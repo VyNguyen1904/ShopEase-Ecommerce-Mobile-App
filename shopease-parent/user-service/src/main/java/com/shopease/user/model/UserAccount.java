@@ -1,5 +1,6 @@
 package com.shopease.user.model;
 
+<<<<<<< HEAD
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -80,5 +81,19 @@ public class UserAccount {
 
     public void replaceAddresses(List<Address> addresses) {
         this.addresses = new ArrayList<>(addresses);
+=======
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+public record UserAccount(UUID id, String email, String passwordHash, String fullName, String phone, String role,
+                          String avatarUrl, List<Address> addresses, Instant createdAt) {
+    public UserAccount withProfile(String fullName, String phone, String avatarUrl) {
+        return new UserAccount(id, email, passwordHash, fullName, phone, role, avatarUrl, addresses, createdAt);
+    }
+
+    public UserAccount withAddresses(List<Address> addresses) {
+        return new UserAccount(id, email, passwordHash, fullName, phone, role, avatarUrl, addresses, createdAt);
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
     }
 }

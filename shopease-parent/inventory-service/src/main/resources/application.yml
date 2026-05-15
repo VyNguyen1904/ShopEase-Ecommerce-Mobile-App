@@ -1,6 +1,7 @@
 spring:
   application:
     name: inventory-service
+<<<<<<< HEAD
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shopease_inventory}
     username: ${DB_USER:postgres}
@@ -12,6 +13,8 @@ spring:
     open-in-view: false
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+=======
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 server:
   port: 8083
 management.endpoints.web.exposure.include: health,info

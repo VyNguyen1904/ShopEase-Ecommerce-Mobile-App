@@ -1,5 +1,6 @@
 package com.shopease.order.model;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -73,4 +74,10 @@ public class OrderItem {
     public BigDecimal getSubtotal() {
         return subtotal;
     }
+=======
+import java.math.BigDecimal;
+
+public record OrderItem(Long productId, String productName, String productImage, BigDecimal unitPrice, int quantity,
+                        BigDecimal subtotal) {
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 }

@@ -1,14 +1,18 @@
 package com.shopease.payment.model;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+=======
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+<<<<<<< HEAD
 @Entity
 @Table(name = "payment_transactions")
 public class PaymentTransaction {
@@ -105,5 +109,17 @@ public class PaymentTransaction {
 
     public Instant getCreatedAt() {
         return createdAt;
+=======
+public record PaymentTransaction(UUID id, UUID orderId, String buyerId, BigDecimal amount, String currency,
+                                 String method, String status, String gatewayTxnId, Instant paidAt,
+                                 Instant createdAt) {
+    public PaymentTransaction completed() {
+        return new PaymentTransaction(id, orderId, buyerId, amount, currency, method, "SUCCESS", "mock-" + id,
+                Instant.now(), createdAt);
+    }
+
+    public PaymentTransaction failed() {
+        return new PaymentTransaction(id, orderId, buyerId, amount, currency, method, "FAILED", null, null, createdAt);
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
     }
 }

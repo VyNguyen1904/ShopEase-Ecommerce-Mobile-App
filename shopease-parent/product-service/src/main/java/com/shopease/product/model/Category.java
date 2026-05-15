@@ -1,5 +1,6 @@
 package com.shopease.product.model;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,4 +48,7 @@ public class Category {
     public String getDescription() {
         return description;
     }
+=======
+public record Category(Long id, String name, String slug, String description) {
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 }

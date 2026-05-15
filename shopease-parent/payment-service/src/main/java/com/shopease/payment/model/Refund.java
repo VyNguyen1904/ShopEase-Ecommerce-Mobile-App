@@ -1,14 +1,18 @@
 package com.shopease.payment.model;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+=======
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+<<<<<<< HEAD
 @Entity
 @Table(name = "refunds")
 public class Refund {
@@ -65,4 +69,7 @@ public class Refund {
     public Instant getRefundedAt() {
         return refundedAt;
     }
+=======
+public record Refund(UUID id, UUID transactionId, BigDecimal amount, String reason, String status, Instant refundedAt) {
+>>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 }
