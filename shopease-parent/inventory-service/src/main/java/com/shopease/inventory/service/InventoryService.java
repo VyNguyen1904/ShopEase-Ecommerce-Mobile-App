@@ -6,12 +6,14 @@ import com.shopease.inventory.model.InventoryItem;
 import com.shopease.inventory.repository.InventoryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
+@Transactional
 public class InventoryService {
     private final InventoryRepository inventory;
 
@@ -24,7 +26,7 @@ public class InventoryService {
     }
 
     public InventoryItem byProduct(Long productId) {
-        return inventory.findByProductId(productId)
+        return inventory.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory item not found"));
     }
 
@@ -34,16 +36,16 @@ public class InventoryService {
 
     public InventoryItem reserve(ReservationRequest request) {
         InventoryItem item = byProduct(request.productId());
-        if (item.availableQty() < request.quantity()) {
+        if (item.getAvailableQty() < request.quantity()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Insufficient stock");
         }
-        return inventory.save(new InventoryItem(item.productId(), item.availableQty() - request.quantity(),
-                item.reservedQty() + request.quantity(), Instant.now()));
+        item.reserve(request.quantity());
+        return inventory.save(item);
     }
 
     public InventoryItem release(ReservationRequest request) {
         InventoryItem item = byProduct(request.productId());
-        return inventory.save(new InventoryItem(item.productId(), item.availableQty() + request.quantity(),
-                Math.max(0, item.reservedQty() - request.quantity()), Instant.now()));
+        item.release(request.quantity());
+        return inventory.save(item);
     }
 }

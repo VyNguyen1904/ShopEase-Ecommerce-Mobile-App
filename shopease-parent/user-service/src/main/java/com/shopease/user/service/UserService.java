@@ -29,7 +29,7 @@ public class UserService {
 
     public LoginResponse register(RegisterRequest request) {
         String email = request.email().toLowerCase(Locale.ROOT);
-        if (users.existsByEmail(email)) {
+        if (users.existsByEmailIgnoreCase(email)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already registered");
         }
         UserAccount user = users.save(new UserAccount(UUID.randomUUID(), email, encoder.encode(request.password()),
@@ -39,9 +39,9 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        UserAccount user = users.findByEmail(request.email())
+        UserAccount user = users.findByEmailIgnoreCase(request.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
-        if (!encoder.matches(request.password(), user.passwordHash())) {
+        if (!encoder.matches(request.password(), user.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
         return loginResponse(user);
@@ -56,38 +56,43 @@ public class UserService {
     }
 
     public UserResponse updateProfile(UUID userId, UpdateProfileRequest request) {
-        return toResponse(users.save(requireUser(userId).withProfile(request.fullName(), request.phone(), request.avatarUrl())));
+        UserAccount user = requireUser(userId);
+        user.updateProfile(request.fullName(), request.phone(), request.avatarUrl());
+        return toResponse(users.save(user));
     }
 
     public UserResponse addAddress(UUID userId, AddressRequest request) {
         UserAccount user = requireUser(userId);
-        List<Address> addresses = new ArrayList<>(user.addresses());
+        List<Address> addresses = new ArrayList<>(user.getAddresses());
         if (request.defaultAddress() || addresses.isEmpty()) {
             addresses.replaceAll(address -> address.withDefault(false));
         }
         addresses.add(toAddress(request, request.defaultAddress() || addresses.isEmpty(), UUID.randomUUID()));
-        return toResponse(users.save(user.withAddresses(addresses)));
+        user.replaceAddresses(addresses);
+        return toResponse(users.save(user));
     }
 
     public UserResponse updateAddress(UUID userId, UUID addressId, AddressRequest request) {
         UserAccount user = requireUser(userId);
-        List<Address> addresses = user.addresses().stream()
-                .map(address -> address.id().equals(addressId)
+        List<Address> addresses = user.getAddresses().stream()
+                .map(address -> address.getId().equals(addressId)
                         ? toAddress(request, request.defaultAddress(), addressId)
                         : (request.defaultAddress() ? address.withDefault(false) : address))
                 .toList();
-        return toResponse(users.save(user.withAddresses(addresses)));
+        user.replaceAddresses(addresses);
+        return toResponse(users.save(user));
     }
 
     public UserResponse deleteAddress(UUID userId, UUID addressId) {
         UserAccount user = requireUser(userId);
-        return toResponse(users.save(user.withAddresses(user.addresses().stream()
-                .filter(address -> !address.id().equals(addressId)).toList())));
+        user.replaceAddresses(user.getAddresses().stream()
+                .filter(address -> !address.getId().equals(addressId)).toList());
+        return toResponse(users.save(user));
     }
 
     private LoginResponse loginResponse(UserAccount user) {
-        return new LoginResponse(tokens.sign(user.id(), user.role(), "access"),
-                tokens.sign(user.id(), user.role(), "refresh"), toResponse(user));
+        return new LoginResponse(tokens.sign(user.getId(), user.getRole(), "access"),
+                tokens.sign(user.getId(), user.getRole(), "refresh"), toResponse(user));
     }
 
     private UserAccount requireUser(UUID id) {
@@ -95,8 +100,8 @@ public class UserService {
     }
 
     private UserResponse toResponse(UserAccount user) {
-        return new UserResponse(user.id(), user.email(), user.fullName(), user.phone(), user.role(), user.avatarUrl(),
-                user.addresses(), user.createdAt());
+        return new UserResponse(user.getId(), user.getEmail(), user.getFullName(), user.getPhone(), user.getRole(), user.getAvatarUrl(),
+                user.getAddresses(), user.getCreatedAt());
     }
 
     private Address toAddress(AddressRequest request, boolean defaultAddress, UUID id) {

@@ -1,13 +1,13 @@
-package com.shopease.order.repository;
+package com.shopease.order.client;
 
 import com.shopease.order.model.ProductSnapshot;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Map;
 
-@Repository
-public class ProductSnapshotRepository {
+@Component
+public class ProductCatalogClient {
     private final Map<Long, ProductSnapshot> products = Map.of(
             101L, new ProductSnapshot(101L, "Wireless Earbuds Pro", new BigDecimal("649000"),
                     "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1"),
