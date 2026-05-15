@@ -2,7 +2,7 @@ package com.shopease.product.controller;
 
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.product.dto.ProductDtos.CategoryRequest;
-import com.shopease.product.model.Category;
+import com.shopease.product.dto.ProductDtos.CategoryResponse;
 import com.shopease.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,13 +20,13 @@ public class CategoryController {
     }
 
     @GetMapping
-    ApiResponse<List<Category>> categories() {
+    ApiResponse<List<CategoryResponse>> categories() {
         return ApiResponse.ok(products.categories());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<Category> create(@Valid @RequestBody CategoryRequest request) {
+    ApiResponse<CategoryResponse> create(@Valid @RequestBody CategoryRequest request) {
         return ApiResponse.created(products.createCategory(request));
     }
 }

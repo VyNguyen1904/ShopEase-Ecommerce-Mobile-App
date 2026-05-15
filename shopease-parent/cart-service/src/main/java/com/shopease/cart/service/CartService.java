@@ -28,23 +28,21 @@ public class CartService {
 
     public CartResponse add(String userId, CartItemRequest request) {
         ProductSnapshot product = products.find(request.productId());
-        Map<Long, CartItem> cart = carts.cartFor(userId);
+        Map<Long, CartItem> cart = carts.find(userId);
         CartItem existing = cart.get(product.productId());
         int quantity = request.quantity() + (existing == null ? 0 : existing.quantity());
-        cart.put(product.productId(), new CartItem(product.productId(), product.name(), product.price(), product.imageUrl(),
-                quantity, Instant.now()));
+        carts.put(userId, new CartItem(product.productId(), product.name(), product.price(), product.imageUrl(), quantity, Instant.now()));
         return toCart(userId);
     }
 
     public CartResponse update(String userId, Long productId, CartItemRequest request) {
         ProductSnapshot product = products.find(productId);
-        carts.cartFor(userId).put(productId, new CartItem(productId, product.name(), product.price(), product.imageUrl(),
-                request.quantity(), Instant.now()));
+        carts.put(userId, new CartItem(productId, product.name(), product.price(), product.imageUrl(), request.quantity(), Instant.now()));
         return toCart(userId);
     }
 
     public CartResponse remove(String userId, Long productId) {
-        carts.cartFor(userId).remove(productId);
+        carts.remove(userId, productId);
         return toCart(userId);
     }
 
@@ -54,7 +52,7 @@ public class CartService {
     }
 
     private CartResponse toCart(String userId) {
-        List<CartItemResponse> items = carts.cartFor(userId).values().stream()
+        List<CartItemResponse> items = carts.find(userId).values().stream()
                 .map(item -> new CartItemResponse(item.productId(), item.productName(), item.priceSnapshot(), item.imageUrl(),
                         item.quantity(), item.priceSnapshot().multiply(BigDecimal.valueOf(item.quantity()))))
                 .toList();

@@ -1,6 +1,5 @@
 package com.shopease.inventory.model;
 
-<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -61,9 +60,4 @@ public class InventoryItem {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
-=======
-import java.time.Instant;
-
-public record InventoryItem(Long productId, int availableQty, int reservedQty, Instant updatedAt) {
->>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
 }

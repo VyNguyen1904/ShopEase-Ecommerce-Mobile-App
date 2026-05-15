@@ -2,7 +2,7 @@ package com.shopease.order.controller;
 
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.order.dto.OrderDtos.CreateOrderRequest;
-import com.shopease.order.model.Order;
+import com.shopease.order.dto.OrderDtos.OrderResponse;
 import com.shopease.order.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,23 +22,23 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<Order> place(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
-                             @Valid @RequestBody CreateOrderRequest request) {
+    ApiResponse<OrderResponse> place(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
+                                     @Valid @RequestBody CreateOrderRequest request) {
         return ApiResponse.created(orders.place(buyerId, request));
     }
 
     @GetMapping
-    ApiResponse<List<Order>> all(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId) {
+    ApiResponse<List<OrderResponse>> all(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId) {
         return ApiResponse.ok(orders.byBuyer(buyerId));
     }
 
     @GetMapping("/{id}")
-    ApiResponse<Order> one(@PathVariable UUID id) {
+    ApiResponse<OrderResponse> one(@PathVariable UUID id) {
         return ApiResponse.ok(orders.one(id));
     }
 
     @PostMapping("/{id}/cancel")
-    ApiResponse<Order> cancel(@PathVariable UUID id) {
+    ApiResponse<OrderResponse> cancel(@PathVariable UUID id) {
         return ApiResponse.ok(orders.cancel(id));
     }
 }

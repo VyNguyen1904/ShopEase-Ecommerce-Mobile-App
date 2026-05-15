@@ -1,6 +1,5 @@
 package com.shopease.order.model;
 
-<<<<<<< HEAD
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -167,19 +166,5 @@ public class Order {
 
     public Instant getCreatedAt() {
         return createdAt;
-=======
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
-public record Order(UUID id, String buyerId, String status, String paymentStatus, List<OrderItem> items,
-                    BigDecimal subtotal, BigDecimal shippingFee, BigDecimal discountAmount, BigDecimal totalAmount,
-                    String paymentMethod, String shipRecipient, String shipPhone, String shipStreet, String shipDistrict,
-                    String shipCity, String note, Instant createdAt) {
-    public Order cancelled() {
-        return new Order(id, buyerId, "CANCELLED", paymentStatus, items, subtotal, shippingFee, discountAmount,
-                totalAmount, paymentMethod, shipRecipient, shipPhone, shipStreet, shipDistrict, shipCity, note, createdAt);
->>>>>>> 9f2b30358e4062f0be39eb86dfe53ada7c670722
     }
 }
