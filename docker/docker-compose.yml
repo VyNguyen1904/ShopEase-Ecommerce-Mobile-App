@@ -1,0 +1,90 @@
+services:
+  user-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: user-service/Dockerfile
+    ports:
+      - "8081:8081"
+
+  product-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: product-service/Dockerfile
+    ports:
+      - "8082:8082"
+
+  inventory-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: inventory-service/Dockerfile
+    ports:
+      - "8083:8083"
+
+  cart-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: cart-service/Dockerfile
+    ports:
+      - "8084:8084"
+
+  order-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: order-service/Dockerfile
+    ports:
+      - "8085:8085"
+
+  payment-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: payment-service/Dockerfile
+    ports:
+      - "8086:8086"
+
+  notification-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: notification-service/Dockerfile
+    ports:
+      - "8087:8087"
+
+  review-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: review-service/Dockerfile
+    ports:
+      - "8089:8089"
+
+  search-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: search-service/Dockerfile
+    ports:
+      - "8090:8090"
+
+  gateway-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: gateway-service/Dockerfile
+    environment:
+      USER_SERVICE_URI: http://user-service:8081
+      PRODUCT_SERVICE_URI: http://product-service:8082
+      INVENTORY_SERVICE_URI: http://inventory-service:8083
+      CART_SERVICE_URI: http://cart-service:8084
+      ORDER_SERVICE_URI: http://order-service:8085
+      PAYMENT_SERVICE_URI: http://payment-service:8086
+      NOTIFICATION_SERVICE_URI: http://notification-service:8087
+      REVIEW_SERVICE_URI: http://review-service:8089
+      SEARCH_SERVICE_URI: http://search-service:8090
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - product-service
+      - inventory-service
+      - cart-service
+      - order-service
+      - payment-service
+      - notification-service
+      - review-service
+      - search-service
