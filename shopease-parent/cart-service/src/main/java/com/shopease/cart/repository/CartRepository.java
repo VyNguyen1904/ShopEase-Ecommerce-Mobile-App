@@ -1,5 +1,7 @@
 package com.shopease.cart.repository;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.cart.model.CartItem;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.redis.core.HashOperations;
@@ -9,13 +11,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Repository
+@RequiredArgsConstructor
 public class CartRepository {
     private static final String KEY_PREFIX = "cart:";
     private final HashOperations<String, Long, CartItem> carts;
 
-    public CartRepository(RedisTemplate<String, CartItem> redisTemplate) {
-        this.carts = redisTemplate.opsForHash();
-    }
+
 
     public Map<Long, CartItem> find(String userId) {
         return new LinkedHashMap<>(carts.entries(key(userId)));

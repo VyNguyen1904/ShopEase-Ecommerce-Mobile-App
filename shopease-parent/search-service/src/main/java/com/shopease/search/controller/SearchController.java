@@ -1,5 +1,7 @@
 package com.shopease.search.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.search.dto.SearchDtos.ProductDocumentRequest;
 import com.shopease.search.model.ProductDocument;
@@ -13,12 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/search")
+@RequiredArgsConstructor
 public class SearchController {
     private final SearchService search;
 
-    public SearchController(SearchService search) {
-        this.search = search;
-    }
+
 
     @GetMapping("/products")
     ApiResponse<List<ProductDocument>> products(@RequestParam(required = false) String q,

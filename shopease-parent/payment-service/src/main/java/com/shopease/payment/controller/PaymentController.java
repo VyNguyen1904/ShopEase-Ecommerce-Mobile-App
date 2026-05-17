@@ -1,5 +1,7 @@
 package com.shopease.payment.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.payment.dto.PaymentDtos.CreatePaymentRequest;
 import com.shopease.payment.dto.PaymentDtos.PaymentResponse;
@@ -15,12 +17,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payments")
+@RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService payments;
 
-    public PaymentController(PaymentService payments) {
-        this.payments = payments;
-    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

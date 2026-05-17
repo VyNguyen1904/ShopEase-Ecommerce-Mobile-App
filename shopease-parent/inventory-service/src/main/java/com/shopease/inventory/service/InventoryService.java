@@ -1,5 +1,7 @@
 package com.shopease.inventory.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.inventory.dto.InventoryDtos.ReservationRequest;
 import com.shopease.inventory.dto.InventoryDtos.InventoryResponse;
 import com.shopease.inventory.dto.InventoryDtos.StockRequest;
@@ -15,12 +17,11 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class InventoryService {
     private final InventoryRepository inventory;
 
-    public InventoryService(InventoryRepository inventory) {
-        this.inventory = inventory;
-    }
+
 
     public List<InventoryResponse> all() {
         return inventory.findAll().stream().map(InventoryResponse::from).toList();

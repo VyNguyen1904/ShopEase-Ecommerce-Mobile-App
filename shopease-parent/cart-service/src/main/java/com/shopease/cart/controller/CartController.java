@@ -1,5 +1,7 @@
 package com.shopease.cart.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.cart.dto.CartDtos.CartItemRequest;
 import com.shopease.cart.dto.CartDtos.CartResponse;
 import com.shopease.cart.service.CartService;
@@ -9,12 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cart")
+@RequiredArgsConstructor
 public class CartController {
     private final CartService carts;
 
-    public CartController(CartService carts) {
-        this.carts = carts;
-    }
+
 
     @GetMapping
     ApiResponse<CartResponse> get(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId) {

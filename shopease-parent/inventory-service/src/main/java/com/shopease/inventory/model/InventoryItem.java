@@ -10,6 +10,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "inventory_items")
 public class InventoryItem {
+
     @Id
     @Column(name = "product_id")
     private Long productId;
@@ -45,19 +46,8 @@ public class InventoryItem {
         this.updatedAt = Instant.now();
     }
 
-    public Long getProductId() {
-        return productId;
-    }
-
-    public int getAvailableQty() {
-        return availableQty;
-    }
-
-    public int getReservedQty() {
-        return reservedQty;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+    public Long getProductId() { return productId; }
+    public int getAvailableQty() { return availableQty; }
+    public int getReservedQty() { return reservedQty; }
+    public Instant getUpdatedAt() { return updatedAt; }
 }

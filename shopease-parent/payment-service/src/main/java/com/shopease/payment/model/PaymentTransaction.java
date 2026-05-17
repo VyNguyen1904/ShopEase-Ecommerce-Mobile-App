@@ -12,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "payment_transactions")
 public class PaymentTransaction {
+
     @Id
     private UUID id;
 
@@ -67,43 +68,14 @@ public class PaymentTransaction {
         this.gatewayTxnId = "SIM-" + id;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public String getBuyerId() {
-        return buyerId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getGatewayTxnId() {
-        return gatewayTxnId;
-    }
-
-    public Instant getPaidAt() {
-        return paidAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+    public UUID getId() { return id; }
+    public UUID getOrderId() { return orderId; }
+    public String getBuyerId() { return buyerId; }
+    public BigDecimal getAmount() { return amount; }
+    public String getCurrency() { return currency; }
+    public String getMethod() { return method; }
+    public String getStatus() { return status; }
+    public String getGatewayTxnId() { return gatewayTxnId; }
+    public Instant getPaidAt() { return paidAt; }
+    public Instant getCreatedAt() { return createdAt; }
 }

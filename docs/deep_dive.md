@@ -19,19 +19,6 @@
 ---
 
 ## PART 1 — System Architecture Overview
-
-### 1.1 Architecture Philosophy: Why Microservices?
-
-ShopEase adopts a **Microservices Architecture** with an **Event-Driven** backbone. Each business domain is encapsulated in its own independently deployable service, communicating via REST (synchronous) and Apache Kafka (asynchronous). This approach provides:
-
-- **Independent deployability**: update Cart Service without touching Product Service
-- **Technology flexibility**: each service can choose its best-fit database
-- **Fault isolation**: a crash in Notification Service does not affect Checkout
-- **Horizontal scalability**: scale Order Service independently during peak sales
-- **Team autonomy**: each team owns their service end-to-end
-
----
-
 ### 1.2 Microservices Breakdown
 
 | Service | Port | Responsibility | Database | Communication |

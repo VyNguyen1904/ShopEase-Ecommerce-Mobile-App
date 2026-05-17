@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Embeddable
 public class Address {
+
     @Column(name = "address_id", nullable = false)
     private UUID id;
 

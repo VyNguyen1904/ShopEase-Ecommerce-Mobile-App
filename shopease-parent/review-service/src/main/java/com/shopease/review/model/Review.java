@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "reviews")
 public class Review {
+
     @Id
     private UUID id;
 
@@ -74,47 +75,15 @@ public class Review {
         this.helpfulCount++;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public String getBuyerId() {
-        return buyerId;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public List<String> getImageUrls() {
-        return List.copyOf(imageUrls);
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public int getHelpfulCount() {
-        return helpfulCount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+    public UUID getId() { return id; }
+    public Long getProductId() { return productId; }
+    public UUID getOrderId() { return orderId; }
+    public String getBuyerId() { return buyerId; }
+    public int getRating() { return rating; }
+    public String getTitle() { return title; }
+    public String getBody() { return body; }
+    public List<String> getImageUrls() { return List.copyOf(imageUrls); }
+    public String getStatus() { return status; }
+    public int getHelpfulCount() { return helpfulCount; }
+    public Instant getCreatedAt() { return createdAt; }
 }

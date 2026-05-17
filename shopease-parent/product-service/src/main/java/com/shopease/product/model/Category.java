@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "categories")
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,19 +33,8 @@ public class Category {
         this.description = description;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getSlug() { return slug; }
+    public String getDescription() { return description; }
 }

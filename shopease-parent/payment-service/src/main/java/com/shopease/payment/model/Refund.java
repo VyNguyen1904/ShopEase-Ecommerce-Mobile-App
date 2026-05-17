@@ -12,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "refunds")
 public class Refund {
+
     @Id
     private UUID id;
 
@@ -42,27 +43,10 @@ public class Refund {
         this.refundedAt = refundedAt;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getTransactionId() {
-        return transactionId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public Instant getRefundedAt() {
-        return refundedAt;
-    }
+    public UUID getId() { return id; }
+    public UUID getTransactionId() { return transactionId; }
+    public BigDecimal getAmount() { return amount; }
+    public String getReason() { return reason; }
+    public String getStatus() { return status; }
+    public Instant getRefundedAt() { return refundedAt; }
 }

@@ -15,8 +15,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public final class OrderDtos {
-    private OrderDtos() {
+public final class OrderDTO {
+    private OrderDTO() {
     }
 
     public record CreateOrderRequest(@NotEmpty List<@Valid OrderItemRequest> items, @NotBlank String shipRecipient,

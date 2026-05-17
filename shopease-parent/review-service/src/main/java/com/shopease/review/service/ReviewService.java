@@ -1,5 +1,7 @@
 package com.shopease.review.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.review.dto.ReviewDtos.ReviewRequest;
 import com.shopease.review.dto.ReviewDtos.ReviewResponse;
 import com.shopease.review.model.Review;
@@ -15,12 +17,11 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviews;
 
-    public ReviewService(ReviewRepository reviews) {
-        this.reviews = reviews;
-    }
+
 
     public List<ReviewResponse> byProduct(Long productId) {
         return reviews.findByProductIdOrderByCreatedAtDesc(productId).stream().map(ReviewResponse::from).toList();

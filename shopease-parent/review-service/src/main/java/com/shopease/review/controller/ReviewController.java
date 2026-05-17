@@ -1,5 +1,7 @@
 package com.shopease.review.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.review.dto.ReviewDtos.ReviewRequest;
 import com.shopease.review.dto.ReviewDtos.ReviewResponse;
@@ -13,12 +15,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reviews")
+@RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviews;
 
-    public ReviewController(ReviewService reviews) {
-        this.reviews = reviews;
-    }
+
 
     @GetMapping("/products/{productId}")
     ApiResponse<List<ReviewResponse>> byProduct(@PathVariable Long productId) {

@@ -1,11 +1,15 @@
 package com.shopease.cart.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.cart.dto.CartDtos.*;
 import com.shopease.cart.model.CartItem;
 import com.shopease.cart.model.ProductSnapshot;
 import com.shopease.cart.repository.CartRepository;
 import com.shopease.cart.repository.ProductSnapshotRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,31 +17,33 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class CartService {
     private final CartRepository carts;
     private final ProductSnapshotRepository products;
-
-    public CartService(CartRepository carts, ProductSnapshotRepository products) {
-        this.carts = carts;
-        this.products = products;
-    }
 
     public CartResponse get(String userId) {
         return toCart(userId);
     }
 
     public CartResponse add(String userId, CartItemRequest request) {
-        ProductSnapshot product = products.find(request.productId());
+        ProductSnapshot product = products.findById(request.productId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Product " + request.productId() + " not found"));
         Map<Long, CartItem> cart = carts.find(userId);
-        CartItem existing = cart.get(product.productId());
+        CartItem existing = cart.get(product.getProductId());
         int quantity = request.quantity() + (existing == null ? 0 : existing.quantity());
-        carts.put(userId, new CartItem(product.productId(), product.name(), product.price(), product.imageUrl(), quantity, Instant.now()));
+        carts.put(userId, new CartItem(product.getProductId(), product.getName(), product.getPrice(),
+                product.getImageUrl(), quantity, Instant.now()));
         return toCart(userId);
     }
 
     public CartResponse update(String userId, Long productId, CartItemRequest request) {
-        ProductSnapshot product = products.find(productId);
-        carts.put(userId, new CartItem(productId, product.name(), product.price(), product.imageUrl(), request.quantity(), Instant.now()));
+        ProductSnapshot product = products.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Product " + productId + " not found"));
+        carts.put(userId, new CartItem(productId, product.getName(), product.getPrice(),
+                product.getImageUrl(), request.quantity(), Instant.now()));
         return toCart(userId);
     }
 

@@ -1,5 +1,7 @@
 package com.shopease.payment.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.payment.dto.PaymentDtos.CreatePaymentRequest;
 import com.shopease.payment.dto.PaymentDtos.PaymentResponse;
 import com.shopease.payment.dto.PaymentDtos.RefundRequest;
@@ -20,14 +22,12 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class PaymentService {
     private final PaymentRepository payments;
     private final RefundRepository refunds;
 
-    public PaymentService(PaymentRepository payments, RefundRepository refunds) {
-        this.payments = payments;
-        this.refunds = refunds;
-    }
+
 
     @Transactional
     public PaymentResponse create(CreatePaymentRequest request) {

@@ -1,8 +1,10 @@
 package com.shopease.order.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.order.dto.OrderDtos.CreateOrderRequest;
-import com.shopease.order.dto.OrderDtos.OrderResponse;
+import com.shopease.order.dto.OrderDTO.CreateOrderRequest;
+import com.shopease.order.dto.OrderDTO.OrderResponse;
 import com.shopease.order.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,12 +15,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
     private final OrderService orders;
 
-    public OrderController(OrderService orders) {
-        this.orders = orders;
-    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

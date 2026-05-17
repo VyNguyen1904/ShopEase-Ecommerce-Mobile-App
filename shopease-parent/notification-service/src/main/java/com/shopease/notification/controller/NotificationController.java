@@ -1,5 +1,7 @@
 package com.shopease.notification.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.notification.dto.NotificationDtos.NotificationRequest;
 import com.shopease.notification.model.Notification;
@@ -13,12 +15,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/notifications")
+@RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notifications;
 
-    public NotificationController(NotificationService notifications) {
-        this.notifications = notifications;
-    }
+
 
     @GetMapping
     ApiResponse<List<Notification>> inbox(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId) {

@@ -1,5 +1,7 @@
 package com.shopease.user.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.user.dto.UserDtos.*;
 import com.shopease.user.service.UserService;
@@ -9,12 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
     private final UserService users;
 
-    public AuthController(UserService users) {
-        this.users = users;
-    }
+
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)

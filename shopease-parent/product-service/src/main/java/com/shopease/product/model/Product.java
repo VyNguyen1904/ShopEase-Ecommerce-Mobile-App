@@ -20,6 +20,7 @@ import java.util.List;
 @Entity
 @Table(name = "products")
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -95,51 +96,16 @@ public class Product {
         this.active = false;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public double getAverageRating() {
-        return averageRating;
-    }
-
-    public String getSellerId() {
-        return sellerId;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
-    public List<String> getImageUrls() {
-        return List.copyOf(imageUrls);
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    public Category getCategory() { return category; }
+    public BigDecimal getPrice() { return price; }
+    public int getStockQuantity() { return stockQuantity; }
+    public double getAverageRating() { return averageRating; }
+    public String getSellerId() { return sellerId; }
+    public String getThumbnailUrl() { return thumbnailUrl; }
+    public List<String> getImageUrls() { return List.copyOf(imageUrls); }
+    public boolean isActive() { return active; }
+    public Instant getCreatedAt() { return createdAt; }
 }

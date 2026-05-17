@@ -1,5 +1,7 @@
 package com.shopease.product.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.product.dto.ProductDtos.ProductRequest;
 import com.shopease.product.dto.ProductDtos.ProductResponse;
@@ -13,12 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
     private final ProductService products;
 
-    public ProductController(ProductService products) {
-        this.products = products;
-    }
+
 
     @GetMapping
     ApiResponse<List<ProductResponse>> products(@RequestParam(required = false) String keyword,

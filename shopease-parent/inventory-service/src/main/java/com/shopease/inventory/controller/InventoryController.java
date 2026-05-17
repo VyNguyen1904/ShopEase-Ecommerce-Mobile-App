@@ -1,5 +1,7 @@
 package com.shopease.inventory.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.inventory.dto.InventoryDtos.InventoryResponse;
 import com.shopease.inventory.dto.InventoryDtos.ReservationRequest;
@@ -12,12 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
+@RequiredArgsConstructor
 public class InventoryController {
     private final InventoryService inventory;
 
-    public InventoryController(InventoryService inventory) {
-        this.inventory = inventory;
-    }
+
 
     @GetMapping
     ApiResponse<List<InventoryResponse>> all() {

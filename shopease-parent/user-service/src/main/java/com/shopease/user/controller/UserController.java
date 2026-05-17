@@ -1,5 +1,7 @@
 package com.shopease.user.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.user.dto.UserDtos.*;
 import com.shopease.user.service.TokenService;
@@ -13,14 +15,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService users;
     private final TokenService tokens;
 
-    public UserController(UserService users, TokenService tokens) {
-        this.users = users;
-        this.tokens = tokens;
-    }
+
 
     @GetMapping("/me")
     ApiResponse<UserResponse> me(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {

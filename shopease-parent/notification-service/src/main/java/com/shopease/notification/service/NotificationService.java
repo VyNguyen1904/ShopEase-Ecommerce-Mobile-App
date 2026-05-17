@@ -1,5 +1,7 @@
 package com.shopease.notification.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.notification.dto.NotificationDtos.NotificationRequest;
 import com.shopease.notification.model.Notification;
 import com.shopease.notification.repository.NotificationRepository;
@@ -13,15 +15,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
     private final NotificationRepository notifications;
 
-    public NotificationService(NotificationRepository notifications) {
-        this.notifications = notifications;
-    }
-
     public List<Notification> inbox(String userId) {
-        return notifications.findByUserId(userId);
+        return notifications.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
     public Notification create(NotificationRequest request) {
@@ -31,7 +30,8 @@ public class NotificationService {
     }
 
     public Notification read(String userId, UUID id) {
-        Notification notification = notifications.findByUserIdAndId(userId, id)
+        Notification notification = notifications.findById(id)
+                .filter(n -> n.getUserId().equals(userId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
         return notifications.save(notification.readNow());
     }

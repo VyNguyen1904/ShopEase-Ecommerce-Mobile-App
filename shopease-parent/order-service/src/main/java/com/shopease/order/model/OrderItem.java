@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,31 +47,11 @@ public class OrderItem {
         this.subtotal = subtotal;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public String getProductImage() {
-        return productImage;
-    }
-
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
+    public Long getId() { return id; }
+    public Long getProductId() { return productId; }
+    public String getProductName() { return productName; }
+    public String getProductImage() { return productImage; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public int getQuantity() { return quantity; }
+    public BigDecimal getSubtotal() { return subtotal; }
 }

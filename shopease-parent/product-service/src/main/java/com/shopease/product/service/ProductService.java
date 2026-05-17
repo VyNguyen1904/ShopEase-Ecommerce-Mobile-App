@@ -1,5 +1,7 @@
 package com.shopease.product.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.product.dto.ProductDtos.CategoryRequest;
 import com.shopease.product.dto.ProductDtos.CategoryResponse;
 import com.shopease.product.dto.ProductDtos.ProductRequest;
@@ -21,14 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository products;
     private final CategoryRepository categories;
 
-    public ProductService(ProductRepository products, CategoryRepository categories) {
-        this.products = products;
-        this.categories = categories;
-    }
+
 
     public List<CategoryResponse> categories() {
         return categories.findAll().stream().map(CategoryResponse::from).toList();

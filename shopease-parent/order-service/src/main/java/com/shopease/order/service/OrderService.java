@@ -1,7 +1,9 @@
 package com.shopease.order.service;
 
-import com.shopease.order.dto.OrderDtos.CreateOrderRequest;
-import com.shopease.order.dto.OrderDtos.OrderResponse;
+import lombok.RequiredArgsConstructor;
+
+import com.shopease.order.dto.OrderDTO.CreateOrderRequest;
+import com.shopease.order.dto.OrderDTO.OrderResponse;
 import com.shopease.order.client.ProductCatalogClient;
 import com.shopease.order.model.Order;
 import com.shopease.order.model.OrderItem;
@@ -19,14 +21,12 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orders;
     private final ProductCatalogClient products;
 
-    public OrderService(OrderRepository orders, ProductCatalogClient products) {
-        this.orders = orders;
-        this.products = products;
-    }
+
 
     @Transactional
     public OrderResponse place(String buyerId, CreateOrderRequest request) {

@@ -1,5 +1,7 @@
 package com.shopease.user.service;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.user.dto.UserDtos.*;
 import com.shopease.user.model.Address;
 import com.shopease.user.model.UserAccount;
@@ -18,16 +20,13 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository users;
     private final BCryptPasswordEncoder encoder;
     private final TokenService tokens;
 
-    public UserService(UserRepository users, BCryptPasswordEncoder encoder, TokenService tokens) {
-        this.users = users;
-        this.encoder = encoder;
-        this.tokens = tokens;
-    }
+
 
     @Transactional
     public LoginResponse register(RegisterRequest request) {

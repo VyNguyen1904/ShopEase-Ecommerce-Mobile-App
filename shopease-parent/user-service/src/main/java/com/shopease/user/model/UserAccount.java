@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class UserAccount {
+
     @Id
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID id;

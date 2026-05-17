@@ -1,5 +1,7 @@
 package com.shopease.product.controller;
 
+import lombok.RequiredArgsConstructor;
+
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.product.dto.ProductDtos.CategoryRequest;
 import com.shopease.product.dto.ProductDtos.CategoryResponse;
@@ -12,12 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@RequiredArgsConstructor
 public class CategoryController {
     private final ProductService products;
 
-    public CategoryController(ProductService products) {
-        this.products = products;
-    }
+
 
     @GetMapping
     ApiResponse<List<CategoryResponse>> categories() {
