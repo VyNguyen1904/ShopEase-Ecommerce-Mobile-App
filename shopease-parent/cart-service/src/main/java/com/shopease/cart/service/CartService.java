@@ -2,11 +2,11 @@ package com.shopease.cart.service;
 
 import lombok.RequiredArgsConstructor;
 
+import com.shopease.cart.client.ProductCatalogClient;
 import com.shopease.cart.dto.CartDtos.*;
 import com.shopease.cart.model.CartItem;
 import com.shopease.cart.model.ProductSnapshot;
 import com.shopease.cart.repository.CartRepository;
-import com.shopease.cart.repository.ProductSnapshotRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,14 +20,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CartService {
     private final CartRepository carts;
-    private final ProductSnapshotRepository products;
+    private final ProductCatalogClient products;
 
     public CartResponse get(String userId) {
         return toCart(userId);
     }
 
     public CartResponse add(String userId, CartItemRequest request) {
-        ProductSnapshot product = products.findById(request.productId())
+        ProductSnapshot product = products.find(request.productId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Product " + request.productId() + " not found"));
         Map<Long, CartItem> cart = carts.find(userId);
@@ -39,7 +39,7 @@ public class CartService {
     }
 
     public CartResponse update(String userId, Long productId, CartItemRequest request) {
-        ProductSnapshot product = products.findById(productId)
+        ProductSnapshot product = products.find(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Product " + productId + " not found"));
         carts.put(userId, new CartItem(productId, product.getName(), product.getPrice(),

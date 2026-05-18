@@ -18,6 +18,27 @@ public final class PaymentDtos {
                                        @NotNull @DecimalMin("0.0") BigDecimal amount, @NotBlank String method) {
     }
 
+    public record CheckoutPaymentRequest(@NotBlank String orderId,
+                                         @NotNull @DecimalMin("0.0") BigDecimal amount,
+                                         String currency,
+                                         String cardNumber,
+                                         String cardHolder,
+                                         String expiryDate,
+                                         String cvv,
+                                         @NotBlank String paymentMethod) {
+    }
+
+    public record CheckoutPaymentResponse(String transactionId, String orderId, String status, String message,
+                                          Instant timestamp, String qrPayload) {
+        public CheckoutPaymentResponse withMessage(String nextMessage) {
+            return new CheckoutPaymentResponse(transactionId, orderId, status, nextMessage, timestamp, qrPayload);
+        }
+
+        public CheckoutPaymentResponse withStatus(String nextStatus, String nextMessage) {
+            return new CheckoutPaymentResponse(transactionId, orderId, nextStatus, nextMessage, Instant.now(), qrPayload);
+        }
+    }
+
     public record RefundRequest(@NotNull @DecimalMin("0.0") BigDecimal amount, String reason) {
     }
 

@@ -3,6 +3,8 @@ package com.shopease.payment.controller;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
+import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentRequest;
+import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentResponse;
 import com.shopease.payment.dto.PaymentDtos.CreatePaymentRequest;
 import com.shopease.payment.dto.PaymentDtos.PaymentResponse;
 import com.shopease.payment.dto.PaymentDtos.RefundRequest;
@@ -21,6 +23,28 @@ import java.util.UUID;
 public class PaymentController {
     private final PaymentService payments;
 
+
+    @PostMapping("/checkout")
+    CheckoutPaymentResponse checkout(@RequestHeader("Idempotency-Key") String idempotencyKey,
+                                     @Valid @RequestBody CheckoutPaymentRequest request) {
+        return payments.checkout(request, idempotencyKey);
+    }
+
+    @GetMapping("/status/{orderId}")
+    CheckoutPaymentResponse status(@PathVariable String orderId) {
+        return payments.status(orderId);
+    }
+
+    @PostMapping("/simulate-webhook")
+    CheckoutPaymentResponse simulateWebhook(@RequestParam String orderId,
+                                            @RequestParam(defaultValue = "true") boolean success) {
+        return payments.simulateWebhook(orderId, success);
+    }
+
+    @GetMapping(value = "/qr/{orderId}", produces = "image/svg+xml")
+    String qr(@PathVariable String orderId) {
+        return payments.qrSvg(orderId);
+    }
 
 
     @PostMapping

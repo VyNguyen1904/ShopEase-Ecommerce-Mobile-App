@@ -4,11 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "payment_transactions")
 public class PaymentTransaction {
@@ -68,14 +70,4 @@ public class PaymentTransaction {
         this.gatewayTxnId = "SIM-" + id;
     }
 
-    public UUID getId() { return id; }
-    public UUID getOrderId() { return orderId; }
-    public String getBuyerId() { return buyerId; }
-    public BigDecimal getAmount() { return amount; }
-    public String getCurrency() { return currency; }
-    public String getMethod() { return method; }
-    public String getStatus() { return status; }
-    public String getGatewayTxnId() { return gatewayTxnId; }
-    public Instant getPaidAt() { return paidAt; }
-    public Instant getCreatedAt() { return createdAt; }
 }

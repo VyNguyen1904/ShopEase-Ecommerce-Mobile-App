@@ -19,8 +19,6 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService orders;
 
-
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ApiResponse<OrderResponse> place(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
