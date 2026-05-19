@@ -12,12 +12,10 @@ services:
       dockerfile: product-service/Dockerfile
     environment:
       INVENTORY_SERVICE_URI: http://inventory-service:8083
-      SEARCH_SERVICE_URI: http://search-service:8090
     ports:
       - "8082:8082"
     depends_on:
       - inventory-service
-      - search-service
 
   inventory-service:
     build:
@@ -77,13 +75,6 @@ services:
     depends_on:
       - order-service
 
-  search-service:
-    build:
-      context: ../shopease-parent
-      dockerfile: search-service/Dockerfile
-    ports:
-      - "8090:8090"
-
   gateway-service:
     build:
       context: ../shopease-parent
@@ -97,7 +88,7 @@ services:
       PAYMENT_SERVICE_URI: http://payment-service:8086
       NOTIFICATION_SERVICE_URI: http://notification-service:8087
       REVIEW_SERVICE_URI: http://review-service:8089
-      SEARCH_SERVICE_URI: http://search-service:8090
+      SEARCH_SERVICE_URI: http://product-service:8082
     ports:
       - "8080:8080"
     depends_on:
@@ -109,4 +100,3 @@ services:
       - payment-service
       - notification-service
       - review-service
-      - search-service

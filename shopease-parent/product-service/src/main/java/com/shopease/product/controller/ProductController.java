@@ -37,6 +37,11 @@ public class ProductController {
         return ApiResponse.ok(products.products(q, categoryId, minPrice, maxPrice));
     }
 
+    @GetMapping("/suggestions")
+    ApiResponse<List<String>> suggestions(@RequestParam(defaultValue = "") String q) {
+        return ApiResponse.ok(products.suggestions(q));
+    }
+
     @GetMapping("/{id}")
     ApiResponse<ProductResponse> product(@PathVariable Long id) {
         return ApiResponse.ok(products.product(id));
@@ -65,10 +70,5 @@ public class ProductController {
     @GetMapping("/seller/{sellerId}")
     ApiResponse<List<ProductResponse>> sellerProducts(@PathVariable String sellerId) {
         return ApiResponse.ok(products.bySeller(sellerId));
-    }
-
-    @GetMapping("/flash-sale")
-    ApiResponse<List<ProductResponse>> flashSale() {
-        return ApiResponse.ok(products.flashSale());
     }
 }

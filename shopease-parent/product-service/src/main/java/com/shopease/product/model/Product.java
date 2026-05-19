@@ -4,6 +4,8 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -30,6 +33,9 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String slug;
+
     @Column(nullable = false, length = 4000)
     private String description;
 
@@ -37,14 +43,26 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal price;
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal basePrice;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal salePrice;
 
     @Column(nullable = false)
     private int stockQuantity;
 
+    @Column(nullable = false, precision = 3, scale = 2)
+    private double avgRating;
+
     @Column(nullable = false)
-    private double averageRating;
+    private int reviewCount;
+
+    @Column(nullable = false)
+    private int soldCount;
+
+    @Column(precision = 6, scale = 3)
+    private BigDecimal weightKg;
 
     @Column(nullable = false)
     private String sellerId;
@@ -56,45 +74,72 @@ public class Product {
     @Column(name = "image_url")
     private List<String> imageUrls = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductStatus status;
+
+    @Column(nullable = false)
+    private boolean isFeatured;
+
     @Column(nullable = false)
     private boolean active;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Instant updatedAt;
 
     protected Product() {
     }
 
-    public Product(String name, String description, Category category, BigDecimal price, int stockQuantity,
-                   double averageRating, String sellerId, String thumbnailUrl, List<String> imageUrls,
-                   boolean active, Instant createdAt) {
+    public Product(String name, String slug, String description, Category category, BigDecimal basePrice,
+                   BigDecimal salePrice, int stockQuantity, double avgRating, int reviewCount, int soldCount,
+                   BigDecimal weightKg, String sellerId, String thumbnailUrl, List<String> imageUrls,
+                   ProductStatus status, boolean isFeatured, boolean active, Instant createdAt) {
         this.name = name;
+        this.slug = slug;
         this.description = description;
         this.category = category;
-        this.price = price;
+        this.basePrice = basePrice;
+        this.salePrice = salePrice;
         this.stockQuantity = stockQuantity;
-        this.averageRating = averageRating;
+        this.avgRating = avgRating;
+        this.reviewCount = reviewCount;
+        this.soldCount = soldCount;
+        this.weightKg = weightKg;
         this.sellerId = sellerId;
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls = new ArrayList<>(imageUrls);
+        this.status = status;
+        this.isFeatured = isFeatured;
         this.active = active;
         this.createdAt = createdAt;
+        this.updatedAt = createdAt;
     }
 
-    public void update(String name, String description, Category category, BigDecimal price, int stockQuantity,
-                       String sellerId, String thumbnailUrl, List<String> imageUrls) {
+    public void update(String name, String slug, String description, Category category, BigDecimal basePrice,
+                       BigDecimal salePrice, int stockQuantity, BigDecimal weightKg, String sellerId,
+                       String thumbnailUrl, List<String> imageUrls, ProductStatus status, boolean isFeatured) {
         this.name = name;
+        this.slug = slug;
         this.description = description;
         this.category = category;
-        this.price = price;
+        this.basePrice = basePrice;
+        this.salePrice = salePrice;
         this.stockQuantity = stockQuantity;
+        this.weightKg = weightKg;
         this.sellerId = sellerId;
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls.clear();
         this.imageUrls.addAll(imageUrls);
+        this.status = status;
+        this.isFeatured = isFeatured;
     }
 
     public void deactivate() {
         this.active = false;
+        this.status = ProductStatus.INACTIVE;
     }
 }

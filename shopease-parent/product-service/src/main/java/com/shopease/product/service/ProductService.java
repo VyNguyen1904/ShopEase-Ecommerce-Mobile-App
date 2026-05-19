@@ -4,13 +4,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.product.client.InventorySyncClient;
-import com.shopease.product.client.SearchIndexClient;
 import com.shopease.product.dto.ProductDTO.CategoryRequest;
 import com.shopease.product.dto.ProductDTO.CategoryResponse;
 import com.shopease.product.dto.ProductDTO.ProductRequest;
 import com.shopease.product.dto.ProductDTO.ProductResponse;
 import com.shopease.product.model.Category;
 import com.shopease.product.model.Product;
+import com.shopease.product.model.ProductStatus;
 import com.shopease.product.repository.CategoryRepository;
 import com.shopease.product.repository.ProductRepository;
 import lombok.experimental.FieldDefaults;
@@ -30,11 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ProductService {
-     ProductRepository products;
-     CategoryRepository categories;
-     SearchIndexClient searchIndex;
-     InventorySyncClient inventory;
-
+    ProductRepository products;
+    CategoryRepository categories;
+    InventorySyncClient inventory;
 
     public List<CategoryResponse> categories() {
         return categories.findAll().stream().map(CategoryResponse::from).toList();
@@ -42,8 +40,14 @@ public class ProductService {
 
     @Transactional
     public CategoryResponse createCategory(CategoryRequest request) {
-        String slug = request.name().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
-        return CategoryResponse.from(categories.save(new Category(request.name(), slug, request.description())));
+        String slug = toSlug(request.name());
+        Category parent = null;
+        if (request.parentId() != null) {
+            parent = categories.findById(request.parentId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parent category not found"));
+        }
+        Category category = new Category(request.name(), slug, request.description(), request.iconUrl(), parent, request.displayOrder(), request.active());
+        return CategoryResponse.from(categories.save(category));
     }
 
     public List<ProductResponse> products(String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice) {
@@ -52,9 +56,18 @@ public class ProductService {
                 .filter(product -> q.isBlank() || product.getName().toLowerCase(Locale.ROOT).contains(q)
                         || product.getDescription().toLowerCase(Locale.ROOT).contains(q))
                 .filter(product -> categoryId == null || product.getCategory().getId().equals(categoryId))
-                .filter(product -> minPrice == null || product.getPrice().compareTo(minPrice) >= 0)
-                .filter(product -> maxPrice == null || product.getPrice().compareTo(maxPrice) <= 0)
+                .filter(product -> minPrice == null || product.getBasePrice().compareTo(minPrice) >= 0)
+                .filter(product -> maxPrice == null || (product.getSalePrice() != null ? product.getSalePrice().compareTo(maxPrice) <= 0 : product.getBasePrice().compareTo(maxPrice) <= 0))
                 .map(ProductResponse::from).toList();
+    }
+
+    public List<String> suggestions(String q) {
+        String keyword = q == null ? "" : q.toLowerCase(Locale.ROOT);
+        return products.findByActiveTrueOrderByIdAsc().stream()
+                .map(Product::getName)
+                .filter(name -> keyword.isBlank() || name.toLowerCase(Locale.ROOT).contains(keyword))
+                .limit(10)
+                .toList();
     }
 
     public ProductResponse product(Long id) {
@@ -65,7 +78,6 @@ public class ProductService {
     public ProductResponse create(String sellerId, ProductRequest request) {
         ProductResponse response = ProductResponse.from(products.save(toProduct(sellerId, request)));
         inventory.upsert(response.id(), response.stockQuantity());
-        searchIndex.upsert(response);
         return response;
     }
 
@@ -74,11 +86,25 @@ public class ProductService {
         Product existing = requireProduct(id);
         Category category = categories.findById(request.categoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
-        existing.update(request.name(), request.description(), category, request.price(), request.stockQuantity(), sellerId,
-                request.thumbnailUrl(), request.imageUrls() == null ? List.of() : request.imageUrls());
+        
+        existing.update(
+                request.name(),
+                toSlug(request.name()),
+                request.description(),
+                category,
+                request.basePrice(),
+                request.salePrice(),
+                request.stockQuantity(),
+                request.weightKg(),
+                sellerId,
+                request.thumbnailUrl(),
+                request.imageUrls() == null ? List.of() : request.imageUrls(),
+                request.status() != null ? request.status() : existing.getStatus(),
+                request.isFeatured()
+        );
+        
         ProductResponse response = ProductResponse.from(products.save(existing));
         inventory.upsert(response.id(), response.stockQuantity());
-        searchIndex.upsert(response);
         return response;
     }
 
@@ -87,18 +113,11 @@ public class ProductService {
         Product product = requireProduct(id);
         product.deactivate();
         products.save(product);
-        searchIndex.delete(id);
     }
 
     public List<ProductResponse> bySeller(String sellerId) {
         return products.findByActiveTrueOrderByIdAsc().stream()
                 .filter(product -> product.getSellerId().equals(sellerId)).map(ProductResponse::from).toList();
-    }
-
-    public List<ProductResponse> flashSale() {
-        return products.findByActiveTrueOrderByIdAsc().stream()
-                .filter(product -> product.getPrice().compareTo(new BigDecimal("300000")) < 0)
-                .map(ProductResponse::from).toList();
     }
 
     private Product requireProduct(Long id) {
@@ -109,8 +128,32 @@ public class ProductService {
     private Product toProduct(String sellerId, ProductRequest request) {
         Category category = categories.findById(request.categoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
-        return new Product(request.name(), request.description(), category, request.price(), request.stockQuantity(),
-                0, sellerId, request.thumbnailUrl(), request.imageUrls() == null ? List.of() : request.imageUrls(),
-                true, Instant.now());
+        
+        return new Product(
+                request.name(),
+                toSlug(request.name()),
+                request.description(),
+                category,
+                request.basePrice(),
+                request.salePrice(),
+                request.stockQuantity(),
+                0.0, // avgRating
+                0,   // reviewCount
+                0,   // soldCount
+                request.weightKg(),
+                sellerId,
+                request.thumbnailUrl(),
+                request.imageUrls() == null ? List.of() : request.imageUrls(),
+                request.status() != null ? request.status() : ProductStatus.DRAFT,
+                request.isFeatured(),
+                true, // active
+                Instant.now()
+        );
+    }
+
+    private String toSlug(String input) {
+        return input.toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("(^-|-$)", "");
     }
 }

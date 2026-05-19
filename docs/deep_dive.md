@@ -25,14 +25,13 @@
 |---|---|---|---|---|
 | API Gateway | 8080 | Single entry point, routing, auth filter, rate limiting | Redis (rate limit) | REST → downstream |
 | User Service | 8081 | Registration, login, JWT auth, profile management | PostgreSQL (users DB) | Publishes: user.registered |
-| Product Service | 8082 | Product CRUD, category, image upload, search indexing | PostgreSQL (products DB) + Elasticsearch | Publishes: product.updated |
+| Product Service | 8082 | Product CRUD, category, search, image upload | PostgreSQL (products DB) | Publishes: product.updated |
 | Inventory Service | 8083 | Stock levels, reservation, release on cancel | PostgreSQL (inventory DB) | Listens: order.placed, order.cancelled |
 | Cart Service | 8084 | Add/remove items, cart persistence, price snapshot | Redis (cart cache) | REST to Product Service |
 | Order Service | 8085 | Place order, order lifecycle, order history | PostgreSQL (orders DB) | Publishes: order.placed, order.status.* |
 | Payment Service | 8086 | Simulate payment, transaction records, refunds | PostgreSQL (payments DB) | Listens: order.placed; Publishes: payment.completed |
 | Notification Service | 8087 | Push via FCM, email, in-app notification inbox | MongoDB (notifications) | Listens: all domain events |
 | Review Service | 8089 | Product reviews, ratings, moderation | PostgreSQL (reviews DB) | Listens: order.delivered |
-| Search Service | 8090 | Full-text product search, filters, suggestions | Elasticsearch | Listens: product.updated |
 | Discovery Server | 8761 | Eureka service registry | In-memory | REST (heartbeat) |
 
 ---
@@ -96,7 +95,7 @@ Used for domain events where the publisher does not wait for consumers:
 | Topic | Producer | Consumers | Trigger |
 |---|---|---|---|
 | user.registered | User Service | Notification Service | New user signs up |
-| product.updated | Product Service | Search Service, Inventory Service | Product created/edited/deleted |
+| product.updated | Product Service | Inventory Service | Product created/edited/deleted |
 | cart.checkout | Cart Service | Order Service | User confirms checkout |
 | order.placed | Order Service | Inventory Service, Payment Service | Order record created |
 | inventory.reserved | Inventory Service | Payment Service | Stock held for order |
@@ -254,7 +253,6 @@ public class AuthenticationFilter implements GatewayFilter {
 | GET | /api/categories | Public | List all categories |
 | POST | /api/categories | ADMIN | Create category |
 | GET | /api/products/seller/{id} | Public | All products by a seller |
-| GET | /api/products/flash-sale | Public | Products with active flash-sale pricing |
 
 #### Elasticsearch Integration — ProductDocument
 
@@ -437,7 +435,6 @@ Each microservice owns its database exclusively. No service queries another serv
 | Payment Service | PostgreSQL | shopease_payments | ACID compliance critical for money transactions |
 | Review Service | PostgreSQL | shopease_reviews | Structured review data, FK to orders for validation |
 | Cart Service | Redis | cart:{userId} keys | Sub-ms read/write, TTL expiry, session-like data |
-| Search Service | Elasticsearch | products index | Full-text search, fuzzy match, aggregations |
 | Notification Service | MongoDB | shopease_notifications | Schemaless, high-write, varied notification shapes |
 | Rate Limiting | Redis | ratelimit:* keys | Atomic counters, Token Bucket algorithm |
 | Token Blacklist | Redis | blacklist:* keys | Fast lookup on every request, TTL = token expiry |
@@ -752,7 +749,6 @@ public class Notification {
 | shopease-parent/payment-service/ | Payment Service | Transaction processing |
 | shopease-parent/notification-service/ | Notification | FCM + email push |
 | shopease-parent/review-service/ | Review Service | Product ratings and reviews |
-| shopease-parent/search-service/ | Search Service | Elasticsearch full-text search |
 | shopease-parent/common-lib/ | Shared Library | DTOs, exceptions, Kafka event classes |
 | docker/ | Docker | docker-compose.yml, Dockerfiles |
 | k8s/ | Kubernetes | Deployment manifests per service |

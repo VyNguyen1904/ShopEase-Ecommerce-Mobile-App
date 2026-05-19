@@ -43,7 +43,7 @@ spring:
           predicates:
             - Path=/api/reviews/**
         - id: search-service
-          uri: ${SEARCH_SERVICE_URI:http://localhost:8090}
+          uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
           predicates:
             - Path=/api/search/**
 server:

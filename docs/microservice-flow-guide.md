@@ -71,9 +71,9 @@ Seller/admin client
 ```text
 Client
 -> gateway-service
--> search-service /api/search/products
--> SearchController.products()
--> SearchService.products()
+-> product-service /api/search/products
+-> SearchController.search()
+-> ProductService.products()
 -> SearchRepository loads active product documents
 -> SearchService filters keyword/category/price
 -> Client receives ProductDocument list
@@ -84,27 +84,13 @@ Client
 ```text
 Client
 -> gateway-service
--> search-service /api/search/suggestions
+-> product-service /api/search/suggestions
 -> SearchController.suggestions()
--> SearchService.suggestions()
+-> ProductService.suggestions()
 -> SearchRepository loads active product documents
 -> SearchService returns up to 10 matching names
 -> Client receives suggestion strings
 ```
-
-### 13. Manual Search Index Update Flow
-
-```text
-Admin/demo client
--> gateway-service
--> search-service POST /api/search/products
--> SearchController.upsert()
--> SearchService.upsert()
--> SearchRepository saves ProductDocument
--> Client receives ProductDocument
-```
-
-Note: `product-service` does not automatically call `search-service` today.
 
 ### 14. Add To Cart Flow
 
@@ -803,14 +789,13 @@ This is the intended architecture, not fully implemented yet. `common-lib` has e
 |---|---:|---|---|---|
 | `gateway-service` | `8080` | `/api/**` | none | Routes requests to domain services |
 | `user-service` | `8081` | `/api/auth/**`, `/api/users/**` | PostgreSQL `shopease_users` | Registration, login, local signed tokens, profile, addresses |
-| `product-service` | `8082` | `/api/products/**`, `/api/categories/**` | PostgreSQL `shopease_products` | Catalog, categories, seller products, flash-sale list |
+| `product-service` | `8082` | `/api/products/**`, `/api/categories/**`, `/api/search/**` | PostgreSQL `shopease_products` | Catalog, categories, seller products, search, suggestions |
 | `inventory-service` | `8083` | `/api/inventory/**` | PostgreSQL `shopease_inventory` | Stock lookup, reserve, release |
 | `cart-service` | `8084` | `/api/cart/**` | Redis | User cart and product price/name snapshots |
 | `order-service` | `8085` | `/api/orders/**` | PostgreSQL `shopease_orders` | Order creation, listing, detail, cancellation |
 | `payment-service` | `8086` | `/api/payments/**` | PostgreSQL plus in-memory demo maps | Payment records, mock card/QR checkout, idempotency, refunds |
 | `notification-service` | `8087` | `/api/notifications/**` | PostgreSQL `shopease_notifications` | Notification inbox, create, mark read |
 | `review-service` | `8089` | `/api/reviews/**` | PostgreSQL `shopease_reviews` | Product reviews and helpful counts |
-| `search-service` | `8090` | `/api/search/**` | PostgreSQL `shopease_search` | Search index documents and suggestions |
 | `discovery-service` | `8761` | not routed | none | Eureka server shell |
 | `common-lib` | n/a | n/a | none | Shared `ApiResponse` and event DTO records |
 
@@ -820,14 +805,14 @@ The gateway is a Spring Cloud Gateway service. It does not implement business lo
 
 ```text
 /api/auth/**, /api/users/**       -> user-service
-/api/products/**, /api/categories/** -> product-service
+/api/products/**, /api/categories/**, /api/search/** -> product-service
 /api/inventory/**                 -> inventory-service
 /api/cart/**                      -> cart-service
 /api/orders/**                    -> order-service
 /api/payments/**                  -> payment-service
 /api/notifications/**             -> notification-service
 /api/reviews/**                   -> review-service
-/api/search/**                    -> search-service
+/api/search/**                    -> product-service
 ```
 
 In Docker Compose, the gateway points to service DNS names such as `http://product-service:8082`. Locally, routes default to `http://localhost:<port>`.
@@ -853,7 +838,7 @@ flowchart LR
 The natural user journey is:
 
 1. The buyer registers or logs in through `user-service`.
-2. The buyer browses catalog data from `product-service` or product search data from `search-service`.
+2. The buyer browses catalog data and performs search/suggestions from `product-service`.
 3. The buyer adds products to cart through `cart-service`.
 4. The buyer may check or reserve stock through `inventory-service`.
 5. The buyer places an order through `order-service`.
@@ -1090,31 +1075,21 @@ Owned data:
 
 ## Flow 3: Search
 
-Search APIs live in `search-service`.
+Search APIs live in `product-service` (under `/api/search/**`).
 
 ```text
 GET    /api/search/products
 GET    /api/search/suggestions
-POST   /api/search/products
-DELETE /api/search/products/{id}
 ```
 
 Detailed behavior:
 
-- Search reads from `product_documents`, not directly from `product-service`.
-- Product search filters active documents by keyword, category name, and price range.
+- Search queries the `products` table directly in `product-service`.
+- Product search filters active products by keyword (name/description), category, and price range.
 - Suggestions return up to 10 active product names containing the query.
-- Upsert manually creates or replaces a product document.
-- Delete soft-deactivates a document by saving a copy with `active = false`.
-
-Current integration gap:
-
-- `product-service` does not automatically publish product create/update/delete changes to `search-service`.
-- To keep search fresh today, an API client or demo script must call `POST /api/search/products`.
 
 Owned data:
-
-- `product_documents`
+- `products` (shared with catalog flow)
 
 ## Flow 4: Cart
 
