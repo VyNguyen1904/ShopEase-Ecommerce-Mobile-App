@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: shopease-postgres
+    environment:
+      POSTGRES_DB: shopease_users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Asia/Ho_Chi_Minh
+      PGTZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5432:5432"

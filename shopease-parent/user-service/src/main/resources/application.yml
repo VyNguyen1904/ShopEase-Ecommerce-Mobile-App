@@ -19,3 +19,10 @@ spring:
 server:
   port: 8081
 management.endpoints.web.exposure.include: health,info
+
+
+app:
+  jwt:
+    secret:  ${JWT_SECRET:U7CSWNhO7HE9fSam/uQx2UyK8LyCArTLsCb+2u+W3rA=}   # min 32 bytes for HS256
+    access-token-expiry: 900        # 15 minutes
+    refresh-token-expiry: 604800    # 7 days

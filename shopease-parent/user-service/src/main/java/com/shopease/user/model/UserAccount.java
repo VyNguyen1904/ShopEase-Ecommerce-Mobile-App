@@ -8,12 +8,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
 @Entity
 @Table(name = "users")
 public class UserAccount {
@@ -37,8 +39,6 @@ public class UserAccount {
     @Column(nullable = false, length = 20)
     private String role;
 
-    @Column(name = "avatar_url", length = 512)
-    private String avatarUrl;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_addresses", joinColumns = @JoinColumn(name = "user_id"))
@@ -50,33 +50,27 @@ public class UserAccount {
     protected UserAccount() {
     }
 
-    public UserAccount(UUID id, String email, String passwordHash, String fullName, String phone, String role,
-                       String avatarUrl, List<Address> addresses, Instant createdAt) {
+    public UserAccount(UUID id,
+                       String email,
+                       String passwordHash,
+                       String fullName,
+                       String phone,
+                       String role,
+                       List<Address> addresses,
+                       Instant createdAt) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
         this.fullName = fullName;
         this.phone = phone;
         this.role = role;
-        this.avatarUrl = avatarUrl;
-        this.addresses = new ArrayList<>(addresses);
+        this.addresses = addresses != null ? new ArrayList<>(addresses) : new ArrayList<>();
         this.createdAt = createdAt;
     }
 
-    public UUID getId() { return id; }
-    public String getEmail() { return email; }
-    public String getPasswordHash() { return passwordHash; }
-    public String getFullName() { return fullName; }
-    public String getPhone() { return phone; }
-    public String getRole() { return role; }
-    public String getAvatarUrl() { return avatarUrl; }
-    public List<Address> getAddresses() { return addresses; }
-    public Instant getCreatedAt() { return createdAt; }
-
-    public void updateProfile(String fullName, String phone, String avatarUrl) {
+    public void updateProfile(String fullName, String phone) {
         this.fullName = fullName;
         this.phone = phone;
-        this.avatarUrl = avatarUrl;
     }
 
     public void replaceAddresses(List<Address> addresses) {

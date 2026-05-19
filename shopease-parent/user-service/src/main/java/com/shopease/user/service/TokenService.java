@@ -1,57 +1,137 @@
 package com.shopease.user.service;
 
+import com.shopease.user.config.JWTProperties;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.time.Instant;
-import java.util.Base64;
+import java.util.HexFormat;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
-    private static final String SECRET = "shopease-local-development-secret";
 
-    public String sign(UUID userId, String role, String type) {
-        long ttl = "refresh".equals(type) ? 604800 : 900;
-        String payload = userId + ":" + role + ":" + type + ":" + Instant.now().plusSeconds(ttl).getEpochSecond();
-        String body = Base64.getUrlEncoder().withoutPadding().encodeToString(payload.getBytes(StandardCharsets.UTF_8));
-        return body + "." + hmac(body);
+    private final JWTProperties jwtProperties;
+
+    private SecretKey secretKey() {
+        return Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(jwtProperties.getSecret())
+        );
     }
 
-    public UUID requireUserId(String authorization) {
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing bearer token");
+    public String sign(UUID userId, String role, String tokenType) {
+        long ttl = "refresh".equals(tokenType)
+                ? jwtProperties.getRefreshTokenExpiry()
+                : jwtProperties.getAccessTokenExpiry();
+
+        Instant now = Instant.now();
+
+        return Jwts.builder()
+                .subject(userId.toString())
+                .claim("role", role)
+                .claim("type", tokenType)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plusSeconds(ttl)))
+                .signWith(secretKey())
+                .compact();
+    }
+
+    /**
+     * Used when Authorization header is:
+     * Authorization: Bearer <access-token>
+     */
+    public UUID getUserId(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Missing Bearer Token"
+            );
         }
-        return validate(authorization.substring(7), "access");
+
+        return validateAccessToken(authorizationHeader.substring(7));
     }
 
-    public UUID validateRefreshToken(String token) {
-        return validate(token, "refresh");
-    }
+    public UUID validateAccessToken(String rawAccessToken) {
+        Claims claims = parseClaims(rawAccessToken);
 
-    private UUID validate(String token, String expectedType) {
-        String[] parts = token.split("\\.");
-        if (parts.length != 2 || !hmac(parts[0]).equals(parts[1])) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
+        String type = claims.get("type", String.class);
+        if (!"access".equals(type)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Wrong token type"
+            );
         }
-        String[] payload = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8).split(":");
-        if (payload.length != 4 || !expectedType.equals(payload[2]) || Instant.now().getEpochSecond() > Long.parseLong(payload[3])) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
-        }
-        return UUID.fromString(payload[0]);
+
+        return UUID.fromString(claims.getSubject());
     }
 
-    private String hmac(String value) {
+    public UUID validateRefreshToken(String rawRefreshToken) {
+        Claims claims = parseClaims(rawRefreshToken);
+
+        String type = claims.get("type", String.class);
+        if (!"refresh".equals(type)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Wrong token type"
+            );
+        }
+
+        return UUID.fromString(claims.getSubject());
+    }
+
+    public String getRole(String rawToken) {
+        Claims claims = parseClaims(rawToken);
+        return claims.get("role", String.class);
+    }
+
+    public Instant getExpiration(String rawToken) {
+        Claims claims = parseClaims(rawToken);
+        return claims.getExpiration().toInstant();
+    }
+
+    private Claims parseClaims(String token) {
         try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            return Base64.getUrlEncoder().withoutPadding().encodeToString(mac.doFinal(value.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            return Jwts.parser()
+                    .verifyWith(secretKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+        } catch (ExpiredJwtException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Token expired"
+            );
+
+        } catch (JwtException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid token"
+            );
+        }
+    }
+
+    public String sha256(String rawToken) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
     }
 }

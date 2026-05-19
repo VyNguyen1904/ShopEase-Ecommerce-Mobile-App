@@ -25,9 +25,9 @@ public class UserServiceConfig {
                 return;
             }
             users.save(new UserAccount(UUID.randomUUID(), "buyer@shopease.local", encoder.encode("password123"),
-                    "Demo Buyer", "+84900000001", "BUYER", null, new ArrayList<>(), Instant.now()));
+                    "Demo Buyer", "+84900000001", "BUYER", new ArrayList<>(), Instant.now()));
             users.save(new UserAccount(UUID.randomUUID(), "seller@shopease.local", encoder.encode("password123"),
-                    "Demo Seller", "+84900000002", "SELLER", null, new ArrayList<>(), Instant.now()));
+                    "Demo Seller", "+84900000002", "SELLER", new ArrayList<>(), Instant.now()));
         };
     }
 }
