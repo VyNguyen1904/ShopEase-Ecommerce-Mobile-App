@@ -39,14 +39,12 @@ services:
       PRODUCT_SERVICE_URI: http://product-service:8082
       INVENTORY_SERVICE_URI: http://inventory-service:8083
       PAYMENT_SERVICE_URI: http://payment-service:8086
-      NOTIFICATION_SERVICE_URI: http://notification-service:8087
     ports:
       - "8085:8085"
     depends_on:
       - product-service
       - inventory-service
       - payment-service
-      - notification-service
 
   payment-service:
     build:
@@ -56,13 +54,6 @@ services:
       ORDER_SERVICE_URI: http://order-service:8085
     ports:
       - "8086:8086"
-
-  notification-service:
-    build:
-      context: ../shopease-parent
-      dockerfile: notification-service/Dockerfile
-    ports:
-      - "8087:8087"
 
   review-service:
     build:
@@ -86,7 +77,6 @@ services:
       CART_SERVICE_URI: http://cart-service:8084
       ORDER_SERVICE_URI: http://order-service:8085
       PAYMENT_SERVICE_URI: http://payment-service:8086
-      NOTIFICATION_SERVICE_URI: http://notification-service:8087
       REVIEW_SERVICE_URI: http://review-service:8089
       SEARCH_SERVICE_URI: http://product-service:8082
     ports:
@@ -98,5 +88,4 @@ services:
       - cart-service
       - order-service
       - payment-service
-      - notification-service
       - review-service

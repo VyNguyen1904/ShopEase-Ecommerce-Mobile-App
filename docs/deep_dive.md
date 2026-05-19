@@ -30,7 +30,6 @@
 | Cart Service | 8084 | Add/remove items, cart persistence, price snapshot | Redis (cart cache) | REST to Product Service |
 | Order Service | 8085 | Place order, order lifecycle, order history | PostgreSQL (orders DB) | Publishes: order.placed, order.status.* |
 | Payment Service | 8086 | Simulate payment, transaction records, refunds | PostgreSQL (payments DB) | Listens: order.placed; Publishes: payment.completed |
-| Notification Service | 8087 | Push via FCM, email, in-app notification inbox | MongoDB (notifications) | Listens: all domain events |
 | Review Service | 8089 | Product reviews, ratings, moderation | PostgreSQL (reviews DB) | Listens: order.delivered |
 | Discovery Server | 8761 | Eureka service registry | In-memory | REST (heartbeat) |
 
@@ -94,16 +93,16 @@ Used for domain events where the publisher does not wait for consumers:
 
 | Topic | Producer | Consumers | Trigger |
 |---|---|---|---|
-| user.registered | User Service | Notification Service | New user signs up |
+| user.registered | User Service | none | New user signs up |
 | product.updated | Product Service | Inventory Service | Product created/edited/deleted |
 | cart.checkout | Cart Service | Order Service | User confirms checkout |
 | order.placed | Order Service | Inventory Service, Payment Service | Order record created |
 | inventory.reserved | Inventory Service | Payment Service | Stock held for order |
-| inventory.failed | Inventory Service | Order Service, Notification Service | Not enough stock |
-| payment.completed | Payment Service | Order Service, Notification Service | Payment processed |
+| inventory.failed | Inventory Service | Order Service | Not enough stock |
+| payment.completed | Payment Service | Order Service | Payment processed |
 | payment.failed | Payment Service | Order Service, Inventory Service | Payment declined |
-| order.status.shipped | Order Service | Notification Service | Seller marks shipped |
-| order.status.delivered | Order Service | Notification, Review Service | Delivery confirmed |
+| order.status.shipped | Order Service | none | Seller marks shipped |
+| order.status.delivered | Order Service | Review Service | Delivery confirmed |
 | order.cancelled | Order Service | Inventory Service, Payment Service | Order cancellation |
 
 ---
@@ -435,7 +434,6 @@ Each microservice owns its database exclusively. No service queries another serv
 | Payment Service | PostgreSQL | shopease_payments | ACID compliance critical for money transactions |
 | Review Service | PostgreSQL | shopease_reviews | Structured review data, FK to orders for validation |
 | Cart Service | Redis | cart:{userId} keys | Sub-ms read/write, TTL expiry, session-like data |
-| Notification Service | MongoDB | shopease_notifications | Schemaless, high-write, varied notification shapes |
 | Rate Limiting | Redis | ratelimit:* keys | Atomic counters, Token Bucket algorithm |
 | Token Blacklist | Redis | blacklist:* keys | Fast lookup on every request, TTL = token expiry |
 
@@ -747,7 +745,6 @@ public class Notification {
 | shopease-parent/cart-service/ | Cart Service | Redis-backed shopping cart |
 | shopease-parent/order-service/ | Order Service | Order placement and lifecycle |
 | shopease-parent/payment-service/ | Payment Service | Transaction processing |
-| shopease-parent/notification-service/ | Notification | FCM + email push |
 | shopease-parent/review-service/ | Review Service | Product ratings and reviews |
 | shopease-parent/common-lib/ | Shared Library | DTOs, exceptions, Kafka event classes |
 | docker/ | Docker | docker-compose.yml, Dockerfiles |

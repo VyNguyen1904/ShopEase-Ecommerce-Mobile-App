@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.shopease.order.client.InventoryClient;
-import com.shopease.order.client.NotificationClient;
 import com.shopease.order.client.PaymentClient;
 import com.shopease.order.dto.OrderDTO.CreateOrderRequest;
 import com.shopease.order.dto.OrderDTO.OrderResponse;
@@ -35,7 +34,6 @@ public class OrderService {
     private final ProductCatalogClient products;
     private final InventoryClient inventory;
     private final PaymentClient payments;
-    private final NotificationClient notifications;
 
 
     @Transactional
@@ -56,7 +54,6 @@ public class OrderService {
                     request.shipStreet(), request.shipDistrict(), request.shipCity(), request.note(), Instant.now());
             Order saved = orders.saveAndFlush(order);
             payments.create(saved.getId(), buyerId, saved.getTotalAmount(), paymentMethod);
-            notifications.sendOrderPlaced(buyerId, saved.getId(), saved.getTotalAmount().toPlainString());
             return OrderResponse.from(saved);
         } catch (RuntimeException ex) {
             releaseItemsQuietly(reservedItems);
@@ -83,7 +80,6 @@ public class OrderService {
         }
         order.cancel();
         Order saved = orders.save(order);
-        notifications.sendOrderCancelled(saved.getBuyerId(), saved.getId());
         return OrderResponse.from(saved);
     }
 
@@ -107,7 +103,6 @@ public class OrderService {
             order.markPaymentFailed();
         }
         Order saved = orders.save(order);
-        notifications.sendPaymentStatus(saved.getBuyerId(), saved.getId(), paid);
         return OrderResponse.from(saved);
     }
 
@@ -121,7 +116,6 @@ public class OrderService {
         commitItems(order.getItems());
         order.markDelivered();
         Order saved = orders.save(order);
-        notifications.sendReviewRequest(saved.getBuyerId(), saved.getId());
         return OrderResponse.from(saved);
     }
 

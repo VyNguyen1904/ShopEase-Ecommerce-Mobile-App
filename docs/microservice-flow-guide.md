@@ -794,7 +794,6 @@ This is the intended architecture, not fully implemented yet. `common-lib` has e
 | `cart-service` | `8084` | `/api/cart/**` | Redis | User cart and product price/name snapshots |
 | `order-service` | `8085` | `/api/orders/**` | PostgreSQL `shopease_orders` | Order creation, listing, detail, cancellation |
 | `payment-service` | `8086` | `/api/payments/**` | PostgreSQL plus in-memory demo maps | Payment records, mock card/QR checkout, idempotency, refunds |
-| `notification-service` | `8087` | `/api/notifications/**` | PostgreSQL `shopease_notifications` | Notification inbox, create, mark read |
 | `review-service` | `8089` | `/api/reviews/**` | PostgreSQL `shopease_reviews` | Product reviews and helpful counts |
 | `discovery-service` | `8761` | not routed | none | Eureka server shell |
 | `common-lib` | n/a | n/a | none | Shared `ApiResponse` and event DTO records |
@@ -810,7 +809,6 @@ The gateway is a Spring Cloud Gateway service. It does not implement business lo
 /api/cart/**                      -> cart-service
 /api/orders/**                    -> order-service
 /api/payments/**                  -> payment-service
-/api/notifications/**             -> notification-service
 /api/reviews/**                   -> review-service
 /api/search/**                    -> product-service
 ```
@@ -843,10 +841,10 @@ The natural user journey is:
 4. The buyer may check or reserve stock through `inventory-service`.
 5. The buyer places an order through `order-service`.
 6. The buyer pays through `payment-service`.
-7. The buyer can receive notifications through `notification-service`.
-8. After purchase, the buyer can create reviews through `review-service`.
+7. After purchase, the buyer can create reviews through `review-service`.
 
-Today, steps 4, 6, 7, and 8 are not automatically triggered by order creation. The frontend, demo script, gateway client, or future saga/event layer must call them.
+Today, steps 4, 6, and 7 are not automatically triggered by order creation.
+ The frontend, demo script, gateway client, or future saga/event layer must call them.
 
 ## Flow Diagrams With Text
 
@@ -1307,32 +1305,7 @@ Owned data:
 - in-memory idempotency registry
 - in-memory demo ledger
 
-## Flow 8: Notifications
-
-Notification APIs live in `notification-service`.
-
-```text
-GET   /api/notifications
-POST  /api/notifications
-PATCH /api/notifications/{id}/read
-```
-
-Detailed behavior:
-
-- Inbox identity comes from `X-User-Id`, defaulting to `demo-buyer`.
-- `POST /api/notifications` creates a notification for a requested `userId`.
-- Notification data supports a JSON map, type, optional image URL, read flag, created time, and read time.
-- Mark-read verifies the notification belongs to the calling user id before saving a copy with `read = true`.
-
-Current integration gap:
-
-- Other services do not automatically create notifications after registration, order placement, payment completion, or shipment events.
-
-Owned data:
-
-- `notifications`
-
-## Flow 9: Reviews
+## Flow 8: Reviews
 
 Review APIs live in `review-service`.
 
@@ -1433,21 +1406,18 @@ Use this order for a clean demo:
 5. `POST /api/orders` with matching items and shipping fields.
 6. `POST /api/payments/checkout` with an `Idempotency-Key`.
 7. For QR demos, poll `GET /api/payments/status/{orderId}` and trigger `POST /api/payments/simulate-webhook`.
-8. `POST /api/notifications` if you want a visible inbox item.
-9. `POST /api/reviews` after the order exists.
+8. `POST /api/reviews` after the order exists.
 
 ## Data Ownership Boundaries
 
 Each service owns its own tables and should be treated as the authority for that domain:
 
 - User identity and addresses: `user-service`
-- Product/category catalog: `product-service`
-- Search read model: `search-service`
+- Product/category catalog and search: `product-service`
 - Cart state: `cart-service`
 - Stock quantities: `inventory-service`
 - Orders and order items: `order-service`
 - Payment transactions and refunds: `payment-service`
-- Notifications: `notification-service`
 - Reviews: `review-service`
 
 The current code often stores denormalized snapshots, which is normal for e-commerce:
