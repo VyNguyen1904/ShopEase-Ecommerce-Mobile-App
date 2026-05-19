@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-public final class ProductDtos {
-    private ProductDtos() {
+public final class ProductDTO {
+    private ProductDTO() {
     }
 
     public record CategoryRequest(@NotBlank @Size(max = 120) String name, @Size(max = 1000) String description) {

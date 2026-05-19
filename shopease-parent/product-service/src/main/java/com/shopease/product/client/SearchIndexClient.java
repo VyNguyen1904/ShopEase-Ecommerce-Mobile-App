@@ -1,6 +1,6 @@
 package com.shopease.product.client;
 
-import com.shopease.product.dto.ProductDtos.ProductResponse;
+import com.shopease.product.dto.ProductDTO.ProductResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

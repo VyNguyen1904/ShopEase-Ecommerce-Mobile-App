@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -24,17 +26,38 @@ public class Category {
     @Column(length = 1000)
     private String description;
 
+    private String iconUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @Column(nullable = false)
+    private int displayOrder;
+
+    @Column(nullable = false)
+    private boolean active;
+
     protected Category() {
     }
 
-    public Category(String name, String slug, String description) {
+    public Category(String name, String slug, String description, String iconUrl, Category parent, int displayOrder, boolean active) {
         this.name = name;
         this.slug = slug;
         this.description = description;
+        this.iconUrl = iconUrl;
+        this.parent = parent;
+        this.displayOrder = displayOrder;
+        this.active = active;
     }
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getSlug() { return slug; }
-    public String getDescription() { return description; }
+    public void update(String name, String slug, String description, String iconUrl, Category parent, int displayOrder, boolean active) {
+        this.name = name;
+        this.slug = slug;
+        this.description = description;
+        this.iconUrl = iconUrl;
+        this.parent = parent;
+        this.displayOrder = displayOrder;
+        this.active = active;
+    }
 }

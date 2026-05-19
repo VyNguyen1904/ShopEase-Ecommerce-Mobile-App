@@ -1,17 +1,19 @@
 package com.shopease.product.service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.product.client.InventorySyncClient;
 import com.shopease.product.client.SearchIndexClient;
-import com.shopease.product.dto.ProductDtos.CategoryRequest;
-import com.shopease.product.dto.ProductDtos.CategoryResponse;
-import com.shopease.product.dto.ProductDtos.ProductRequest;
-import com.shopease.product.dto.ProductDtos.ProductResponse;
+import com.shopease.product.dto.ProductDTO.CategoryRequest;
+import com.shopease.product.dto.ProductDTO.CategoryResponse;
+import com.shopease.product.dto.ProductDTO.ProductRequest;
+import com.shopease.product.dto.ProductDTO.ProductResponse;
 import com.shopease.product.model.Category;
 import com.shopease.product.model.Product;
 import com.shopease.product.repository.CategoryRepository;
 import com.shopease.product.repository.ProductRepository;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,12 +28,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ProductService {
-    private final ProductRepository products;
-    private final CategoryRepository categories;
-    private final SearchIndexClient searchIndex;
-    private final InventorySyncClient inventory;
-
+     ProductRepository products;
+     CategoryRepository categories;
+     SearchIndexClient searchIndex;
+     InventorySyncClient inventory;
 
 
     public List<CategoryResponse> categories() {

@@ -11,12 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @Table(name = "products")
 public class Product {
@@ -95,17 +97,4 @@ public class Product {
     public void deactivate() {
         this.active = false;
     }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public Category getCategory() { return category; }
-    public BigDecimal getPrice() { return price; }
-    public int getStockQuantity() { return stockQuantity; }
-    public double getAverageRating() { return averageRating; }
-    public String getSellerId() { return sellerId; }
-    public String getThumbnailUrl() { return thumbnailUrl; }
-    public List<String> getImageUrls() { return List.copyOf(imageUrls); }
-    public boolean isActive() { return active; }
-    public Instant getCreatedAt() { return createdAt; }
 }

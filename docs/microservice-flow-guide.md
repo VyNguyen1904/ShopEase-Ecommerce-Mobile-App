@@ -1,59 +1,6 @@
 # ShopEase Microservice Flow Guide
 ## Main Flow Cheat Sheet
-### 2. Register Flow
 
-```text
-Client
--> gateway-service
--> user-service /api/auth/register
--> AuthController.register()
--> UserService.register()
--> UserRepository checks duplicate email
--> BCrypt hashes password
--> users table saves UserAccount
--> TokenService creates access token + refresh token
--> Client receives LoginResponse
-```
-
-### 3. Login Flow
-
-```text
-Client
--> gateway-service
--> user-service /api/auth/login
--> AuthController.login()
--> UserService.login()
--> UserRepository finds user by email
--> BCrypt verifies password
--> TokenService creates access token + refresh token
--> Client receives LoginResponse
-```
-
-### 4. Profile Flow
-
-```text
-Client with Authorization Bearer token
--> gateway-service
--> user-service /api/users/me
--> UserController.me()
--> TokenService validates access token
--> UserService.profile()
--> UserRepository loads UserAccount
--> Client receives UserResponse
-```
-
-### 5. Address Management Flow
-
-```text
-Client with Authorization Bearer token
--> gateway-service
--> user-service /api/users/me/addresses
--> UserController add/update/delete address endpoint
--> TokenService validates access token
--> UserService mutates embedded Address list
--> users + user_addresses tables update
--> Client receives updated UserResponse
-```
 
 ### 6. Browse Products Flow
 
