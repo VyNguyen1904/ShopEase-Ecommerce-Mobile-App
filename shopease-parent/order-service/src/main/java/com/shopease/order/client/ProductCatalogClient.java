@@ -1,21 +1,62 @@
 package com.shopease.order.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.shopease.common.dto.ApiResponse;
 import com.shopease.order.model.ProductSnapshot;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.util.Map;
+import java.time.Instant;
+import java.util.List;
 
 @Component
 public class ProductCatalogClient {
-    private final Map<Long, ProductSnapshot> products = Map.of(
-            101L, new ProductSnapshot(101L, "Wireless Earbuds Pro", new BigDecimal("649000"),
-                    "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1"),
-            102L, new ProductSnapshot(102L, "Compact Crossbody Bag", new BigDecimal("279000"),
-                    "https://images.unsplash.com/photo-1548036328-c9fa89d128fa")
-    );
+    private static final ParameterizedTypeReference<ApiResponse<ProductResponse>> PRODUCT_RESPONSE =
+            new ParameterizedTypeReference<>() {
+            };
+
+    private final RestClient productClient;
+
+    public ProductCatalogClient(RestClient.Builder restClientBuilder,
+                                @Value("${clients.product-service.url:http://localhost:8082}") String productServiceUrl) {
+        this.productClient = restClientBuilder.baseUrl(productServiceUrl).build();
+    }
 
     public ProductSnapshot find(Long productId) {
-        return products.getOrDefault(productId, new ProductSnapshot(productId, "Product " + productId, BigDecimal.ZERO, null));
+        try {
+            ApiResponse<ProductResponse> response = productClient.get()
+                    .uri("/api/products/{id}", productId)
+                    .retrieve()
+                    .body(PRODUCT_RESPONSE);
+            if (response == null || !response.success() || response.data() == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found");
+            }
+            ProductResponse product = response.data();
+            return new ProductSnapshot(product.id(), product.name(), product.price(), product.thumbnailUrl());
+        } catch (RestClientResponseException ex) {
+            if (ex.getStatusCode().value() == 404) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found", ex);
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Product service rejected product lookup", ex);
+        } catch (ResourceAccessException ex) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Product service is unavailable", ex);
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record ProductResponse(Long id, String name, String description, CategoryResponse category,
+                                   BigDecimal price, int stockQuantity, double averageRating, String sellerId,
+                                   String thumbnailUrl, List<String> imageUrls, boolean active, Instant createdAt) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private record CategoryResponse(Long id, String name, String slug, String description) {
     }
 }

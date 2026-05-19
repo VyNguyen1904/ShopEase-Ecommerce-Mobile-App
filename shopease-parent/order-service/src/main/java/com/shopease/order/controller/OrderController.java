@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.order.dto.OrderDTO.CreateOrderRequest;
 import com.shopease.order.dto.OrderDTO.OrderResponse;
+import com.shopease.order.dto.OrderDTO.PaymentStatusRequest;
+import com.shopease.order.dto.OrderDTO.ReviewEligibilityResponse;
 import com.shopease.order.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,5 +41,24 @@ public class OrderController {
     @PostMapping("/{id}/cancel")
     ApiResponse<OrderResponse> cancel(@PathVariable UUID id) {
         return ApiResponse.ok(orders.cancel(id));
+    }
+
+    @PostMapping("/{id}/payment-status")
+    ApiResponse<OrderResponse> paymentStatus(@PathVariable UUID id,
+                                             @Valid @RequestBody PaymentStatusRequest request) {
+        return ApiResponse.ok(orders.updatePaymentStatus(id, request.paid()));
+    }
+
+    @PostMapping("/{id}/deliver")
+    ApiResponse<OrderResponse> deliver(@PathVariable UUID id) {
+        return ApiResponse.ok(orders.deliver(id));
+    }
+
+    @GetMapping("/{id}/review-eligibility")
+    ApiResponse<ReviewEligibilityResponse> reviewEligibility(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
+            @RequestParam Long productId) {
+        return ApiResponse.ok(orders.reviewEligibility(id, buyerId, productId));
     }
 }

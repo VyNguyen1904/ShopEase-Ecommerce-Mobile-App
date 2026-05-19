@@ -44,4 +44,9 @@ public class InventoryController {
     ApiResponse<InventoryResponse> release(@Valid @RequestBody ReservationRequest request) {
         return ApiResponse.ok(inventory.release(request));
     }
+
+    @PostMapping("/commit")
+    ApiResponse<InventoryResponse> commit(@Valid @RequestBody ReservationRequest request) {
+        return ApiResponse.ok(inventory.commit(request));
+    }
 }

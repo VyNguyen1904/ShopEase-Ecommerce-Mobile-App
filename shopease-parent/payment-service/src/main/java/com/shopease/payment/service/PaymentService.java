@@ -2,6 +2,7 @@ package com.shopease.payment.service;
 
 import lombok.RequiredArgsConstructor;
 
+import com.shopease.payment.client.OrderClient;
 import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentRequest;
 import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentResponse;
 import com.shopease.payment.dto.PaymentDtos.CreatePaymentRequest;
@@ -36,6 +37,7 @@ public class PaymentService {
 
     private final PaymentRepository payments;
     private final RefundRepository refunds;
+    private final OrderClient orders;
 
     private final ConcurrentMap<String, IdempotencyRecord> idempotencyRegistry = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, CheckoutPaymentResponse> demoLedger = new ConcurrentHashMap<>();
@@ -56,6 +58,7 @@ public class PaymentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found")));
     }
 
+    @Transactional
     public CheckoutPaymentResponse checkout(CheckoutPaymentRequest request, String idempotencyKey) {
         String normalizedIdempotencyKey = requireIdempotencyKey(idempotencyKey);
         AtomicBoolean claimed = new AtomicBoolean(false);
@@ -79,6 +82,7 @@ public class PaymentService {
             CheckoutPaymentResponse response = processCheckout(request);
             demoLedger.put(normalizeOrderId(response.orderId()), response);
             record.complete(response);
+            syncOrderPaymentStatus(response);
             return response;
         } catch (RuntimeException ex) {
             idempotencyRegistry.remove(normalizedIdempotencyKey, record);
@@ -103,15 +107,18 @@ public class PaymentService {
         }
     }
 
+    @Transactional
     public CheckoutPaymentResponse simulateWebhook(String orderId, boolean success) {
         String normalizedOrderId = normalizeOrderId(orderId);
-        return demoLedger.compute(normalizedOrderId, (key, current) -> {
+        CheckoutPaymentResponse response = demoLedger.compute(normalizedOrderId, (key, current) -> {
             CheckoutPaymentResponse base = current == null ? pendingQrResponse(orderId.trim()) : current;
             String status = success ? "SUCCESS" : "FAILED";
             String message = success ? "QR payment confirmed by simulated webhook."
                     : "QR payment failed by simulated webhook.";
             return base.withStatus(status, message);
         });
+        syncOrderPaymentStatus(response);
+        return response;
     }
 
     public String qrSvg(String orderId) {
@@ -158,7 +165,9 @@ public class PaymentService {
         } else {
             current.markFailed();
         }
-        return PaymentResponse.from(payments.save(current));
+        PaymentResponse response = PaymentResponse.from(payments.save(current));
+        orders.markPaymentStatus(orderId, success);
+        return response;
     }
 
     @Transactional
@@ -205,6 +214,39 @@ public class PaymentService {
         String transactionId = payment.getGatewayTxnId() == null ? payment.getId().toString() : payment.getGatewayTxnId();
         return new CheckoutPaymentResponse(transactionId, payment.getOrderId().toString(), status,
                 "Payment status loaded from transaction ledger.", Instant.now(), null);
+    }
+
+    private void syncOrderPaymentStatus(CheckoutPaymentResponse response) {
+        UUID orderId = parseOrderId(response.orderId());
+        if (orderId == null) {
+            return;
+        }
+        syncPersistentPayment(response, orderId);
+        if ("SUCCESS".equals(response.status())) {
+            orders.markPaymentStatus(orderId, true);
+        } else if (response.status().startsWith("FAILED")) {
+            orders.markPaymentStatus(orderId, false);
+        }
+    }
+
+    private void syncPersistentPayment(CheckoutPaymentResponse response, UUID orderId) {
+        payments.findByOrderId(orderId).ifPresent(payment -> {
+            if ("SUCCESS".equals(response.status())) {
+                payment.markCompleted();
+                payments.save(payment);
+            } else if (response.status().startsWith("FAILED")) {
+                payment.markFailed();
+                payments.save(payment);
+            }
+        });
+    }
+
+    private UUID parseOrderId(String orderId) {
+        try {
+            return UUID.fromString(orderId);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     private void simulateGatewayLatency() {

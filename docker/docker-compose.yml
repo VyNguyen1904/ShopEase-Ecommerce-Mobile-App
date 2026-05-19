@@ -10,8 +10,14 @@ services:
     build:
       context: ../shopease-parent
       dockerfile: product-service/Dockerfile
+    environment:
+      INVENTORY_SERVICE_URI: http://inventory-service:8083
+      SEARCH_SERVICE_URI: http://search-service:8090
     ports:
       - "8082:8082"
+    depends_on:
+      - inventory-service
+      - search-service
 
   inventory-service:
     build:
@@ -31,13 +37,25 @@ services:
     build:
       context: ../shopease-parent
       dockerfile: order-service/Dockerfile
+    environment:
+      PRODUCT_SERVICE_URI: http://product-service:8082
+      INVENTORY_SERVICE_URI: http://inventory-service:8083
+      PAYMENT_SERVICE_URI: http://payment-service:8086
+      NOTIFICATION_SERVICE_URI: http://notification-service:8087
     ports:
       - "8085:8085"
+    depends_on:
+      - product-service
+      - inventory-service
+      - payment-service
+      - notification-service
 
   payment-service:
     build:
       context: ../shopease-parent
       dockerfile: payment-service/Dockerfile
+    environment:
+      ORDER_SERVICE_URI: http://order-service:8085
     ports:
       - "8086:8086"
 
@@ -52,8 +70,12 @@ services:
     build:
       context: ../shopease-parent
       dockerfile: review-service/Dockerfile
+    environment:
+      ORDER_SERVICE_URI: http://order-service:8085
     ports:
       - "8089:8089"
+    depends_on:
+      - order-service
 
   search-service:
     build:

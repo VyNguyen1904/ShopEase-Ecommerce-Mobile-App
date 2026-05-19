@@ -53,6 +53,13 @@ public class InventoryService {
         return InventoryResponse.from(inventory.save(item));
     }
 
+    @Transactional
+    public InventoryResponse commit(ReservationRequest request) {
+        InventoryItem item = requireInventoryForUpdate(request.productId());
+        item.commit(request.quantity());
+        return InventoryResponse.from(inventory.save(item));
+    }
+
     private InventoryItem requireInventory(Long productId) {
         return inventory.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory item not found"));

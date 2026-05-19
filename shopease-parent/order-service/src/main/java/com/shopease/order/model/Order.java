@@ -101,6 +101,32 @@ public class Order {
         this.status = "CANCELLED";
     }
 
+    public void markPaymentPaid() {
+        this.paymentStatus = "PAID";
+        if ("PENDING".equals(this.status)) {
+            this.status = "CONFIRMED";
+        }
+    }
+
+    public void markPaymentFailed() {
+        this.paymentStatus = "FAILED";
+        if (!"CANCELLED".equals(this.status) && !"DELIVERED".equals(this.status)) {
+            this.status = "PAYMENT_FAILED";
+        }
+    }
+
+    public void markDelivered() {
+        this.status = "DELIVERED";
+    }
+
+    public boolean hasReleasableInventory() {
+        return "PENDING".equals(status) || "CONFIRMED".equals(status);
+    }
+
+    public boolean hasFulfillableInventory() {
+        return "PENDING".equals(status) || "CONFIRMED".equals(status);
+    }
+
     public UUID getId() { return id; }
     public String getBuyerId() { return buyerId; }
     public String getStatus() { return status; }

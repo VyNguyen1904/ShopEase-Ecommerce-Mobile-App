@@ -18,4 +18,13 @@ spring:
     baseline-on-migrate: true
 server:
   port: 8085
+clients:
+  product-service:
+    url: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+  inventory-service:
+    url: ${INVENTORY_SERVICE_URI:http://localhost:8083}
+  payment-service:
+    url: ${PAYMENT_SERVICE_URI:http://localhost:8086}
+  notification-service:
+    url: ${NOTIFICATION_SERVICE_URI:http://localhost:8087}
 management.endpoints.web.exposure.include: health,info

@@ -33,21 +33,26 @@ public class TokenService {
         );
     }
 
-    public String sign(UUID userId, String role, String tokenType) {
+    public record TokenInfo(String token, Instant expiresAt) {}
+
+    public TokenInfo sign(UUID userId, String role, String tokenType) {
         long ttl = "refresh".equals(tokenType)
                 ? jwtProperties.getRefreshTokenExpiry()
                 : jwtProperties.getAccessTokenExpiry();
 
         Instant now = Instant.now();
+        Instant expiresAt = now.plusSeconds(ttl);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .subject(userId.toString())
                 .claim("role", role)
                 .claim("type", tokenType)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(ttl)))
+                .expiration(Date.from(expiresAt))
                 .signWith(secretKey())
                 .compact();
+
+        return new TokenInfo(token, expiresAt);
     }
 
     /**

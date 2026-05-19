@@ -1,0 +1,52 @@
+FLOW REFRESH TOKEN
+Refresh flow làm 3 việc:
+Kiểm tra refresh token hợp lệ
+Kiểm tra token này còn được server cho phép dùng không
+Thu hồi token cũ và phát token mới
+
+
+1. Giả sử access token hết hạn -->
+{
+  "refreshToken": "old-refresh-token"
+}
+
+FLOW:
+-> Client gửi refresh token
+-> Controller nhận request
+-> Xác thực JWT refresh token về mặt mật mã
+UUID userId = tokenService.validateRefreshToken(rawRefreshToken);
+Token có đúng chữ ký không
+Token có bị sửa không
+Token có hết hạn chưa
+
+-> Hash raw refresh token
+String currentTokenHash = tokenHashService.sha256(rawRefreshToken);
+-> Tìm token trong DB
+RefreshToken storedToken = refreshTokenRepository.findByTokenHash(currentTokenHash).orElseThrow(...);
+
+
+-> Bước 6: Kiểm tra token đã bị revoke chưa
+if (storedToken.isRevoked()) {
+    throw new ResponseStatusException(
+            HttpStatus.UNAUTHORIZED,
+            "Refresh token already revoked"
+    );
+}
+Nếu revoked_at != null, token này không được dùng nữa.
+
+-> Bước 7: Kiểm tra token còn hạn trong DB chưa
+if (storedToken.isExpired()) {
+    throw new ResponseStatusException(
+            HttpStatus.UNAUTHORIZED,
+            "Refresh token expired"
+    );
+}
+-> Bước 8: Tạo token mới
+String newAccessToken = tokenService.sign(userId, role, "access");
+String newRefreshToken = tokenService.sign(userId, role, "refresh");
+
+-> Bước 9: Revoke refresh token cũ
+
+-> Bước 10: Lưu token mới vào DB
+
+-> Bước 11: Trả token pair mới về client

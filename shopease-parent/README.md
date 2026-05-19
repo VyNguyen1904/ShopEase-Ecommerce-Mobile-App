@@ -9,9 +9,9 @@ This is the backend project described in `docs/deep_dive.md`: a Maven multi-modu
 | `gateway-service` | 8080 | Routes `/api/**` to backend services |
 | `user-service` | 8081 | Auth, JWT-like local tokens, profile, addresses |
 | `product-service` | 8082 | Products, categories, seller listings |
-| `inventory-service` | 8083 | Stock, reserve, release |
+| `inventory-service` | 8083 | Stock, reserve, release, commit |
 | `cart-service` | 8084 | Cart item add/update/remove/clear |
-| `order-service` | 8085 | Place, list, detail, cancel orders |
+| `order-service` | 8085 | Place, list, detail, cancel, payment status, delivery |
 | `payment-service` | 8086 | Payment transactions, simulation, refunds |
 | `notification-service` | 8087 | In-app notification inbox and read state |
 | `review-service` | 8089 | Product reviews and helpful counts |
@@ -74,12 +74,14 @@ Implemented now:
 
 - Auth/profile/address APIs in `user-service`
 - Catalog/category/seller/flash-sale APIs in `product-service`
-- Stock reserve/release APIs in `inventory-service`
+- Product create/update syncs stock to `inventory-service` and product documents to `search-service`
+- Stock reserve/release/commit APIs in `inventory-service`
 - Cart CRUD APIs in `cart-service`
-- Order place/list/detail/cancel APIs in `order-service`
-- Payment create/simulate/refund APIs in `payment-service`
+- Order place/list/detail/cancel/payment-status/deliver APIs in `order-service`
+- Order placement now validates products through `product-service`, reserves stock through `inventory-service`, creates a pending payment through `payment-service`, and creates buyer notifications through `notification-service`
+- Payment create/simulate/refund APIs in `payment-service`, with successful/failed payment simulation syncing back to `order-service`
 - Notification inbox/create/read APIs in `notification-service`
-- Product review/helpful APIs in `review-service`
+- Product review/helpful APIs in `review-service`, with review creation validated against delivered buyer orders in `order-service`
 - Product search/suggestion/index APIs in `search-service`
 
 Still intentionally pending for production:

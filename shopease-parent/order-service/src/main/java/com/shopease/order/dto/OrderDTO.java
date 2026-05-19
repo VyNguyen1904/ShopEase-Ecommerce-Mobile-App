@@ -37,6 +37,13 @@ public final class OrderDTO {
         }
     }
 
+    public record PaymentStatusRequest(@NotNull Boolean paid) {
+    }
+
+    public record ReviewEligibilityResponse(UUID orderId, String buyerId, Long productId, boolean eligible,
+                                            String reason) {
+    }
+
     public record OrderResponse(UUID id, String buyerId, String status, String paymentStatus,
                                 List<OrderItemResponse> items, BigDecimal subtotal, BigDecimal shippingFee,
                                 BigDecimal discountAmount, BigDecimal totalAmount, String paymentMethod,

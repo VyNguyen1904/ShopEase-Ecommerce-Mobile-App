@@ -1,45 +1,5 @@
 # ShopEase Microservice Flow Guide
-
-This document describes the current source-code architecture of the ShopEase backend, how requests move from service to service, and where the current implementation is intentionally still demo/manual rather than fully orchestrated.
-
-## Current-State Summary
-
-ShopEase is a Maven multi-module Spring Boot backend. The gateway exposes one public API surface and routes each `/api/**` path to its owning domain service.
-
-Important implementation detail: most services are currently independent domain APIs. The frontend or API client composes the complete shopping journey by calling several services. Backend-to-backend calls exist only in a few places:
-
-- `cart-service` calls `product-service` over HTTP to validate and snapshot product data when adding or updating cart items.
-- `order-service` uses a `ProductCatalogClient`, but that client currently returns product snapshots from a local in-memory map, not from `product-service`.
-- `payment-service`, `inventory-service`, `notification-service`, `review-service`, and `search-service` do not currently get called automatically by `order-service`.
-- `common-lib` defines domain event records for future event-driven flow, but Kafka/event publishing is not wired in the current code.
-
 ## Main Flow Cheat Sheet
-
-These are the project flows in simple `A -> B -> C` form.
-
-### 1. Gateway Routing Flow
-
-```text
-Client / Mobile App
--> gateway-service :8080
--> target domain service based on path
--> service controller
--> service business logic
--> service storage
--> response back through gateway
--> Client / Mobile App
-```
-
-Examples:
-
-```text
-Client -> gateway-service -> user-service
-Client -> gateway-service -> product-service
-Client -> gateway-service -> cart-service
-Client -> gateway-service -> order-service
-Client -> gateway-service -> payment-service
-```
-
 ### 2. Register Flow
 
 ```text

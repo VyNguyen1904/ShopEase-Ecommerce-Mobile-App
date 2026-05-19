@@ -2,6 +2,8 @@ package com.shopease.product.service;
 
 import lombok.RequiredArgsConstructor;
 
+import com.shopease.product.client.InventorySyncClient;
+import com.shopease.product.client.SearchIndexClient;
 import com.shopease.product.dto.ProductDtos.CategoryRequest;
 import com.shopease.product.dto.ProductDtos.CategoryResponse;
 import com.shopease.product.dto.ProductDtos.ProductRequest;
@@ -27,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
     private final ProductRepository products;
     private final CategoryRepository categories;
+    private final SearchIndexClient searchIndex;
+    private final InventorySyncClient inventory;
 
 
 
@@ -57,7 +61,10 @@ public class ProductService {
 
     @Transactional
     public ProductResponse create(String sellerId, ProductRequest request) {
-        return ProductResponse.from(products.save(toProduct(sellerId, request)));
+        ProductResponse response = ProductResponse.from(products.save(toProduct(sellerId, request)));
+        inventory.upsert(response.id(), response.stockQuantity());
+        searchIndex.upsert(response);
+        return response;
     }
 
     @Transactional
@@ -67,7 +74,10 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
         existing.update(request.name(), request.description(), category, request.price(), request.stockQuantity(), sellerId,
                 request.thumbnailUrl(), request.imageUrls() == null ? List.of() : request.imageUrls());
-        return ProductResponse.from(products.save(existing));
+        ProductResponse response = ProductResponse.from(products.save(existing));
+        inventory.upsert(response.id(), response.stockQuantity());
+        searchIndex.upsert(response);
+        return response;
     }
 
     @Transactional
@@ -75,6 +85,7 @@ public class ProductService {
         Product product = requireProduct(id);
         product.deactivate();
         products.save(product);
+        searchIndex.delete(id);
     }
 
     public List<ProductResponse> bySeller(String sellerId) {

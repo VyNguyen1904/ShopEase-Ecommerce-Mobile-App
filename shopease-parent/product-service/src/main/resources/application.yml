@@ -18,4 +18,9 @@ spring:
     baseline-on-migrate: true
 server:
   port: 8082
+clients:
+  inventory-service:
+    url: ${INVENTORY_SERVICE_URI:http://localhost:8083}
+  search-service:
+    url: ${SEARCH_SERVICE_URI:http://localhost:8090}
 management.endpoints.web.exposure.include: health,info

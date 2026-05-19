@@ -46,6 +46,11 @@ public class InventoryItem {
         this.updatedAt = Instant.now();
     }
 
+    public void commit(int quantity) {
+        this.reservedQty = Math.max(0, this.reservedQty - quantity);
+        this.updatedAt = Instant.now();
+    }
+
     public Long getProductId() { return productId; }
     public int getAvailableQty() { return availableQty; }
     public int getReservedQty() { return reservedQty; }
