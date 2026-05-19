@@ -99,22 +99,20 @@ public class Order {
         this.createdAt = createdAt;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public void cancel() {
         this.status = "CANCELLED";
     }
 
     public void markPaymentPaid() {
         this.paymentStatus = "PAID";
-        if ("PENDING".equals(this.status)) {
-            this.status = "CONFIRMED";
-        }
     }
 
     public void markPaymentFailed() {
         this.paymentStatus = "FAILED";
-        if (!"CANCELLED".equals(this.status) && !"DELIVERED".equals(this.status)) {
-            this.status = "PAYMENT_FAILED";
-        }
     }
 
     public void markDelivered() {

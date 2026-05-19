@@ -1,0 +1,176 @@
+{
+	"info": {
+		"_postman_id": "8b8b8b8b-8b8b-8b8b-8b8b-8b8b8b8b8b8b",
+		"name": "ShopEase Saga Flow Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Browse Products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Search Products (built-in)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/search/products?q=iphone",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"search",
+						"products"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "iphone"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. Place Order (Starts Saga)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "demo-buyer",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantity\": 1\n        }\n    ],\n    \"shipRecipient\": \"John Doe\",\n    \"shipPhone\": \"0987654321\",\n    \"shipStreet\": \"123 Main St\",\n    \"shipDistrict\": \"District 1\",\n    \"shipCity\": \"HCM City\",\n    \"paymentMethod\": \"CARD\",\n    \"note\": \"Handle with care\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Check Order Status (Saga Progress)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "demo-buyer",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/orders/{{last_order_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"orders",
+						"{{last_order_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Simulation: Trigger Payment Success (Webhook)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/payments/simulate-webhook?orderId={{last_order_id}}&success=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"payments",
+						"simulate-webhook"
+					],
+					"query": [
+						{
+							"key": "orderId",
+							"value": "{{last_order_id}}"
+						},
+						{
+							"key": "success",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Inventory Stock Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/inventory/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"inventory",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "last_order_id",
+			"value": "REPLACE_WITH_UUID_FROM_STEP_3"
+		}
+	]
+}

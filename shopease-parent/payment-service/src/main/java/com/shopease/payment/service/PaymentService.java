@@ -37,7 +37,6 @@ public class PaymentService {
 
     private final PaymentRepository payments;
     private final RefundRepository refunds;
-    private final OrderClient orders;
 
     private final ConcurrentMap<String, IdempotencyRecord> idempotencyRegistry = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, CheckoutPaymentResponse> demoLedger = new ConcurrentHashMap<>();
@@ -82,7 +81,7 @@ public class PaymentService {
             CheckoutPaymentResponse response = processCheckout(request);
             demoLedger.put(normalizeOrderId(response.orderId()), response);
             record.complete(response);
-            syncOrderPaymentStatus(response);
+            syncPersistentPayment(response, parseOrderId(response.orderId()));
             return response;
         } catch (RuntimeException ex) {
             idempotencyRegistry.remove(normalizedIdempotencyKey, record);
@@ -117,7 +116,7 @@ public class PaymentService {
                     : "QR payment failed by simulated webhook.";
             return base.withStatus(status, message);
         });
-        syncOrderPaymentStatus(response);
+        syncPersistentPayment(response, parseOrderId(response.orderId()));
         return response;
     }
 
@@ -165,9 +164,7 @@ public class PaymentService {
         } else {
             current.markFailed();
         }
-        PaymentResponse response = PaymentResponse.from(payments.save(current));
-        orders.markPaymentStatus(orderId, success);
-        return response;
+        return PaymentResponse.from(payments.save(current));
     }
 
     @Transactional
@@ -216,20 +213,8 @@ public class PaymentService {
                 "Payment status loaded from transaction ledger.", Instant.now(), null);
     }
 
-    private void syncOrderPaymentStatus(CheckoutPaymentResponse response) {
-        UUID orderId = parseOrderId(response.orderId());
-        if (orderId == null) {
-            return;
-        }
-        syncPersistentPayment(response, orderId);
-        if ("SUCCESS".equals(response.status())) {
-            orders.markPaymentStatus(orderId, true);
-        } else if (response.status().startsWith("FAILED")) {
-            orders.markPaymentStatus(orderId, false);
-        }
-    }
-
     private void syncPersistentPayment(CheckoutPaymentResponse response, UUID orderId) {
+        if (orderId == null) return;
         payments.findByOrderId(orderId).ifPresent(payment -> {
             if ("SUCCESS".equals(response.status())) {
                 payment.markCompleted();

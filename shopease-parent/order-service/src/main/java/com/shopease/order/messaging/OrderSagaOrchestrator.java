@@ -25,6 +25,7 @@ public class OrderSagaOrchestrator {
     @Transactional
     @KafkaListener(topics = "inventory-events", groupId = "order-group")
     public void handleInventoryEvents(Object event) {
+        log.info("Received inventory event: {}", event);
         if (event instanceof StockReservedEvent e) {
             handleStockReserved(e);
         } else if (event instanceof StockReservationFailedEvent e) {
@@ -35,6 +36,7 @@ public class OrderSagaOrchestrator {
     @Transactional
     @KafkaListener(topics = "payment-events", groupId = "order-group")
     public void handlePaymentEvents(Object event) {
+        log.info("Received payment event: {}", event);
         if (event instanceof PaymentProcessedEvent e) {
             handlePaymentProcessed(e);
         } else if (event instanceof PaymentFailedEvent e) {
@@ -44,7 +46,7 @@ public class OrderSagaOrchestrator {
 
     private void handleStockReserved(StockReservedEvent event) {
         log.info("Stock reserved for order {}. Proceeding to payment.", event.orderId());
-        orderRepository.findById(event.orderId()).ifPresent(order -> {
+        orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
             order.setStatus("STOCK_RESERVED");
             orderRepository.save(order);
             
@@ -56,35 +58,35 @@ public class OrderSagaOrchestrator {
                     Instant.now()
             );
             kafkaTemplate.send("payment-commands", command.orderId().toString(), command);
-        });
+        }, () -> log.error("Order {} not found for StockReservedEvent", event.orderId()));
     }
 
     private void handleStockReservationFailed(StockReservationFailedEvent event) {
         log.error("Stock reservation failed for order {}: {}", event.orderId(), event.reason());
-        orderRepository.findById(event.orderId()).ifPresent(order -> {
+        orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
             order.setStatus("FAILED_OUT_OF_STOCK");
             orderRepository.save(order);
             
             OrderFailedEvent failedEvent = new OrderFailedEvent(order.getId(), event.reason(), Instant.now());
             kafkaTemplate.send("order-events", failedEvent.orderId().toString(), failedEvent);
-        });
+        }, () -> log.error("Order {} not found for StockReservationFailedEvent", event.orderId()));
     }
 
     private void handlePaymentProcessed(PaymentProcessedEvent event) {
         log.info("Payment processed for order {}. Confirming order.", event.orderId());
-        orderRepository.findById(event.orderId()).ifPresent(order -> {
+        orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
             order.markPaymentPaid();
             order.setStatus("CONFIRMED");
             orderRepository.save(order);
             
             OrderConfirmedEvent confirmedEvent = new OrderConfirmedEvent(order.getId(), Instant.now());
             kafkaTemplate.send("order-events", confirmedEvent.orderId().toString(), confirmedEvent);
-        });
+        }, () -> log.error("Order {} not found for PaymentProcessedEvent", event.orderId()));
     }
 
     private void handlePaymentFailed(PaymentFailedEvent event) {
         log.error("Payment failed for order {}: {}. Starting compensation.", event.orderId(), event.reason());
-        orderRepository.findById(event.orderId()).ifPresent(order -> {
+        orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
             order.markPaymentFailed();
             order.setStatus("FAILED_PAYMENT");
             orderRepository.save(order);
@@ -99,7 +101,7 @@ public class OrderSagaOrchestrator {
             
             OrderFailedEvent failedEvent = new OrderFailedEvent(order.getId(), event.reason(), Instant.now());
             kafkaTemplate.send("order-events", failedEvent.orderId().toString(), failedEvent);
-        });
+        }, () -> log.error("Order {} not found for PaymentFailedEvent", event.orderId()));
     }
 
     private OrderItemEvent toEventItem(OrderItem item) {

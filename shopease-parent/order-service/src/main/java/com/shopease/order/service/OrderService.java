@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.shopease.common.event.DomainEvents.*;
 import com.shopease.order.client.ProductCatalogClient;
-import com.shopease.order.dto.OrderDTO.CreateOrderRequest;
-import com.shopease.order.dto.OrderDTO.OrderResponse;
-import com.shopease.order.dto.OrderDTO.ReviewEligibilityResponse;
+import com.shopease.order.dto.CreateOrderRequest;
+import com.shopease.order.dto.OrderResponse;
+import com.shopease.order.dto.ReviewEligibilityResponse;
 import com.shopease.order.model.Order;
 import com.shopease.order.model.OrderItem;
 import com.shopease.order.model.ProductSnapshot;

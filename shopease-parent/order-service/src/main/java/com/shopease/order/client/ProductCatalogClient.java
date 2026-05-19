@@ -39,7 +39,7 @@ public class ProductCatalogClient {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found");
             }
             ProductResponse product = response.data();
-            return new ProductSnapshot(product.id(), product.name(), product.price(), product.thumbnailUrl());
+            return new ProductSnapshot(product.id(), product.name(), product.basePrice(), product.thumbnailUrl());
         } catch (RestClientResponseException ex) {
             if (ex.getStatusCode().value() == 404) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found", ex);
@@ -51,9 +51,11 @@ public class ProductCatalogClient {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private record ProductResponse(Long id, String name, String description, CategoryResponse category,
-                                   BigDecimal price, int stockQuantity, double averageRating, String sellerId,
-                                   String thumbnailUrl, List<String> imageUrls, boolean active, Instant createdAt) {
+    private record ProductResponse(Long id, String name, String slug, String description, CategoryResponse category,
+                                   BigDecimal basePrice, BigDecimal salePrice, int stockQuantity, double avgRating,
+                                   int reviewCount, int soldCount, BigDecimal weightKg, String sellerId,
+                                   String thumbnailUrl, List<String> imageUrls, String status, boolean isFeatured,
+                                   boolean active, Instant createdAt, Instant updatedAt) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -21,6 +21,4 @@ server:
 clients:
   inventory-service:
     url: ${INVENTORY_SERVICE_URI:http://localhost:8083}
-  search-service:
-    url: ${SEARCH_SERVICE_URI:http://localhost:8090}
 management.endpoints.web.exposure.include: health,info
