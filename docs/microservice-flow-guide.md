@@ -795,7 +795,6 @@ This is the intended architecture, not fully implemented yet. `common-lib` has e
 | `order-service` | `8085` | `/api/orders/**` | PostgreSQL `shopease_orders` | Order creation, listing, detail, cancellation |
 | `payment-service` | `8086` | `/api/payments/**` | PostgreSQL plus in-memory demo maps | Payment records, mock card/QR checkout, idempotency, refunds |
 | `review-service` | `8089` | `/api/reviews/**` | PostgreSQL `shopease_reviews` | Product reviews and helpful counts |
-| `discovery-service` | `8761` | not routed | none | Eureka server shell |
 | `common-lib` | n/a | n/a | none | Shared `ApiResponse` and event DTO records |
 
 ## Gateway Routing

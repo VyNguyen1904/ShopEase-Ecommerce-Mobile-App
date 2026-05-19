@@ -44,9 +44,6 @@ spring:
             - Path=/api/search/**
 server:
   port: 8080
-eureka:
-  client:
-    enabled: false
 management:
   endpoints:
     web:

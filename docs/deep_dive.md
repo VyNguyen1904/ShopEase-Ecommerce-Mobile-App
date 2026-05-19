@@ -100,16 +100,11 @@ Used for domain events where the publisher does not wait for consumers:
 | inventory.reserved | Inventory Service | Payment Service | Stock held for order |
 | inventory.failed | Inventory Service | Order Service | Not enough stock |
 | payment.completed | Payment Service | Order Service | Payment processed |
-| payment.failed | Payment Service | Order Service, Inventory Service | Payment declined |
-| order.status.shipped | Order Service | none | Seller marks shipped |
+| payment.failed | Payment Service | Order Service, Inventory arks shipped |
 | order.status.delivered | Order Service | Review Service | Delivery confirmed |
 | order.cancelled | Order Service | Inventory Service, Payment Service | Order cancellation |
 
----
-
-## PART 2 — Service-by-Service Implementation
-
-### 2.1 API Gateway Service
+-celled | Order Service | Inventory Service, Payment Service | Or Gateway Service
 
 > **Port:** 8080 | Spring Boot 3.x | Spring Cloud Gateway + WebFlux
 > **Dependencies:** spring-cloud-starter-gateway, spring-cloud-starter-netflix-eureka-client, spring-boot-starter-data-redis-reactive (rate limiting)
@@ -197,6 +192,10 @@ public class AuthenticationFilter implements GatewayFilter {
 
 | Package | Classes | Description |
 |---|---|---|
+| controller | AuthControtructure
+
+| Package | Classes | Description |
+|---|---|---|
 | controller | AuthController, UserController | REST endpoints for auth and user profile |
 | service | AuthService, UserService, JwtService | Business logic, token generation/validation |
 | repository | UserRepository, RoleRepository, TokenBlacklistRepo | JPA repositories + Redis blacklist |
@@ -273,9 +272,7 @@ public class ProductDocument {
 // Search query with filters
 public Page<ProductDocument> search(String keyword, String category,
         BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
-    Criteria c = new Criteria("name").matches(keyword)
-        .and("active").is(true);
-    if (category != null) c = c.and("categoryName").is(category);
+    Criteria c =ory != null) c = c.and("categoryName").is(category);
     if (minPrice != null) c = c.and("price").greaterThanEqual(minPrice);
     if (maxPrice != null) c = c.and("price").lessThanEqual(maxPrice);
     return elasticsearchOperations.search(new CriteriaQuery(c), ProductDocument.class);
@@ -383,6 +380,8 @@ public void processPayment(InventoryReservedEvent event) {
     PaymentTransaction txn = PaymentTransaction.builder()
         .orderId(order.getId()).amount(order.getTotal())
         .method(order.getPaymentMethod()).status(PaymentStatus.PENDING)
+        .build();
+    transactionRepository.save(td()).status(PaymentStatus.PENDING)
         .build();
     transactionRepository.save(txn);
 
@@ -530,8 +529,12 @@ CREATE TABLE products (
     weight_kg     DECIMAL(6,3),
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(category_id),
-    INDEX idx_seller(seller_id), INDEX idx_status(status), INDEX idx_featured(is_featured)
+    FOREIGN KEY (cX idx_status(status), INDEX idx_featured(is_featured)
+);
+
+CREATE TABLE product_images (
+    image_id   BIGSERIAL PRIMARY KEY,
+  _featured)
 );
 
 CREATE TABLE product_images (
@@ -612,10 +615,7 @@ CREATE TABLE orders (
     ship_street     VARCHAR(255)  NOT NULL,
     ship_district   VARCHAR(100)  NOT NULL,
     ship_city       VARCHAR(100)  NOT NULL,
-    tracking_code   VARCHAR(100),
-    note            TEXT,
-    cancelled_reason VARCHAR(500),
-    created_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    tracking_coreated_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -736,16 +736,20 @@ public class Notification {
 
 | Directory | Service | Description |
 |---|---|---|
+| ion
+
+### 4.1 Mono-Repo Layout
+
+| Directory | Service | Description |
+|---|---|---|
 | shopease-parent/ | Root POM | Maven parent POM with shared dependency management |
 | shopease-parent/gateway/ | API Gateway | Spring Cloud Gateway service |
-| shopease-parent/discovery/ | Discovery Server | Eureka Server |
 | shopease-parent/user-service/ | User Service | Auth, registration, profiles |
 | shopease-parent/product-service/ | Product Service | Catalog, categories, images |
 | shopease-parent/inventory-service/ | Inventory | Stock management |
 | shopease-parent/cart-service/ | Cart Service | Redis-backed shopping cart |
 | shopease-parent/order-service/ | Order Service | Order placement and lifecycle |
-| shopease-parent/payment-service/ | Payment Service | Transaction processing |
-| shopease-parent/review-service/ | Review Service | Product ratings and reviews |
+| shopease-parent/payment-service/ | Payment Service | Transactionpease-parent/review-service/ | Review Service | Product ratings  | Product ratings and reviews |
 | shopease-parent/common-lib/ | Shared Library | DTOs, exceptions, Kafka event classes |
 | docker/ | Docker | docker-compose.yml, Dockerfiles |
 | k8s/ | Kubernetes | Deployment manifests per service |
@@ -799,7 +803,7 @@ spring:
     url: jdbc:postgresql://postgres:5432/shopease_orders?useSSL=false
     username: ${DB_USER:root}
     password: ${DB_PASS:secret}
-    driver-class-name: org.postgresql.Driver
+me: org.postgresql.Driver
   jpa:
     hibernate.ddl-auto: validate       # NEVER 'create-drop' in prod
     properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -854,11 +858,12 @@ management:
 
 ```yaml
 version: '3.9'
+aml
+version: '3.9'
 services:
   postgres:
     image: postgres:16
-    environment:
-      POSTGRES_PASSWORD: secret
+    POSTGRES_PASSWORD: secret
       POSTGRES_DB: shopease_users
     volumes: [ postgres-data:/var/lib/postgresql/data ]
     ports: ['5432:5432']
@@ -963,6 +968,7 @@ class AuthInterceptor extends Interceptor {
 | ProductRepository | Product Service /api/products/** | getProducts(filter, page), getById(), search() |
 | CartRepository | Cart Service /api/cart/** | getCart(), addItem(), updateQty(), removeItem(), clearCart() |
 | OrderRepository | Order Service /api/orders/** | placeOrder(), getOrders(), getOrderById(), cancelOrder() |
+| PaancelOrder() |
 | PaymentRepository | Payment Service /api/payments/** | getTransaction(), simulatePayment() |
 | ReviewRepository | Review Service /api/reviews/** | getByProduct(), submitReview() |
 
@@ -1024,7 +1030,7 @@ class CartProvider extends ChangeNotifier {
 | Test Type | Annotation / Tool | What to Test | Example |
 |---|---|---|---|
 | Unit Test | @ExtendWith(MockitoExtension) | Service logic in isolation (mock repos) | OrderService.placeOrder() — verify Kafka publish called |
-| Repository Test | @DataJpaTest | JPA queries against in-memory H2 | OrderRepository.findByBuyerId() returns correct results |
+| Repository Test | @DataJpaTest | JPA queries against in-memory H2 | OrderRepository.findByBuyerId() rets |
 | Controller Test | @WebMvcTest | HTTP layer, validation, status codes | POST /api/orders with invalid body returns 400 |
 | Integration Test | @SpringBootTest + @Testcontainers | Full stack with real PostgreSQL (Docker) | Register user → login → get JWT → place order |
 | Kafka Test | EmbeddedKafka | Producer/Consumer event flow | Order placed event consumed by Inventory Service |
@@ -1036,6 +1042,7 @@ class CartProvider extends ChangeNotifier {
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class OrderIntegrationTest {
+    @ContaonTest {
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
 
@@ -1131,9 +1138,10 @@ spec:
 | Events | Apache Kafka 3.x (async domain events, Saga pattern) |
 | Primary DB | PostgreSQL — User, Product, Inventory, Order, Payment, Review |
 | Cache | Redis 7 — Cart storage, JWT blacklist, rate limiting, sessions |
-| Document DB | MongoDB 7 — Notifications |
-| Search | Elasticsearch 8 — Full-text product search with filters |
+| Document DB | MongoDB 7 — NotificaElasticsearch 8 — Full-text product search with filters |
 | File Storage | Firebase Storage (product/profile images) |
 | Push Notify | Firebase Cloud Messaging (FCM) |
 | Frontend | Flutter 3.x (Dart) + Provider + Dio  |
 | DevOps | Docker + Kubernetes + GitHub Actions + Zipkin + Prometheus |
+kin + Prometheus |
+tes + GitHub Actions + Zipkin + Prometheus |
