@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Getter
 @Table(name = "orders")
 public class Order {
 
@@ -126,22 +128,4 @@ public class Order {
     public boolean hasFulfillableInventory() {
         return "PENDING".equals(status) || "CONFIRMED".equals(status);
     }
-
-    public UUID getId() { return id; }
-    public String getBuyerId() { return buyerId; }
-    public String getStatus() { return status; }
-    public String getPaymentStatus() { return paymentStatus; }
-    public List<OrderItem> getItems() { return List.copyOf(items); }
-    public BigDecimal getSubtotal() { return subtotal; }
-    public BigDecimal getShippingFee() { return shippingFee; }
-    public BigDecimal getDiscountAmount() { return discountAmount; }
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public String getPaymentMethod() { return paymentMethod; }
-    public String getShipRecipient() { return shipRecipient; }
-    public String getShipPhone() { return shipPhone; }
-    public String getShipStreet() { return shipStreet; }
-    public String getShipDistrict() { return shipDistrict; }
-    public String getShipCity() { return shipCity; }
-    public String getNote() { return note; }
-    public Instant getCreatedAt() { return createdAt; }
 }

@@ -6,9 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
+@Getter
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
@@ -47,11 +49,4 @@ public class OrderItem {
         this.subtotal = subtotal;
     }
 
-    public Long getId() { return id; }
-    public Long getProductId() { return productId; }
-    public String getProductName() { return productName; }
-    public String getProductImage() { return productImage; }
-    public BigDecimal getUnitPrice() { return unitPrice; }
-    public int getQuantity() { return quantity; }
-    public BigDecimal getSubtotal() { return subtotal; }
 }

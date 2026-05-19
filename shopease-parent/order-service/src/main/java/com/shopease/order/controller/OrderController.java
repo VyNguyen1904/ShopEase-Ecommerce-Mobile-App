@@ -3,10 +3,10 @@ package com.shopease.order.controller;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.order.dto.OrderDTO.CreateOrderRequest;
-import com.shopease.order.dto.OrderDTO.OrderResponse;
-import com.shopease.order.dto.OrderDTO.PaymentStatusRequest;
-import com.shopease.order.dto.OrderDTO.ReviewEligibilityResponse;
+import com.shopease.order.dto.CreateOrderRequest;
+import com.shopease.order.dto.OrderResponse;
+import com.shopease.order.dto.PaymentStatusRequest;
+import com.shopease.order.dto.ReviewEligibilityResponse;
 import com.shopease.order.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
