@@ -52,7 +52,7 @@ public class Product {
     @Column(nullable = false)
     private int stockQuantity;
 
-    @Column(nullable = false, precision = 3, scale = 2)
+    @Column(nullable = false)
     private double avgRating;
 
     @Column(nullable = false)

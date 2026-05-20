@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: shopease
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      TZ: Asia/Ho_Chi_Minh
-      PGTZ: Asia/Ho_Chi_Minh
     ports:
       - "5432:5432"
     volumes:
@@ -18,21 +16,16 @@ services:
       timeout: 5s
       retries: 5
 
-  db-migration:
-    build:
-      context: ../shopease-parent
-      dockerfile: order-service/Dockerfile
-    command:
-      - --spring.main.web-application-type=none
-      - --spring.kafka.listener.auto-startup=false
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
-      DB_USER: postgres
-      DB_PASS: postgres
-      KAFKA_SERVERS: kafka:9092
-    depends_on:
-      postgres:
-        condition: service_healthy
+  redis:
+    image: redis:7-alpine
+    container_name: shopease-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   user-service:
     build:
@@ -45,8 +38,8 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      db-migration:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
 
   product-service:
     build:
@@ -60,8 +53,8 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      db-migration:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
       inventory-service:
         condition: service_started
 
@@ -77,8 +70,8 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      db-migration:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_started
 
@@ -86,8 +79,14 @@ services:
     build:
       context: ../shopease-parent
       dockerfile: cart-service/Dockerfile
+    environment:
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     ports:
       - "8084:8084"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   order-service:
     build:
@@ -104,8 +103,8 @@ services:
     ports:
       - "8085:8085"
     depends_on:
-      db-migration:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_started
 
@@ -122,8 +121,8 @@ services:
     ports:
       - "8086:8086"
     depends_on:
-      db-migration:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
       kafka:
         condition: service_started
 
@@ -139,8 +138,8 @@ services:
     ports:
       - "8089:8089"
     depends_on:
-      db-migration:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
       order-service:
         condition: service_started
 
@@ -160,24 +159,32 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - user-service
-      - product-service
-      - inventory-service
-      - cart-service
-      - order-service
-      - payment-service
-      - review-service
+      user-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+      inventory-service:
+        condition: service_started
+      cart-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      review-service:
+        condition: service_started
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_started
     ports:
-      - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

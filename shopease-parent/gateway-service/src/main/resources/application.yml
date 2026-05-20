@@ -1,4 +1,4 @@
-spring:
+﻿spring:
   application:
     name: gateway-service
   cloud:
@@ -49,3 +49,4 @@ management:
     web:
       exposure:
         include: health,info
+

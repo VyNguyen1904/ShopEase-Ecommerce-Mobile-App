@@ -1,4 +1,4 @@
-spring:
+﻿spring:
   application:
     name: user-service
   datasource:
@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     open-in-view: false
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -24,3 +24,4 @@ app:
     secret:  ${JWT_SECRET:U7CSWNhO7HE9fSam/uQx2UyK8LyCArTLsCb+2u+W3rA=}   # min 32 bytes for HS256
     access-token-expiry: 900        # 15 minutes
     refresh-token-expiry: 604800    # 7 days
+
