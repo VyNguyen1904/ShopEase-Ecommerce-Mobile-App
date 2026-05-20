@@ -12,7 +12,7 @@ public final class DomainEvents {
     public record UserRegisteredEvent(UUID userId, String email, Instant occurredAt) {
     }
 
-    public record OrderItemEvent(Long productId, String productName, int quantity, BigDecimal unitPrice) {
+    public record OrderItemEvent(Long productId, int quantity) {
     }
 
     public record OrderPlacedEvent(UUID orderId, String buyerId, List<OrderItemEvent> items, BigDecimal total,

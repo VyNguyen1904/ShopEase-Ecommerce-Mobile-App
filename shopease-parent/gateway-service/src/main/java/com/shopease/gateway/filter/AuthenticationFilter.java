@@ -11,8 +11,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Component
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
@@ -23,7 +21,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     @Override
-    public Mono<Mono<Void>> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
 
         // Skip authentication for login and register
@@ -48,8 +46,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .retrieve()
                 .bodyToMono(ApiResponse.class)
                 .flatMap(apiResponse -> {
-                    if (apiResponse != null && apiResponse.getSuccess()) {
-                        String userId = (String) apiResponse.getData();
+                    if (apiResponse != null && apiResponse.success()) {
+                        String userId = (String) apiResponse.data();
                         exchange.getRequest().mutate()
                                 .header("X-User-Id", userId)
                                 .build();

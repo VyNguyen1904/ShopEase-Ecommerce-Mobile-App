@@ -21,11 +21,11 @@ public class SearchController {
                                               @RequestParam(required = false) Long categoryId,
                                               @RequestParam(required = false) BigDecimal minPrice,
                                               @RequestParam(required = false) BigDecimal maxPrice) {
-        return ApiResponse.ok(products.products(q, categoryId, minPrice, maxPrice));
+        return ApiResponse.ok(products.listProducts(q, categoryId, minPrice, maxPrice));
     }
 
     @GetMapping("/suggestions")
     ApiResponse<List<String>> suggestions(@RequestParam(defaultValue = "") String q) {
-        return ApiResponse.ok(products.suggestions(q));
+        return ApiResponse.ok(products.getProductSuggestions(q));
     }
 }

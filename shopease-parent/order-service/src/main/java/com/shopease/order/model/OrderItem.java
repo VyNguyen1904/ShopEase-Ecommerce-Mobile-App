@@ -22,11 +22,6 @@ public class OrderItem {
     @Column(nullable = false)
     private Long productId;
 
-    @Column(nullable = false)
-    private String productName;
-
-    private String productImage;
-
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice;
 
@@ -39,11 +34,9 @@ public class OrderItem {
     protected OrderItem() {
     }
 
-    public OrderItem(Long productId, String productName, String productImage, BigDecimal unitPrice, int quantity,
+    public OrderItem(Long productId, BigDecimal unitPrice, int quantity,
                      BigDecimal subtotal) {
         this.productId = productId;
-        this.productName = productName;
-        this.productImage = productImage;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.subtotal = subtotal;

@@ -2,7 +2,6 @@ package com.shopease.order.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.order.model.ProductSnapshot;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,7 @@ public class ProductCatalogClient {
         this.productClient = restClientBuilder.baseUrl(productServiceUrl).build();
     }
 
-    public ProductSnapshot find(Long productId) {
+    public BigDecimal getProductPrice(Long productId) {
         try {
             ApiResponse<ProductResponse> response = productClient.get()
                     .uri("/api/products/{id}", productId)
@@ -38,8 +37,7 @@ public class ProductCatalogClient {
             if (response == null || !response.success() || response.data() == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found");
             }
-            ProductResponse product = response.data();
-            return new ProductSnapshot(product.id(), product.name(), product.basePrice(), product.thumbnailUrl());
+            return response.data().basePrice();
         } catch (RestClientResponseException ex) {
             if (ex.getStatusCode().value() == 404) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found", ex);

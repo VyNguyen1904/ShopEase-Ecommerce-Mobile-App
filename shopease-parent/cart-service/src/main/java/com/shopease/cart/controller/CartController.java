@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService carts;
 
-
-
     @GetMapping
     ApiResponse<CartResponse> getCart(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId) {
         return ApiResponse.ok(carts.getCart(userId));

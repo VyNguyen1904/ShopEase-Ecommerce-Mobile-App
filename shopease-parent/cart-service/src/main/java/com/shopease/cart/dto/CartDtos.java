@@ -13,7 +13,7 @@ public final class CartDtos {
     public record CartItemRequest(@NotNull Long productId, @Min(1) int quantity) {
     }
 
-    public record CartItemResponse(Long productId, String productName, BigDecimal priceSnapshot, String imageUrl,
+    public record CartItemResponse(Long productId, BigDecimal price,
                                    int quantity, BigDecimal subtotal) {
     }
 

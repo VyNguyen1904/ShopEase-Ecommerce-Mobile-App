@@ -107,6 +107,6 @@ public class OrderSagaOrchestrator {
     }
 
     private OrderItemEvent toEventItem(OrderItem item) {
-        return new OrderItemEvent(item.getProductId(), item.getProductName(), item.getQuantity(), item.getUnitPrice());
+        return new OrderItemEvent(item.getProductId(), item.getQuantity());
     }
 }

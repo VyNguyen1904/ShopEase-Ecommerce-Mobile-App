@@ -1,7 +1,6 @@
 package com.shopease.cart.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.shopease.cart.model.ProductSnapshot;
 import com.shopease.common.dto.ApiResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,7 +26,7 @@ public class ProductCatalogClient {
         this.productClient = restClientBuilder.baseUrl(productServiceUrl).build();
     }
 
-    public Optional<ProductSnapshot> find(Long productId) {
+    public Optional<BigDecimal> getProductPrice(Long productId) {
         try {
             ApiResponse<ProductResponse> response = productClient.get()
                     .uri("/api/products/{id}", productId)
@@ -36,8 +35,7 @@ public class ProductCatalogClient {
             if (response == null || !response.success() || response.data() == null) {
                 return Optional.empty();
             }
-            ProductResponse product = response.data();
-            return Optional.of(new ProductSnapshot(product.id(), product.name(), product.price(), product.thumbnailUrl()));
+            return Optional.of(response.data().price());
         } catch (RestClientResponseException ex) {
             if (ex.getStatusCode().value() == 404) {
                 return Optional.empty();

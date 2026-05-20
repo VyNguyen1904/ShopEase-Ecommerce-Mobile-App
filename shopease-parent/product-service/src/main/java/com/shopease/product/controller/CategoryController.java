@@ -22,7 +22,7 @@ public class CategoryController {
 
     @GetMapping
     ApiResponse<List<CategoryResponse>> categories() {
-        return ApiResponse.ok(products.categories());
+        return ApiResponse.ok(products.getAllCategories());
     }
 
     @PostMapping

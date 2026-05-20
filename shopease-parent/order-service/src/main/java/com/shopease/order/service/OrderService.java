@@ -12,7 +12,6 @@ import com.shopease.order.dto.OrderResponse;
 import com.shopease.order.dto.ReviewEligibilityResponse;
 import com.shopease.order.model.Order;
 import com.shopease.order.model.OrderItem;
-import com.shopease.order.model.ProductSnapshot;
 import com.shopease.order.repository.OrderRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -38,9 +37,9 @@ public class OrderService {
     public OrderResponse createOrder(String buyerId, CreateOrderRequest request) {
         // Synchronous validation and snapshotting
         List<OrderItem> items = request.items().stream().map(item -> {
-            ProductSnapshot product = productCatalog.find(item.productId());
-            return new OrderItem(product.productId(), product.name(), product.imageUrl(), product.price(), item.quantity(),
-                    product.price().multiply(BigDecimal.valueOf(item.quantity())));
+            BigDecimal price = productCatalog.getProductPrice(item.productId());
+            return new OrderItem(item.productId(), price, item.quantity(),
+                    price.multiply(BigDecimal.valueOf(item.quantity())));
         }).toList();
 
         BigDecimal subtotal = items.stream().map(OrderItem::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -138,6 +137,6 @@ public class OrderService {
     }
 
     private OrderItemEvent toEventItem(OrderItem item) {
-        return new OrderItemEvent(item.getProductId(), item.getProductName(), item.getQuantity(), item.getUnitPrice());
+        return new OrderItemEvent(item.getProductId(), item.getQuantity());
     }
 }
