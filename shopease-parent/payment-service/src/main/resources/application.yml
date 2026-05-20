@@ -2,7 +2,7 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shopease_payments}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shopease}
     username: ${DB_USER:postgres}
     password: ${DB_PASS:postgres}
     driver-class-name: org.postgresql.Driver
@@ -13,14 +13,7 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-server:
-  port: 8086
-management.endpoints.web.exposure.include: health,info
-
-spring:
+    enabled: false
   kafka:
     bootstrap-servers: ${KAFKA_SERVERS:localhost:9092}
     producer:
@@ -33,3 +26,6 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+server:
+  port: 8086
+management.endpoints.web.exposure.include: health,info

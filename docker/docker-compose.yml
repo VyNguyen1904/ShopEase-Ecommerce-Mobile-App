@@ -1,32 +1,86 @@
 services:
+  postgres:
+    image: postgres:17
+    container_name: shopease-postgres
+    environment:
+      POSTGRES_DB: shopease
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Asia/Ho_Chi_Minh
+      PGTZ: Asia/Ho_Chi_Minh
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shopease"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-migration:
+    build:
+      context: ../shopease-parent
+      dockerfile: order-service/Dockerfile
+    command:
+      - --spring.main.web-application-type=none
+      - --spring.kafka.listener.auto-startup=false
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
+      KAFKA_SERVERS: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   user-service:
     build:
       context: ../shopease-parent
       dockerfile: user-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
     ports:
       - "8081:8081"
+    depends_on:
+      db-migration:
+        condition: service_completed_successfully
 
   product-service:
     build:
       context: ../shopease-parent
       dockerfile: product-service/Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
       INVENTORY_SERVICE_URI: http://inventory-service:8083
     ports:
       - "8082:8082"
     depends_on:
-      - inventory-service
+      db-migration:
+        condition: service_completed_successfully
+      inventory-service:
+        condition: service_started
 
   inventory-service:
     build:
       context: ../shopease-parent
       dockerfile: inventory-service/Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
       KAFKA_SERVERS: kafka:9092
     ports:
       - "8083:8083"
     depends_on:
-      - kafka
+      db-migration:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_started
 
   cart-service:
     build:
@@ -40,6 +94,9 @@ services:
       context: ../shopease-parent
       dockerfile: order-service/Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
       PRODUCT_SERVICE_URI: http://product-service:8082
       INVENTORY_SERVICE_URI: http://inventory-service:8083
       PAYMENT_SERVICE_URI: http://payment-service:8086
@@ -47,33 +104,45 @@ services:
     ports:
       - "8085:8085"
     depends_on:
-      - product-service
-      - inventory-service
-      - payment-service
-      - kafka
+      db-migration:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_started
 
   payment-service:
     build:
       context: ../shopease-parent
       dockerfile: payment-service/Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
       ORDER_SERVICE_URI: http://order-service:8085
       KAFKA_SERVERS: kafka:9092
     ports:
       - "8086:8086"
     depends_on:
-      - kafka
+      db-migration:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_started
 
   review-service:
     build:
       context: ../shopease-parent
       dockerfile: review-service/Dockerfile
     environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
       ORDER_SERVICE_URI: http://order-service:8085
     ports:
       - "8089:8089"
     depends_on:
-      - order-service
+      db-migration:
+        condition: service_completed_successfully
+      order-service:
+        condition: service_started
 
   gateway-service:
     build:
@@ -118,3 +187,6 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+
+volumes:
+  postgres-data:

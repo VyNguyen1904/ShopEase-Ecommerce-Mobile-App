@@ -3,10 +3,30 @@ services:
     image: postgres:17
     container_name: shopease-postgres
     environment:
-      POSTGRES_DB: shopease_users
+      POSTGRES_DB: shopease
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       TZ: Asia/Ho_Chi_Minh
       PGTZ: Asia/Ho_Chi_Minh
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shopease"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-migration:
+    build:
+      context: ..
+      dockerfile: order-service/Dockerfile
+    command:
+      - --spring.main.web-application-type=none
+      - --spring.kafka.listener.auto-startup=false
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy

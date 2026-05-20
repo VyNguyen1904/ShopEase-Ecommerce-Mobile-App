@@ -16,6 +16,12 @@ This is the backend project described in `docs/deep_dive.md`: a Maven multi-modu
 | `review-service` | 8089 | Product reviews and helpful counts |
 | `common-lib` | - | Shared API response and domain event records |
 
+## Database
+
+The PostgreSQL-backed services share one database named `shopease`. `order-service` owns the Flyway migrations for the whole project schema in `order-service/src/main/resources/db/migration`, while the other SQL services keep JPA validation enabled and Flyway disabled.
+
+In Docker Compose, the `db-migration` job runs the `order-service` migration before the SQL services start.
+
 Each domain service is organized with the same layered shape:
 
 ```text

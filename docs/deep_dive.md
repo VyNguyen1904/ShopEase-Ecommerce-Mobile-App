@@ -185,7 +185,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
 ### 2.2 User Service
 
-> **Port:** 8081 | Database: PostgreSQL (shopease_users) | Cache: Redis
+> **Port:** 8081 | Database: PostgreSQL (shopease) | Cache: Redis
 > **Dependencies:** spring-boot-starter-security, jjwt-api, spring-data-jpa, org.postgresql:postgresql, spring-boot-starter-data-redis
 
 #### Package Structure
@@ -234,7 +234,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
 ### 2.3 Product Service
 
-> **Port:** 8082 | Primary DB: PostgreSQL (shopease_products) | Search: Elasticsearch 8.x
+> **Port:** 8082 | Primary DB: PostgreSQL (shopease) | Search: Elasticsearch 8.x
 > **Dependencies:** spring-data-jpa, spring-data-elasticsearch, org.postgresql:postgresql, spring-kafka, spring-cloud-starter-netflix-eureka-client
 
 #### Key REST Endpoints
@@ -283,7 +283,7 @@ public Page<ProductDocument> search(String keyword, String category,
 
 ### 2.4 Inventory Service
 
-> **Port:** 8083 | Database: PostgreSQL (shopease_inventory)
+> **Port:** 8083 | Database: PostgreSQL (shopease)
 > **Listens:** order.placed, order.cancelled, order.delivered
 > **Publishes:** inventory.reserved, inventory.failed
 
@@ -348,7 +348,7 @@ public CartDto addItem(String userId, Long productId, int qty) {
 
 ### 2.6 Order Service
 
-> **Port:** 8085 | Database: PostgreSQL (shopease_orders)
+> **Port:** 8085 | Database: PostgreSQL (shopease)
 > **Orchestrates:** Inventory reservation → Payment → Confirmation
 
 #### Order State Machine
@@ -369,7 +369,7 @@ public CartDto addItem(String userId, Long productId, int qty) {
 
 ### 2.7 Payment Service
 
-> **Port:** 8086 | Database: PostgreSQL (shopease_payments)
+> **Port:** 8086 | Database: PostgreSQL (shopease)
 > **Listens:** inventory.reserved | **Publishes:** payment.completed, payment.failed
 > **Integrations:** VNPay callback (production), Mock gateway (dev/test)
 
@@ -399,7 +399,7 @@ public void processPayment(InventoryReservedEvent event) {
 
 ### 2.8 Notification Service
 
-> **Port:** 8087 | Database: MongoDB (shopease_notifications)
+> **Port:** 8087 | Storage: planned notification store
 > **Listens:** all domain events | **Sends:** FCM push, email (SMTP)
 
 #### Event → Notification Mapping
@@ -420,25 +420,25 @@ public void processPayment(InventoryReservedEvent event) {
 
 ---
 
-## PART 3 — Database Design (Per Microservice)
+## PART 3 — Database Design (Shared PostgreSQL Database)
 
-Each microservice owns its database exclusively. No service queries another service's database directly (**Database-per-Service** pattern).
+The PostgreSQL-backed microservices now use one shared database named `shopease`. `order-service` owns the Flyway migration files for the whole project schema, while the other SQL services keep JPA validation enabled and Flyway disabled. Services continue communicating through APIs/events rather than direct cross-service repository access.
 
 | Service | Database Engine | Database Name | Why This DB? |
 |---|---|---|---|
-| User Service | PostgreSQL | shopease_users | Structured user data, ACID transactions for auth |
-| Product Service | PostgreSQL | shopease_products | Relational product/category structure |
-| Inventory Service | PostgreSQL | shopease_inventory | Strong consistency required for stock management |
-| Order Service | PostgreSQL | shopease_orders | Transactional order lifecycle, financial records |
-| Payment Service | PostgreSQL | shopease_payments | ACID compliance critical for money transactions |
-| Review Service | PostgreSQL | shopease_reviews | Structured review data, FK to orders for validation |
+| User Service | PostgreSQL | shopease | Structured user data, ACID transactions for auth |
+| Product Service | PostgreSQL | shopease | Relational product/category structure |
+| Inventory Service | PostgreSQL | shopease | Strong consistency required for stock management |
+| Order Service | PostgreSQL | shopease | Transactional order lifecycle, financial records |
+| Payment Service | PostgreSQL | shopease | ACID compliance critical for money transactions |
+| Review Service | PostgreSQL | shopease | Structured review data, FK to orders for validation |
 | Cart Service | Redis | cart:{userId} keys | Sub-ms read/write, TTL expiry, session-like data |
 | Rate Limiting | Redis | ratelimit:* keys | Atomic counters, Token Bucket algorithm |
 | Token Blacklist | Redis | blacklist:* keys | Fast lookup on every request, TTL = token expiry |
 
 ---
 
-### 3.1 User Service — shopease_users
+### 3.1 User Service Tables
 
 ```sql
 CREATE TABLE users (
@@ -497,7 +497,7 @@ CREATE TABLE refresh_tokens (
 
 ---
 
-### 3.2 Product Service — shopease_products
+### 3.2 Product Service Tables
 
 ```sql
 CREATE TABLE categories (
@@ -569,7 +569,7 @@ CREATE TABLE flash_sales (
 
 ---
 
-### 3.3 Inventory Service — shopease_inventory
+### 3.3 Inventory Service Tables
 
 ```sql
 CREATE TABLE inventory (
@@ -595,7 +595,7 @@ CREATE TABLE stock_movements (
 
 ---
 
-### 3.4 Order Service — shopease_orders
+### 3.4 Order Service Tables
 
 ```sql
 CREATE TABLE orders (
@@ -646,7 +646,7 @@ CREATE TABLE order_status_history (
 
 ---
 
-### 3.5 Payment Service — shopease_payments
+### 3.5 Payment Service Tables
 
 ```sql
 CREATE TABLE payment_transactions (
@@ -678,7 +678,7 @@ CREATE TABLE refunds (
 
 ---
 
-### 3.6 Review Service — shopease_reviews
+### 3.6 Review Service Tables
 
 ```sql
 CREATE TABLE reviews (
@@ -800,7 +800,7 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:postgresql://postgres:5432/shopease_orders?useSSL=false
+    url: jdbc:postgresql://postgres:5432/shopease?useSSL=false
     username: ${DB_USER:root}
     password: ${DB_PASS:secret}
 me: org.postgresql.Driver
@@ -864,7 +864,7 @@ services:
   postgres:
     image: postgres:16
     POSTGRES_PASSWORD: secret
-      POSTGRES_DB: shopease_users
+      POSTGRES_DB: shopease
     volumes: [ postgres-data:/var/lib/postgresql/data ]
     ports: ['5432:5432']
 
@@ -909,7 +909,7 @@ services:
     build: ./user-service
     depends_on: [postgres, kafka, discovery]
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease_users
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
 
 volumes:
   postgres-data:
