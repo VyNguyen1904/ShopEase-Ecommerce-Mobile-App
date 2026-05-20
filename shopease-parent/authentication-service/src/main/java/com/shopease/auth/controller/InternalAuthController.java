@@ -18,7 +18,7 @@ public class InternalAuthController {
             String userId = tokenValidatorService.validateAndGetUserId(token);
             return ApiResponse.ok(userId);
         } catch (Exception e) {
-            return ApiResponse.error(401, "Unauthorized: " + e.getMessage());
+            return ApiResponse.error("Unauthorized: " + e.getMessage());
         }
     }
 }

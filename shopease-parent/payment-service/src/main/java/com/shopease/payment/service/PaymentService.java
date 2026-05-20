@@ -3,13 +3,12 @@ package com.shopease.payment.service;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.domain.PaymentStatus;
-import com.shopease.payment.client.OrderClient;
-import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentRequest;
-import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentResponse;
-import com.shopease.payment.dto.PaymentDtos.CreatePaymentRequest;
-import com.shopease.payment.dto.PaymentDtos.PaymentResponse;
-import com.shopease.payment.dto.PaymentDtos.RefundRequest;
-import com.shopease.payment.dto.PaymentDtos.RefundResponse;
+import com.shopease.payment.dto.CheckoutPaymentRequest;
+import com.shopease.payment.dto.CheckoutPaymentResponse;
+import com.shopease.payment.dto.CreatePaymentRequest;
+import com.shopease.payment.dto.PaymentResponse;
+import com.shopease.payment.dto.RefundRequest;
+import com.shopease.payment.dto.RefundResponse;
 import com.shopease.payment.model.PaymentTransaction;
 import com.shopease.payment.model.Refund;
 import com.shopease.payment.repository.PaymentRepository;
@@ -47,6 +46,16 @@ public class PaymentService {
     public PaymentResponse createPaymentTransaction(CreatePaymentRequest request) {
         return PaymentResponse.from(payments.save(new PaymentTransaction(UUID.randomUUID(), request.orderId(), request.buyerId(),
                 request.amount(), "VND", request.method(), PaymentStatus.PENDING, null, null, Instant.now())));
+    }
+
+    @Transactional
+    public PaymentResponse create(CreatePaymentRequest request) {
+        return createPaymentTransaction(request);
+    }
+
+    @Transactional
+    public PaymentResponse simulate(UUID orderId, boolean success) {
+        return simulatePaymentResult(orderId, success);
     }
 
     public List<PaymentResponse> listPaymentTransactions() {

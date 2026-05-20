@@ -3,8 +3,8 @@ package com.shopease.review.service;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.review.client.OrderClient;
-import com.shopease.review.dto.ReviewDtos.ReviewRequest;
-import com.shopease.review.dto.ReviewDtos.ReviewResponse;
+import com.shopease.review.dto.ReviewRequest;
+import com.shopease.review.dto.ReviewResponse;
 import com.shopease.review.model.Review;
 import com.shopease.review.repository.ReviewRepository;
 import org.springframework.http.HttpStatus;

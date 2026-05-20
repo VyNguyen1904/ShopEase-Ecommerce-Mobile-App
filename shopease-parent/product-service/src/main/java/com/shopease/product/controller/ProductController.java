@@ -3,8 +3,8 @@ package com.shopease.product.controller;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.product.dto.ProductDTO.ProductRequest;
-import com.shopease.product.dto.ProductDTO.ProductResponse;
+import com.shopease.product.dto.ProductRequest;
+import com.shopease.product.dto.ProductResponse;
 import com.shopease.product.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

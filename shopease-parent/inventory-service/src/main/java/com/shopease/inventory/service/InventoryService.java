@@ -2,9 +2,9 @@ package com.shopease.inventory.service;
 
 import lombok.RequiredArgsConstructor;
 
-import com.shopease.inventory.dto.InventoryDtos.ReservationRequest;
-import com.shopease.inventory.dto.InventoryDtos.InventoryResponse;
-import com.shopease.inventory.dto.InventoryDtos.StockRequest;
+import com.shopease.inventory.dto.ReservationRequest;
+import com.shopease.inventory.dto.InventoryResponse;
+import com.shopease.inventory.dto.StockRequest;
 import com.shopease.inventory.model.InventoryItem;
 import com.shopease.inventory.repository.InventoryRepository;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventoryService {
     private final InventoryRepository inventory;
-
-
 
     public List<InventoryResponse> getAllInventoryItems() {
         return inventory.findAll().stream().map(InventoryResponse::from).toList();
@@ -47,10 +45,20 @@ public class InventoryService {
     }
 
     @Transactional
+    public InventoryResponse reserve(ReservationRequest request) {
+        return reserveStock(request);
+    }
+
+    @Transactional
     public InventoryResponse releaseStock(ReservationRequest request) {
         InventoryItem item = requireInventoryForUpdate(request.productId());
         item.release(request.quantity());
         return InventoryResponse.from(inventory.save(item));
+    }
+
+    @Transactional
+    public InventoryResponse release(ReservationRequest request) {
+        return releaseStock(request);
     }
 
     @Transactional

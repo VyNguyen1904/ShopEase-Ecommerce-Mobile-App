@@ -3,12 +3,12 @@ package com.shopease.payment.controller;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentRequest;
-import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentResponse;
-import com.shopease.payment.dto.PaymentDtos.CreatePaymentRequest;
-import com.shopease.payment.dto.PaymentDtos.PaymentResponse;
-import com.shopease.payment.dto.PaymentDtos.RefundRequest;
-import com.shopease.payment.dto.PaymentDtos.RefundResponse;
+import com.shopease.payment.dto.CheckoutPaymentRequest;
+import com.shopease.payment.dto.CheckoutPaymentResponse;
+import com.shopease.payment.dto.CreatePaymentRequest;
+import com.shopease.payment.dto.PaymentResponse;
+import com.shopease.payment.dto.RefundRequest;
+import com.shopease.payment.dto.RefundResponse;
 import com.shopease.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

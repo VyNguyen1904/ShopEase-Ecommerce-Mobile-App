@@ -3,7 +3,9 @@ package com.shopease.cart.service;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.cart.client.ProductCatalogClient;
-import com.shopease.cart.dto.CartDtos.*;
+import com.shopease.cart.dto.CartItemRequest;
+import com.shopease.cart.dto.CartItemResponse;
+import com.shopease.cart.dto.CartResponse;
 import com.shopease.cart.model.CartItem;
 import com.shopease.cart.repository.CartRepository;
 import org.springframework.http.HttpStatus;

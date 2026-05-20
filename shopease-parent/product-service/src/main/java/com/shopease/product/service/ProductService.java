@@ -4,10 +4,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.product.client.InventorySyncClient;
-import com.shopease.product.dto.ProductDTO.CategoryRequest;
-import com.shopease.product.dto.ProductDTO.CategoryResponse;
-import com.shopease.product.dto.ProductDTO.ProductRequest;
-import com.shopease.product.dto.ProductDTO.ProductResponse;
+import com.shopease.product.dto.CategoryRequest;
+import com.shopease.product.dto.CategoryResponse;
+import com.shopease.product.dto.ProductRequest;
+import com.shopease.product.dto.ProductResponse;
 import com.shopease.product.model.Category;
 import com.shopease.product.model.Product;
 import com.shopease.product.model.ProductStatus;

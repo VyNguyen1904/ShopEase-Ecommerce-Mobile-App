@@ -3,9 +3,9 @@ package com.shopease.inventory.controller;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.inventory.dto.InventoryDtos.InventoryResponse;
-import com.shopease.inventory.dto.InventoryDtos.ReservationRequest;
-import com.shopease.inventory.dto.InventoryDtos.StockRequest;
+import com.shopease.inventory.dto.InventoryResponse;
+import com.shopease.inventory.dto.ReservationRequest;
+import com.shopease.inventory.dto.StockRequest;
 import com.shopease.inventory.service.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;

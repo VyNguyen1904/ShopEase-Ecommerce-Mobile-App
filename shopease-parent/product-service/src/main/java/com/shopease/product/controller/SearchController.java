@@ -3,7 +3,7 @@ package com.shopease.product.controller;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
-import com.shopease.product.dto.ProductDTO.ProductResponse;
+import com.shopease.product.dto.ProductResponse;
 import com.shopease.product.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 

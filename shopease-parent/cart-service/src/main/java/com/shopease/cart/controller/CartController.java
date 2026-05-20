@@ -2,8 +2,8 @@ package com.shopease.cart.controller;
 
 import lombok.RequiredArgsConstructor;
 
-import com.shopease.cart.dto.CartDtos.CartItemRequest;
-import com.shopease.cart.dto.CartDtos.CartResponse;
+import com.shopease.cart.dto.CartItemRequest;
+import com.shopease.cart.dto.CartResponse;
 import com.shopease.cart.service.CartService;
 import com.shopease.common.dto.ApiResponse;
 import jakarta.validation.Valid;

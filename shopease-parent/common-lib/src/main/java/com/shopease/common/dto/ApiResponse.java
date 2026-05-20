@@ -12,7 +12,7 @@ public record ApiResponse<T>(boolean success, String message, T data, Instant ti
         return new ApiResponse<>(true, "Created", data, Instant.now());
     }
 
-    public static ApiResponse<Void> error(String message) {
+    public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>(false, message, null, Instant.now());
     }
 }

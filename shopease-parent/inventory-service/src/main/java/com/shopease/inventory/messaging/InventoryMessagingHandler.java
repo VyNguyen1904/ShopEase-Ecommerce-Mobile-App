@@ -1,7 +1,7 @@
 package com.shopease.inventory.messaging;
 
 import com.shopease.common.event.DomainEvents.*;
-import com.shopease.inventory.dto.InventoryDtos.ReservationRequest;
+import com.shopease.inventory.dto.ReservationRequest;
 import com.shopease.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
