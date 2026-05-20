@@ -1,5 +1,7 @@
 package com.shopease.order.dto;
 
+import com.shopease.common.domain.OrderStatus;
+import com.shopease.common.domain.PaymentStatus;
 import com.shopease.order.model.Order;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -9,8 +11,8 @@ import java.util.UUID;
 public record OrderResponse(
     UUID id,
     String buyerId,
-    String status,
-    String paymentStatus,
+    OrderStatus status,
+    PaymentStatus paymentStatus,
     List<OrderItemResponse> items,
     BigDecimal subtotal,
     BigDecimal shippingFee,

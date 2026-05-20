@@ -22,11 +22,11 @@ public class ProductController {
 
 
     @GetMapping
-    ApiResponse<List<ProductResponse>> products(@RequestParam(required = false) String keyword,
-                                                @RequestParam(required = false) Long categoryId,
-                                                @RequestParam(required = false) BigDecimal minPrice,
-                                                @RequestParam(required = false) BigDecimal maxPrice) {
-        return ApiResponse.ok(products.products(keyword, categoryId, minPrice, maxPrice));
+    ApiResponse<List<ProductResponse>> listProducts(@RequestParam(required = false) String keyword,
+                                                    @RequestParam(required = false) Long categoryId,
+                                                    @RequestParam(required = false) BigDecimal minPrice,
+                                                    @RequestParam(required = false) BigDecimal maxPrice) {
+        return ApiResponse.ok(products.listProducts(keyword, categoryId, minPrice, maxPrice));
     }
 
     @GetMapping("/search")
@@ -34,41 +34,41 @@ public class ProductController {
                                               @RequestParam(required = false) Long categoryId,
                                               @RequestParam(required = false) BigDecimal minPrice,
                                               @RequestParam(required = false) BigDecimal maxPrice) {
-        return ApiResponse.ok(products.products(q, categoryId, minPrice, maxPrice));
+        return ApiResponse.ok(products.listProducts(q, categoryId, minPrice, maxPrice));
     }
 
     @GetMapping("/suggestions")
-    ApiResponse<List<String>> suggestions(@RequestParam(defaultValue = "") String q) {
-        return ApiResponse.ok(products.suggestions(q));
+    ApiResponse<List<String>> getProductSuggestions(@RequestParam(defaultValue = "") String q) {
+        return ApiResponse.ok(products.getProductSuggestions(q));
     }
 
     @GetMapping("/{id}")
-    ApiResponse<ProductResponse> product(@PathVariable Long id) {
-        return ApiResponse.ok(products.product(id));
+    ApiResponse<ProductResponse> getProductDetail(@PathVariable Long id) {
+        return ApiResponse.ok(products.getProductDetail(id));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<ProductResponse> create(@RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId,
-                                        @Valid @RequestBody ProductRequest request) {
-        return ApiResponse.created(products.create(sellerId, request));
+    ApiResponse<ProductResponse> createProduct(@RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId,
+                                               @Valid @RequestBody ProductRequest request) {
+        return ApiResponse.created(products.createProduct(sellerId, request));
     }
 
     @PutMapping("/{id}")
-    ApiResponse<ProductResponse> update(@PathVariable Long id,
-                                        @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId,
-                                        @Valid @RequestBody ProductRequest request) {
-        return ApiResponse.ok(products.update(id, sellerId, request));
+    ApiResponse<ProductResponse> updateProduct(@PathVariable Long id,
+                                               @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId,
+                                               @Valid @RequestBody ProductRequest request) {
+        return ApiResponse.ok(products.updateProduct(id, sellerId, request));
     }
 
     @DeleteMapping("/{id}")
-    ApiResponse<Void> delete(@PathVariable Long id) {
-        products.delete(id);
+    ApiResponse<Void> deleteProduct(@PathVariable Long id) {
+        products.deleteProduct(id);
         return ApiResponse.ok(null);
     }
 
     @GetMapping("/seller/{sellerId}")
-    ApiResponse<List<ProductResponse>> sellerProducts(@PathVariable String sellerId) {
-        return ApiResponse.ok(products.bySeller(sellerId));
+    ApiResponse<List<ProductResponse>> getProductsBySeller(@PathVariable String sellerId) {
+        return ApiResponse.ok(products.getProductsBySeller(sellerId));
     }
 }

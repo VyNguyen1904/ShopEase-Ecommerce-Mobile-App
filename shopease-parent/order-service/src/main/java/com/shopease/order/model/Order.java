@@ -1,14 +1,19 @@
 package com.shopease.order.model;
 
+import com.shopease.common.domain.OrderStatus;
+import com.shopease.common.domain.PaymentStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -27,11 +32,15 @@ public class Order {
     @Column(nullable = false)
     private String buyerId;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private OrderStatus status;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
@@ -76,7 +85,7 @@ public class Order {
     protected Order() {
     }
 
-    public Order(UUID id, String buyerId, String status, String paymentStatus, List<OrderItem> items,
+    public Order(UUID id, String buyerId, OrderStatus status, PaymentStatus paymentStatus, List<OrderItem> items,
                  BigDecimal subtotal, BigDecimal shippingFee, BigDecimal discountAmount, BigDecimal totalAmount,
                  String paymentMethod, String shipRecipient, String shipPhone, String shipStreet,
                  String shipDistrict, String shipCity, String note, Instant createdAt) {
@@ -99,31 +108,27 @@ public class Order {
         this.createdAt = createdAt;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public void cancel() {
-        this.status = "CANCELLED";
+        this.status = OrderStatus.CANCELLED;
     }
 
     public void markPaymentPaid() {
-        this.paymentStatus = "PAID";
+        this.paymentStatus = PaymentStatus.PAID;
     }
 
     public void markPaymentFailed() {
-        this.paymentStatus = "FAILED";
+        this.paymentStatus = PaymentStatus.FAILED;
     }
 
     public void markDelivered() {
-        this.status = "DELIVERED";
+        this.status = OrderStatus.DELIVERED;
     }
 
     public boolean hasReleasableInventory() {
-        return "PENDING".equals(status) || "CONFIRMED".equals(status);
+        return OrderStatus.PENDING.equals(status) || OrderStatus.CONFIRMED.equals(status);
     }
 
     public boolean hasFulfillableInventory() {
-        return "PENDING".equals(status) || "CONFIRMED".equals(status);
+        return OrderStatus.PENDING.equals(status) || OrderStatus.CONFIRMED.equals(status);
     }
 }

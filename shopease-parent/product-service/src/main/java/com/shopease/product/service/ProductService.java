@@ -34,7 +34,7 @@ public class ProductService {
     CategoryRepository categories;
     InventorySyncClient inventory;
 
-    public List<CategoryResponse> categories() {
+    public List<CategoryResponse> getAllCategories() {
         return categories.findAll().stream().map(CategoryResponse::from).toList();
     }
 
@@ -50,7 +50,7 @@ public class ProductService {
         return CategoryResponse.from(categories.save(category));
     }
 
-    public List<ProductResponse> products(String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice) {
+    public List<ProductResponse> listProducts(String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice) {
         String q = keyword == null ? "" : keyword.toLowerCase(Locale.ROOT);
         return products.findByActiveTrueOrderByIdAsc().stream()
                 .filter(product -> q.isBlank() || product.getName().toLowerCase(Locale.ROOT).contains(q)
@@ -61,7 +61,7 @@ public class ProductService {
                 .map(ProductResponse::from).toList();
     }
 
-    public List<String> suggestions(String q) {
+    public List<String> getProductSuggestions(String q) {
         String keyword = q == null ? "" : q.toLowerCase(Locale.ROOT);
         return products.findByActiveTrueOrderByIdAsc().stream()
                 .map(Product::getName)
@@ -70,19 +70,19 @@ public class ProductService {
                 .toList();
     }
 
-    public ProductResponse product(Long id) {
+    public ProductResponse getProductDetail(Long id) {
         return ProductResponse.from(requireProduct(id));
     }
 
     @Transactional
-    public ProductResponse create(String sellerId, ProductRequest request) {
+    public ProductResponse createProduct(String sellerId, ProductRequest request) {
         ProductResponse response = ProductResponse.from(products.save(toProduct(sellerId, request)));
-        inventory.upsert(response.id(), response.stockQuantity());
+        inventory.updateStock(response.id(), response.stockQuantity());
         return response;
     }
 
     @Transactional
-    public ProductResponse update(Long id, String sellerId, ProductRequest request) {
+    public ProductResponse updateProduct(Long id, String sellerId, ProductRequest request) {
         Product existing = requireProduct(id);
         Category category = categories.findById(request.categoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
@@ -104,18 +104,18 @@ public class ProductService {
         );
         
         ProductResponse response = ProductResponse.from(products.save(existing));
-        inventory.upsert(response.id(), response.stockQuantity());
+        inventory.updateStock(response.id(), response.stockQuantity());
         return response;
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void deleteProduct(Long id) {
         Product product = requireProduct(id);
         product.deactivate();
         products.save(product);
     }
 
-    public List<ProductResponse> bySeller(String sellerId) {
+    public List<ProductResponse> getProductsBySeller(String sellerId) {
         return products.findByActiveTrueOrderByIdAsc().stream()
                 .filter(product -> product.getSellerId().equals(sellerId)).map(ProductResponse::from).toList();
     }

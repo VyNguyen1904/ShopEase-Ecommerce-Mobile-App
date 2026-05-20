@@ -2,6 +2,7 @@ package com.shopease.payment.service;
 
 import lombok.RequiredArgsConstructor;
 
+import com.shopease.common.domain.PaymentStatus;
 import com.shopease.payment.client.OrderClient;
 import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentRequest;
 import com.shopease.payment.dto.PaymentDtos.CheckoutPaymentResponse;
@@ -43,22 +44,22 @@ public class PaymentService {
 
 
     @Transactional
-    public PaymentResponse create(CreatePaymentRequest request) {
+    public PaymentResponse createPaymentTransaction(CreatePaymentRequest request) {
         return PaymentResponse.from(payments.save(new PaymentTransaction(UUID.randomUUID(), request.orderId(), request.buyerId(),
-                request.amount(), "VND", request.method(), "PENDING", null, null, Instant.now())));
+                request.amount(), "VND", request.method(), PaymentStatus.PENDING, null, null, Instant.now())));
     }
 
-    public List<PaymentResponse> all() {
+    public List<PaymentResponse> listPaymentTransactions() {
         return payments.findAll().stream().map(PaymentResponse::from).toList();
     }
 
-    public PaymentResponse byOrder(UUID orderId) {
+    public PaymentResponse getPaymentByOrder(UUID orderId) {
         return PaymentResponse.from(payments.findByOrderId(orderId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found")));
     }
 
     @Transactional
-    public CheckoutPaymentResponse checkout(CheckoutPaymentRequest request, String idempotencyKey) {
+    public CheckoutPaymentResponse processCheckout(CheckoutPaymentRequest request, String idempotencyKey) {
         String normalizedIdempotencyKey = requireIdempotencyKey(idempotencyKey);
         AtomicBoolean claimed = new AtomicBoolean(false);
         IdempotencyRecord record = idempotencyRegistry.compute(normalizedIdempotencyKey, (key, current) -> {
@@ -78,7 +79,7 @@ public class PaymentService {
         }
 
         try {
-            CheckoutPaymentResponse response = processCheckout(request);
+            CheckoutPaymentResponse response = processCheckoutInternal(request);
             demoLedger.put(normalizeOrderId(response.orderId()), response);
             record.complete(response);
             syncPersistentPayment(response, parseOrderId(response.orderId()));
@@ -89,7 +90,7 @@ public class PaymentService {
         }
     }
 
-    public CheckoutPaymentResponse status(String orderId) {
+    public CheckoutPaymentResponse getPaymentStatus(String orderId) {
         String normalizedOrderId = normalizeOrderId(orderId);
         CheckoutPaymentResponse response = demoLedger.get(normalizedOrderId);
         if (response != null) {
@@ -107,7 +108,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public CheckoutPaymentResponse simulateWebhook(String orderId, boolean success) {
+    public CheckoutPaymentResponse handleSimulatedWebhook(String orderId, boolean success) {
         String normalizedOrderId = normalizeOrderId(orderId);
         CheckoutPaymentResponse response = demoLedger.compute(normalizedOrderId, (key, current) -> {
             CheckoutPaymentResponse base = current == null ? pendingQrResponse(orderId.trim()) : current;
@@ -155,10 +156,10 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentResponse simulate(UUID orderId, boolean success) {
+    public PaymentResponse simulatePaymentResult(UUID orderId, boolean success) {
         PaymentTransaction current = payments.findByOrderId(orderId).orElseGet(() -> payments.save(
                 new PaymentTransaction(UUID.randomUUID(), orderId, "demo-buyer", BigDecimal.ZERO, "VND", "COD",
-                        "PENDING", null, null, Instant.now())));
+                        PaymentStatus.PENDING, null, null, Instant.now())));
         if (success) {
             current.markCompleted();
         } else {
@@ -168,12 +169,12 @@ public class PaymentService {
     }
 
     @Transactional
-    public RefundResponse refund(UUID transactionId, RefundRequest request) {
+    public RefundResponse processRefund(UUID transactionId, RefundRequest request) {
         payments.findById(transactionId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
         return RefundResponse.from(refunds.save(new Refund(UUID.randomUUID(), transactionId, request.amount(), request.reason(), "COMPLETED", Instant.now())));
     }
 
-    private CheckoutPaymentResponse processCheckout(CheckoutPaymentRequest request) {
+    private CheckoutPaymentResponse processCheckoutInternal(CheckoutPaymentRequest request) {
         simulateGatewayLatency();
         String method = request.paymentMethod().trim().toUpperCase();
         if (isQrMethod(method)) {
@@ -204,8 +205,8 @@ public class PaymentService {
 
     private CheckoutPaymentResponse fromTransaction(PaymentTransaction payment) {
         String status = switch (payment.getStatus()) {
-            case "COMPLETED" -> "SUCCESS";
-            case "PENDING" -> "PENDING";
+            case PAID -> "SUCCESS";
+            case PENDING -> "PENDING";
             default -> "FAILED";
         };
         String transactionId = payment.getGatewayTxnId() == null ? payment.getId().toString() : payment.getGatewayTxnId();

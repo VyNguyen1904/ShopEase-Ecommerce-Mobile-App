@@ -21,32 +21,32 @@ public class InventoryController {
 
 
     @GetMapping
-    ApiResponse<List<InventoryResponse>> all() {
-        return ApiResponse.ok(inventory.all());
+    ApiResponse<List<InventoryResponse>> getAllInventoryItems() {
+        return ApiResponse.ok(inventory.getAllInventoryItems());
     }
 
     @GetMapping("/{productId}")
-    ApiResponse<InventoryResponse> byProduct(@PathVariable Long productId) {
-        return ApiResponse.ok(inventory.byProduct(productId));
+    ApiResponse<InventoryResponse> getInventoryByProductId(@PathVariable Long productId) {
+        return ApiResponse.ok(inventory.getInventoryByProduct(productId));
     }
 
     @PutMapping("/{productId}")
-    ApiResponse<InventoryResponse> upsert(@PathVariable Long productId, @Valid @RequestBody StockRequest request) {
-        return ApiResponse.ok(inventory.upsert(productId, request));
+    ApiResponse<InventoryResponse> updateStock(@PathVariable Long productId, @Valid @RequestBody StockRequest request) {
+        return ApiResponse.ok(inventory.updateStock(productId, request));
     }
 
     @PostMapping("/reserve")
-    ApiResponse<InventoryResponse> reserve(@Valid @RequestBody ReservationRequest request) {
-        return ApiResponse.ok(inventory.reserve(request));
+    ApiResponse<InventoryResponse> reserveStock(@Valid @RequestBody ReservationRequest request) {
+        return ApiResponse.ok(inventory.reserveStock(request));
     }
 
     @PostMapping("/release")
-    ApiResponse<InventoryResponse> release(@Valid @RequestBody ReservationRequest request) {
-        return ApiResponse.ok(inventory.release(request));
+    ApiResponse<InventoryResponse> releaseStock(@Valid @RequestBody ReservationRequest request) {
+        return ApiResponse.ok(inventory.releaseStock(request));
     }
 
     @PostMapping("/commit")
-    ApiResponse<InventoryResponse> commit(@Valid @RequestBody ReservationRequest request) {
-        return ApiResponse.ok(inventory.commit(request));
+    ApiResponse<InventoryResponse> commitStock(@Valid @RequestBody ReservationRequest request) {
+        return ApiResponse.ok(inventory.commitStock(request));
     }
 }

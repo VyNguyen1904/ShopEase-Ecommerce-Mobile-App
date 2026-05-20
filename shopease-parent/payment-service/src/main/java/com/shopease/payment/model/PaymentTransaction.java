@@ -1,7 +1,10 @@
 package com.shopease.payment.model;
 
+import com.shopease.common.domain.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -33,8 +36,9 @@ public class PaymentTransaction {
     @Column(nullable = false)
     private String method;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private PaymentStatus status;
 
     private String gatewayTxnId;
     private Instant paidAt;
@@ -46,7 +50,7 @@ public class PaymentTransaction {
     }
 
     public PaymentTransaction(UUID id, UUID orderId, String buyerId, BigDecimal amount, String currency,
-                              String method, String status, String gatewayTxnId, Instant paidAt, Instant createdAt) {
+                              String method, PaymentStatus status, String gatewayTxnId, Instant paidAt, Instant createdAt) {
         this.id = id;
         this.orderId = orderId;
         this.buyerId = buyerId;
@@ -60,13 +64,13 @@ public class PaymentTransaction {
     }
 
     public void markCompleted() {
-        this.status = "COMPLETED";
+        this.status = PaymentStatus.PAID;
         this.gatewayTxnId = "SIM-" + id;
         this.paidAt = Instant.now();
     }
 
     public void markFailed() {
-        this.status = "FAILED";
+        this.status = PaymentStatus.FAILED;
         this.gatewayTxnId = "SIM-" + id;
     }
 

@@ -22,19 +22,19 @@ public class ReviewController {
 
 
     @GetMapping("/products/{productId}")
-    ApiResponse<List<ReviewResponse>> byProduct(@PathVariable Long productId) {
-        return ApiResponse.ok(reviews.byProduct(productId));
+    ApiResponse<List<ReviewResponse>> getReviewsByProduct(@PathVariable Long productId) {
+        return ApiResponse.ok(reviews.getReviewsByProduct(productId));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<ReviewResponse> create(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
-                                       @Valid @RequestBody ReviewRequest request) {
-        return ApiResponse.created(reviews.create(buyerId, request));
+    ApiResponse<ReviewResponse> createReview(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
+                                             @Valid @RequestBody ReviewRequest request) {
+        return ApiResponse.created(reviews.createReview(buyerId, request));
     }
 
     @PostMapping("/{id}/helpful")
-    ApiResponse<ReviewResponse> helpful(@PathVariable UUID id) {
-        return ApiResponse.ok(reviews.helpful(id));
+    ApiResponse<ReviewResponse> markReviewAsHelpful(@PathVariable UUID id) {
+        return ApiResponse.ok(reviews.markReviewAsHelpful(id));
     }
 }

@@ -7,8 +7,8 @@
         <artifactId>shopease-parent</artifactId>
         <version>0.1.0</version>
     </parent>
-    <artifactId>gateway-service</artifactId>
-    <name>ShopEase Gateway Service</name>
+    <artifactId>authentication-service</artifactId>
+    <name>ShopEase Authentication Service</name>
 
     <dependencies>
         <dependency>
@@ -17,12 +17,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -44,11 +40,6 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.6</version>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 

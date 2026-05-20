@@ -20,6 +20,7 @@
         <module>common-lib</module>
         <module>gateway-service</module>
         <module>user-service</module>
+        <module>authentication-service</module>
         <module>product-service</module>
         <module>inventory-service</module>
         <module>cart-service</module>

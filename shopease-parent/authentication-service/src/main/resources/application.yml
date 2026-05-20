@@ -1,0 +1,10 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: authentication-service
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:U7CSWNhO7HE9fSam/uQx2UyK8LyCArTLsCb+2u+W3rA=}

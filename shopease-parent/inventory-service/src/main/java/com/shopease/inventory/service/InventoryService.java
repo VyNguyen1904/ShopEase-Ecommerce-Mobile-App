@@ -23,21 +23,21 @@ public class InventoryService {
 
 
 
-    public List<InventoryResponse> all() {
+    public List<InventoryResponse> getAllInventoryItems() {
         return inventory.findAll().stream().map(InventoryResponse::from).toList();
     }
 
-    public InventoryResponse byProduct(Long productId) {
+    public InventoryResponse getInventoryByProduct(Long productId) {
         return InventoryResponse.from(requireInventory(productId));
     }
 
     @Transactional
-    public InventoryResponse upsert(Long productId, StockRequest request) {
+    public InventoryResponse updateStock(Long productId, StockRequest request) {
         return InventoryResponse.from(inventory.save(new InventoryItem(productId, request.availableQty(), request.reservedQty(), Instant.now())));
     }
 
     @Transactional
-    public InventoryResponse reserve(ReservationRequest request) {
+    public InventoryResponse reserveStock(ReservationRequest request) {
         InventoryItem item = requireInventoryForUpdate(request.productId());
         if (item.getAvailableQty() < request.quantity()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Insufficient stock");
@@ -47,14 +47,14 @@ public class InventoryService {
     }
 
     @Transactional
-    public InventoryResponse release(ReservationRequest request) {
+    public InventoryResponse releaseStock(ReservationRequest request) {
         InventoryItem item = requireInventoryForUpdate(request.productId());
         item.release(request.quantity());
         return InventoryResponse.from(inventory.save(item));
     }
 
     @Transactional
-    public InventoryResponse commit(ReservationRequest request) {
+    public InventoryResponse commitStock(ReservationRequest request) {
         InventoryItem item = requireInventoryForUpdate(request.productId());
         item.commit(request.quantity());
         return InventoryResponse.from(inventory.save(item));

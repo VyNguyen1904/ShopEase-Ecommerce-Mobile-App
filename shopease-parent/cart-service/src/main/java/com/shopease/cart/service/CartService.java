@@ -22,11 +22,11 @@ public class CartService {
     private final CartRepository carts;
     private final ProductCatalogClient products;
 
-    public CartResponse get(String userId) {
+    public CartResponse getCart(String userId) {
         return toCart(userId);
     }
 
-    public CartResponse add(String userId, CartItemRequest request) {
+    public CartResponse addItemToCart(String userId, CartItemRequest request) {
         ProductSnapshot product = products.find(request.productId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Product " + request.productId() + " not found"));
@@ -38,7 +38,7 @@ public class CartService {
         return toCart(userId);
     }
 
-    public CartResponse update(String userId, Long productId, CartItemRequest request) {
+    public CartResponse updateItemQuantity(String userId, Long productId, CartItemRequest request) {
         ProductSnapshot product = products.find(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Product " + productId + " not found"));
@@ -47,12 +47,12 @@ public class CartService {
         return toCart(userId);
     }
 
-    public CartResponse remove(String userId, Long productId) {
+    public CartResponse removeItemFromCart(String userId, Long productId) {
         carts.remove(userId, productId);
         return toCart(userId);
     }
 
-    public CartResponse clear(String userId) {
+    public CartResponse clearCart(String userId) {
         carts.clear(userId);
         return toCart(userId);
     }

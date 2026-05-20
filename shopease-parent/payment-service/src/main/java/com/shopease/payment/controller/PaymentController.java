@@ -25,52 +25,52 @@ public class PaymentController {
 
 
     @PostMapping("/checkout")
-    CheckoutPaymentResponse checkout(@RequestHeader("Idempotency-Key") String idempotencyKey,
-                                     @Valid @RequestBody CheckoutPaymentRequest request) {
-        return payments.checkout(request, idempotencyKey);
+    CheckoutPaymentResponse processCheckout(@RequestHeader("Idempotency-Key") String idempotencyKey,
+                                            @Valid @RequestBody CheckoutPaymentRequest request) {
+        return payments.processCheckout(request, idempotencyKey);
     }
 
     @GetMapping("/status/{orderId}")
-    CheckoutPaymentResponse status(@PathVariable String orderId) {
-        return payments.status(orderId);
+    CheckoutPaymentResponse getPaymentStatus(@PathVariable String orderId) {
+        return payments.getPaymentStatus(orderId);
     }
 
     @PostMapping("/simulate-webhook")
-    CheckoutPaymentResponse simulateWebhook(@RequestParam String orderId,
-                                            @RequestParam(defaultValue = "true") boolean success) {
-        return payments.simulateWebhook(orderId, success);
+    CheckoutPaymentResponse handleSimulatedWebhook(@RequestParam String orderId,
+                                                   @RequestParam(defaultValue = "true") boolean success) {
+        return payments.handleSimulatedWebhook(orderId, success);
     }
 
     @GetMapping(value = "/qr/{orderId}", produces = "image/svg+xml")
-    String qr(@PathVariable String orderId) {
+    String getPaymentQr(@PathVariable String orderId) {
         return payments.qrSvg(orderId);
     }
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<PaymentResponse> create(@Valid @RequestBody CreatePaymentRequest request) {
-        return ApiResponse.created(payments.create(request));
+    ApiResponse<PaymentResponse> createPaymentTransaction(@Valid @RequestBody CreatePaymentRequest request) {
+        return ApiResponse.created(payments.createPaymentTransaction(request));
     }
 
     @GetMapping
-    ApiResponse<List<PaymentResponse>> all() {
-        return ApiResponse.ok(payments.all());
+    ApiResponse<List<PaymentResponse>> listPaymentTransactions() {
+        return ApiResponse.ok(payments.listPaymentTransactions());
     }
 
     @GetMapping("/orders/{orderId}")
-    ApiResponse<PaymentResponse> byOrder(@PathVariable UUID orderId) {
-        return ApiResponse.ok(payments.byOrder(orderId));
+    ApiResponse<PaymentResponse> getPaymentByOrder(@PathVariable UUID orderId) {
+        return ApiResponse.ok(payments.getPaymentByOrder(orderId));
     }
 
     @PostMapping("/orders/{orderId}/simulate")
-    ApiResponse<PaymentResponse> simulate(@PathVariable UUID orderId,
-                                          @RequestParam(defaultValue = "true") boolean success) {
-        return ApiResponse.ok(payments.simulate(orderId, success));
+    ApiResponse<PaymentResponse> simulatePaymentResult(@PathVariable UUID orderId,
+                                                       @RequestParam(defaultValue = "true") boolean success) {
+        return ApiResponse.ok(payments.simulatePaymentResult(orderId, success));
     }
 
     @PostMapping("/{id}/refund")
-    ApiResponse<RefundResponse> refund(@PathVariable UUID id, @Valid @RequestBody RefundRequest request) {
-        return ApiResponse.ok(payments.refund(id, request));
+    ApiResponse<RefundResponse> processRefund(@PathVariable UUID id, @Valid @RequestBody RefundRequest request) {
+        return ApiResponse.ok(payments.processRefund(id, request));
     }
 }

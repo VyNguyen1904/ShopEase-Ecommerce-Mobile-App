@@ -1,5 +1,7 @@
 package com.shopease.order.messaging;
 
+import com.shopease.common.domain.OrderStatus;
+import com.shopease.common.domain.PaymentStatus;
 import com.shopease.common.event.DomainEvents.*;
 import com.shopease.order.model.Order;
 import com.shopease.order.model.OrderItem;
@@ -47,7 +49,7 @@ public class OrderSagaOrchestrator {
     private void handleStockReserved(StockReservedEvent event) {
         log.info("Stock reserved for order {}. Proceeding to payment.", event.orderId());
         orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
-            order.setStatus("STOCK_RESERVED");
+            order.setStatus(OrderStatus.STOCK_RESERVED);
             orderRepository.save(order);
             
             ProcessPaymentCommand command = new ProcessPaymentCommand(
@@ -64,7 +66,7 @@ public class OrderSagaOrchestrator {
     private void handleStockReservationFailed(StockReservationFailedEvent event) {
         log.error("Stock reservation failed for order {}: {}", event.orderId(), event.reason());
         orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
-            order.setStatus("FAILED_OUT_OF_STOCK");
+            order.setStatus(OrderStatus.FAILED);
             orderRepository.save(order);
             
             OrderFailedEvent failedEvent = new OrderFailedEvent(order.getId(), event.reason(), Instant.now());
@@ -75,8 +77,8 @@ public class OrderSagaOrchestrator {
     private void handlePaymentProcessed(PaymentProcessedEvent event) {
         log.info("Payment processed for order {}. Confirming order.", event.orderId());
         orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
-            order.markPaymentPaid();
-            order.setStatus("CONFIRMED");
+            order.setPaymentStatus(PaymentStatus.PAID);
+            order.setStatus(OrderStatus.CONFIRMED);
             orderRepository.save(order);
             
             OrderConfirmedEvent confirmedEvent = new OrderConfirmedEvent(order.getId(), Instant.now());
@@ -87,8 +89,8 @@ public class OrderSagaOrchestrator {
     private void handlePaymentFailed(PaymentFailedEvent event) {
         log.error("Payment failed for order {}: {}. Starting compensation.", event.orderId(), event.reason());
         orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
-            order.markPaymentFailed();
-            order.setStatus("FAILED_PAYMENT");
+            order.setPaymentStatus(PaymentStatus.FAILED);
+            order.setStatus(OrderStatus.FAILED);
             orderRepository.save(order);
             
             // Compensate inventory

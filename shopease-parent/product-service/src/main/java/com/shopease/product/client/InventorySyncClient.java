@@ -17,7 +17,7 @@ public class InventorySyncClient {
         this.inventoryClient = restClientBuilder.baseUrl(inventoryServiceUrl).build();
     }
 
-    public void upsert(Long productId, int availableQty) {
+    public void updateStock(Long productId, int availableQty) {
         try {
             inventoryClient.put()
                     .uri("/api/inventory/{productId}", productId)

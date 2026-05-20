@@ -3,6 +3,8 @@ package com.shopease.order.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.shopease.common.domain.OrderStatus;
+import com.shopease.common.domain.PaymentStatus;
 import com.shopease.common.event.DomainEvents.*;
 import com.shopease.order.client.ProductCatalogClient;
 import com.shopease.order.dto.CreateOrderRequest;
@@ -23,18 +25,17 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class OrderService {
     private final OrderRepository orders;
     private final ProductCatalogClient productCatalog;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional
-    public OrderResponse place(String buyerId, CreateOrderRequest request) {
+    public OrderResponse createOrder(String buyerId, CreateOrderRequest request) {
         // Synchronous validation and snapshotting
         List<OrderItem> items = request.items().stream().map(item -> {
             ProductSnapshot product = productCatalog.find(item.productId());
@@ -46,7 +47,7 @@ public class OrderService {
         BigDecimal shipping = subtotal.compareTo(new BigDecimal("500000")) >= 0 ? BigDecimal.ZERO : new BigDecimal("25000");
         String paymentMethod = request.paymentMethod() == null ? "COD" : request.paymentMethod().trim().toUpperCase(Locale.ROOT);
 
-        Order order = new Order(UUID.randomUUID(), buyerId, "PENDING", "UNPAID", items, subtotal, shipping,
+        Order order = new Order(UUID.randomUUID(), buyerId, OrderStatus.PENDING, PaymentStatus.UNPAID, items, subtotal, shipping,
                 BigDecimal.ZERO, subtotal.add(shipping), paymentMethod, request.shipRecipient(), request.shipPhone(),
                 request.shipStreet(), request.shipDistrict(), request.shipCity(), request.note(), Instant.now());
         
@@ -63,18 +64,18 @@ public class OrderService {
         return OrderResponse.from(saved);
     }
 
-    public List<OrderResponse> byBuyer(String buyerId) {
+    public List<OrderResponse> getOrderHistory(String buyerId) {
         return orders.findByBuyerIdOrderByCreatedAtDesc(buyerId).stream().map(OrderResponse::from).toList();
     }
 
-    public OrderResponse one(UUID id) {
+    public OrderResponse getOrderDetail(UUID id) {
         return OrderResponse.from(requireOrder(id));
     }
 
     @Transactional
-    public OrderResponse cancel(UUID id) {
+    public OrderResponse cancelOrder(UUID id) {
         Order order = requireOrder(id);
-        if ("DELIVERED".equals(order.getStatus())) {
+        if (OrderStatus.DELIVERED.equals(order.getStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Delivered orders cannot be cancelled");
         }
         
@@ -107,19 +108,19 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse deliver(UUID id) {
+    public OrderResponse markAsDelivered(UUID id) {
         Order order = requireOrder(id);
         order.markDelivered();
         return OrderResponse.from(orders.save(order));
     }
 
-    public ReviewEligibilityResponse reviewEligibility(UUID id, String buyerId, Long productId) {
+    public ReviewEligibilityResponse checkReviewEligibility(UUID id, String buyerId, Long productId) {
         Order order = requireOrder(id);
         if (!order.getBuyerId().equals(buyerId)) {
             return new ReviewEligibilityResponse(order.getId(), buyerId, productId, false,
                     "Order does not belong to buyer");
         }
-        if (!"DELIVERED".equals(order.getStatus())) {
+        if (!OrderStatus.DELIVERED.equals(order.getStatus())) {
             return new ReviewEligibilityResponse(order.getId(), buyerId, productId, false,
                     "Order must be delivered before review");
         }

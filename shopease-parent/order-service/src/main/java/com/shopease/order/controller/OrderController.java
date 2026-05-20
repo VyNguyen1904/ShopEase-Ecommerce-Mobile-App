@@ -23,42 +23,42 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<OrderResponse> place(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
-                                     @Valid @RequestBody CreateOrderRequest request) {
-        return ApiResponse.created(orders.place(buyerId, request));
+    ApiResponse<OrderResponse> createOrder(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
+                                           @Valid @RequestBody CreateOrderRequest request) {
+        return ApiResponse.created(orders.createOrder(buyerId, request));
     }
 
     @GetMapping
-    ApiResponse<List<OrderResponse>> all(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId) {
-        return ApiResponse.ok(orders.byBuyer(buyerId));
+    ApiResponse<List<OrderResponse>> getOrderHistory(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId) {
+        return ApiResponse.ok(orders.getOrderHistory(buyerId));
     }
 
     @GetMapping("/{id}")
-    ApiResponse<OrderResponse> one(@PathVariable UUID id) {
-        return ApiResponse.ok(orders.one(id));
+    ApiResponse<OrderResponse> getOrderDetail(@PathVariable UUID id) {
+        return ApiResponse.ok(orders.getOrderDetail(id));
     }
 
     @PostMapping("/{id}/cancel")
-    ApiResponse<OrderResponse> cancel(@PathVariable UUID id) {
-        return ApiResponse.ok(orders.cancel(id));
+    ApiResponse<OrderResponse> cancelOrder(@PathVariable UUID id) {
+        return ApiResponse.ok(orders.cancelOrder(id));
     }
 
     @PostMapping("/{id}/payment-status")
-    ApiResponse<OrderResponse> paymentStatus(@PathVariable UUID id,
-                                             @Valid @RequestBody PaymentStatusRequest request) {
+    ApiResponse<OrderResponse> updatePaymentStatus(@PathVariable UUID id,
+                                                   @Valid @RequestBody PaymentStatusRequest request) {
         return ApiResponse.ok(orders.updatePaymentStatus(id, request.paid()));
     }
 
     @PostMapping("/{id}/deliver")
-    ApiResponse<OrderResponse> deliver(@PathVariable UUID id) {
-        return ApiResponse.ok(orders.deliver(id));
+    ApiResponse<OrderResponse> markAsDelivered(@PathVariable UUID id) {
+        return ApiResponse.ok(orders.markAsDelivered(id));
     }
 
     @GetMapping("/{id}/review-eligibility")
-    ApiResponse<ReviewEligibilityResponse> reviewEligibility(
+    ApiResponse<ReviewEligibilityResponse> checkReviewEligibility(
             @PathVariable UUID id,
             @RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String buyerId,
             @RequestParam Long productId) {
-        return ApiResponse.ok(orders.reviewEligibility(id, buyerId, productId));
+        return ApiResponse.ok(orders.checkReviewEligibility(id, buyerId, productId));
     }
 }
