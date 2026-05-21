@@ -3,6 +3,8 @@ package com.shopease.payment.service;
 import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.domain.PaymentStatus;
+import com.shopease.common.event.DomainEvents.PaymentFailedEvent;
+import com.shopease.common.event.DomainEvents.PaymentProcessedEvent;
 import com.shopease.payment.dto.CheckoutPaymentRequest;
 import com.shopease.payment.dto.CheckoutPaymentResponse;
 import com.shopease.payment.dto.CreatePaymentRequest;
@@ -14,6 +16,7 @@ import com.shopease.payment.model.Refund;
 import com.shopease.payment.repository.PaymentRepository;
 import com.shopease.payment.repository.RefundRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,6 +40,7 @@ public class PaymentService {
 
     private final PaymentRepository payments;
     private final RefundRepository refunds;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private final ConcurrentMap<String, IdempotencyRecord> idempotencyRegistry = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, CheckoutPaymentResponse> demoLedger = new ConcurrentHashMap<>();
@@ -174,7 +178,17 @@ public class PaymentService {
         } else {
             current.markFailed();
         }
-        return PaymentResponse.from(payments.save(current));
+        PaymentTransaction saved = payments.save(current);
+        
+        if (success) {
+            kafkaTemplate.send("payment-events", orderId.toString(),
+                    new PaymentProcessedEvent(orderId, saved.getId(), Instant.now()));
+        } else {
+            kafkaTemplate.send("payment-events", orderId.toString(),
+                    new PaymentFailedEvent(orderId, "Payment failed via simulation", Instant.now()));
+        }
+        
+        return PaymentResponse.from(saved);
     }
 
     @Transactional
@@ -229,9 +243,13 @@ public class PaymentService {
             if ("SUCCESS".equals(response.status())) {
                 payment.markCompleted();
                 payments.save(payment);
+                kafkaTemplate.send("payment-events", orderId.toString(),
+                        new PaymentProcessedEvent(orderId, payment.getId(), Instant.now()));
             } else if (response.status().startsWith("FAILED")) {
                 payment.markFailed();
                 payments.save(payment);
+                kafkaTemplate.send("payment-events", orderId.toString(),
+                        new PaymentFailedEvent(orderId, response.message(), Instant.now()));
             }
         });
     }

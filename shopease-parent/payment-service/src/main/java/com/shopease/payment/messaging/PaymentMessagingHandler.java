@@ -13,7 +13,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Component
 @Slf4j
@@ -38,31 +37,28 @@ public class PaymentMessagingHandler {
                     command.orderId(),
                     command.buyerId(),
                     command.amount(),
-                    command.paymentMethod()
-            ));
+                    command.paymentMethod()));
 
             // In a real system, we'd wait for a webhook or external gateway.
             // For this implementation, if it's "COD", we approve immediately.
-            // Otherwise, we'd keep it PENDING. But for the Saga flow demo, 
+            // Otherwise, we'd keep it PENDING. But for the Saga flow demo,
             // let's approve everything that isn't explicitly failed.
-            
+
             boolean success = !command.paymentMethod().equalsIgnoreCase("FAIL");
-            
+
             if (success) {
                 paymentService.simulate(command.orderId(), true);
                 PaymentProcessedEvent event = new PaymentProcessedEvent(
                         command.orderId(),
                         response.id(),
-                        Instant.now()
-                );
+                        Instant.now());
                 kafkaTemplate.send("payment-events", event.orderId().toString(), event);
             } else {
                 paymentService.simulate(command.orderId(), false);
                 PaymentFailedEvent event = new PaymentFailedEvent(
                         command.orderId(),
                         "Payment declined by gateway",
-                        Instant.now()
-                );
+                        Instant.now());
                 kafkaTemplate.send("payment-events", event.orderId().toString(), event);
             }
         } catch (Exception ex) {
@@ -70,8 +66,7 @@ public class PaymentMessagingHandler {
             PaymentFailedEvent event = new PaymentFailedEvent(
                     command.orderId(),
                     ex.getMessage(),
-                    Instant.now()
-            );
+                    Instant.now());
             kafkaTemplate.send("payment-events", event.orderId().toString(), event);
         }
     }

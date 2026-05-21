@@ -3,7 +3,6 @@ package com.shopease.order.messaging;
 import com.shopease.common.domain.OrderStatus;
 import com.shopease.common.domain.PaymentStatus;
 import com.shopease.common.event.DomainEvents.*;
-import com.shopease.order.model.Order;
 import com.shopease.order.model.OrderItem;
 import com.shopease.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Component
 @Slf4j
@@ -51,14 +49,13 @@ public class OrderSagaOrchestrator {
         orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
             order.setStatus(OrderStatus.STOCK_RESERVED);
             orderRepository.save(order);
-            
+
             ProcessPaymentCommand command = new ProcessPaymentCommand(
                     order.getId(),
                     order.getBuyerId(),
                     order.getTotalAmount(),
                     order.getPaymentMethod(),
-                    Instant.now()
-            );
+                    Instant.now());
             kafkaTemplate.send("payment-commands", command.orderId().toString(), command);
         }, () -> log.error("Order {} not found for StockReservedEvent", event.orderId()));
     }
@@ -68,7 +65,7 @@ public class OrderSagaOrchestrator {
         orderRepository.findById(event.orderId()).ifPresentOrElse(order -> {
             order.setStatus(OrderStatus.FAILED);
             orderRepository.save(order);
-            
+
             OrderFailedEvent failedEvent = new OrderFailedEvent(order.getId(), event.reason(), Instant.now());
             kafkaTemplate.send("order-events", failedEvent.orderId().toString(), failedEvent);
         }, () -> log.error("Order {} not found for StockReservationFailedEvent", event.orderId()));
@@ -80,7 +77,7 @@ public class OrderSagaOrchestrator {
             order.setPaymentStatus(PaymentStatus.PAID);
             order.setStatus(OrderStatus.CONFIRMED);
             orderRepository.save(order);
-            
+
             OrderConfirmedEvent confirmedEvent = new OrderConfirmedEvent(order.getId(), Instant.now());
             kafkaTemplate.send("order-events", confirmedEvent.orderId().toString(), confirmedEvent);
         }, () -> log.error("Order {} not found for PaymentProcessedEvent", event.orderId()));
@@ -92,15 +89,14 @@ public class OrderSagaOrchestrator {
             order.setPaymentStatus(PaymentStatus.FAILED);
             order.setStatus(OrderStatus.FAILED);
             orderRepository.save(order);
-            
+
             // Compensate inventory
             CompensateInventoryCommand command = new CompensateInventoryCommand(
                     order.getId(),
                     order.getItems().stream().map(this::toEventItem).toList(),
-                    Instant.now()
-            );
+                    Instant.now());
             kafkaTemplate.send("inventory-commands", command.orderId().toString(), command);
-            
+
             OrderFailedEvent failedEvent = new OrderFailedEvent(order.getId(), event.reason(), Instant.now());
             kafkaTemplate.send("order-events", failedEvent.orderId().toString(), failedEvent);
         }, () -> log.error("Order {} not found for PaymentFailedEvent", event.orderId()));
