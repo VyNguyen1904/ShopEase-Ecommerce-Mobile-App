@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'dart:ui';
 import 'views/splash_screen.dart';
 import 'views/home_screen.dart';
 import 'views/login_screen.dart';
+import 'views/register_screen.dart';
 import 'views/onboarding_screen.dart';
+import 'views/product_detail_screen.dart';
 import 'utils/app_colors.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -17,6 +22,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ShopEase',
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.trackpad,
+        },
+      ),
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Poppins',
@@ -34,7 +47,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
+        '/product-detail': (context) => const ProductDetailScreen(),
       },
     );
   }

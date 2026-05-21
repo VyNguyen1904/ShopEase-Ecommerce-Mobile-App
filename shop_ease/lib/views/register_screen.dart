@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import 'widgets/custom_text_field.dart';
-import 'widgets/social_button.dart';
-import '../services/auth_service.dart';
 import 'widgets/cart_loading.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -34,12 +36,19 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _handleLogin() async {
+  void _handleRegister() async {
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (name.isEmpty) {
+      _showError('Vui lòng nhập họ tên');
+      return;
+    }
 
     if (email.isEmpty) {
-      _showError('Vui lòng nhập email hoặc số điện thoại');
+      _showError('Vui lòng nhập email');
       return;
     }
 
@@ -53,13 +62,17 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    if (password != confirmPassword) {
+      _showError('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    // Thêm delay giả lập để thấy hiệu ứng giỏ hàng chạy
-    await Future.delayed(const Duration(milliseconds: 2000));
-    await AuthService().setLoggedIn(true);
+    // Giả lập delay mạng để thấy loading
+    await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
@@ -67,7 +80,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = false;
     });
 
-    Navigator.pushReplacementNamed(context, '/home');
+    // Tạm thời hiển thị thành công và quay lại trang đăng nhập
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.pop(context);
   }
 
   @override
@@ -76,15 +97,23 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Scaffold(
           backgroundColor: AppColors.background,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColors.primaryDark),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 10),
                   const Text(
-                    'Chào mừng trở lại',
+                    'Tạo tài khoản mới',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -93,14 +122,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Đăng nhập để tiếp tục',
+                    'Điền thông tin bên dưới để đăng ký',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                   const SizedBox(height: 40),
                   CustomTextField(
-                    controller: _emailController,
+                    controller: _nameController,
                     icon: Icons.person_outline,
-                    hintText: 'Email hoặc số điện thoại',
+                    hintText: 'Họ và tên',
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    controller: _emailController,
+                    icon: Icons.email_outlined,
+                    hintText: 'Email',
                   ),
                   const SizedBox(height: 20),
                   CustomTextField(
@@ -109,30 +144,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'Mật khẩu',
                     isPassword: true,
                   ),
-                  const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Quên mật khẩu?',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 20),
+                  CustomTextField(
+                    controller: _confirmPasswordController,
+                    icon: Icons.lock_outline,
+                    hintText: 'Xác nhận mật khẩu',
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _handleLogin,
+                      onPressed: _isLoading ? null : _handleRegister,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryDark,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                         elevation: 0,
                       ),
                       child: const Text(
-                        'Đăng nhập',
+                        'Đăng ký',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -141,37 +172,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  const Center(
-                    child: Text(
-                      'hoặc tiếp tục với',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 20,
-                    runSpacing: 20,
-                    children: [
-                      SocialButton(icon: Icons.g_mobiledata, onTap: () {}),
-                      SocialButton(icon: Icons.apple, onTap: () {}),
-                      SocialButton(icon: Icons.facebook, onTap: () {}),
-                    ],
-                  ),
                   const SizedBox(height: 30),
                   Center(
                     child: Wrap(
                       alignment: WrapAlignment.center,
                       children: [
                         const Text(
-                          'Chưa có tài khoản? ',
+                          'Đã có tài khoản? ',
                           style: TextStyle(color: Colors.grey),
                         ),
                         GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/register'),
+                          onTap: () => Navigator.pop(context),
                           child: const Text(
-                            'Đăng ký ngay',
+                            'Đăng nhập',
                             style: TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,

@@ -9,17 +9,46 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   final AuthService _authService = AuthService();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+      ),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
+      ),
+    );
+
+    _animationController.forward();
     _checkAuth();
   }
 
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2, milliseconds: 500));
     bool isFirstLaunch = await _authService.isFirstLaunch();
     bool loggedIn = await _authService.isLoggedIn();
     
@@ -37,170 +66,86 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          const Positioned.fill(
-            child: CustomPaint(
-              painter: SailboatBackgroundPainter(),
-            ),
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryDark,
+              AppColors.primary,
+            ],
           ),
-          SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(flex: 3),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.15),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+        ),
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return Opacity(
+              opacity: _fadeAnimation.value,
+              child: Transform.scale(
+                scale: _scaleAnimation.value,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 30,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.shopping_bag_rounded,
+                          size: 64,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'Z',
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 72,
-                        fontWeight: FontWeight.w900,
-                        height: 1.1,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 28),
-                  const Text(
-                    'Zanzibar',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 38,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                    const SizedBox(height: 32),
+                    const Text(
+                      'ShopEase',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 42,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Smart Shopping, Better Living',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.5,
+                    const SizedBox(height: 12),
+                    Text(
+                      'Smart Shopping, Better Living',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-                  const Spacer(flex: 2),
-                  const SizedBox(
-                    width: 32,
-                    height: 32,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
-                      strokeWidth: 2.5,
+                    const SizedBox(height: 64),
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.9)),
+                        strokeWidth: 3,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 48),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
-}
-
-class SailboatBackgroundPainter extends CustomPainter {
-  const SailboatBackgroundPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    
-    final skyPaint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Color(0xFF132F3D),
-          Color(0xFF1E485D),
-          Color(0xFF3D8C95),
-        ],
-      ).createShader(rect);
-    canvas.drawRect(rect, skyPaint);
-
-    final sunPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Colors.white.withValues(alpha: 0.35),
-          Colors.white.withValues(alpha: 0.0),
-        ],
-      ).createShader(Rect.fromCircle(center: Offset(size.width * 0.5, size.height * 0.65), radius: 180));
-    canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.65), 180, sunPaint);
-
-    final sunCorePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.85);
-    canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.65), 10, sunCorePaint);
-
-    final mountainPaint1 = Paint()..color = const Color(0xFF1C3D4F);
-    final path1 = Path();
-    path1.moveTo(0, size.height * 0.7);
-    path1.quadraticBezierTo(size.width * 0.25, size.height * 0.64, size.width * 0.5, size.height * 0.67);
-    path1.quadraticBezierTo(size.width * 0.75, size.height * 0.7, size.width, size.height * 0.66);
-    path1.lineTo(size.width, size.height);
-    path1.lineTo(0, size.height);
-    path1.close();
-    canvas.drawPath(path1, mountainPaint1);
-
-    final mountainPaint2 = Paint()..color = const Color(0xFF163242);
-    final path2 = Path();
-    path2.moveTo(0, size.height * 0.72);
-    path2.quadraticBezierTo(size.width * 0.35, size.height * 0.74, size.width * 0.7, size.height * 0.7);
-    path2.quadraticBezierTo(size.width * 0.85, size.height * 0.68, size.width, size.height * 0.71);
-    path2.lineTo(size.width, size.height);
-    path2.lineTo(0, size.height);
-    path2.close();
-    canvas.drawPath(path2, mountainPaint2);
-
-    final seaPaint = Paint()..color = const Color(0xFF0F2430);
-    final seaRect = Rect.fromLTRB(0, size.height * 0.74, size.width, size.height);
-    canvas.drawRect(seaRect, seaPaint);
-
-    _drawSailboat(canvas, Offset(size.width * 0.22, size.height * 0.725), 34);
-    _drawSailboat(canvas, Offset(size.width * 0.78, size.height * 0.74), 18);
-  }
-
-  void _drawSailboat(Canvas canvas, Offset bottomCenter, double height) {
-    final boatPaint = Paint()..color = Colors.white.withValues(alpha: 0.9);
-    
-    final hullPath = Path();
-    hullPath.moveTo(bottomCenter.dx - height * 0.4, bottomCenter.dy);
-    hullPath.lineTo(bottomCenter.dx + height * 0.4, bottomCenter.dy);
-    hullPath.lineTo(bottomCenter.dx + height * 0.25, bottomCenter.dy + height * 0.1);
-    hullPath.lineTo(bottomCenter.dx - height * 0.3, bottomCenter.dy + height * 0.1);
-    hullPath.close();
-    canvas.drawPath(hullPath, boatPaint);
-
-    final mainSail = Path();
-    mainSail.moveTo(bottomCenter.dx - height * 0.05, bottomCenter.dy - height * 0.05);
-    mainSail.lineTo(bottomCenter.dx - height * 0.05, bottomCenter.dy - height * 0.9);
-    mainSail.lineTo(bottomCenter.dx - height * 0.35, bottomCenter.dy - height * 0.25);
-    mainSail.close();
-    canvas.drawPath(mainSail, boatPaint);
-
-    final jibSail = Path();
-    jibSail.moveTo(bottomCenter.dx + height * 0.05, bottomCenter.dy - height * 0.05);
-    jibSail.lineTo(bottomCenter.dx + height * 0.05, bottomCenter.dy - height * 0.75);
-    jibSail.lineTo(bottomCenter.dx + height * 0.25, bottomCenter.dy - height * 0.25);
-    jibSail.close();
-    canvas.drawPath(jibSail, boatPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

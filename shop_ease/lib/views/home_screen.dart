@@ -132,9 +132,37 @@ class HomeBanner extends StatefulWidget {
 
 class _HomeBannerState extends State<HomeBanner> {
   final ValueNotifier<int> _currentPageNotifier = ValueNotifier<int>(0);
+  final PageController _pageController = PageController();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoSlide();
+  }
+
+  void _startAutoSlide() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
+      if (_currentPageNotifier.value < _banners.length - 1) {
+        _currentPageNotifier.value++;
+      } else {
+        _currentPageNotifier.value = 0;
+      }
+      
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPageNotifier.value,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
     _currentPageNotifier.dispose();
     super.dispose();
   }
@@ -180,6 +208,7 @@ class _HomeBannerState extends State<HomeBanner> {
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: PageView.builder(
+              controller: _pageController,
               physics: const BouncingScrollPhysics(),
               onPageChanged: (index) {
                 _currentPageNotifier.value = index;
@@ -311,39 +340,45 @@ class HomeCategories extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 10,
+        runSpacing: 20,
         children: categories.map((cat) {
-          return Column(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
-                  ]
+          return SizedBox(
+            width: 70, // Fixed width for each item to ensure even spacing
+            child: Column(
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ]
+                  ),
+                  child: Icon(cat['icon'], color: const Color(0xFF2E6582), size: 28),
                 ),
-                child: Icon(cat['icon'], color: const Color(0xFF2E6582), size: 28),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                cat['label'],
-                style: const TextStyle(
-                  color: Color(0xFF4B5563),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
+                const SizedBox(height: 10),
+                Text(
+                  cat['label'],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF4B5563),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }).toList(),
       ),
@@ -499,8 +534,10 @@ class HomeProductList extends StatelessWidget {
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-          return Container(
-            width: 170,
+          return GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/product-detail'),
+            child: Container(
+              width: 170,
             margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -632,7 +669,7 @@ class HomeProductList extends StatelessWidget {
                 ),
               ],
             ),
-          );
+          ));
         },
       ),
     );
@@ -649,16 +686,18 @@ class JustForYouGrid extends StatelessWidget {
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 200,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
-          childAspectRatio: 0.75,
+          childAspectRatio: 0.7,
         ),
         itemCount: 4,
         itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
+          return GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/product-detail'),
+            child: Container(
+              decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
@@ -695,7 +734,7 @@ class JustForYouGrid extends StatelessWidget {
                 )
               ],
             ),
-          );
+          ));
         },
       ),
     );
@@ -720,15 +759,20 @@ class HomeBottomNav extends StatelessWidget {
         ],
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(Icons.home_filled, 'Trang chủ', true),
+              const SizedBox(width: 24),
               _buildNavItem(Icons.grid_view_rounded, 'Danh mục', false),
+              const SizedBox(width: 24),
               _buildNavItem(Icons.shopping_cart_outlined, 'Giỏ hàng', false),
+              const SizedBox(width: 24),
               _buildNavItem(Icons.receipt_long_outlined, 'Đơn hàng', false),
+              const SizedBox(width: 24),
               _buildNavItem(Icons.person_outline, 'Tài khoản', false),
             ],
           ),
