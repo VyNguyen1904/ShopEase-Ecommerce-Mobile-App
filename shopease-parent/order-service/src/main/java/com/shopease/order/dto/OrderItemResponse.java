@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 public record OrderItemResponse(
     Long id,
     Long productId,
+    String productName,
+    String productImage,
     BigDecimal unitPrice,
     int quantity,
     BigDecimal subtotal
@@ -14,6 +16,8 @@ public record OrderItemResponse(
         return new OrderItemResponse(
             item.getId(),
             item.getProductId(),
+            item.getProductName(),
+            item.getProductImage(),
             item.getUnitPrice(),
             item.getQuantity(),
             item.getSubtotal()

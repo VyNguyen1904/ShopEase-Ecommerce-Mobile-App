@@ -28,7 +28,7 @@ public class ProductCatalogClient {
         this.productClient = restClientBuilder.baseUrl(productServiceUrl).build();
     }
 
-    public BigDecimal getProductPrice(Long productId) {
+    public ProductResponse getProduct(Long productId) {
         try {
             ApiResponse<ProductResponse> response = productClient.get()
                     .uri("/api/products/{id}", productId)
@@ -37,7 +37,7 @@ public class ProductCatalogClient {
             if (response == null || !response.success() || response.data() == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found");
             }
-            return response.data().basePrice();
+            return response.data();
         } catch (RestClientResponseException ex) {
             if (ex.getStatusCode().value() == 404) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product " + productId + " not found", ex);
@@ -48,8 +48,13 @@ public class ProductCatalogClient {
         }
     }
 
+    public BigDecimal getProductPrice(Long productId) {
+        ProductResponse product = getProduct(productId);
+        return product.salePrice() != null ? product.salePrice() : product.basePrice();
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private record ProductResponse(Long id, String name, String slug, String description, CategoryResponse category,
+    public record ProductResponse(Long id, String name, String slug, String description, CategoryResponse category,
                                    BigDecimal basePrice, BigDecimal salePrice, int stockQuantity, double avgRating,
                                    int reviewCount, int soldCount, BigDecimal weightKg, String sellerId,
                                    String thumbnailUrl, List<String> imageUrls, String status, boolean isFeatured,
@@ -57,6 +62,6 @@ public class ProductCatalogClient {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private record CategoryResponse(Long id, String name, String slug, String description) {
+    public record CategoryResponse(Long id, String name, String slug, String description) {
     }
 }

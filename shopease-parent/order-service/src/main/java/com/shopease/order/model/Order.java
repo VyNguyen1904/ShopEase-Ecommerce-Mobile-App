@@ -42,8 +42,7 @@ public class Order {
     @Column(nullable = false)
     private PaymentStatus paymentStatus;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> items = new ArrayList<>();
 
     @Column(nullable = false, precision = 12, scale = 2)
@@ -93,7 +92,13 @@ public class Order {
         this.buyerId = buyerId;
         this.status = status;
         this.paymentStatus = paymentStatus;
-        this.items = new ArrayList<>(items);
+        this.items = new ArrayList<>();
+        if (items != null) {
+            for (OrderItem item : items) {
+                item.setOrder(this);
+                this.items.add(item);
+            }
+        }
         this.subtotal = subtotal;
         this.shippingFee = shippingFee;
         this.discountAmount = discountAmount;

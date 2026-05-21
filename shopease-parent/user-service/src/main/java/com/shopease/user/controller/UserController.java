@@ -26,31 +26,31 @@ public class UserController {
 
     @GetMapping("/me")
     ApiResponse<UserResponse> me(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-        return ApiResponse.ok(users.profile(tokens.validateAccessToken(authorization)));
+        return ApiResponse.ok(users.profile(tokens.getUserId(authorization)));
     }
 
     @PutMapping("/me")
     ApiResponse<UserResponse> updateMe(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
                                        @Valid @RequestBody UpdateProfileRequest request) {
-        return ApiResponse.ok(users.updateProfile(tokens.validateAccessToken(authorization), request));
+        return ApiResponse.ok(users.updateProfile(tokens.getUserId(authorization), request));
     }
 
     @PostMapping("/me/addresses")
     @ResponseStatus(HttpStatus.CREATED)
     ApiResponse<UserResponse> addAddress(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
                                          @Valid @RequestBody AddressRequest request) {
-        return ApiResponse.created(users.addAddress(tokens.validateAccessToken(authorization), request));
+        return ApiResponse.created(users.addAddress(tokens.getUserId(authorization), request));
     }
 
     @PutMapping("/me/addresses/{id}")
     ApiResponse<UserResponse> updateAddress(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
                                             @PathVariable UUID id, @Valid @RequestBody AddressRequest request) {
-        return ApiResponse.ok(users.updateAddress(tokens.validateAccessToken(authorization), id, request));
+        return ApiResponse.ok(users.updateAddress(tokens.getUserId(authorization), id, request));
     }
 
     @DeleteMapping("/me/addresses/{id}")
     ApiResponse<UserResponse> deleteAddress(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
                                             @PathVariable UUID id) {
-        return ApiResponse.ok(users.deleteAddress(tokens.validateAccessToken(authorization), id));
+        return ApiResponse.ok(users.deleteAddress(tokens.getUserId(authorization), id));
     }
 }

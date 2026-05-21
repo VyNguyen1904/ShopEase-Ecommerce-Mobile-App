@@ -37,8 +37,9 @@ public class OrderService {
     public OrderResponse createOrder(String buyerId, CreateOrderRequest request) {
         // Synchronous validation and snapshotting
         List<OrderItem> items = request.items().stream().map(item -> {
-            BigDecimal price = productCatalog.getProductPrice(item.productId());
-            return new OrderItem(item.productId(), price, item.quantity(),
+            ProductCatalogClient.ProductResponse product = productCatalog.getProduct(item.productId());
+            BigDecimal price = product.salePrice() != null ? product.salePrice() : product.basePrice();
+            return new OrderItem(item.productId(), product.name(), product.thumbnailUrl(), price, item.quantity(),
                     price.multiply(BigDecimal.valueOf(item.quantity())));
         }).toList();
 

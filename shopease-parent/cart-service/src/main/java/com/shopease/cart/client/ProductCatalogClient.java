@@ -35,7 +35,12 @@ public class ProductCatalogClient {
             if (response == null || !response.success() || response.data() == null) {
                 return Optional.empty();
             }
-            return Optional.of(response.data().price());
+            ProductResponse data = response.data();
+            BigDecimal price = data.salePrice() != null ? data.salePrice() : data.basePrice();
+            if (price == null) {
+                return Optional.empty();
+            }
+            return Optional.of(price);
         } catch (RestClientResponseException ex) {
             if (ex.getStatusCode().value() == 404) {
                 return Optional.empty();
@@ -46,7 +51,7 @@ public class ProductCatalogClient {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private record ProductResponse(Long id, String name, String description, CategoryResponse category,
-                                   BigDecimal price, int stockQuantity, double averageRating, String sellerId,
+                                   BigDecimal basePrice, BigDecimal salePrice, int stockQuantity, double averageRating, String sellerId,
                                    String thumbnailUrl, List<String> imageUrls, boolean active, Instant createdAt) {
     }
 

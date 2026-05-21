@@ -41,6 +41,13 @@ services:
       postgres:
         condition: service_healthy
 
+  authentication-service:
+    build:
+      context: ../shopease-parent
+      dockerfile: authentication-service/Dockerfile
+    ports:
+      - "8088:8088"
+
   product-service:
     build:
       context: ../shopease-parent
@@ -82,6 +89,7 @@ services:
     environment:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      PRODUCT_SERVICE_URI: http://product-service:8082
     ports:
       - "8084:8084"
     depends_on:
@@ -156,10 +164,13 @@ services:
       PAYMENT_SERVICE_URI: http://payment-service:8086
       REVIEW_SERVICE_URI: http://review-service:8089
       SEARCH_SERVICE_URI: http://product-service:8082
+      AUTH_SERVICE_URI: http://authentication-service:8088
     ports:
       - "8080:8080"
     depends_on:
       user-service:
+        condition: service_started
+      authentication-service:
         condition: service_started
       product-service:
         condition: service_started

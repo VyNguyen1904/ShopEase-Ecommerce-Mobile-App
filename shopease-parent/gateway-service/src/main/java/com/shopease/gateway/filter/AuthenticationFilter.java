@@ -1,6 +1,7 @@
 package com.shopease.gateway.filter;
 
 import com.shopease.common.dto.ApiResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -16,16 +17,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     private final WebClient webClient;
 
-    public AuthenticationFilter(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8088").build();
+    public AuthenticationFilter(WebClient.Builder webClientBuilder,
+                                @Value("${AUTH_SERVICE_URI:http://localhost:8088}") String authServiceUri) {
+        this.webClient = webClientBuilder.baseUrl(authServiceUri).build();
     }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
+        String method = exchange.getRequest().getMethod().name();
 
-        // Skip authentication for login and register
-        if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register")) {
+        // Skip authentication for public endpoints
+        if (isPublicEndpoint(path, method)) {
             return chain.filter(exchange);
         }
 
@@ -61,6 +64,29 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 });
+    }
+
+    private boolean isPublicEndpoint(String path, String method) {
+        // Auth paths that do not require access token
+        if (path.startsWith("/api/auth/login") || 
+            path.startsWith("/api/auth/register") || 
+            path.startsWith("/api/auth/refresh")) {
+            return true;
+        }
+
+        // Public GET endpoints
+        if ("GET".equalsIgnoreCase(method)) {
+            if (path.equals("/api/products") || 
+                path.startsWith("/api/products/") || 
+                path.equals("/api/categories") || 
+                path.startsWith("/api/categories/") || 
+                path.startsWith("/api/search/") || 
+                path.startsWith("/api/reviews/products/")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

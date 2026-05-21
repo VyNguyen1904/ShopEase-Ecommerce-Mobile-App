@@ -5,6 +5,16 @@
 		"description": "Exhaustive testing suite containing all REST endpoints and flow scenarios for all ShopEase microservices, including Auth, User profile/address management, Product Catalog, Search & Suggestions, Shopping Cart, Inventory Stock Management, Order Placement, Saga Workflow, VNPay/Card Payments & webhook simulation, and Product Reviews.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
 	"item": [
 		{
 			"name": "1. User & Authentication",
@@ -627,25 +637,6 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{base_url}}/api/products/{{last_product_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"products",
-								"{{last_product_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Product",
-					"request": {
-						"method": "DELETE",
-						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/products/{{last_product_id}}",
 							"host": [
