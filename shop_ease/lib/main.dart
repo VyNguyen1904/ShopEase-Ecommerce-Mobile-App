@@ -7,6 +7,8 @@ import 'views/login_screen.dart';
 import 'views/register_screen.dart';
 import 'views/onboarding_screen.dart';
 import 'views/product_detail_screen.dart';
+import 'views/orders_screen.dart';
+import 'views/notifications_screen.dart';
 import 'utils/app_colors.dart';
 
 void main() {
@@ -50,6 +52,8 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
         '/product-detail': (context) => const ProductDetailScreen(),
+        '/orders': (context) => const OrdersScreen(),
+        '/notifications': (context) => const NotificationsScreen(),
       },
     );
   }

@@ -71,7 +71,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _isLoading = true;
     });
 
-    // Giả lập delay mạng để thấy loading
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
@@ -80,7 +79,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _isLoading = false;
     });
 
-    // Tạm thời hiển thị thành công và quay lại trang đăng nhập
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Đăng ký thành công! Vui lòng đăng nhập.'),

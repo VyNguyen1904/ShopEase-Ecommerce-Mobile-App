@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'widgets/custom_bottom_nav.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -42,7 +43,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const HomeBottomNav(),
+      bottomNavigationBar: const CustomBottomNav(currentIndex: 0),
     );
   }
 }
@@ -56,66 +57,51 @@ class HomeTopBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       child: Row(
         children: [
+
           Expanded(
             child: Container(
-              height: 50,
+              height: 44,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(22),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  const Icon(Icons.search_rounded, color: Color(0xFF9CA3AF), size: 22),
-                  const SizedBox(width: 10),
+                  const Icon(Icons.search_rounded, color: Color(0xFF9CA3AF), size: 20),
+                  const SizedBox(width: 8),
                   Text(
-                    'Tìm kiếm sản phẩm, thương hiệu...',
-                    style: TextStyle(color: const Color(0xFF9CA3AF).withValues(alpha: 0.8), fontSize: 14, fontWeight: FontWeight.w400),
+                    'Tìm kiếm sản phẩm...',
+                    style: TextStyle(color: const Color(0xFF9CA3AF).withValues(alpha: 0.8), fontSize: 13, fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(width: 16),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/notifications');
+            },
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.notifications_none_rounded, color: Color(0xFF4B5563), size: 26),
+                Positioned(
+                  right: 2,
+                  top: 2,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDC2626),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFF9FAFB), width: 2),
                     ),
-                  ],
-                ),
-                child: const Icon(Icons.notifications_outlined, color: Color(0xFF1F2937), size: 24),
-              ),
-              Positioned(
-                right: 2,
-                top: 2,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDC2626),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -169,10 +155,11 @@ class _HomeBannerState extends State<HomeBanner> {
 
   final List<Map<String, String>> _banners = [
     {
-      'title': 'SIÊU SALE\nGIẢM ĐẾN 50%',
-      'image': 'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=400&q=80',
-      'color1': '0xFF2E6582',
-      'color2': '0xFF1A3F54',
+      'badge': 'MEGA SALE',
+      'title': 'UP TO 50% OFF\nTECH GADGETS',
+      'image': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80',
+      'color1': '0xFF1E3A8A',
+      'color2': '0xFF5B21B6',
     },
     {
       'title': 'BỘ SƯU TẬP\nMÙA HÈ 2024',
@@ -192,7 +179,7 @@ class _HomeBannerState extends State<HomeBanner> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      height: 170,
+      height: 210,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
@@ -260,6 +247,24 @@ class _HomeBannerState extends State<HomeBanner> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                if (banner.containsKey('badge')) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF59E0B),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      banner['badge']!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 Text(
                   banner['title']!,
                   style: const TextStyle(
@@ -332,55 +337,57 @@ class HomeCategories extends StatelessWidget {
   final List<Map<String, dynamic>> categories = const [
     {'icon': Icons.devices_other_rounded, 'label': 'Điện tử'},
     {'icon': Icons.checkroom_rounded, 'label': 'Thời trang'},
-    {'icon': Icons.chair_alt_rounded, 'label': 'Nhà cửa'},
-    {'icon': Icons.face_retouching_natural_rounded, 'label': 'Làm đẹp'},
+    {'icon': Icons.chair_alt_rounded, 'label': 'Gia dụng'},
+    {'icon': Icons.face_retouching_natural_rounded, 'label': 'Sắc đẹp'},
+    {'icon': Icons.payments_rounded, 'label': 'Thanh toán'},
+    {'icon': Icons.card_giftcard_rounded, 'label': 'Quà tặng'},
+    {'icon': Icons.work_outline_rounded, 'label': 'Dịch vụ'},
+    {'icon': Icons.apps_rounded, 'label': 'Tất cả'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        spacing: 10,
-        runSpacing: 20,
-        children: categories.map((cat) {
-          return SizedBox(
-            width: 70, // Fixed width for each item to ensure even spacing
-            child: Column(
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 3),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      )
-                    ]
-                  ),
-                  child: Icon(cat['icon'], color: const Color(0xFF2E6582), size: 28),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisExtent: 78,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final cat = categories[index];
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  cat['label'],
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFF4B5563),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
-                  ),
+                child: Icon(cat['icon'], color: const Color(0xFF374151), size: 24),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                cat['label'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Color(0xFF4B5563),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
                 ),
-              ],
-            ),
+              ),
+            ],
           );
-        }).toList(),
+        },
       ),
     );
   }
@@ -435,33 +442,36 @@ class _FlashSaleHeaderState extends State<FlashSaleHeader> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
+          const Icon(Icons.bolt_rounded, color: Color(0xFFF59E0B), size: 24),
+          const SizedBox(width: 4),
           const Text(
-            'Flash Sale',
+            'FLASH SALE',
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFFF59E0B),
+              letterSpacing: 0.5,
             ),
           ),
           const SizedBox(width: 14),
           _buildTimerBox(hours),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFB91C1C), fontSize: 16)),
+            child: Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4B5563), fontSize: 16)),
           ),
           _buildTimerBox(minutes),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFB91C1C), fontSize: 16)),
+            child: Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4B5563), fontSize: 16)),
           ),
           _buildTimerBox(seconds),
           const Spacer(),
           const Text(
-            'Xem tất cả',
+            'Xem tất cả >',
             style: TextStyle(
-              color: Color(0xFF2E6582),
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
+              color: Color(0xFF6B7280),
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
           ),
         ],
@@ -473,15 +483,8 @@ class _FlashSaleHeaderState extends State<FlashSaleHeader> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFDC2626),
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFDC2626).withValues(alpha: 0.3),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         value,
@@ -526,7 +529,7 @@ class HomeProductList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260,
+      height: 280,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -686,11 +689,11 @@ class JustForYouGrid extends StatelessWidget {
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
-          childAspectRatio: 0.7,
+          childAspectRatio: MediaQuery.of(context).size.width > 400 ? 0.7 : 0.6,
         ),
         itemCount: 4,
         itemBuilder: (context, index) {
@@ -742,64 +745,4 @@ class JustForYouGrid extends StatelessWidget {
 }
 
 
-class HomeBottomNav extends StatelessWidget {
-  const HomeBottomNav({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 20,
-            offset: const Offset(0, -10),
-          )
-        ],
-      ),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home_filled, 'Trang chủ', true),
-              const SizedBox(width: 24),
-              _buildNavItem(Icons.grid_view_rounded, 'Danh mục', false),
-              const SizedBox(width: 24),
-              _buildNavItem(Icons.shopping_cart_outlined, 'Giỏ hàng', false),
-              const SizedBox(width: 24),
-              _buildNavItem(Icons.receipt_long_outlined, 'Đơn hàng', false),
-              const SizedBox(width: 24),
-              _buildNavItem(Icons.person_outline, 'Tài khoản', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF2E6582) : const Color(0xFF9CA3AF),
-          size: 26,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isActive ? const Color(0xFF2E6582) : const Color(0xFF9CA3AF),
-            fontSize: 11,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-}

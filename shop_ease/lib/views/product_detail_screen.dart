@@ -52,7 +52,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Stack(
               children: [
                 SizedBox(
-                  height: 380,
+                  height: MediaQuery.of(context).size.height * 0.45,
                   width: double.infinity,
                   child: PageView.builder(
                     itemCount: _images.length,

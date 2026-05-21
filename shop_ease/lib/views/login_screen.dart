@@ -57,7 +57,6 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    // Thêm delay giả lập để thấy hiệu ứng giỏ hàng chạy
     await Future.delayed(const Duration(milliseconds: 2000));
     await AuthService().setLoggedIn(true);
 
