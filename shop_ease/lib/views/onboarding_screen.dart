@@ -25,7 +25,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     },
     {
       "title": "Giao hàng siêu tốc\nTận cửa nhà bạn",
-      "subtitle": "Nhận hàng nhanh chóng với dịch vụ\ngiao hàng hỏa tốc của chúng tôi.",
+      "subtitle":
+          "Nhận hàng nhanh chóng với dịch vụ\ngiao hàng hỏa tốc của chúng tôi.",
       "image": "assets/images/onboarding2.png",
     },
   ];
@@ -91,12 +92,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 physics: const BouncingScrollPhysics(),
                 onPageChanged: (index) => setState(() => _currentPage = index),
                 itemCount: _onboardingData.length,
-                itemBuilder: (context, index) => _OnboardingPage(
-                  data: _onboardingData[index],
-                ),
+                itemBuilder: (context, index) =>
+                    _OnboardingPage(data: _onboardingData[index]),
               ),
             ),
-            _DotIndicator(count: _onboardingData.length, currentIndex: _currentPage),
+            _DotIndicator(
+              count: _onboardingData.length,
+              currentIndex: _currentPage,
+            ),
             const SizedBox(height: 24),
             _buildButton(),
             const SizedBox(height: 32),
@@ -116,11 +119,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onPressed: _onNext,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF265B73),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             elevation: 0,
           ),
           child: Text(
-            _currentPage == _onboardingData.length - 1 ? 'Bắt Đầu Mua Sắm' : 'Tiếp tục',
+            _currentPage == _onboardingData.length - 1
+                ? 'Bắt Đầu Mua Sắm'
+                : 'Tiếp tục',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -151,7 +158,9 @@ class _DotIndicator extends StatelessWidget {
           width: 8,
           height: 8,
           decoration: BoxDecoration(
-            color: index == currentIndex ? const Color(0xFF265B73) : const Color(0xFFE5E7EB),
+            color: index == currentIndex
+                ? const Color(0xFF265B73)
+                : const Color(0xFFE5E7EB),
             shape: BoxShape.circle,
           ),
         ),
@@ -173,10 +182,7 @@ class _OnboardingPage extends StatelessWidget {
         children: [
           Expanded(
             child: Center(
-              child: Image.asset(
-                data["image"]!,
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset(data["image"]!, fit: BoxFit.contain),
             ),
           ),
           const SizedBox(height: 16),

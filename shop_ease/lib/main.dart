@@ -9,6 +9,10 @@ import 'views/onboarding_screen.dart';
 import 'views/product_detail_screen.dart';
 import 'views/orders_screen.dart';
 import 'views/notifications_screen.dart';
+import 'views/search_screen.dart';
+import 'views/cart_screen.dart';
+import 'views/checkout_screen.dart';
+import 'views/payment_success_screen.dart';
 import 'utils/app_colors.dart';
 
 void main() {
@@ -54,6 +58,10 @@ class MyApp extends StatelessWidget {
         '/product-detail': (context) => const ProductDetailScreen(),
         '/orders': (context) => const OrdersScreen(),
         '/notifications': (context) => const NotificationsScreen(),
+        '/search': (context) => const SearchScreen(),
+        '/cart': (context) => const CartScreen(),
+        '/checkout': (context) => const CheckoutScreen(),
+        '/payment-success': (context) => const PaymentSuccessScreen(),
       },
     );
   }

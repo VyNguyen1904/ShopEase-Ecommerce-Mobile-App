@@ -7,7 +7,8 @@ class CartLoadingOverlay extends StatefulWidget {
   State<CartLoadingOverlay> createState() => _CartLoadingOverlayState();
 }
 
-class _CartLoadingOverlayState extends State<CartLoadingOverlay> with SingleTickerProviderStateMixin {
+class _CartLoadingOverlayState extends State<CartLoadingOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _slideAnimation;
 
@@ -19,9 +20,10 @@ class _CartLoadingOverlayState extends State<CartLoadingOverlay> with SingleTick
       duration: const Duration(milliseconds: 1500),
     )..repeat();
 
-    _slideAnimation = Tween<double>(begin: -1.2, end: 1.2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _slideAnimation = Tween<double>(
+      begin: -1.2,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

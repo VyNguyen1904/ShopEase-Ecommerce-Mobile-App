@@ -21,4 +21,3 @@ class AuthService {
     await prefs.setBool('is_logged_in', loggedIn);
   }
 }
-

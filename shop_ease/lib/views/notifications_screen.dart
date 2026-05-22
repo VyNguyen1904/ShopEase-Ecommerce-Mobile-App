@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'widgets/custom_bottom_nav.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -26,7 +25,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E3A8A), size: 22),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Color(0xFF1E3A8A),
+                      size: 22,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Text(
@@ -38,7 +41,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.search_rounded, color: Color(0xFF1E3A8A), size: 26),
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      color: Color(0xFF1E3A8A),
+                      size: 26,
+                    ),
                     onPressed: () {},
                   ),
                 ],
@@ -64,18 +71,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: isActive ? const Color(0xFF205273) : const Color(0xFFF8FAFC),
+                        color: isActive
+                            ? const Color(0xFF205273)
+                            : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(20),
-                        border: isActive ? null : Border.all(color: const Color(0xFFE5E7EB)),
+                        border: isActive
+                            ? null
+                            : Border.all(color: const Color(0xFFE5E7EB)),
                       ),
                       child: Center(
                         child: Text(
                           _tabs[index],
                           style: TextStyle(
-                            color: isActive ? Colors.white : const Color(0xFF4B5563),
-                            fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                            color: isActive
+                                ? Colors.white
+                                : const Color(0xFF4B5563),
+                            fontWeight: isActive
+                                ? FontWeight.bold
+                                : FontWeight.w600,
                             fontSize: 14,
                           ),
                         ),
@@ -98,7 +116,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     iconBgColor: const Color(0xFF03425F),
                     iconColor: Colors.white,
                     title: 'Đơn hàng #ZNZ-8492 đang được giao',
-                    description: 'Đơn hàng của bạn đã được bàn giao cho đối tác vận chuyển và dự kiến giao trong ngày...',
+                    description:
+                        'Đơn hàng của bạn đã được bàn giao cho đối tác vận chuyển và dự kiến giao trong ngày...',
                     time: '10 phút trước',
                     isUnread: true,
                   ),
@@ -107,7 +126,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     iconBgColor: const Color(0xFFFFF7ED),
                     iconColor: const Color(0xFFEA580C),
                     title: 'Flash Sale: Giảm đến 50% đồ gia dụng',
-                    description: 'Cơ hội sở hữu các sản phẩm gia dụng cao cấp với mức giá không tưởng. Mở app mua...',
+                    description:
+                        'Cơ hội sở hữu các sản phẩm gia dụng cao cấp với mức giá không tưởng. Mở app mua...',
                     time: '1 giờ trước',
                     isUnread: true,
                   ),
@@ -116,7 +136,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     iconBgColor: const Color(0xFFF3F4F6),
                     iconColor: const Color(0xFF4B5563),
                     title: 'Đăng nhập thành công từ thiết bị mới',
-                    description: 'Tài khoản của bạn vừa đăng nhập thành công trên iPhone 14 Pro lúc 14:30. Nếu không phả...',
+                    description:
+                        'Tài khoản của bạn vừa đăng nhập thành công trên iPhone 14 Pro lúc 14:30. Nếu không phả...',
                     time: 'Hôm qua, 14:30',
                     isUnread: false,
                   ),
@@ -125,7 +146,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     iconBgColor: const Color(0xFFF3F4F6),
                     iconColor: const Color(0xFF4B5563),
                     title: 'Giao hàng thành công',
-                    description: 'Đơn hàng #ZNZ-8490 đã được giao thành công. Vui lòng đánh giá sản phẩm để nhận x...',
+                    description:
+                        'Đơn hàng #ZNZ-8490 đã được giao thành công. Vui lòng đánh giá sản phẩm để nhận x...',
                     time: 'Hôm qua, 09:15',
                     isUnread: false,
                   ),
@@ -134,7 +156,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     iconBgColor: const Color(0xFFF3F4F6),
                     iconColor: const Color(0xFF4B5563),
                     title: 'Tặng bạn Voucher 50K',
-                    description: 'Mừng sinh nhật Zanzibar, tặng bạn voucher 50K áp dụng cho mọi đơn hàng từ 200K. Hạ...',
+                    description:
+                        'Mừng sinh nhật Zanzibar, tặng bạn voucher 50K áp dụng cho mọi đơn hàng từ 200K. Hạ...',
                     time: '20/11/2023',
                     isUnread: false,
                   ),
@@ -145,7 +168,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomNav(currentIndex: -1),
     );
   }
 
@@ -212,7 +234,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           shape: BoxShape.circle,
                         ),
                       ),
-                    ]
+                    ],
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -243,5 +265,3 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 }
-
-

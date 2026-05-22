@@ -9,7 +9,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   final AuthService _authService = AuthService();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -51,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await Future.delayed(const Duration(seconds: 2, milliseconds: 500));
     bool isFirstLaunch = await _authService.isFirstLaunch();
     bool loggedIn = await _authService.isLoggedIn();
-    
+
     if (!mounted) return;
 
     if (isFirstLaunch) {
@@ -72,10 +73,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.primaryDark,
-              AppColors.primary,
-            ],
+            colors: [AppColors.primaryDark, AppColors.primary],
           ),
         ),
         child: AnimatedBuilder(
@@ -135,7 +133,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       width: 40,
                       height: 40,
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.9)),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white.withValues(alpha: 0.9),
+                        ),
                         strokeWidth: 3,
                       ),
                     ),

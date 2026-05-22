@@ -127,7 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryDark,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
+                        ),
                         elevation: 0,
                       ),
                       child: const Text(
@@ -168,7 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(color: Colors.grey),
                         ),
                         GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/register'),
+                          onTap: () =>
+                              Navigator.pushNamed(context, '/register'),
                           child: const Text(
                             'Đăng ký ngay',
                             style: TextStyle(

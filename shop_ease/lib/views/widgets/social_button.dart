@@ -5,11 +5,7 @@ class SocialButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const SocialButton({
-    super.key,
-    required this.icon,
-    this.onTap,
-  });
+  const SocialButton({super.key, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +20,7 @@ class SocialButton extends StatelessWidget {
             border: Border.all(color: Colors.grey[300]!),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            icon,
-            size: 28,
-            color: AppColors.primaryDark,
-          ),
+          child: Icon(icon, size: 28, color: AppColors.primaryDark),
         ),
       ),
     );
