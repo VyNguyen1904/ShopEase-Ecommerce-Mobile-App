@@ -4,9 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 import java.time.Instant;
 
+@Getter
 @Entity
 @Table(name = "inventory_items")
 public class InventoryItem {
@@ -51,8 +53,4 @@ public class InventoryItem {
         this.updatedAt = Instant.now();
     }
 
-    public Long getProductId() { return productId; }
-    public int getAvailableQty() { return availableQty; }
-    public int getReservedQty() { return reservedQty; }
-    public Instant getUpdatedAt() { return updatedAt; }
 }
