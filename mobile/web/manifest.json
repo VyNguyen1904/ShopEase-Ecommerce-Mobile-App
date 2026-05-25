@@ -1,6 +1,6 @@
 {
-    "name": "shop_ease",
-    "short_name": "shop_ease",
+    "name": "shopease",
+    "short_name": "shopease",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

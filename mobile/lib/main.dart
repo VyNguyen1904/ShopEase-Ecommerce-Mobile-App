@@ -1,68 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
-import 'dart:ui';
-import 'views/splash_screen.dart';
-import 'views/home_screen.dart';
-import 'views/login_screen.dart';
-import 'views/register_screen.dart';
-import 'views/onboarding_screen.dart';
-import 'views/product_detail_screen.dart';
-import 'views/orders_screen.dart';
-import 'views/notifications_screen.dart';
-import 'views/search_screen.dart';
-import 'views/cart_screen.dart';
-import 'views/checkout_screen.dart';
-import 'views/payment_success_screen.dart';
-import 'utils/app_colors.dart';
+import 'constants/app_colors.dart';
+import 'screens/shell_screen.dart';
 
 void main() {
-  usePathUrlStrategy();
-  runApp(const MyApp());
+  runApp(const ShopEaseApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ShopEaseApp extends StatelessWidget {
+  const ShopEaseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'ShopEase',
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.mouse,
-          PointerDeviceKind.touch,
-          PointerDeviceKind.stylus,
-          PointerDeviceKind.trackpad,
-        },
-      ),
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'Poppins',
+        primaryColor: AppColors.primary,
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,
-          onPrimary: AppColors.white,
           secondary: AppColors.accent,
-          surface: AppColors.background,
+          surface: Colors.white,
         ),
-        scaffoldBackgroundColor: AppColors.background,
+        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Inter', // Fits the clean, modern look of the mock designs
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: AppColors.textDark),
+          titleTextStyle: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.white,
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: AppColors.textLight,
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+          elevation: 8,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+        ),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return AppColors.primary;
+            }
+            return Colors.transparent;
+          }),
+          side: const BorderSide(color: AppColors.border, width: 1.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/onboarding': (context) => const OnboardingScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/product-detail': (context) => const ProductDetailScreen(),
-        '/orders': (context) => const OrdersScreen(),
-        '/notifications': (context) => const NotificationsScreen(),
-        '/search': (context) => const SearchScreen(),
-        '/cart': (context) => const CartScreen(),
-        '/checkout': (context) => const CheckoutScreen(),
-        '/payment-success': (context) => const PaymentSuccessScreen(),
-      },
+      home: const ShellScreen(),
     );
   }
 }
