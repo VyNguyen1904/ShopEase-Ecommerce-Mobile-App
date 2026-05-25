@@ -107,8 +107,8 @@ public class AuthService {
     }
 
     private TokenResponse returnToken(UserAccount user) {
-        TokenService.TokenInfo access = tokenService.sign(user.getId(), user.getRole(), "access");
-        TokenService.TokenInfo refresh = tokenService.sign(user.getId(), user.getRole(), "refresh");
+        TokenService.TokenInfo access = tokenService.sign(user.getId(), user.getRole().name(), "access");
+        TokenService.TokenInfo refresh = tokenService.sign(user.getId(), user.getRole().name(), "refresh");
 
         saveRefreshToken(user.getId(), refresh);
 

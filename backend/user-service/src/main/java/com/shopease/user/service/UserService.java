@@ -2,6 +2,7 @@ package com.shopease.user.service;
 
 import com.shopease.user.dto.*;
 import com.shopease.user.mapper.UserMapper;
+import com.shopease.user.model.Role;
 import com.shopease.user.model.Address;
 import com.shopease.user.model.UserAccount;
 import com.shopease.user.repository.UserRepository;
@@ -36,10 +37,11 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already registered");
         }
         String hashedPassword = encoder.encode(request.password());
+        Role role = request.role() == null ? Role.BUYER : Role.valueOf(request.role().toUpperCase(Locale.ROOT));
         UserAccount user =
                 new UserAccount(UUID.randomUUID(), email, hashedPassword,
                         request.fullName(), request.phone(),
-                        request.role() == null ? "BUYER" : request.role(),
+                        role,
                         new ArrayList<>(),
                         Instant.now());
         return users.save(user);
@@ -86,6 +88,42 @@ public class UserService {
         user.replaceAddresses(user.getAddresses().stream()
                 .filter(address -> !address.getId().equals(addressId)).toList());
         return userMapper.toResponse(users.save(user));
+    }
+
+    public List<UserResponse> listAllUsers() {
+        return users.findAll().stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public UserResponse updateUserRole(UUID userId, String role) {
+        UserAccount user = getUserById(userId);
+        user.updateRole(Role.valueOf(role.toUpperCase(Locale.ROOT)));
+        return userMapper.toResponse(users.save(user));
+    }
+
+    @Transactional
+    public void deleteUser(UUID userId) {
+        if (!users.existsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        users.deleteById(userId);
+    }
+
+    public UserStatsResponse getStats() {
+        List<UserAccount> allUsers = users.findAll();
+        long totalUsers = allUsers.size();
+        
+        java.util.Map<String, Long> usersByRole = allUsers.stream()
+                .collect(java.util.stream.Collectors.groupingBy(u -> u.getRole().name(), java.util.stream.Collectors.counting()));
+        
+        Instant startOfDay = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.DAYS);
+        long newUsersToday = allUsers.stream()
+                .filter(u -> u.getCreatedAt().isAfter(startOfDay))
+                .count();
+
+        return new UserStatsResponse(totalUsers, usersByRole, newUsersToday);
     }
 
     private UserAccount getUserById(UUID id) {

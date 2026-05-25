@@ -33,14 +33,25 @@ public class OrderController {
         return ApiResponse.ok(orders.getOrderHistory(buyerId));
     }
 
+    @GetMapping("/seller")
+    ApiResponse<List<OrderResponse>> getSellerOrders(@RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId) {
+        return ApiResponse.ok(orders.getOrdersForSeller(sellerId));
+    }
+
     @GetMapping("/{id}")
-    ApiResponse<OrderResponse> getOrderDetail(@PathVariable UUID id) {
-        return ApiResponse.ok(orders.getOrderDetail(id));
+    ApiResponse<OrderResponse> getOrderDetail(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        return ApiResponse.ok(orders.getOrderDetail(id, userId, userRole));
     }
 
     @PostMapping("/{id}/cancel")
-    ApiResponse<OrderResponse> cancelOrder(@PathVariable UUID id) {
-        return ApiResponse.ok(orders.cancelOrder(id));
+    ApiResponse<OrderResponse> cancelOrder(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        return ApiResponse.ok(orders.cancelOrder(id, userId, userRole));
     }
 
     @PostMapping("/{id}/payment-status")
@@ -50,8 +61,11 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/deliver")
-    ApiResponse<OrderResponse> markAsDelivered(@PathVariable UUID id) {
-        return ApiResponse.ok(orders.markAsDelivered(id));
+    ApiResponse<OrderResponse> markAsDelivered(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String userId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        return ApiResponse.ok(orders.markAsDelivered(id, userId, userRole));
     }
 
     @GetMapping("/{id}/review-eligibility")

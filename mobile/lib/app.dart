@@ -65,8 +65,7 @@ class ShopEaseApp extends StatelessWidget {
             return Colors.transparent;
           }),
           side: const BorderSide(color: AppColors.border, width: 1.5),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
     );

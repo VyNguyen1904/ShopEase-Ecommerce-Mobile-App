@@ -1,5 +1,6 @@
 package com.shopease.user.config;
 
+import com.shopease.user.model.Role;
 import com.shopease.user.model.UserAccount;
 import com.shopease.user.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -25,9 +26,9 @@ public class UserServiceConfig {
                 return;
             }
             users.save(new UserAccount(UUID.randomUUID(), "buyer@shopease.local", encoder.encode("password123"),
-                    "Demo Buyer", "+84900000001", "BUYER", new ArrayList<>(), Instant.now()));
+                    "Demo Buyer", "+84900000001", Role.BUYER, new ArrayList<>(), Instant.now()));
             users.save(new UserAccount(UUID.randomUUID(), "seller@shopease.local", encoder.encode("password123"),
-                    "Demo Seller", "+84900000002", "SELLER", new ArrayList<>(), Instant.now()));
+                    "Demo Seller", "+84900000002", Role.SELLER, new ArrayList<>(), Instant.now()));
         };
     }
 }

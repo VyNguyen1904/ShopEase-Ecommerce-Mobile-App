@@ -1,5 +1,6 @@
 package com.shopease.auth.controller;
 
+import com.shopease.auth.dto.UserTokenInfo;
 import com.shopease.auth.service.TokenValidatorService;
 import com.shopease.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,10 @@ public class InternalAuthController {
     private final TokenValidatorService tokenValidatorService;
 
     @GetMapping("/validate")
-    public ApiResponse<String> validate(@RequestParam String token) {
+    public ApiResponse<UserTokenInfo> validate(@RequestParam String token) {
         try {
-            String userId = tokenValidatorService.validateAndGetUserId(token);
-            return ApiResponse.ok(userId);
+            UserTokenInfo tokenInfo = tokenValidatorService.validateAndGetTokenInfo(token);
+            return ApiResponse.ok(tokenInfo);
         } catch (Exception e) {
             return ApiResponse.error("Unauthorized: " + e.getMessage());
         }

@@ -40,7 +40,7 @@ public class OrderService {
             ProductCatalogClient.ProductResponse product = productCatalog.getProduct(item.productId());
             BigDecimal price = product.salePrice() != null ? product.salePrice() : product.basePrice();
             return new OrderItem(item.productId(), product.name(), product.thumbnailUrl(), price, item.quantity(),
-                    price.multiply(BigDecimal.valueOf(item.quantity())));
+                    price.multiply(BigDecimal.valueOf(item.quantity())), product.sellerId());
         }).toList();
 
         BigDecimal subtotal = items.stream().map(OrderItem::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -68,24 +68,36 @@ public class OrderService {
         return orders.findByBuyerIdOrderByCreatedAtDesc(buyerId).stream().map(OrderResponse::from).toList();
     }
 
-    public OrderResponse getOrderDetail(UUID id) {
-        return OrderResponse.from(requireOrder(id));
+    public List<OrderResponse> getOrdersForSeller(String sellerId) {
+        return orders.findBySellerId(sellerId).stream().map(OrderResponse::from).toList();
+    }
+
+    public OrderResponse getOrderDetail(UUID id, String userId, String userRole) {
+        Order order = requireOrder(id);
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            boolean isBuyer = order.getBuyerId().equals(userId);
+            boolean isSeller = order.getItems().stream()
+                    .anyMatch(item -> item.getSellerId().equals(userId));
+            if (!isBuyer && !isSeller) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to order details");
+            }
+        }
+        return OrderResponse.from(order);
     }
 
     @Transactional
-    public OrderResponse cancelOrder(UUID id) {
+    public OrderResponse cancelOrder(UUID id, String userId, String userRole) {
         Order order = requireOrder(id);
+        if (!"ADMIN".equalsIgnoreCase(userRole) && !order.getBuyerId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied to cancel this order");
+        }
         if (OrderStatus.DELIVERED.equals(order.getStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Delivered orders cannot be cancelled");
         }
         
-        // In Saga, cancellation should probably also be asynchronous if it involves inventory release
-        // but for now, we'll keep it simple or trigger a compensation command.
-        
         order.cancel();
         Order saved = orders.save(order);
         
-        // Trigger compensation if needed
         CompensateInventoryCommand command = new CompensateInventoryCommand(
                 saved.getId(),
                 saved.getItems().stream().map(this::toEventItem).toList(),
@@ -108,8 +120,15 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse markAsDelivered(UUID id) {
+    public OrderResponse markAsDelivered(UUID id, String userId, String userRole) {
         Order order = requireOrder(id);
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            boolean isSellerOfOrderItem = order.getItems().stream()
+                    .anyMatch(item -> item.getSellerId().equals(userId));
+            if (!isSellerOfOrderItem) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the seller of the items in this order can mark it as delivered");
+            }
+        }
         order.markDelivered();
         return OrderResponse.from(orders.save(order));
     }

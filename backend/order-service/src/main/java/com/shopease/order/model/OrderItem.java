@@ -37,6 +37,9 @@ public class OrderItem {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal subtotal;
 
+    @Column(name = "seller_id", nullable = false)
+    private String sellerId;
+
     @com.fasterxml.jackson.annotation.JsonIgnore
     @jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @jakarta.persistence.JoinColumn(name = "order_id", nullable = false)
@@ -46,13 +49,14 @@ public class OrderItem {
     }
 
     public OrderItem(Long productId, String productName, String productImage, BigDecimal unitPrice, int quantity,
-                     BigDecimal subtotal) {
+                     BigDecimal subtotal, String sellerId) {
         this.productId = productId;
         this.productName = productName;
         this.productImage = productImage;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.subtotal = subtotal;
+        this.sellerId = sellerId;
     }
 
     public void setOrder(Order order) {

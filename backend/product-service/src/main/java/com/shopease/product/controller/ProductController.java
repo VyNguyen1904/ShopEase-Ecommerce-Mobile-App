@@ -57,13 +57,16 @@ public class ProductController {
     @PutMapping("/{id}")
     ApiResponse<ProductResponse> updateProduct(@PathVariable Long id,
                                                @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId,
+                                               @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole,
                                                @Valid @RequestBody ProductRequest request) {
-        return ApiResponse.ok(products.updateProduct(id, sellerId, request));
+        return ApiResponse.ok(products.updateProduct(id, sellerId, userRole, request));
     }
 
     @DeleteMapping("/{id}")
-    ApiResponse<Void> deleteProduct(@PathVariable Long id) {
-        products.deleteProduct(id);
+    ApiResponse<Void> deleteProduct(@PathVariable Long id,
+                                    @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String sellerId,
+                                    @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        products.deleteProduct(id, sellerId, userRole);
         return ApiResponse.ok(null);
     }
 

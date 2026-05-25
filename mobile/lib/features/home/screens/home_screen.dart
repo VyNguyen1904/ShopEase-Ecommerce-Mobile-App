@@ -174,10 +174,11 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // 3. Quick Categories
-              Padding(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildCategoryItem(
                       icon: Icons.headphones_outlined,
@@ -185,24 +186,28 @@ class HomeScreen extends ConsumerWidget {
                       color: const Color(0xFFFFECE5),
                       iconColor: const Color(0xFFFF5D2E),
                     ),
+                    const SizedBox(width: 20),
                     _buildCategoryItem(
                       icon: Icons.checkroom_outlined,
                       label: 'Thời trang',
                       color: const Color(0xFFE6F5F6),
                       iconColor: const Color(0xFF0A6F75),
                     ),
+                    const SizedBox(width: 20),
                     _buildCategoryItem(
                       icon: Icons.home_outlined,
                       label: 'Nhà cửa',
                       color: const Color(0xFFECEFFF),
                       iconColor: const Color(0xFF3B82F6),
                     ),
+                    const SizedBox(width: 20),
                     _buildCategoryItem(
                       icon: Icons.face_retouching_natural_outlined,
                       label: 'Làm đẹp',
                       color: const Color(0xFFFFF0F0),
                       iconColor: const Color(0xFFEF4444),
                     ),
+                    const SizedBox(width: 20),
                     _buildCategoryItem(
                       icon: Icons.grid_view_outlined,
                       label: 'Khác',
@@ -250,7 +255,7 @@ class HomeScreen extends ConsumerWidget {
 
               // 4b. Flash Sale Products
               SizedBox(
-                height: 170,
+                height: 185,
                 child: ListView.builder(
                   padding: const EdgeInsets.only(left: 16),
                   scrollDirection: Axis.horizontal,
@@ -258,14 +263,20 @@ class HomeScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final product = mockProducts[index];
                     final heroTag = 'hero_flash_${product.id}';
-                    return ProductCard(
-                      product: product,
-                      heroTag: heroTag,
-                      onTap: () {
-                        ref.read(selectedProductProvider.notifier).state = product;
-                        ref.read(selectedHeroTagProvider.notifier).state = heroTag;
-                        context.push(AppRoutes.productDetailPath(product.id));
-                      },
+                    return SizedBox(
+                      width: 152,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: ProductCard(
+                          product: product,
+                          heroTag: heroTag,
+                          onTap: () {
+                            ref.read(selectedProductProvider.notifier).state = product;
+                            ref.read(selectedHeroTagProvider.notifier).state = heroTag;
+                            context.push(AppRoutes.productDetailPath(product.id));
+                          },
+                        ),
+                      ),
                     );
                   },
                 ),
