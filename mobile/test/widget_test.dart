@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shopease/main.dart';
+import 'package:shopease/app.dart';
 
 void main() {
   testWidgets('ShopEase App Smoke Test', (WidgetTester tester) async {
