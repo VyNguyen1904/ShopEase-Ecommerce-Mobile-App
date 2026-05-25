@@ -38,47 +38,45 @@ class ShellLayout extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _onTap,
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: _onTap,
+
         backgroundColor: Colors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textLight,
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 11,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
         elevation: 8,
-        items: [
-          const BottomNavigationBarItem(
+
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home),
             label: 'Trang chủ',
           ),
-          const BottomNavigationBarItem(
+
+          const NavigationDestination(
             icon: Icon(Icons.grid_view_outlined),
-            activeIcon: Icon(Icons.grid_view),
+            selectedIcon: Icon(Icons.grid_view),
             label: 'Danh mục',
           ),
-          const BottomNavigationBarItem(
+
+          const NavigationDestination(
             icon: Icon(Icons.shopping_cart_outlined),
-            activeIcon: Icon(Icons.shopping_cart),
+            selectedIcon: Icon(Icons.shopping_cart),
             label: 'Giỏ hàng',
           ),
-          const BottomNavigationBarItem(
+
+          const NavigationDestination(
             icon: Icon(Icons.assignment_outlined),
-            activeIcon: Icon(Icons.assignment),
+            selectedIcon: Icon(Icons.assignment),
             label: 'Đơn hàng',
           ),
-          BottomNavigationBarItem(
+
+          NavigationDestination(
             icon: Stack(
               children: [
                 const Icon(Icons.notifications_outlined),
+
                 Positioned(
                   right: 0,
                   top: 0,
@@ -93,7 +91,8 @@ class ShellLayout extends StatelessWidget {
                 ),
               ],
             ),
-            activeIcon: const Icon(Icons.notifications),
+
+            selectedIcon: const Icon(Icons.notifications),
             label: 'Thông báo',
           ),
         ],

@@ -27,8 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: AnimatedOpacity(
         opacity: _opacity,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOutCubic,
         onEnd: () {
           if (_isNavigating) {
             context.go(AppRoutes.home);
@@ -38,8 +38,10 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             // Background gradient matching Customer/1.png
             Container(
+              // Size constraints
               width: double.infinity,
               height: double.infinity,
+              // Background decoration
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -69,11 +71,14 @@ class _SplashScreenState extends State<SplashScreen> {
                   vertical: 16,
                 ),
                 child: Column(
+                  // How to position children along the MAIN axis (vertical for Column)
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 40), // Spacer
                     // App Logo & Brand Slogan
                     Column(
+                      // How to size children along the MAIN axis
+                      // MainAxisSize.min — shrink to fit children
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
@@ -138,15 +143,13 @@ class _SplashScreenState extends State<SplashScreen> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: _startNavigation,
-                            overlayColor:
-                                WidgetStateProperty.resolveWith<Color?>((
-                                  Set<WidgetState> states,
-                                ) {
-                                  if (states.contains(WidgetState.pressed)) {
-                                    return Colors.white24;
-                                  }
-                                  return Colors.transparent;
-                                }),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            overlayColor: WidgetStateProperty.all(
+                              Colors.transparent,
+                            ),
                             child: MouseRegion(
                               cursor: SystemMouseCursors.click,
                               child: Container(
@@ -155,6 +158,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                   vertical: 18,
                                 ),
                                 alignment: Alignment.center,
+                                // Rich Text — multiple styles in one text block
                                 child: RichText(
                                   text: const TextSpan(
                                     style: TextStyle(
