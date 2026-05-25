@@ -38,43 +38,45 @@ class ShellLayout extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _onTap,
-        type: BottomNavigationBarType.fixed,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: _onTap,
+
         backgroundColor: Colors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textLight,
-        selectedLabelStyle:
-            const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-        unselectedLabelStyle:
-            const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
         elevation: 8,
-        items: [
-          const BottomNavigationBarItem(
+
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home),
             label: 'Trang chủ',
           ),
-          const BottomNavigationBarItem(
+
+          const NavigationDestination(
             icon: Icon(Icons.grid_view_outlined),
-            activeIcon: Icon(Icons.grid_view),
+            selectedIcon: Icon(Icons.grid_view),
             label: 'Danh mục',
           ),
-          const BottomNavigationBarItem(
+
+          const NavigationDestination(
             icon: Icon(Icons.shopping_cart_outlined),
-            activeIcon: Icon(Icons.shopping_cart),
+            selectedIcon: Icon(Icons.shopping_cart),
             label: 'Giỏ hàng',
           ),
-          const BottomNavigationBarItem(
+
+          const NavigationDestination(
             icon: Icon(Icons.assignment_outlined),
-            activeIcon: Icon(Icons.assignment),
+            selectedIcon: Icon(Icons.assignment),
             label: 'Đơn hàng',
           ),
-          BottomNavigationBarItem(
+
+          NavigationDestination(
             icon: Stack(
               children: [
                 const Icon(Icons.notifications_outlined),
+
                 Positioned(
                   right: 0,
                   top: 0,
@@ -89,7 +91,8 @@ class ShellLayout extends StatelessWidget {
                 ),
               ],
             ),
-            activeIcon: const Icon(Icons.notifications),
+
+            selectedIcon: const Icon(Icons.notifications),
             label: 'Thông báo',
           ),
         ],
@@ -122,9 +125,10 @@ class ShellLayout extends StatelessWidget {
                     Text(
                       'Bảng điều khiển kiểm thử giao diện',
                       style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
                     ),
                   ],
                 ),
@@ -139,61 +143,93 @@ class ShellLayout extends StatelessWidget {
                     controller: controller,
                     children: [
                       _buildPanelSection('1. Luồng Chào Mừng & Đăng ký', [
-                        _buildPanelItem(ctx, 'Splash Screen (Customer/1.png)',
-                            () => context.go(AppRoutes.splash)),
-                        _buildPanelItem(ctx, 'Onboarding (Customer/2.png)',
-                            () => context.go(AppRoutes.onboarding)),
-                        _buildPanelItem(ctx, 'Register (Customer/4.png)',
-                            () => context.go(AppRoutes.register)),
+                        _buildPanelItem(
+                          ctx,
+                          'Splash Screen (Customer/1.png)',
+                          () => context.go(AppRoutes.splash),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Register (Customer/4.png)',
+                          () => context.go(AppRoutes.register),
+                        ),
                       ]),
                       _buildPanelSection('2. Trang mua sắm chính', [
-                        _buildPanelItem(ctx, 'Home Screen (Customer/5.png)',
-                            () => context.go(AppRoutes.home)),
-                        _buildPanelItem(ctx, 'Search Results (Customer/6.png)',
-                            () => context.push(AppRoutes.search)),
                         _buildPanelItem(
-                            ctx, 'Product Detail (Customer/7.png)', () {
-                          context.push(AppRoutes.productDetailPath('p1'));
-                        }),
+                          ctx,
+                          'Home Screen (Customer/5.png)',
+                          () => context.go(AppRoutes.home),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Search Results (Customer/6.png)',
+                          () => context.push(AppRoutes.search),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Product Detail (Customer/7.png)',
+                          () {
+                            context.push(AppRoutes.productDetailPath('p1'));
+                          },
+                        ),
+                      ]),
+                      _buildPanelSection('3. Màn hình chung (Common Screens)', [
+                        _buildPanelItem(
+                          ctx,
+                          'Categories (Common_Sceen/2.png)',
+                          () => context.go(AppRoutes.category),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Notifications (Common_Sceen/1.png)',
+                          () => context.go(AppRoutes.notifications),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Settings (Common_Sceen/3.png)',
+                          () => context.push(AppRoutes.settings),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Account (Common_Sceen/4.png)',
+                          () => context.push(AppRoutes.account),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Chat List (Common_Sceen/6.png)',
+                          () => context.push(AppRoutes.chats),
+                        ),
                       ]),
                       _buildPanelSection(
-                          '3. Màn hình chung (Common Screens)', [
-                        _buildPanelItem(ctx, 'Categories (Common_Sceen/2.png)',
-                            () => context.go(AppRoutes.category)),
-                        _buildPanelItem(
-                            ctx,
-                            'Notifications (Common_Sceen/1.png)',
-                            () => context.go(AppRoutes.notifications)),
-                        _buildPanelItem(ctx, 'Settings (Common_Sceen/3.png)',
-                            () => context.push(AppRoutes.settings)),
-                        _buildPanelItem(ctx, 'Account (Common_Sceen/4.png)',
-                            () => context.push(AppRoutes.account)),
-                        _buildPanelItem(ctx, 'Chat List (Common_Sceen/6.png)',
-                            () => context.push(AppRoutes.chats)),
-                      ]),
-                      _buildPanelSection(
-                          '4. Quản trị & Người bán (Admin & Seller)', [
-                        _buildPanelItem(
+                        '4. Quản trị & Người bán (Admin & Seller)',
+                        [
+                          _buildPanelItem(
                             ctx,
                             'Admin Dashboard (Admin/1.png)',
-                            () => context.push(AppRoutes.adminDashboard)),
-                        _buildPanelItem(
+                            () => context.push(AppRoutes.adminDashboard),
+                          ),
+                          _buildPanelItem(
                             ctx,
                             'Admin Orders & Stock (Admin/2.png)',
-                            () => context.push(AppRoutes.adminOrders)),
-                        _buildPanelItem(
+                            () => context.push(AppRoutes.adminOrders),
+                          ),
+                          _buildPanelItem(
                             ctx,
                             'Admin User Management (Admin/3.png)',
-                            () => context.push(AppRoutes.adminUsers)),
-                        _buildPanelItem(
+                            () => context.push(AppRoutes.adminUsers),
+                          ),
+                          _buildPanelItem(
                             ctx,
                             'Seller Order Detail (Seller/1.png)',
-                            () => context.push(AppRoutes.sellerOrderDetail)),
-                        _buildPanelItem(
+                            () => context.push(AppRoutes.sellerOrderDetail),
+                          ),
+                          _buildPanelItem(
                             ctx,
                             'Seller Notifications (Seller/2.png)',
-                            () => context.push(AppRoutes.sellerNotifications)),
-                      ]),
+                            () => context.push(AppRoutes.sellerNotifications),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -214,9 +250,10 @@ class ShellLayout extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary),
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
           ),
         ),
         ...items,
@@ -226,7 +263,10 @@ class ShellLayout extends StatelessWidget {
   }
 
   Widget _buildPanelItem(
-      BuildContext context, String name, VoidCallback onTap) {
+    BuildContext context,
+    String name,
+    VoidCallback onTap,
+  ) {
     return Card(
       elevation: 0,
       color: AppColors.bgLight,
@@ -236,12 +276,17 @@ class ShellLayout extends StatelessWidget {
         title: Text(
           name,
           style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textDark),
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textDark,
+          ),
         ),
         dense: true,
-        trailing: const Icon(Icons.arrow_forward, size: 14, color: AppColors.primary),
+        trailing: const Icon(
+          Icons.arrow_forward,
+          size: 14,
+          color: AppColors.primary,
+        ),
         onTap: () {
           Navigator.pop(context);
           onTap();

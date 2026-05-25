@@ -82,8 +82,12 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse updateProduct(Long id, String sellerId, ProductRequest request) {
+    public ProductResponse updateProduct(Long id, String sellerId, String userRole, ProductRequest request) {
         Product existing = requireProduct(id);
+        if (!"ADMIN".equalsIgnoreCase(userRole) && !existing.getSellerId().equals(sellerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the seller who created this product or an admin can update it");
+        }
+
         Category category = categories.findById(request.categoryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
         
@@ -96,7 +100,7 @@ public class ProductService {
                 request.salePrice(),
                 request.stockQuantity(),
                 request.weightKg(),
-                sellerId,
+                existing.getSellerId(), // Keep the original seller ID
                 request.thumbnailUrl(),
                 request.imageUrls() == null ? List.of() : request.imageUrls(),
                 request.status() != null ? request.status() : existing.getStatus(),
@@ -109,8 +113,11 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
+    public void deleteProduct(Long id, String sellerId, String userRole) {
         Product product = requireProduct(id);
+        if (!"ADMIN".equalsIgnoreCase(userRole) && !product.getSellerId().equals(sellerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the seller who created this product or an admin can delete it");
+        }
         product.deactivate();
         products.save(product);
     }

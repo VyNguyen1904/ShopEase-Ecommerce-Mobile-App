@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
-import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
@@ -21,16 +20,12 @@ import '../../features/admin/screens/seller_notifications.dart';
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
-  debugLogDiagnostics: false,
+  debugLogDiagnostics: true,
   routes: [
     // ── Onboarding & Auth ──────────────────────────────────────────────────
     GoRoute(
       path: AppRoutes.splash,
       builder: (context, state) => const SplashScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.onboarding,
-      builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
       path: AppRoutes.register,

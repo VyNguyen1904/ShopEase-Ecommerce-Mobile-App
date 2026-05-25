@@ -12,6 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Component
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
@@ -49,10 +51,31 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 .retrieve()
                 .bodyToMono(ApiResponse.class)
                 .flatMap(apiResponse -> {
-                    if (apiResponse != null && apiResponse.success()) {
-                        String userId = (String) apiResponse.data();
+                    if (apiResponse != null && apiResponse.success() && apiResponse.data() != null) {
+                        String userId = null;
+                        String role = null;
+
+                        Object data = apiResponse.data();
+                        if (data instanceof Map<?, ?> map) {
+                            userId = (String) map.get("userId");
+                            role = (String) map.get("role");
+                        } else if (data instanceof String) {
+                            userId = (String) data;
+                        }
+
+                        if (userId == null) {
+                            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                            return exchange.getResponse().setComplete();
+                        }
+
+                        if (!hasRequiredRole(path, method, role)) {
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                            return exchange.getResponse().setComplete();
+                        }
+
                         exchange.getRequest().mutate()
                                 .header("X-User-Id", userId)
+                                .header("X-User-Role", role != null ? role : "")
                                 .build();
                         return chain.filter(exchange);
                     } else {
@@ -66,6 +89,75 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 });
     }
 
+    private boolean hasRequiredRole(String path, String method, String role) {
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            return true;
+        }
+
+        // --- Product & Category Management ---
+        boolean b = "POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(method);
+        if (path.startsWith("/api/products")) {
+            // Write operations require SELLER
+            if (b) {
+                return "SELLER".equalsIgnoreCase(role);
+            }
+        }
+        if (path.startsWith("/api/categories")) {
+            // Write operations are ADMIN-only (and we already checked ADMIN at the top)
+            if (b) {
+                return false;
+            }
+        }
+
+        // --- Inventory Management ---
+        if (path.startsWith("/api/inventory")) {
+            // Internally triggered endpoints are open to all authenticated users
+            if (path.equals("/api/inventory/reserve") || path.equals("/api/inventory/release") || path.equals("/api/inventory/commit")) {
+                return true;
+            }
+            // General stock management requires SELLER
+            return "SELLER".equalsIgnoreCase(role);
+        }
+
+        // --- Cart Management ---
+        // Cart is exclusively for BUYER
+        if (path.startsWith("/api/cart")) {
+            return "BUYER".equalsIgnoreCase(role);
+        }
+
+        // --- Order Management ---
+        if (path.startsWith("/api/orders")) {
+            // Placing order requires BUYER
+            if ("POST".equalsIgnoreCase(method) && path.equals("/api/orders")) {
+                return "BUYER".equalsIgnoreCase(role);
+            }
+            // Checking review eligibility requires BUYER
+            if (path.contains("/review-eligibility")) {
+                return "BUYER".equalsIgnoreCase(role);
+            }
+            // Cancel order requires BUYER
+            if (path.endsWith("/cancel")) {
+                return "BUYER".equalsIgnoreCase(role);
+            }
+            // Seller-specific orders lookup and deliver endpoints require SELLER
+            if (path.startsWith("/api/orders/seller") || path.endsWith("/deliver")) {
+                return "SELLER".equalsIgnoreCase(role);
+            }
+            // General details (GET /api/orders/{id}) or history (GET /api/orders) can be accessed by both
+            return "BUYER".equalsIgnoreCase(role) || "SELLER".equalsIgnoreCase(role);
+        }
+
+        // --- Review Management ---
+        // Placing reviews requires BUYER
+        if (path.startsWith("/api/reviews")) {
+            if ("POST".equalsIgnoreCase(method)) {
+                return "BUYER".equalsIgnoreCase(role);
+            }
+        }
+
+        return true;
+    }
+
     private boolean isPublicEndpoint(String path, String method) {
         // Auth paths that do not require access token
         if (path.startsWith("/api/auth/login") || 
@@ -76,14 +168,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Public GET endpoints
         if ("GET".equalsIgnoreCase(method)) {
-            if (path.equals("/api/products") || 
-                path.startsWith("/api/products/") || 
-                path.equals("/api/categories") || 
-                path.startsWith("/api/categories/") || 
-                path.startsWith("/api/search/") || 
-                path.startsWith("/api/reviews/products/")) {
-                return true;
-            }
+            return path.equals("/api/products") ||
+                    path.startsWith("/api/products/") ||
+                    path.equals("/api/categories") ||
+                    path.startsWith("/api/categories/") ||
+                    path.startsWith("/api/search/") ||
+                    path.startsWith("/api/reviews/products/");
         }
 
         return false;

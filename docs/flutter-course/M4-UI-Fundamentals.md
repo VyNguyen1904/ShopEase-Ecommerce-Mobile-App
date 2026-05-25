@@ -1,192 +1,3 @@
-# Module 4: UI Fundamentals — Sessions 17–20
-
-> **Course:** Flutter & Dart Mobile Development  
-> **Module:** 4 of 8  
-> **Sessions:** 17 – 20  
-> **Prerequisites:** Modules 1–3 (Dart basics, Widgets, State management intro)  
-> **Estimated Reading Time:** 3–4 hours  
-
----
-
-Welcome back! By now you know how to write Dart, scaffold a basic Flutter app, and wrestle with the widget tree. In Module 4 we graduate from "it works" to "it looks and feels great." We will cover the building blocks of every polished Flutter app: structural widgets, interactive controls, pickers, and theming. Expect plenty of code, war stories, and exercises that will have you building production-quality UI by the end of the module.
-
-Let's dive in. 🚀
-
----
-
-## Table of Contents
-
-1. [Session 17 – UI Basics: Scaffold, ListView & Card/ListTile](#session-17)
-2. [Session 18 – Interactive Widgets](#session-18)
-3. [Session 19 – Pickers: Date & Time](#session-19)
-4. [Session 20 – Theming & UI Polishing](#session-20)
-5. [Module Summary](#module-summary)
-6. [Review Questions](#review-questions)
-
----
-
-<a name="session-17"></a>
-# Session 17 – UI Basics: Scaffold, ListView & Card/ListTile
-
-## 17.1 Scaffold Deep Dive
-
-`Scaffold` is the skeleton of every Material screen. You have seen it before — now we learn every bone.
-
-### The Full Scaffold Anatomy
-
-```dart
-import 'package:flutter/material.dart';
-
-class FullScaffoldDemo extends StatelessWidget {
-  const FullScaffoldDemo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // ─── Top ───────────────────────────────────────────────────────────────
-      appBar: AppBar(
-        // Title can be any widget, not just Text!
-        title: const Text('ShopEase'),
-        centerTitle: true,                       // centers on Android too
-
-        // Leading: default is the back-button / hamburger icon
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},                       // open drawer, etc.
-        ),
-
-        // Actions: right-side icon buttons
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Search',
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {},
-          ),
-        ],
-
-        // Elevation controls the shadow depth
-        elevation: 4,
-
-        // backgroundColor overrides the theme color for this AppBar only
-        backgroundColor: Colors.deepPurple,
-        foregroundColor: Colors.white,           // icon + text color
-
-        // flexibleSpace renders BEHIND the toolbar — great for gradients
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.deepPurple, Colors.purpleAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-
-        // bottom adds a widget below the toolbar (e.g. TabBar)
-        bottom: const TabBar(
-          tabs: [
-            Tab(text: 'Home'),
-            Tab(text: 'Products'),
-            Tab(text: 'Orders'),
-          ],
-        ),
-      ),
-
-      // ─── Drawer ────────────────────────────────────────────────────────────
-      drawer: const AppDrawer(),
-
-      // ─── Body ──────────────────────────────────────────────────────────────
-      body: const Center(child: Text('Hello, ShopEase!')),
-
-      // ─── Bottom Navigation ─────────────────────────────────────────────────
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Shop'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-        onTap: (index) {},
-      ),
-
-      // ─── FAB ───────────────────────────────────────────────────────────────
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
-}
-```
-
-### 17.1.1 AppBar Customization
-
-The `AppBar` is much more than a title bar. Here are the properties you'll use daily:
-
-| Property | Type | Purpose |
-|---|---|---|
-| `title` | `Widget?` | The main title widget |
-| `leading` | `Widget?` | Widget on the left (defaults to back/menu) |
-| `actions` | `List<Widget>?` | Widgets on the right |
-| `bottom` | `PreferredSizeWidget?` | Placed below the toolbar (TabBar lives here) |
-| `flexibleSpace` | `Widget?` | Behind the entire AppBar — use for gradients |
-| `elevation` | `double?` | Shadow depth |
-| `scrolledUnderElevation` | `double?` | Elevation when content scrolls under AppBar |
-| `centerTitle` | `bool?` | Center the title (default: platform adaptive) |
-| `toolbarHeight` | `double` | Override toolbar height (default 56) |
-| `backgroundColor` | `Color?` | AppBar background |
-| `foregroundColor` | `Color?` | Icons and text color |
-
-#### Gradient AppBar with SliverAppBar (Advanced)
-
-```dart
-/// SliverAppBar collapses as the user scrolls down — used inside CustomScrollView.
-class ShopEaseProductPage extends StatelessWidget {
-  const ShopEaseProductPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 220,        // how tall when fully expanded
-            pinned: true,               // stays visible when scrolled
-            floating: false,
-            flexibleSpace: FlexibleSpaceBar(
-              title: const Text('Products'),
-              background: Image.network(
-                'https://picsum.photos/600/300',
-                fit: BoxFit.cover,
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.filter_list),
-                onPressed: () {},
-              ),
-            ],
-          ),
-          // The list content goes here
-          const SliverFillRemaining(
-            child: Center(child: Text('Product grid here')),
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
-> 💡 **Pro Tip:** Use `SliverAppBar` + `SliverList`/`SliverGrid` whenever you need a collapsing header with a scrollable body. It creates a much more immersive experience than a static AppBar.
-
----
-
 ### 17.1.2 Drawer and NavigationDrawer
 
 A **Drawer** slides in from the left (or right via `endDrawer`) and is opened by the leading hamburger icon or by calling `Scaffold.of(context).openDrawer()`.
@@ -421,14 +232,14 @@ class _NavBarDemoState extends State<NavBarDemo> {
 
 **Key differences at a glance:**
 
-| Feature | `BottomNavigationBar` | `NavigationBar` |
-|---|---|---|
-| Material spec | Material 2 | Material 3 |
-| Selected indicator | Color only | Pill-shaped indicator |
-| Badge support | Manual workaround | Built-in `Badge` widget |
-| Animation | Basic | Smooth, built-in |
-| Max destinations | Usually 5 | 3–5 (spec) |
-| Recommended | Legacy projects | New projects ✅ |
+| Feature            | `BottomNavigationBar` | `NavigationBar`         |
+| ------------------ | --------------------- | ----------------------- |
+| Material spec      | Material 2            | Material 3              |
+| Selected indicator | Color only            | Pill-shaped indicator   |
+| Badge support      | Manual workaround     | Built-in `Badge` widget |
+| Animation          | Basic                 | Smooth, built-in        |
+| Max destinations   | Usually 5             | 3–5 (spec)              |
+| Recommended        | Legacy projects       | New projects ✅         |
 
 > 💡 **Pro Tip:** In Material 3 apps, opt-in via `ThemeData(useMaterial3: true)`. This switches many widgets (including `NavigationBar`) to their M3 variants automatically.
 
@@ -550,11 +361,13 @@ This is one of the most important distinctions in Flutter UI performance.
 ```
 ListView(children: [...1000 widgets...])
 ```
+
 ➡️ Flutter builds **all 1000 widgets at once** when the ListView appears. Even if only 10 fit on screen, all 1000 are in memory.
 
 ```
 ListView.builder(itemCount: 1000, itemBuilder: ...)
 ```
+
 ➡️ Flutter builds only the **~10–15 visible + a small buffer**. Widgets outside the viewport are discarded and rebuilt on demand. Memory usage stays flat.
 
 **The rule:** Any list with more than ~20 items should use `ListView.builder`.
@@ -728,12 +541,12 @@ GestureDetector(
 
 **When to use which:**
 
-| | `InkWell` | `GestureDetector` |
-|---|---|---|
-| Visual ripple | ✅ Yes | ❌ No |
-| Complex gestures | ❌ No | ✅ Yes |
-| Material 3 style | ✅ Best fit | Works but no ink |
-| Performance | Slightly heavier | Lighter |
+|                  | `InkWell`        | `GestureDetector` |
+| ---------------- | ---------------- | ----------------- |
+| Visual ripple    | ✅ Yes           | ❌ No             |
+| Complex gestures | ❌ No            | ✅ Yes            |
+| Material 3 style | ✅ Best fit      | Works but no ink  |
+| Performance      | Slightly heavier | Lighter           |
 
 > 💡 **Pro Tip:** Wrap `InkWell` inside a `Material` widget if you're placing it over a colored Container — otherwise the ripple won't show because it renders on the Material layer below.
 
@@ -777,12 +590,12 @@ Column(
 
 **Decision table:**
 
-| Situation | Best Choice |
-|---|---|
-| Gap between two sibling widgets in Column/Row | `SizedBox` |
-| Inner breathing room for a widget's content | `Padding` or `Container(padding:)` |
-| Space outside a widget's visual boundary | `Container(margin:)` or `Card(margin:)` |
-| Responsive spacing | `Spacer()` in Row/Column |
+| Situation                                     | Best Choice                             |
+| --------------------------------------------- | --------------------------------------- |
+| Gap between two sibling widgets in Column/Row | `SizedBox`                              |
+| Inner breathing room for a widget's content   | `Padding` or `Container(padding:)`      |
+| Space outside a widget's visual boundary      | `Container(margin:)` or `Card(margin:)` |
+| Responsive spacing                            | `Spacer()` in Row/Column                |
 
 #### Common Mistakes — Cards & Spacing
 
@@ -795,20 +608,21 @@ Column(
 ## ✏️ Session 17 Exercises
 
 **Exercise 1 — ShopEase Navigation Shell**  
-Create a `ShopEaseApp` with a `NavigationBar` (Material 3) with 4 destinations: Home, Products, Cart, Profile. Each tab shows a placeholder page. Add a `NavigationDrawer` accessible via the AppBar leading icon. *(Hint: use a `StatefulWidget` with `_selectedIndex` and an `IndexedStack` for the body to preserve tab state.)*
+Create a `ShopEaseApp` with a `NavigationBar` (Material 3) with 4 destinations: Home, Products, Cart, Profile. Each tab shows a placeholder page. Add a `NavigationDrawer` accessible via the AppBar leading icon. _(Hint: use a `StatefulWidget` with `_selectedIndex` and an `IndexedStack` for the body to preserve tab state.)_
 
 **Exercise 2 — Product List**  
-Build a `ListView.builder` showing 500 products. Each item is a `Card` with an image, product name, price, and an "Add to Cart" `IconButton`. Log every tap to the console. *(Hint: use `ListTile` inside the `Card` for easy layout.)*
+Build a `ListView.builder` showing 500 products. Each item is a `Card` with an image, product name, price, and an "Add to Cart" `IconButton`. Log every tap to the console. _(Hint: use `ListTile` inside the `Card` for easy layout.)_
 
 **Exercise 3 — Swipeable List Item**  
-Wrap each list item in a `GestureDetector` that detects horizontal swipe-left to show a "Delete" confirmation. *(Hint: use `onHorizontalDragEnd` and check `primaryVelocity`.)*
+Wrap each list item in a `GestureDetector` that detects horizontal swipe-left to show a "Delete" confirmation. _(Hint: use `onHorizontalDragEnd` and check `primaryVelocity`.)_
 
 **Exercise 4 — AppBar with Search**  
-Replace the AppBar title with a `TextField` when the search icon is tapped. Tapping the X icon restores the original title. *(Hint: use a `bool _isSearching` state variable and `AnimatedSwitcher` for smooth transition.)*
+Replace the AppBar title with a `TextField` when the search icon is tapped. Tapping the X icon restores the original title. _(Hint: use a `bool _isSearching` state variable and `AnimatedSwitcher` for smooth transition.)_
 
 ---
 
 <a name="session-18"></a>
+
 # Session 18 – Interactive Widgets
 
 Interactive widgets are the bridge between your app and the user. This session covers every form control you'll use in a real e-commerce app.
@@ -1411,13 +1225,13 @@ FloatingActionButton.large(
 
 This is a nuanced but important topic.
 
-| Callback | Widget | When it fires |
-|---|---|---|
-| `onChanged` | `TextField`, `Checkbox`, `Switch`, `Slider`, `Dropdown` | Every time the value changes (per keystroke for text) |
-| `onSubmitted` | `TextField` | When the user presses the keyboard action button (done/next/go) |
-| `onEditingComplete` | `TextField` | When editing is finished (before `onSubmitted`) |
-| `onTap` | `TextField`, `ListTile`, buttons | When the widget is tapped |
-| `onSaved` | `TextFormField` | When `formKey.currentState!.save()` is called |
+| Callback            | Widget                                                  | When it fires                                                   |
+| ------------------- | ------------------------------------------------------- | --------------------------------------------------------------- |
+| `onChanged`         | `TextField`, `Checkbox`, `Switch`, `Slider`, `Dropdown` | Every time the value changes (per keystroke for text)           |
+| `onSubmitted`       | `TextField`                                             | When the user presses the keyboard action button (done/next/go) |
+| `onEditingComplete` | `TextField`                                             | When editing is finished (before `onSubmitted`)                 |
+| `onTap`             | `TextField`, `ListTile`, buttons                        | When the widget is tapped                                       |
+| `onSaved`           | `TextFormField`                                         | When `formKey.currentState!.save()` is called                   |
 
 ```dart
 TextField(
@@ -1537,20 +1351,21 @@ if (mounted) setState(() { _expensiveData = result; });
 ## ✏️ Session 18 Exercises
 
 **Exercise 1 — Product Filter Panel**  
-Build a filter panel with: a `RangeSlider` for price, `CheckboxListTile` for categories (Electronics, Clothing, Books), and a `DropdownButtonFormField` for sort order (Price: Low→High, High→Low, Newest, Rating). Show the applied filters in a summary `Text`. *(Hint: store all filter state in one `StatefulWidget`.)*
+Build a filter panel with: a `RangeSlider` for price, `CheckboxListTile` for categories (Electronics, Clothing, Books), and a `DropdownButtonFormField` for sort order (Price: Low→High, High→Low, Newest, Rating). Show the applied filters in a summary `Text`. _(Hint: store all filter state in one `StatefulWidget`.)_
 
 **Exercise 2 — Login & Register Forms**  
-Build a `Form` with two tabs: Login (email + password) and Register (name + email + password + confirm password). Validate all fields. The Register form should check that password and confirm password match. *(Hint: store both controllers as class fields; compare values in the validator.)*
+Build a `Form` with two tabs: Login (email + password) and Register (name + email + password + confirm password). Validate all fields. The Register form should check that password and confirm password match. _(Hint: store both controllers as class fields; compare values in the validator.)_
 
 **Exercise 3 — Settings Screen**  
-Create a settings screen with: a `SwitchListTile` for notifications, a `RadioListTile` group for theme (Light/Dark/System), and a `Slider` for font size (12–24). When the font size slider changes, preview text on the screen should update in real time. *(Hint: `onChanged` updates state immediately.)*
+Create a settings screen with: a `SwitchListTile` for notifications, a `RadioListTile` group for theme (Light/Dark/System), and a `Slider` for font size (12–24). When the font size slider changes, preview text on the screen should update in real time. _(Hint: `onChanged` updates state immediately.)_
 
 **Exercise 4 — Search Bar with Debounce**  
-Add a search `TextField` to a product list. Use a `Timer` to debounce the `onChanged` callback so the "search" only fires 400ms after the user stops typing. Print the search query to the console. *(Hint: `import 'dart:async'; Timer? _debounce;`)*
+Add a search `TextField` to a product list. Use a `Timer` to debounce the `onChanged` callback so the "search" only fires 400ms after the user stops typing. Print the search query to the console. _(Hint: `import 'dart:async'; Timer? _debounce;`)_
 
 ---
 
 <a name="session-19"></a>
+
 # Session 19 – Pickers: Date & Time
 
 Date and time selection is ubiquitous in e-commerce apps: delivery date selection, filter by date, booking appointments. Flutter provides clean, system-integrated pickers via dialogs.
@@ -1846,9 +1661,9 @@ Flutter's `DateTime` class doesn't include formatting. The `intl` package fills 
 ```yaml
 # pubspec.yaml
 dependencies:
-  flutter:
-    sdk: flutter
-  intl: ^0.19.0  # always check pub.dev for the latest version
+    flutter:
+        sdk: flutter
+    intl: ^0.19.0 # always check pub.dev for the latest version
 ```
 
 ```bash
@@ -2073,20 +1888,21 @@ class _BookingFormState extends State<BookingForm> {
 ## ✏️ Session 19 Exercises
 
 **Exercise 1 — Vacation Booking**  
-Build a hotel booking form with: check-in date, check-out date (must be after check-in), number of guests (Slider 1–10), and room type (DropdownButton). Calculate and display the number of nights dynamically. *(Hint: `checkOut.difference(checkIn).inDays`)*
+Build a hotel booking form with: check-in date, check-out date (must be after check-in), number of guests (Slider 1–10), and room type (DropdownButton). Calculate and display the number of nights dynamically. _(Hint: `checkOut.difference(checkIn).inDays`)_
 
 **Exercise 2 — Birthday Picker**  
-Create a profile field for date of birth. The user must be at least 18 years old (use `firstDate: DateTime(1900)` and `lastDate: 18 years ago`). Show age dynamically after selection. *(Hint: compute age with `DateTime.now().year - dob.year`.)*
+Create a profile field for date of birth. The user must be at least 18 years old (use `firstDate: DateTime(1900)` and `lastDate: 18 years ago`). Show age dynamically after selection. _(Hint: compute age with `DateTime.now().year - dob.year`.)_
 
 **Exercise 3 — Order History Filter**  
-Add a date range picker to an order list page. When a range is selected, filter the visible orders to only show those within the range. Use dummy order data with random dates. *(Hint: `order.date.isAfter(range.start) && order.date.isBefore(range.end)`)*
+Add a date range picker to an order list page. When a range is selected, filter the visible orders to only show those within the range. Use dummy order data with random dates. _(Hint: `order.date.isAfter(range.start) && order.date.isBefore(range.end)`)_
 
 **Exercise 4 — Appointment Scheduler**  
-Build a time slot selector: the user picks a date, then the UI shows available 1-hour time slots (9 AM – 5 PM) as tappable chips. Slots in the past or marked "booked" are disabled. *(Hint: generate slots with a loop; check `slot.isBefore(DateTime.now())`.)*
+Build a time slot selector: the user picks a date, then the UI shows available 1-hour time slots (9 AM – 5 PM) as tappable chips. Slots in the past or marked "booked" are disabled. _(Hint: generate slots with a loop; check `slot.isBefore(DateTime.now())`.)_
 
 ---
 
 <a name="session-20"></a>
+
 # Session 20 – Theming & UI Polishing
 
 Theming is what separates a student project from a product. When done right, a theme ensures your entire app looks consistent, responds to dark mode, and can be updated in one place.
@@ -2189,6 +2005,7 @@ colorScheme: ColorScheme.fromSeed(
 ```
 
 The generated scheme includes:
+
 - `primary` — main brand color (buttons, links)
 - `onPrimary` — text/icons ON primary background
 - `secondary` — complementary accent color
@@ -2311,19 +2128,19 @@ Widget build(BuildContext context) {
 ```yaml
 # pubspec.yaml
 flutter:
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/Poppins-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Poppins-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Poppins-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Poppins-Italic.ttf
-          style: italic
+    fonts:
+        - family: Poppins
+          fonts:
+              - asset: assets/fonts/Poppins-Regular.ttf
+                weight: 400
+              - asset: assets/fonts/Poppins-Medium.ttf
+                weight: 500
+              - asset: assets/fonts/Poppins-SemiBold.ttf
+                weight: 600
+              - asset: assets/fonts/Poppins-Bold.ttf
+                weight: 700
+              - asset: assets/fonts/Poppins-Italic.ttf
+                style: italic
 ```
 
 ```dart
@@ -2352,7 +2169,7 @@ const Text(
 ```yaml
 # pubspec.yaml
 dependencies:
-  google_fonts: ^6.2.1
+    google_fonts: ^6.2.1
 ```
 
 ```bash
@@ -3124,82 +2941,84 @@ class _PolishedProductCardState extends State<PolishedProductCard> {
 ## ✏️ Session 20 Exercises
 
 **Exercise 1 — Full Theme Setup**  
-Create a `ThemeData` for ShopEase with: a purple color scheme, Poppins font (via `google_fonts`), custom `AppBarTheme`, `CardTheme`, `InputDecorationTheme`, and `ElevatedButtonTheme`. Apply it to `MaterialApp`. *(Hint: create a separate `app_theme.dart` file.)*
+Create a `ThemeData` for ShopEase with: a purple color scheme, Poppins font (via `google_fonts`), custom `AppBarTheme`, `CardTheme`, `InputDecorationTheme`, and `ElevatedButtonTheme`. Apply it to `MaterialApp`. _(Hint: create a separate `app_theme.dart` file.)_
 
 **Exercise 2 — Dark Mode Toggle**  
-Add a `SwitchListTile` in a settings screen that toggles between light and dark mode. Store the preference in the app state (lift it up to the `StatefulWidget` wrapping `MaterialApp`). *(Hint: `ThemeMode.light` / `ThemeMode.dark` + `setState`.)*
+Add a `SwitchListTile` in a settings screen that toggles between light and dark mode. Store the preference in the app state (lift it up to the `StatefulWidget` wrapping `MaterialApp`). _(Hint: `ThemeMode.light` / `ThemeMode.dark` + `setState`.)_
 
 **Exercise 3 — Animated Product Grid**  
-Build a product grid where tapping a product expands it with `AnimatedContainer` to show more details, and tapping again collapses it. Only one product can be expanded at a time. *(Hint: store `_expandedIndex` in state; set to `null` to collapse all.)*
+Build a product grid where tapping a product expands it with `AnimatedContainer` to show more details, and tapping again collapses it. Only one product can be expanded at a time. _(Hint: store `_expandedIndex` in state; set to `null` to collapse all.)_
 
 **Exercise 4 — Hero Navigation**  
-Build a product list where each card has a `Hero` wrapping the product image. Tapping a card navigates to a detail screen where the image hero-animates to a full-width banner at the top. *(Hint: matching `tag: 'product-${product.id}'` on both screens.)*
+Build a product list where each card has a `Hero` wrapping the product image. Tapping a card navigates to a detail screen where the image hero-animates to a full-width banner at the top. _(Hint: matching `tag: 'product-${product.id}'` on both screens.)_
 
 ---
 
 <a name="module-summary"></a>
+
 # Module Summary
 
 Congratulations on completing Module 4! You have covered an enormous amount of ground. Here is a quick recap of the key concepts from each session:
 
 ## Session 17 — UI Basics
 
-| Concept | Key Takeaway |
-|---|---|
-| `Scaffold` | Full skeleton of a screen: AppBar, Drawer, Body, BottomNav, FAB |
-| `AppBar` | `flexibleSpace` for gradients, `bottom` for TabBar, `SliverAppBar` for collapsing headers |
-| `Drawer` / `NavigationDrawer` | Always `Navigator.pop(context)` before navigating from a drawer |
-| `NavigationBar` (M3) | Preferred over `BottomNavigationBar`; built-in `Badge` support |
-| `ListView` constructors | Use `.builder()` for any list > 20 items — lazy loading is critical |
-| `Card` | Use `clipBehavior: Clip.antiAlias` for images in rounded cards |
-| `ListTile` | All-in-one list item with leading/trailing/title/subtitle |
-| `InkWell` vs `GestureDetector` | `InkWell` = ripple; `GestureDetector` = raw gesture access |
-| Spacing | `SizedBox` between siblings; `Padding` around a child; `margin` on Containers/Cards |
+| Concept                        | Key Takeaway                                                                              |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| `Scaffold`                     | Full skeleton of a screen: AppBar, Drawer, Body, BottomNav, FAB                           |
+| `AppBar`                       | `flexibleSpace` for gradients, `bottom` for TabBar, `SliverAppBar` for collapsing headers |
+| `Drawer` / `NavigationDrawer`  | Always `Navigator.pop(context)` before navigating from a drawer                           |
+| `NavigationBar` (M3)           | Preferred over `BottomNavigationBar`; built-in `Badge` support                            |
+| `ListView` constructors        | Use `.builder()` for any list > 20 items — lazy loading is critical                       |
+| `Card`                         | Use `clipBehavior: Clip.antiAlias` for images in rounded cards                            |
+| `ListTile`                     | All-in-one list item with leading/trailing/title/subtitle                                 |
+| `InkWell` vs `GestureDetector` | `InkWell` = ripple; `GestureDetector` = raw gesture access                                |
+| Spacing                        | `SizedBox` between siblings; `Padding` around a child; `margin` on Containers/Cards       |
 
 ## Session 18 — Interactive Widgets
 
-| Concept | Key Takeaway |
-|---|---|
-| `TextField` | Always dispose the `TextEditingController`! Use `FocusNode` for focus management |
-| `TextFormField` | Pairs with `Form` + `GlobalKey<FormState>` for validation |
-| `Checkbox` / `Radio` / `Switch` | Always call `setState` in `onChanged` |
-| `Slider` / `RangeSlider` | Use `divisions` for discrete steps; `label` for tooltip |
-| `DropdownButton` | `isExpanded: true` fills width; use `DropdownButtonFormField` in forms |
-| Button types | Elevated > Outlined > Text (in terms of emphasis) |
-| Callbacks | `onChanged` fires per keystroke; `onSubmitted` fires on keyboard action |
-| Ephemeral state | Local widget-level state; managed with `setState` |
-| `setState` | Only marks dirty and schedules rebuild; always check `mounted` after `await` |
+| Concept                         | Key Takeaway                                                                     |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| `TextField`                     | Always dispose the `TextEditingController`! Use `FocusNode` for focus management |
+| `TextFormField`                 | Pairs with `Form` + `GlobalKey<FormState>` for validation                        |
+| `Checkbox` / `Radio` / `Switch` | Always call `setState` in `onChanged`                                            |
+| `Slider` / `RangeSlider`        | Use `divisions` for discrete steps; `label` for tooltip                          |
+| `DropdownButton`                | `isExpanded: true` fills width; use `DropdownButtonFormField` in forms           |
+| Button types                    | Elevated > Outlined > Text (in terms of emphasis)                                |
+| Callbacks                       | `onChanged` fires per keystroke; `onSubmitted` fires on keyboard action          |
+| Ephemeral state                 | Local widget-level state; managed with `setState`                                |
+| `setState`                      | Only marks dirty and schedules rebuild; always check `mounted` after `await`     |
 
 ## Session 19 — Pickers
 
-| Concept | Key Takeaway |
-|---|---|
-| `showDatePicker` | Returns `Future<DateTime?>`; null if dismissed |
-| `showTimePicker` | Returns `Future<TimeOfDay?>`; use `.format(context)` for display |
-| `showDateRangePicker` | Returns `Future<DateTimeRange?>`; great for booking UIs |
-| Null handling | ALWAYS null-check the result before using it |
-| `mounted` check | ALWAYS `if (!mounted) return;` after any `await` |
-| `DateFormat` (intl) | Use `DateFormat('EEEE, MMMM d, yyyy').format(date)` not `date.toString()` |
-| `selectableDayPredicate` | Disable specific days (e.g., Sundays, holidays) |
+| Concept                  | Key Takeaway                                                              |
+| ------------------------ | ------------------------------------------------------------------------- |
+| `showDatePicker`         | Returns `Future<DateTime?>`; null if dismissed                            |
+| `showTimePicker`         | Returns `Future<TimeOfDay?>`; use `.format(context)` for display          |
+| `showDateRangePicker`    | Returns `Future<DateTimeRange?>`; great for booking UIs                   |
+| Null handling            | ALWAYS null-check the result before using it                              |
+| `mounted` check          | ALWAYS `if (!mounted) return;` after any `await`                          |
+| `DateFormat` (intl)      | Use `DateFormat('EEEE, MMMM d, yyyy').format(date)` not `date.toString()` |
+| `selectableDayPredicate` | Disable specific days (e.g., Sundays, holidays)                           |
 
 ## Session 20 — Theming & UI Polishing
 
-| Concept | Key Takeaway |
-|---|---|
-| `ThemeData` | Central hub for all visual styling |
-| `ColorScheme.fromSeed` | M3 color system from a single seed color |
-| `ThemeMode` | `system`, `light`, or `dark` |
-| Custom fonts | `google_fonts` package or `pubspec.yaml` assets |
-| `copyWith` | Extend theme or text styles without rewriting everything |
-| Component themes | Set `AppBarTheme`, `CardTheme`, `InputDecorationTheme` globally |
-| `AnimatedContainer` | Implicit animation for size/color/decoration changes |
-| `AnimatedSwitcher` | Transition between two different widgets (requires unique `key`) |
-| `Hero` | Shared element animation between two screens (requires matching `tag`) |
-| `InkWell` + `Material` | Proper ripple requires the InkWell to be above a Material surface |
+| Concept                | Key Takeaway                                                           |
+| ---------------------- | ---------------------------------------------------------------------- |
+| `ThemeData`            | Central hub for all visual styling                                     |
+| `ColorScheme.fromSeed` | M3 color system from a single seed color                               |
+| `ThemeMode`            | `system`, `light`, or `dark`                                           |
+| Custom fonts           | `google_fonts` package or `pubspec.yaml` assets                        |
+| `copyWith`             | Extend theme or text styles without rewriting everything               |
+| Component themes       | Set `AppBarTheme`, `CardTheme`, `InputDecorationTheme` globally        |
+| `AnimatedContainer`    | Implicit animation for size/color/decoration changes                   |
+| `AnimatedSwitcher`     | Transition between two different widgets (requires unique `key`)       |
+| `Hero`                 | Shared element animation between two screens (requires matching `tag`) |
+| `InkWell` + `Material` | Proper ripple requires the InkWell to be above a Material surface      |
 
 ---
 
 <a name="review-questions"></a>
+
 # Review Questions
 
 Test your understanding! Try to answer each question before checking the code or re-reading the relevant section.
@@ -3282,6 +3101,6 @@ Test your understanding! Try to answer each question before checking the code or
 
 ---
 
-*Document written by the Flutter & Dart University Course Team.*  
-*Last updated: May 2026.*  
-*Version: 1.0.0*
+_Document written by the Flutter & Dart University Course Team._  
+_Last updated: May 2026._  
+_Version: 1.0.0_

@@ -230,59 +230,62 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        children: List.generate(
-                          _colorOptions.length,
-                          (index) => GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedColorIndex = index;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeInOut,
-                              margin: const EdgeInsets.only(right: 12),
-                              width: _selectedColorIndex == index ? 42 : 38,
-                              height: _selectedColorIndex == index ? 42 : 38,
-                              decoration: BoxDecoration(
-                                color: _colorOptions[index]['color'],
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: _selectedColorIndex == index
-                                      ? AppColors.primary
-                                      : (_colorOptions[index]['hasBorder']
-                                          ? AppColors.border
-                                          : Colors.transparent),
-                                  width:
-                                      _selectedColorIndex == index ? 3.0 : 1,
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(
+                            _colorOptions.length,
+                            (index) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedColorIndex = index;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeInOut,
+                                margin: const EdgeInsets.only(right: 12),
+                                width: _selectedColorIndex == index ? 42 : 38,
+                                height: _selectedColorIndex == index ? 42 : 38,
+                                decoration: BoxDecoration(
+                                  color: _colorOptions[index]['color'],
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: _selectedColorIndex == index
+                                        ? AppColors.primary
+                                        : (_colorOptions[index]['hasBorder']
+                                            ? AppColors.border
+                                            : Colors.transparent),
+                                    width:
+                                        _selectedColorIndex == index ? 3.0 : 1,
+                                  ),
+                                  boxShadow: _selectedColorIndex == index
+                                      ? [
+                                          BoxShadow(
+                                            color: AppColors.primary
+                                                .withOpacity(0.2),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 3),
+                                          )
+                                        ]
+                                      : null,
                                 ),
-                                boxShadow: _selectedColorIndex == index
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.primary
-                                              .withOpacity(0.2),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 3),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 200),
+                                  child: _selectedColorIndex == index
+                                      ? Icon(
+                                          Icons.check,
+                                          key: const ValueKey('checked'),
+                                          color:
+                                              _colorOptions[index]['color'] ==
+                                                      Colors.white
+                                                  ? AppColors.primary
+                                                  : Colors.white,
+                                          size: 20,
                                         )
-                                      ]
-                                    : null,
-                              ),
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 200),
-                                child: _selectedColorIndex == index
-                                    ? Icon(
-                                        Icons.check,
-                                        key: const ValueKey('checked'),
-                                        color:
-                                            _colorOptions[index]['color'] ==
-                                                    Colors.white
-                                                ? AppColors.primary
-                                                : Colors.white,
-                                        size: 20,
-                                      )
-                                    : const SizedBox.shrink(
-                                        key: ValueKey('empty')),
+                                      : const SizedBox.shrink(
+                                          key: ValueKey('empty')),
+                                ),
                               ),
                             ),
                           ),
@@ -300,57 +303,60 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        children: product.sizes.map((size) {
-                          final isSelected = _selectedSize == size;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedSize = size;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeInOut,
-                              margin: const EdgeInsets.only(right: 12),
-                              width: isSelected ? 48 : 42,
-                              height: isSelected ? 48 : 42,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.accent
-                                    : Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: product.sizes.map((size) {
+                            final isSelected = _selectedSize == size;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedSize = size;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                curve: Curves.easeInOut,
+                                margin: const EdgeInsets.only(right: 12),
+                                width: isSelected ? 48 : 42,
+                                height: isSelected ? 48 : 42,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
                                   color: isSelected
                                       ? AppColors.accent
-                                      : AppColors.border,
-                                  width: 1,
+                                      : Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? AppColors.accent
+                                        : AppColors.border,
+                                    width: 1,
+                                  ),
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color: AppColors.accent
+                                                .withOpacity(0.3),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 3),
+                                          )
+                                        ]
+                                      : null,
                                 ),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: AppColors.accent
-                                              .withOpacity(0.3),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 3),
-                                        )
-                                      ]
-                                    : null,
-                              ),
-                              child: Text(
-                                size,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.textDark,
+                                child: Text(
+                                  size,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.textDark,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                            );
+                          }).toList(),
+                        ),
                       ),
                       const SizedBox(height: 30),
                     ],

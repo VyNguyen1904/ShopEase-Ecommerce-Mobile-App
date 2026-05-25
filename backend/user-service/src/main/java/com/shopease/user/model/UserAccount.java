@@ -36,8 +36,9 @@ public class UserAccount {
     @Column(length = 20)
     private String phone;
 
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String role;
+    private Role role;
 
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -55,7 +56,7 @@ public class UserAccount {
                        String passwordHash,
                        String fullName,
                        String phone,
-                       String role,
+                       Role role,
                        List<Address> addresses,
                        Instant createdAt) {
         this.id = id;
@@ -75,5 +76,9 @@ public class UserAccount {
 
     public void replaceAddresses(List<Address> addresses) {
         this.addresses = new ArrayList<>(addresses);
+    }
+
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }

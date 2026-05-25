@@ -1,5 +1,6 @@
 package com.shopease.auth.service;
 
+import com.shopease.auth.dto.UserTokenInfo;
 import com.shopease.auth.config.JWTProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,7 +22,7 @@ public class TokenValidatorService {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSecret()));
     }
 
-    public String validateAndGetUserId(String token) {
+    public UserTokenInfo validateAndGetTokenInfo(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(secretKey())
                 .build()
@@ -33,6 +34,8 @@ public class TokenValidatorService {
             throw new RuntimeException("Invalid token type");
         }
 
-        return claims.getSubject();
+        String userId = claims.getSubject();
+        String role = claims.get("role", String.class);
+        return new UserTokenInfo(userId, role);
     }
 }

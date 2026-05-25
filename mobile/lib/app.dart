@@ -12,8 +12,9 @@ class ShopEaseApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: ThemeData(
-        useMaterial3: true,
+        useMaterial3: true, // Enable Material Design 3
         primaryColor: AppColors.primary,
+        // Color scheme generated from a seed color (Material 3)
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,
@@ -22,6 +23,7 @@ class ShopEaseApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Inter',
+        // Customize specific component themes
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -65,8 +67,7 @@ class ShopEaseApp extends StatelessWidget {
             return Colors.transparent;
           }),
           side: const BorderSide(color: AppColors.border, width: 1.5),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
     );
