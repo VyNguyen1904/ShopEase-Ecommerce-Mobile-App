@@ -12,6 +12,7 @@ class ShopEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // ? MaterialApp định nghĩa các thiết lập cấu hình cấp cao cho toàn bộ ứng dụng theo quy chuẩn
       title: 'ShopEase',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -39,8 +40,14 @@ class ShopEaseApp extends StatelessWidget {
           backgroundColor: Colors.white,
           selectedItemColor: AppColors.primary,
           unselectedItemColor: AppColors.textLight,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
-          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+          selectedLabelStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 11,
+          ),
           elevation: 8,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -62,12 +69,11 @@ class ShopEaseApp extends StatelessWidget {
             return Colors.transparent;
           }),
           side: const BorderSide(color: AppColors.border, width: 1.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
       ),
-      home: const ShellScreen(),
+      home:
+          const ShellScreen(), // ? màn hình đầu tiên xuất hiện khi app mở lên thành công
     );
   }
 }
