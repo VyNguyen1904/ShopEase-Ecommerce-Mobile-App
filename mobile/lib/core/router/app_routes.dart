@@ -24,6 +24,7 @@ abstract class AppRoutes {
   static const String adminUsers = '/admin/users';
   static const String sellerOrderDetail = '/seller/order-detail';
   static const String sellerNotifications = '/seller/notifications';
+  static const String sellerShopProfile = '/seller/shop-profile';
 
   /// Build the product detail path with a given product id.
   static String productDetailPath(String id) => '/product/$id';
