@@ -6,13 +6,17 @@ import '../../features/auth/screens/register_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/shell/screens/category_screen.dart';
-import '../../features/shell/screens/cart_screen.dart';
+import '../../features/cart/screens/cart_screen.dart';
 import '../../features/shell/screens/notification_screen.dart';
 import '../../features/shell/screens/account_screen.dart';
+import '../../features/orders/screens/orders_screen.dart';
+import '../../features/cart/screens/checkout_screen.dart';
+import '../../features/orders/screens/order_detail_screen.dart';
 import '../../features/shell/screens/settings_screen.dart';
 import '../../features/shell/screens/chat_list_screen.dart';
 import '../../features/home/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
+import '../../features/profile/screens/address_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
 import '../../features/admin/screens/admin_orders.dart';
 import '../../features/admin/screens/admin_users.dart';
@@ -70,10 +74,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.orders,
-              builder: (context, state) => const _PlaceholderScreen(
-                icon: Icons.assignment_outlined,
-                label: 'Đơn hàng (Trống)',
-              ),
+              builder: (context, state) => const OrdersScreen(),
             ),
           ],
         ),
@@ -91,6 +92,17 @@ final appRouter = GoRouter(
 
     // ── Detail Screens (pushed on top, no bottom nav) ────────────────────
     GoRoute(
+      path: AppRoutes.checkout,
+      builder: (context, state) => const CheckoutScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.orderDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return OrderDetailScreen(orderId: id);
+      },
+    ),
+    GoRoute(
       path: AppRoutes.productDetail,
       builder: (context, state) {
         final id = state.pathParameters['id'] ?? '';
@@ -100,6 +112,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.search,
       builder: (context, state) => const SearchResultsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.address,
+      builder: (context, state) => const AddressScreen(),
     ),
     GoRoute(
       path: AppRoutes.settings,

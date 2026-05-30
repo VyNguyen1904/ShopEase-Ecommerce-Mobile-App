@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../widgets/app_bottom_nav.dart';
 
 /// The main scaffold that holds the bottom navigation bar.
 /// Used as the shell for StatefulShellRoute in go_router.
@@ -39,66 +40,9 @@ class ShellLayout extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(32),
-              child: NavigationBar(
-                height: 64,
-                selectedIndex: navigationShell.currentIndex,
-                onDestinationSelected: _onTap,
-                backgroundColor: Colors.white,
-                elevation: 0,
-                indicatorColor: AppColors.bgLight,
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-
-        destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Trang chủ',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.category_outlined),
-            selectedIcon: Icon(Icons.category),
-            label: 'Danh mục',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.shopping_bag_outlined),
-            selectedIcon: Icon(Icons.shopping_bag),
-            label: 'Giỏ hàng',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: 'Đơn hàng',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Cá nhân',
-          ),
-        ],
-      ),
-            ),
-          ),
-        ),
+      bottomNavigationBar: AppBottomNav(
+        currentIndex: navigationShell.currentIndex,
+        onTap: _onTap,
       ),
     );
   }
@@ -174,6 +118,31 @@ class ShellLayout extends StatelessWidget {
                           () {
                             context.push(AppRoutes.productDetailPath('p1'));
                           },
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Cart (Customer/3.png)',
+                          () => context.go(AppRoutes.cart),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Checkout (Customer/4.png)',
+                          () => context.push(AppRoutes.checkout),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Orders (Customer/8.png)',
+                          () => context.go(AppRoutes.orders),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Order Detail (Customer/9.png)',
+                          () => context.push(AppRoutes.orderDetailPath('SE2405150001')),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Address Screen (Customer/10.png)',
+                          () => context.push(AppRoutes.address),
                         ),
                       ]),
                       _buildPanelSection('3. Màn hình chung (Common Screens)', [

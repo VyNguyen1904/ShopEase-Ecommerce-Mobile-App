@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_routes.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -219,7 +220,7 @@ class _CartScreenState extends State<CartScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => context.push(AppRoutes.checkout),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.textDark, // Following the reference image's black button
                         foregroundColor: Colors.white,

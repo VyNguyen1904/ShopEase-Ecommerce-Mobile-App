@@ -86,6 +86,7 @@ class AccountScreen extends StatelessWidget {
               _buildMenuItem(
                 icon: Icons.person_outline,
                 title: 'Quản lý thông tin',
+                onTap: () => context.push(AppRoutes.address),
               ),
               _buildMenuItem(
                 icon: Icons.lock_outline,
@@ -107,6 +108,11 @@ class AccountScreen extends StatelessWidget {
             _buildSectionTitle('Tùy chọn'),
             const SizedBox(height: 12),
             _buildMenuGroup([
+              _buildMenuItem(
+                icon: Icons.settings_outlined,
+                title: 'Cài đặt',
+                onTap: () => context.push(AppRoutes.settings),
+              ),
               _buildMenuItem(
                 icon: Icons.feed_outlined,
                 title: 'Về chúng tôi',

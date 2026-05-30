@@ -445,7 +445,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               children: [
                                 const CircleAvatar(
                                   radius: 20,
-                                  backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=32'),
+                                  backgroundImage: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80'),
                                 ),
                                 const SizedBox(width: 12),
                                 const Expanded(

@@ -196,7 +196,7 @@ class HomeScreen extends ConsumerWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: products.length,
                     itemBuilder: (context, index) {
-                      return _buildNewArrivalCard(context, ref, products[index], showDiscount: false);
+                      return _buildNewArrivalCard(context, ref, products[index], heroPrefix: 'new', showDiscount: false);
                     },
                   ),
                   loading: () => const Center(child: CircularProgressIndicator()),
@@ -249,7 +249,7 @@ class HomeScreen extends ConsumerWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: products.length,
                     itemBuilder: (context, index) {
-                      return _buildNewArrivalCard(context, ref, products[index]);
+                      return _buildNewArrivalCard(context, ref, products[index], heroPrefix: 'rec');
                     },
                   ),
                   loading: () => const Center(child: CircularProgressIndicator()),
@@ -379,8 +379,8 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNewArrivalCard(BuildContext context, WidgetRef ref, Product product, {bool showDiscount = true}) {
-    final heroTag = 'hero_new_${product.id}';
+  Widget _buildNewArrivalCard(BuildContext context, WidgetRef ref, Product product, {bool showDiscount = true, String heroPrefix = 'item'}) {
+    final heroTag = 'hero_${heroPrefix}_${product.id}';
     return GestureDetector(
       onTap: () {
         ref.read(selectedProductProvider.notifier).state = product;

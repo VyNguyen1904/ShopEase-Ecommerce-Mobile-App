@@ -16,6 +16,7 @@ class CategoryScreen extends ConsumerWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
+        centerTitle: true,
         title: const Text(
           'Danh mục',
           style: TextStyle(
