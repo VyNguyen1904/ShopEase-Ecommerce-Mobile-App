@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -42,7 +43,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               const Text('Không tìm thấy sản phẩm'),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => context.pop(),
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(AppRoutes.home);
+                  }
+                },
                 child: const Text('Quay lại'),
               ),
             ],
@@ -66,7 +73,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => context.pop(),
+                    onTap: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go(AppRoutes.home);
+                      }
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       child: const Icon(Icons.arrow_back_ios,
@@ -94,39 +107,54 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ),
             ),
 
-            // 2. Large Image View
+            // 2. Scrollable Content (Image + Details)
             Expanded(
-              flex: 4,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                child: Center(
-                  child: Hero(
-                    tag: heroTag.isNotEmpty
-                        ? heroTag
-                        : 'hero_img_${product.id}_v',
-                    child: Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.image,
-                            size: 100, color: AppColors.textLight);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // 3. Scrollable Detail content
-            Expanded(
-              flex: 5,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Large Image View
+                      Container(
+                        width: double.infinity,
+                        height: 360, // Slightly taller for a more premium look
+                        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.bgLight,
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: Hero(
+                            tag: heroTag.isNotEmpty
+                                ? heroTag
+                                : 'hero_img_${product.id}_v',
+                            child: Image.network(
+                              product.imageUrl,
+                              fit: BoxFit.cover, // Fill the container beautifully
+                              cacheWidth: 800,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.image,
+                                    size: 100, color: AppColors.textLight);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      // Detail Content
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                       // Product Title
                       Text(
                         product.name,
@@ -219,6 +247,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
+
+                      // Description
+                      const Text(
+                        'Mô tả sản phẩm',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        product.description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textGrey,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
 
                       // Color selector
                       Text(
@@ -358,12 +406,88 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           }).toList(),
                         ),
                       ),
-                      const SizedBox(height: 30),
-                    ],
+                      const SizedBox(height: 32),
+                      
+                      // Reviews Section
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Đánh giá sản phẩm',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          Text(
+                            'Xem tất cả',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Mock Review Item
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.bgLight,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=32'),
+                                ),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Trần Thị B',
+                                        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                      ),
+                                      Text(
+                                        '2 ngày trước',
+                                        style: TextStyle(fontSize: 12, color: AppColors.textLight),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: List.generate(
+                                    5,
+                                    (index) => const Icon(Icons.star, color: Colors.amber, size: 14),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Giày lên form rất đẹp và ôm chân, đi siêu êm. Hàng đóng gói cẩn thận. Rất ưng ý, 10 điểm không có nhưng nha!',
+                              style: TextStyle(color: AppColors.textDark, height: 1.5, fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
 
             // 4. Sticky Bottom Action Buttons
             Container(
@@ -452,7 +576,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   String _formatCurrency(double amount) {
     String value = amount.round().toString();
-    RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+    RegExp reg = RegExp(r'(\d)(?=(\d{3})+(?!\d))');
     return value.replaceAllMapped(reg, (Match match) => '${match[1]}.');
   }
 }

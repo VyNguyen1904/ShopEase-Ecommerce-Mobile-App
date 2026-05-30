@@ -6,6 +6,7 @@ import '../../features/auth/screens/register_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/shell/screens/category_screen.dart';
+import '../../features/shell/screens/cart_screen.dart';
 import '../../features/shell/screens/notification_screen.dart';
 import '../../features/shell/screens/account_screen.dart';
 import '../../features/shell/screens/settings_screen.dart';
@@ -55,15 +56,12 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        // Tab 2: Cart (placeholder)
+        // Tab 2: Cart
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: AppRoutes.cart,
-              builder: (context, state) => const _PlaceholderScreen(
-                icon: Icons.shopping_cart_outlined,
-                label: 'Giỏ hàng (Trống)',
-              ),
+              builder: (context, state) => const CartScreen(),
             ),
           ],
         ),
@@ -79,12 +77,12 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        // Tab 4: Notifications
+        // Tab 4: Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.notifications,
-              builder: (context, state) => const NotificationScreen(),
+              path: AppRoutes.account,
+              builder: (context, state) => const AccountScreen(),
             ),
           ],
         ),
@@ -107,9 +105,10 @@ final appRouter = GoRouter(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
+
     GoRoute(
-      path: AppRoutes.account,
-      builder: (context, state) => const AccountScreen(),
+      path: AppRoutes.notifications,
+      builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(
       path: AppRoutes.chats,

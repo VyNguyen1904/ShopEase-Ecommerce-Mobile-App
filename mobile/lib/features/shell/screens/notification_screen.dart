@@ -78,11 +78,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
             icon: const Icon(Icons.search, color: AppColors.textDark, size: 24),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined,
-                color: AppColors.textDark, size: 24),
-            onPressed: () => context.push(AppRoutes.settings),
-          ),
           const SizedBox(width: 8),
         ],
       ),

@@ -21,6 +21,7 @@ class ShellLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: Stack(
         children: [
           navigationShell,
@@ -38,14 +39,30 @@ class ShellLayout extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onTap,
-
-        backgroundColor: Colors.white,
-        elevation: 8,
-
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: NavigationBar(
+                height: 64,
+                selectedIndex: navigationShell.currentIndex,
+                onDestinationSelected: _onTap,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                indicatorColor: AppColors.bgLight,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
 
         destinations: [
           const NavigationDestination(
@@ -55,47 +72,33 @@ class ShellLayout extends StatelessWidget {
           ),
 
           const NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view),
+            icon: Icon(Icons.category_outlined),
+            selectedIcon: Icon(Icons.category),
             label: 'Danh mục',
           ),
 
           const NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart),
+            icon: Icon(Icons.shopping_bag_outlined),
+            selectedIcon: Icon(Icons.shopping_bag),
             label: 'Giỏ hàng',
           ),
 
           const NavigationDestination(
-            icon: Icon(Icons.assignment_outlined),
-            selectedIcon: Icon(Icons.assignment),
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
             label: 'Đơn hàng',
           ),
 
-          NavigationDestination(
-            icon: Stack(
-              children: [
-                const Icon(Icons.notifications_outlined),
-
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppColors.alertRed,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            selectedIcon: const Icon(Icons.notifications),
-            label: 'Thông báo',
+          const NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Cá nhân',
           ),
         ],
+      ),
+            ),
+          ),
+        ),
       ),
     );
   }
