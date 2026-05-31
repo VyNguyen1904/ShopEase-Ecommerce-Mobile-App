@@ -13,9 +13,12 @@ abstract class AppRoutes {
 
   // Detail screens (pushed on top of shell)
   static const String productDetail = '/product/:id';
+  static const String checkout = '/checkout';
+  static const String orderDetail = '/order-detail/:id';
   static const String search = '/search';
   static const String settings = '/settings';
   static const String account = '/account';
+  static const String address = '/address';
   static const String chats = '/chats';
 
   // Admin & Seller screens
@@ -26,6 +29,6 @@ abstract class AppRoutes {
   static const String sellerNotifications = '/seller/notifications';
   static const String sellerShopProfile = '/seller/shop-profile';
 
-  /// Build the product detail path with a given product id.
   static String productDetailPath(String id) => '/product/$id';
+  static String orderDetailPath(String id) => '/order-detail/$id';
 }
