@@ -5,13 +5,18 @@ import '../../features/onboarding/screens/splash_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
-import '../../features/shell/screens/category_screen.dart';
-import '../../features/shell/screens/notification_screen.dart';
-import '../../features/shell/screens/account_screen.dart';
-import '../../features/shell/screens/settings_screen.dart';
-import '../../features/shell/screens/chat_list_screen.dart';
+import '../../features/category/screens/category_screen.dart';
+import '../../features/cart/screens/cart_screen.dart';
+import '../../features/notifications/screens/notification_screen.dart';
+import '../../features/profile/screens/account_screen.dart';
+import '../../features/orders/screens/orders_screen.dart';
+import '../../features/cart/screens/checkout_screen.dart';
+import '../../features/orders/screens/order_detail_screen.dart';
+import '../../features/profile/screens/settings_screen.dart';
+import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/home/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
+import '../../features/profile/screens/address_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
 import '../../features/admin/screens/admin_orders.dart';
 import '../../features/admin/screens/admin_users.dart';
@@ -56,15 +61,12 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        // Tab 2: Cart (placeholder)
+        // Tab 2: Cart
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: AppRoutes.cart,
-              builder: (context, state) => const _PlaceholderScreen(
-                icon: Icons.shopping_cart_outlined,
-                label: 'Giỏ hàng (Trống)',
-              ),
+              builder: (context, state) => const CartScreen(),
             ),
           ],
         ),
@@ -73,19 +75,16 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.orders,
-              builder: (context, state) => const _PlaceholderScreen(
-                icon: Icons.assignment_outlined,
-                label: 'Đơn hàng (Trống)',
-              ),
+              builder: (context, state) => const OrdersScreen(),
             ),
           ],
         ),
-        // Tab 4: Notifications
+        // Tab 4: Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.notifications,
-              builder: (context, state) => const NotificationScreen(),
+              path: AppRoutes.account,
+              builder: (context, state) => const AccountScreen(),
             ),
           ],
         ),
@@ -93,6 +92,17 @@ final appRouter = GoRouter(
     ),
 
     // ── Detail Screens (pushed on top, no bottom nav) ────────────────────
+    GoRoute(
+      path: AppRoutes.checkout,
+      builder: (context, state) => const CheckoutScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.orderDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return OrderDetailScreen(orderId: id);
+      },
+    ),
     GoRoute(
       path: AppRoutes.productDetail,
       builder: (context, state) {
@@ -105,12 +115,17 @@ final appRouter = GoRouter(
       builder: (context, state) => const SearchResultsScreen(),
     ),
     GoRoute(
+      path: AppRoutes.address,
+      builder: (context, state) => const AddressScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
+
     GoRoute(
-      path: AppRoutes.account,
-      builder: (context, state) => const AccountScreen(),
+      path: AppRoutes.notifications,
+      builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(
       path: AppRoutes.chats,
