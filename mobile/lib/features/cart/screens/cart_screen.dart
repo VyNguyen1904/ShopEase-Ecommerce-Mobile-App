@@ -103,7 +103,16 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               // Cart Items
               Expanded(
                 child: cartItems.isEmpty
-                    ? const Center(child: Text('Giỏ hàng trống'))
+                    ? const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.remove_shopping_cart_outlined, size: 64, color: AppColors.textLight),
+                            SizedBox(height: 16),
+                            Text('Giỏ hàng của bạn đang trống', style: TextStyle(color: AppColors.textGrey, fontSize: 16)),
+                          ],
+                        ),
+                      )
                     : ListView.separated(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         itemCount: cartItems.length,

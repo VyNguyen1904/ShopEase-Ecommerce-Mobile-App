@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/models/notification_item.dart';
+import '../models/notification_item.dart';
 import '../../../core/router/app_routes.dart';
 
 class NotificationScreen extends StatefulWidget {
