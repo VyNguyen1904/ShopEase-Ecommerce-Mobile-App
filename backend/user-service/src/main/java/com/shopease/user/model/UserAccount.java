@@ -40,6 +40,8 @@ public class UserAccount {
     @Column(nullable = false, length = 20)
     private Role role;
 
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion = 0;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_addresses", joinColumns = @JoinColumn(name = "user_id"))
@@ -65,8 +67,13 @@ public class UserAccount {
         this.fullName = fullName;
         this.phone = phone;
         this.role = role;
+        this.tokenVersion = 0;
         this.addresses = addresses != null ? new ArrayList<>(addresses) : new ArrayList<>();
         this.createdAt = createdAt;
+    }
+
+    public void incrementTokenVersion() {
+        this.tokenVersion++;
     }
 
     public void updateProfile(String fullName, String phone) {

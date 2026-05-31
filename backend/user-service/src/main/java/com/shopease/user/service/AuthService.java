@@ -2,7 +2,9 @@ package com.shopease.user.service;
 
 import com.shopease.user.dto.*;
 import com.shopease.user.model.RefreshToken;
+import com.shopease.user.model.RefreshTokenFamily;
 import com.shopease.user.model.UserAccount;
+import com.shopease.user.repository.RefreshTokenFamilyRepository;
 import com.shopease.user.repository.RefreshTokenRepository;
 import com.shopease.user.repository.UserRepository;
 import lombok.AccessLevel;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +30,7 @@ public class AuthService {
     BCryptPasswordEncoder encoder;
     TokenService tokenService;
     RefreshTokenRepository refreshTokenRepository;
+    RefreshTokenFamilyRepository refreshTokenFamilyRepository;
 
     public TokenResponse register(RegisterRequest request) {
         UserAccount user = userService.createUser(request);
@@ -55,10 +59,34 @@ public class AuthService {
                         "Refresh token not recognized"
                 ));
 
+        // Case F4: Reuse Detection (RT is revoked)
         if (storedToken.isRevoked()) {
+            // Revoke entire family
+            UUID familyId = storedToken.getFamilyId();
+            refreshTokenFamilyRepository.findById(familyId).ifPresent(family -> {
+                family.setRevokedAt(Instant.now());
+                family.setRevokedReason("COMPROMISED");
+                refreshTokenFamilyRepository.save(family);
+            });
+
+            // Revoke all tokens in family
+            List<RefreshToken> familyTokens = refreshTokenRepository.findAllByFamilyId(familyId);
+            for (RefreshToken token : familyTokens) {
+                if (!token.isRevoked()) {
+                    token.setRevokedAt(Instant.now());
+                    token.setRevokedReason("FAMILY_COMPROMISED");
+                }
+            }
+            refreshTokenRepository.saveAll(familyTokens);
+
+            // Increment token_version of user
+            UserAccount user = users.findById(userId).orElseThrow();
+            user.incrementTokenVersion();
+            users.save(user);
+
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
-                    "Refresh token already revoked"
+                    "Refresh token already revoked (Compromised session). Force login."
             );
         }
 
@@ -69,14 +97,26 @@ public class AuthService {
             );
         }
 
-        TokenService.TokenInfo newAccess = tokenService.sign(userId, role, "access");
-        TokenService.TokenInfo newRefresh = tokenService.sign(userId, role, "refresh");
+        // Case F5: Happy Path Rotation
+        UserAccount user = users.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        TokenService.TokenInfo newAccess = tokenService.sign(userId, role, "access", user.getTokenVersion());
+        TokenService.TokenInfo newRefresh = tokenService.sign(userId, role, "refresh", user.getTokenVersion());
         String newRefreshTokenHash = tokenService.sha256(newRefresh.token());
 
         storedToken.setRevokedAt(Instant.now());
+        storedToken.setRevokedReason("ROTATED");
         storedToken.setReplacedByTokenHash(newRefreshTokenHash);
+        refreshTokenRepository.save(storedToken);
 
-        saveRefreshToken(userId, newRefresh);
+        saveRefreshToken(userId, newRefresh, storedToken.getFamilyId());
+
+        refreshTokenFamilyRepository.findById(storedToken.getFamilyId()).ifPresent(family -> {
+            family.setLastUsedAt(Instant.now());
+            family.setUpdatedAt(Instant.now());
+            refreshTokenFamilyRepository.save(family);
+        });
 
         return new TokenResponse(newAccess.token(), newRefresh.token());
     }
@@ -86,18 +126,55 @@ public class AuthService {
 
         refreshTokenRepository.findByTokenHash(tokenHash)
                 .ifPresent(token -> {
-                    if (!token.isRevoked()) {
-                        token.setRevokedAt(Instant.now());
+                    UUID familyId = token.getFamilyId();
+                    // Revoke family
+                    refreshTokenFamilyRepository.findById(familyId).ifPresent(family -> {
+                        family.setRevokedAt(Instant.now());
+                        family.setRevokedReason("USER_LOGOUT");
+                        refreshTokenFamilyRepository.save(family);
+                    });
+                    // Revoke tokens in family
+                    List<RefreshToken> familyTokens = refreshTokenRepository.findAllByFamilyId(familyId);
+                    for (RefreshToken t : familyTokens) {
+                        if (!t.isRevoked()) {
+                            t.setRevokedAt(Instant.now());
+                            t.setRevokedReason("USER_LOGOUT");
+                        }
                     }
+                    refreshTokenRepository.saveAll(familyTokens);
                 });
     }
 
-    private void saveRefreshToken(UUID userId, TokenService.TokenInfo tokenInfo) {
+    public void logoutAll(UUID userId) {
+        List<RefreshTokenFamily> activeFamilies = refreshTokenFamilyRepository.findAllByUserIdAndRevokedAtIsNull(userId);
+        for (RefreshTokenFamily family : activeFamilies) {
+            family.setRevokedAt(Instant.now());
+            family.setRevokedReason("LOGOUT_ALL");
+            refreshTokenFamilyRepository.save(family);
+
+            List<RefreshToken> tokens = refreshTokenRepository.findAllByFamilyId(family.getId());
+            for (RefreshToken t : tokens) {
+                if (!t.isRevoked()) {
+                    t.setRevokedAt(Instant.now());
+                    t.setRevokedReason("LOGOUT_ALL");
+                }
+            }
+            refreshTokenRepository.saveAll(tokens);
+        }
+
+        users.findById(userId).ifPresent(user -> {
+            user.incrementTokenVersion();
+            users.save(user);
+        });
+    }
+
+    private void saveRefreshToken(UUID userId, TokenService.TokenInfo tokenInfo, UUID familyId) {
         String tokenHash = tokenService.sha256(tokenInfo.token());
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .id(UUID.randomUUID())
                 .userId(userId)
+                .familyId(familyId)
                 .tokenHash(tokenHash)
                 .expiresAt(tokenInfo.expiresAt())
                 .createdAt(Instant.now())
@@ -107,10 +184,21 @@ public class AuthService {
     }
 
     private TokenResponse returnToken(UserAccount user) {
-        TokenService.TokenInfo access = tokenService.sign(user.getId(), user.getRole().name(), "access");
-        TokenService.TokenInfo refresh = tokenService.sign(user.getId(), user.getRole().name(), "refresh");
+        // Create new Refresh Token Family
+        UUID familyId = UUID.randomUUID();
+        RefreshTokenFamily family = RefreshTokenFamily.builder()
+                .id(familyId)
+                .userId(user.getId())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .lastUsedAt(Instant.now())
+                .build();
+        refreshTokenFamilyRepository.save(family);
 
-        saveRefreshToken(user.getId(), refresh);
+        TokenService.TokenInfo access = tokenService.sign(user.getId(), user.getRole().name(), "access", user.getTokenVersion());
+        TokenService.TokenInfo refresh = tokenService.sign(user.getId(), user.getRole().name(), "refresh", user.getTokenVersion());
+
+        saveRefreshToken(user.getId(), refresh, familyId);
 
         return new TokenResponse(access.token(), refresh.token());
     }
