@@ -43,20 +43,13 @@ class SellerStatsCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textGrey,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
         ),
       ],
     );
   }
 
   Widget _buildDivider() {
-    return Container(
-      width: 1,
-      height: 40,
-      color: AppColors.border,
-    );
+    return Container(width: 1, height: 40, color: AppColors.border);
   }
 }

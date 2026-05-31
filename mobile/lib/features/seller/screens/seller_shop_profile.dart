@@ -12,7 +12,8 @@ class SellerShopProfile extends StatefulWidget {
   State<SellerShopProfile> createState() => _SellerShopProfileState();
 }
 
-class _SellerShopProfileState extends State<SellerShopProfile> with SingleTickerProviderStateMixin {
+class _SellerShopProfileState extends State<SellerShopProfile>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   final List<Product> _featuredProducts = [
@@ -21,7 +22,8 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
       name: 'Nike Air Max 270',
       price: 160.00,
       originalPrice: 200.00,
-      imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
       category: 'Giày Nam',
       rating: 4.8,
       reviewsCount: 172,
@@ -35,7 +37,8 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
       name: 'Adidas Ultraboost',
       price: 160.00,
       originalPrice: 180.00,
-      imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&auto=format&fit=crop&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&auto=format&fit=crop&q=80',
       category: 'Giày Nam',
       rating: 4.9,
       reviewsCount: 210,
@@ -49,7 +52,8 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
       name: 'Puma RS-X',
       price: 160.00,
       originalPrice: 200.00,
-      imageUrl: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&auto=format&fit=crop&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&auto=format&fit=crop&q=80',
       category: 'Giày Nam',
       rating: 4.7,
       reviewsCount: 150,
@@ -75,7 +79,7 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
   @override
   Widget build(BuildContext context) {
     // Custom dark background color matching the design
-    const Color headerColor = Color(0xFF044851); 
+    const Color headerColor = Color(0xFF044851);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -90,17 +94,26 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 16,
+                  ),
                 ),
                 onPressed: () => context.pop(),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 background: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 40, left: 20, right: 20, bottom: 60),
+                    padding: const EdgeInsets.only(
+                      top: 40,
+                      left: 20,
+                      right: 20,
+                      bottom: 60,
+                    ),
                     child: Column(
                       children: [
                         Row(
@@ -112,9 +125,14 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.iconTeal, width: 2),
+                                border: Border.all(
+                                  color: AppColors.iconTeal,
+                                  width: 2,
+                                ),
                                 image: const DecorationImage(
-                                  image: NetworkImage('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80'),
+                                  image: NetworkImage(
+                                    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80',
+                                  ),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -164,28 +182,54 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 18),
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
                             const Text(
                               '4.9',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                             const Text(
                               ' (2.3k đánh giá)',
-                              style: TextStyle(fontSize: 14, color: Colors.white70),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
                             ),
                             const SizedBox(width: 16),
-                            Container(width: 1, height: 16, color: Colors.white24),
+                            Container(
+                              width: 1,
+                              height: 16,
+                              color: Colors.white24,
+                            ),
                             const SizedBox(width: 16),
-                            const Icon(Icons.people_alt, color: Colors.white70, size: 18),
+                            const Icon(
+                              Icons.people_alt,
+                              color: Colors.white70,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
                             const Text(
                               '2.3k',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                             const Text(
                               ' Người theo dõi',
-                              style: TextStyle(fontSize: 14, color: Colors.white70),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
                             ),
                           ],
                         ),
@@ -202,8 +246,12 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                                   backgroundColor: Colors.white,
                                   foregroundColor: headerColor,
                                   side: const BorderSide(color: Colors.white),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                 ),
                               ),
                             ),
@@ -211,14 +259,21 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {},
-                                icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                                icon: const Icon(
+                                  Icons.chat_bubble_outline,
+                                  size: 18,
+                                ),
                                 label: const Text('Chat'),
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: headerColor,
                                   side: const BorderSide(color: Colors.white),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
                                 ),
                               ),
                             ),
@@ -239,8 +294,14 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                     indicatorWeight: 3,
                     labelColor: AppColors.primary,
                     unselectedLabelColor: AppColors.textGrey,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+                    labelStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 14,
+                    ),
                     tabs: const [
                       Tab(text: 'Shop'),
                       Tab(text: 'Sản phẩm'),
@@ -284,12 +345,19 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.verified_outlined, size: 20, color: AppColors.textGrey),
+              const Icon(
+                Icons.verified_outlined,
+                size: 20,
+                color: AppColors.textGrey,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Chuyên nhập và kinh doanh giày chính hãng',
-                  style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textGrey,
+                  ),
                 ),
               ),
             ],
@@ -297,7 +365,11 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
           const SizedBox(height: 8),
           Row(
             children: const [
-              Icon(Icons.calendar_today_outlined, size: 20, color: AppColors.textGrey),
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 20,
+                color: AppColors.textGrey,
+              ),
               SizedBox(width: 8),
               Text(
                 'Tham gia từ 09/2022',
@@ -305,7 +377,7 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
               ),
             ],
           ),
-          
+
           // Stats Card
           const SellerStatsCard(),
           const SizedBox(height: 32),
@@ -336,14 +408,18 @@ class _SellerShopProfileState extends State<SellerShopProfile> with SingleTicker
                         color: AppColors.primary,
                       ),
                     ),
-                    Icon(Icons.chevron_right, size: 18, color: AppColors.primary),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 18,
+                      color: AppColors.primary,
+                    ),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Horizontal Product List
           SizedBox(
             height: 240, // Height for vertical ProductCard

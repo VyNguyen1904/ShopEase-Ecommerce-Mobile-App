@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../auth/providers/auth_provider.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userProfileAsync = ref.watch(userProfileProvider);
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white bg
       appBar: AppBar(
@@ -29,53 +32,60 @@ class AccountScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User Info Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 32,
-                    backgroundImage: NetworkImage(
-                      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
+            userProfileAsync.when(
+              data: (user) => Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Jane Doe',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'jane.doe@gmail.com',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textGrey.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 32,
+                      backgroundImage:
+                          user.avatar != null && user.avatar!.isNotEmpty
+                          ? NetworkImage(user.avatar!)
+                          : const NetworkImage(
+                              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
+                            ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user.fullName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user.email,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textGrey.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Lỗi: $err')),
             ),
             const SizedBox(height: 32),
 
@@ -113,10 +123,7 @@ class AccountScreen extends StatelessWidget {
                 title: 'Cài đặt',
                 onTap: () => context.push(AppRoutes.settings),
               ),
-              _buildMenuItem(
-                icon: Icons.feed_outlined,
-                title: 'Về chúng tôi',
-              ),
+              _buildMenuItem(icon: Icons.feed_outlined, title: 'Về chúng tôi'),
               _buildMenuItem(
                 icon: Icons.contrast,
                 title: 'Giao diện',
@@ -142,10 +149,14 @@ class AccountScreen extends StatelessWidget {
                 icon: Icons.logout_outlined,
                 title: 'Đăng xuất',
                 isDestructive: true,
-                onTap: () => context.go(AppRoutes.splash),
+                onTap: () async {
+                  await ref.read(authServiceProvider).logout();
+                  ref.invalidate(userProfileProvider);
+                  if (context.mounted) context.go(AppRoutes.splash);
+                },
               ),
             ]),
-            
+
             // Padding to account for the floating bottom nav bar
             const SizedBox(height: 120),
           ],
@@ -172,7 +183,7 @@ class AccountScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -230,18 +241,11 @@ class AccountScreen extends StatelessWidget {
           if (trailingText != null) ...[
             Text(
               trailingText,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textGrey,
-              ),
+              style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
             ),
             const SizedBox(width: 8),
           ],
-          const Icon(
-            Icons.chevron_right,
-            color: AppColors.textLight,
-            size: 20,
-          ),
+          const Icon(Icons.chevron_right, color: AppColors.textLight, size: 20),
         ],
       ),
     );

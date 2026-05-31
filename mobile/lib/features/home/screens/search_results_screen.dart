@@ -11,17 +11,20 @@ class SearchResultsScreen extends ConsumerStatefulWidget {
   const SearchResultsScreen({super.key});
 
   @override
-  ConsumerState<SearchResultsScreen> createState() => _SearchResultsScreenState();
+  ConsumerState<SearchResultsScreen> createState() =>
+      _SearchResultsScreenState();
 }
 
 class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
-  final TextEditingController _searchController =
-      TextEditingController(text: 'sneakers');
+  final TextEditingController _searchController = TextEditingController(
+    text: 'sneakers',
+  );
 
   @override
   Widget build(BuildContext context) {
-    final List<Product> shoes =
-        mockProducts.where((p) => p.category.contains('Giày')).toList();
+    final List<Product> shoes = mockProducts
+        .where((p) => p.category.contains('Giày'))
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
@@ -38,8 +41,11 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                     onTap: () => context.pop(),
                     child: Container(
                       padding: const EdgeInsets.all(8),
-                      child: const Icon(Icons.arrow_back,
-                          color: AppColors.textDark, size: 24),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.textDark,
+                        size: 24,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -54,14 +60,18 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                       child: TextField(
                         controller: _searchController,
                         style: const TextStyle(
-                            fontSize: 15, color: AppColors.textDark),
+                          fontSize: 15,
+                          color: AppColors.textDark,
+                        ),
                         decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.search,
-                              color: AppColors.textGrey, size: 20),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: AppColors.textGrey,
+                            size: 20,
+                          ),
                           hintText: 'Tìm kiếm sản phẩm...',
                           border: InputBorder.none,
-                          contentPadding:
-                              EdgeInsets.symmetric(vertical: 14),
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
                         ),
                       ),
                     ),
@@ -90,14 +100,17 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                 children: [
                   _buildFilterButton(icon: Icons.swap_vert, label: 'Sắp xếp'),
                   const SizedBox(width: 10),
-                  _buildFilterButton(
-                      icon: Icons.grid_view, label: 'Danh mục'),
+                  _buildFilterButton(icon: Icons.grid_view, label: 'Danh mục'),
                   const SizedBox(width: 10),
                   _buildFilterButton(
-                      icon: Icons.local_offer_outlined, label: 'Giá'),
+                    icon: Icons.local_offer_outlined,
+                    label: 'Giá',
+                  ),
                   const SizedBox(width: 10),
                   _buildFilterButton(
-                      icon: Icons.filter_alt_outlined, label: 'Bộ lọc'),
+                    icon: Icons.filter_alt_outlined,
+                    label: 'Bộ lọc',
+                  ),
                 ],
               ),
             ),
@@ -113,8 +126,9 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                     TextSpan(
                       text: '123',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     TextSpan(text: ' kết quả tìm thấy'),
                   ],
@@ -152,8 +166,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
     );
   }
 
-  Widget _buildFilterButton(
-      {required IconData icon, required String label}) {
+  Widget _buildFilterButton({required IconData icon, required String label}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(

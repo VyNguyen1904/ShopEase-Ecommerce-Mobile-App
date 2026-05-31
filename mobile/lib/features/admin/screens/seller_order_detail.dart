@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 
-
 class SellerOrderDetail extends StatefulWidget {
   const SellerOrderDetail({super.key});
 
@@ -11,7 +10,8 @@ class SellerOrderDetail extends StatefulWidget {
 }
 
 class _SellerOrderDetailState extends State<SellerOrderDetail> {
-  int _activeStatusStep = 0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
+  int _activeStatusStep =
+      0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
 
   final List<String> _statusTexts = [
     'Đang xử lý',
@@ -71,14 +71,23 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                           children: [
                             const Text(
                               '#DH2405190001',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: _activeStatusStep == 0
                                     ? const Color(0xFFFFF7ED)
-                                    : (_activeStatusStep == 3 ? const Color(0xFFEAF5F6) : const Color(0xFFECEFFF)),
+                                    : (_activeStatusStep == 3
+                                          ? const Color(0xFFEAF5F6)
+                                          : const Color(0xFFECEFFF)),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -88,7 +97,9 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                                   fontWeight: FontWeight.bold,
                                   color: _activeStatusStep == 0
                                       ? const Color(0xFFD97706)
-                                      : (_activeStatusStep == 3 ? AppColors.primary : const Color(0xFF3B82F6)),
+                                      : (_activeStatusStep == 3
+                                            ? AppColors.primary
+                                            : const Color(0xFF3B82F6)),
                                 ),
                               ),
                             ),
@@ -97,7 +108,10 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                         const SizedBox(height: 8),
                         const Text(
                           '19/05/2024 • 10:24  •  Thanh toán: Đã thanh toán',
-                          style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textGrey,
+                          ),
                         ),
                       ],
                     ),
@@ -130,18 +144,29 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                             children: [
                               Text(
                                 'Nguyễn Văn An',
-                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textDark,
+                                ),
                               ),
                               SizedBox(height: 4),
                               Text(
                                 '📞 0987 654 321',
-                                style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textGrey,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.chat_bubble_outline, color: AppColors.primary, size: 20),
+                          icon: const Icon(
+                            Icons.chat_bubble_outline,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
                           onPressed: () {},
                         ),
                       ],
@@ -164,24 +189,39 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                                 children: [
                                   Text(
                                     'Nguyễn Văn An',
-                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textDark,
+                                    ),
                                   ),
                                   SizedBox(width: 8),
                                   Text(
                                     'Mặc định',
-                                    style: TextStyle(fontSize: 10, color: AppColors.primary, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: 6),
                               Text(
                                 '123 Đường Lê Lai, Phường Bến Thành,\nQuận 1, TP. Hồ Chí Minh',
-                                style: TextStyle(fontSize: 13, color: AppColors.textGrey, height: 1.4),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textGrey,
+                                  height: 1.4,
+                                ),
                               ),
                               SizedBox(height: 6),
                               Text(
                                 '📞 0987 654 321',
-                                style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textGrey,
+                                ),
                               ),
                             ],
                           ),
@@ -235,19 +275,30 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                                 children: [
                                   Text(
                                     'Nike Air Max 270',
-                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.textDark,
+                                    ),
                                   ),
                                   SizedBox(height: 4),
                                   Text(
                                     'Trắng / Đen  •  Size 42  •  x1',
-                                    style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: AppColors.textGrey,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                             const Text(
                               '1.250.000đ',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
                             ),
                           ],
                         ),
@@ -257,8 +308,21 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                         const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Phí vận chuyển', style: TextStyle(fontSize: 13, color: AppColors.textGrey)),
-                            Text('30.000đ', style: TextStyle(fontSize: 13, color: AppColors.textDark, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Phí vận chuyển',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                            Text(
+                              '30.000đ',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textDark,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -267,11 +331,19 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                           children: [
                             Text(
                               'Tổng tiền',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
                             ),
                             Text(
                               '1.280.000đ',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.accent),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accent,
+                              ),
                             ),
                           ],
                         ),
@@ -289,16 +361,42 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Phương thức', style: TextStyle(fontSize: 13, color: AppColors.textGrey)),
-                            Text('Ví ShopeePay', style: TextStyle(fontSize: 13, color: AppColors.textDark, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Phương thức',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                            Text(
+                              'Ví ShopeePay',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textDark,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Trạng thái', style: TextStyle(fontSize: 13, color: AppColors.textGrey)),
-                            Text('Đã thanh toán', style: TextStyle(fontSize: 13, color: AppColors.iconGreen, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Trạng thái',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                            Text(
+                              'Đã thanh toán',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.iconGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -326,19 +424,25 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                         ),
                         _buildTimelineItem(
                           title: 'Đơn hàng đã đóng gói',
-                          time: _activeStatusStep >= 1 ? '19/05/2024 • 11:15' : '--:--/--/----  •  --:--',
+                          time: _activeStatusStep >= 1
+                              ? '19/05/2024 • 11:15'
+                              : '--:--/--/----  •  --:--',
                           user: _activeStatusStep >= 1 ? 'Bạn' : '---',
                           isDone: _activeStatusStep >= 1,
                         ),
                         _buildTimelineItem(
                           title: 'Đơn hàng đã bàn giao vận chuyển',
-                          time: _activeStatusStep >= 2 ? '19/05/2024 • 14:00' : '--:--/--/----  •  --:--',
+                          time: _activeStatusStep >= 2
+                              ? '19/05/2024 • 14:00'
+                              : '--:--/--/----  •  --:--',
                           user: _activeStatusStep >= 2 ? 'Bạn' : '---',
                           isDone: _activeStatusStep >= 2,
                         ),
                         _buildTimelineItem(
                           title: 'Đơn hàng đã giao thành công',
-                          time: _activeStatusStep >= 3 ? '21/05/2024 • 16:30' : '--:--/--/----  •  --:--',
+                          time: _activeStatusStep >= 3
+                              ? '21/05/2024 • 16:30'
+                              : '--:--/--/----  •  --:--',
                           user: _activeStatusStep >= 3 ? 'Hệ thống' : '---',
                           isDone: _activeStatusStep >= 3,
                           isLast: true,
@@ -359,7 +463,7 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 10,
                   offset: const Offset(0, -4),
                 ),
@@ -371,16 +475,32 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
               children: [
                 const Text(
                   'Cập nhật trạng thái đơn hàng',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textGrey),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textGrey,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _buildActionButton(0, Icons.check_circle_outline, 'Xác nhận'),
+                    _buildActionButton(
+                      0,
+                      Icons.check_circle_outline,
+                      'Xác nhận',
+                    ),
                     const SizedBox(width: 8),
-                    _buildActionButton(1, Icons.inventory_2_outlined, 'Đóng gói'),
+                    _buildActionButton(
+                      1,
+                      Icons.inventory_2_outlined,
+                      'Đóng gói',
+                    ),
                     const SizedBox(width: 8),
-                    _buildActionButton(2, Icons.local_shipping_outlined, 'Bàn giao'),
+                    _buildActionButton(
+                      2,
+                      Icons.local_shipping_outlined,
+                      'Bàn giao',
+                    ),
                     const SizedBox(width: 8),
                     _buildActionButton(3, Icons.done_all, 'Hoàn thành'),
                   ],
@@ -414,7 +534,11 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textGrey),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textGrey,
+                ),
               ),
             ],
           ),
@@ -477,14 +601,21 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
               const SizedBox(height: 4),
               Text(
                 time,
-                style: const TextStyle(fontSize: 11, color: AppColors.textLight),
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textLight,
+                ),
               ),
             ],
           ),
         ),
         Text(
           user,
-          style: TextStyle(fontSize: 12, color: isDone ? AppColors.textGrey : AppColors.textLight, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 12,
+            color: isDone ? AppColors.textGrey : AppColors.textLight,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );
@@ -512,7 +643,11 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: isSelected ? AppColors.primary : AppColors.textGrey, size: 18),
+              Icon(
+                icon,
+                color: isSelected ? AppColors.primary : AppColors.textGrey,
+                size: 18,
+              ),
               const SizedBox(height: 4),
               Text(
                 label,

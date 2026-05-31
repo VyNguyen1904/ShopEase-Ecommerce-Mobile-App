@@ -25,7 +25,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () {
             if (context.canPop()) context.pop();
           },
@@ -41,7 +45,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         centerTitle: true,
       ),
       body: cartState.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.textDark)),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.textDark),
+        ),
         error: (err, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -50,29 +56,37 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               TextButton(
                 onPressed: () => ref.read(cartProvider.notifier).fetchCart(),
                 child: const Text('Thử lại'),
-              )
+              ),
             ],
           ),
         ),
         data: (cart) {
           final cartItems = cart.items;
-          final bool isAllSelected = cartItems.isNotEmpty && cartItems.every((item) => item.selected);
-          
+          final bool isAllSelected =
+              cartItems.isNotEmpty && cartItems.every((item) => item.selected);
+
           return Column(
             children: [
               // Select All Checkbox
               if (cartItems.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     children: [
                       Checkbox(
                         value: isAllSelected,
                         onChanged: (bool? value) {
-                          ref.read(cartProvider.notifier).toggleAll(value ?? false);
+                          ref
+                              .read(cartProvider.notifier)
+                              .toggleAll(value ?? false);
                         },
                         activeColor: AppColors.textDark,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                       ),
                       const Text(
                         'Chọn tất cả',
@@ -85,7 +99,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     ],
                   ),
                 ),
-                
+
               // Cart Items
               Expanded(
                 child: cartItems.isEmpty
@@ -93,14 +107,15 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     : ListView.separated(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         itemCount: cartItems.length,
-                        separatorBuilder: (context, index) => _buildDottedDivider(),
+                        separatorBuilder: (context, index) =>
+                            _buildDottedDivider(),
                         itemBuilder: (context, index) {
                           final item = cartItems[index];
                           return _buildCartItem(item);
                         },
                       ),
               ),
-              
+
               // Bottom Checkout Section
               if (cartItems.isNotEmpty)
                 Container(
@@ -109,12 +124,14 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 16,
                         offset: const Offset(0, -4),
                       ),
                     ],
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(32),
+                    ),
                   ),
                   child: SafeArea(
                     child: Column(
@@ -122,23 +139,36 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       children: [
                         // Coupon Code
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.bgLight,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.local_activity_outlined, color: AppColors.textLight, size: 22),
+                              const Icon(
+                                Icons.local_activity_outlined,
+                                color: AppColors.textLight,
+                                size: 22,
+                              ),
                               const SizedBox(width: 12),
                               const Expanded(
                                 child: Text(
                                   'Thêm mã giảm giá',
-                                  style: TextStyle(color: AppColors.textLight, fontSize: 15),
+                                  style: TextStyle(
+                                    color: AppColors.textLight,
+                                    fontSize: 15,
+                                  ),
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.green.shade400,
                                   borderRadius: BorderRadius.circular(20),
@@ -147,18 +177,26 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                                   children: [
                                     Text(
                                       '-10%',
-                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                     SizedBox(width: 4),
-                                    Icon(Icons.close, color: Colors.white, size: 14),
+                                    Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 14,
+                                    ),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Total Amount
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -169,12 +207,19 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                               children: [
                                 Text(
                                   'Tổng cộng:',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
                                 ),
                                 SizedBox(height: 4),
                                 Text(
                                   'Mua để nhận điểm',
-                                  style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textGrey,
+                                  ),
                                 ),
                               ],
                             ),
@@ -183,19 +228,26 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                               children: [
                                 Text(
                                   '${cart.subtotal.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
-                                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 const Text(
                                   'Miễn phí giao hàng',
-                                  style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textGrey,
+                                  ),
                                 ),
                               ],
                             ),
                           ],
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Checkout Button
                         SizedBox(
                           width: double.infinity,
@@ -212,7 +264,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                             ),
                             child: const Text(
                               'Tiến hành thanh toán',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
@@ -237,14 +292,18 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           Checkbox(
             value: item.selected,
             onChanged: (bool? value) {
-              ref.read(cartProvider.notifier).toggleItemSelection(item.productId, value ?? false);
+              ref
+                  .read(cartProvider.notifier)
+                  .toggleItemSelection(item.productId, value ?? false);
             },
             activeColor: AppColors.textDark,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
             visualDensity: VisualDensity.compact,
           ),
           const SizedBox(width: 8),
-          
+
           // Image
           Container(
             width: 72,
@@ -255,18 +314,19 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: item.productImageUrl != null 
-                ? Image.network(
-                    item.productImageUrl!,
-                    fit: BoxFit.cover,
-                    cacheWidth: 144,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, color: Colors.grey),
-                  )
-                : const Icon(Icons.image, color: Colors.grey),
+              child: item.productImageUrl != null
+                  ? Image.network(
+                      item.productImageUrl!,
+                      fit: BoxFit.cover,
+                      cacheWidth: 144,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.image, color: Colors.grey),
+                    )
+                  : const Icon(Icons.image, color: Colors.grey),
             ),
           ),
           const SizedBox(width: 16),
-          
+
           // Details
           Expanded(
             child: Column(
@@ -291,16 +351,25 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
-                        ref.read(cartProvider.notifier).removeItem(item.productId);
+                        ref
+                            .read(cartProvider.notifier)
+                            .removeItem(item.productId);
                       },
-                      child: const Icon(Icons.close, color: AppColors.textLight, size: 18),
+                      child: const Icon(
+                        Icons.close,
+                        color: AppColors.textLight,
+                        size: 18,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   item.productVariant ?? 'Mặc định',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textLight),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textLight,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -320,7 +389,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         ),
                       ],
                     ),
-                    
+
                     // Quantity Selector
                     Container(
                       height: 36,
@@ -335,7 +404,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                             icon: const Icon(Icons.remove, size: 16),
                             onPressed: () {
                               if (item.quantity > 1) {
-                                ref.read(cartProvider.notifier).updateQuantity(item.productId, item.quantity - 1);
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .updateQuantity(
+                                      item.productId,
+                                      item.quantity - 1,
+                                    );
                               }
                             },
                             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -354,7 +428,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                           IconButton(
                             icon: const Icon(Icons.add, size: 16),
                             onPressed: () {
-                              ref.read(cartProvider.notifier).updateQuantity(item.productId, item.quantity + 1);
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .updateQuantity(
+                                    item.productId,
+                                    item.quantity + 1,
+                                  );
                             },
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             constraints: const BoxConstraints(),

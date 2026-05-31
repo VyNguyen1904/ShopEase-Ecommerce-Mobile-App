@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 enum DeviceType { mobile, tablet, desktop }
 
 class ResponsiveBuilder extends StatelessWidget {
-  final Widget Function(BuildContext context, DeviceType deviceType, BoxConstraints constraints)
-      builder;
+  final Widget Function(
+    BuildContext context,
+    DeviceType deviceType,
+    BoxConstraints constraints,
+  )
+  builder;
 
   const ResponsiveBuilder({super.key, required this.builder});
 

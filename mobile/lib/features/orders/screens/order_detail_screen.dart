@@ -28,7 +28,11 @@ class OrderDetailScreen extends StatelessWidget {
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 // Fallback in case asset is not loaded
-                return const Icon(Icons.check_circle, color: AppColors.primary, size: 100);
+                return const Icon(
+                  Icons.check_circle,
+                  color: AppColors.primary,
+                  size: 100,
+                );
               },
             ),
             const SizedBox(height: 16),
@@ -46,7 +50,7 @@ class OrderDetailScreen extends StatelessWidget {
               'Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.',
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textGrey.withOpacity(0.8),
+                color: AppColors.textGrey.withValues(alpha: 0.8),
               ),
               textAlign: TextAlign.center,
             ),
@@ -78,7 +82,10 @@ class OrderDetailScreen extends StatelessWidget {
               color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.receipt_long_outlined, color: AppColors.primaryDark),
+            child: const Icon(
+              Icons.receipt_long_outlined,
+              color: AppColors.primaryDark,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -100,11 +107,18 @@ class OrderDetailScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.textGrey.withOpacity(0.7)),
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: AppColors.textGrey.withValues(alpha: 0.7),
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Đặt ngày: 15 Thg 5, 2024 • 10:30 AM',
-                      style: TextStyle(fontSize: 12, color: AppColors.textGrey.withOpacity(0.8)),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textGrey.withValues(alpha: 0.8),
+                      ),
                     ),
                   ],
                 ),
@@ -114,7 +128,7 @@ class OrderDetailScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight.withOpacity(0.5),
+              color: AppColors.primaryLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Text(
@@ -136,19 +150,51 @@ class OrderDetailScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildTimelineStep('Đặt hàng', '15/05, 10:30', Icons.shopping_bag_outlined, true, true),
+          _buildTimelineStep(
+            'Đặt hàng',
+            '15/05, 10:30',
+            Icons.shopping_bag_outlined,
+            true,
+            true,
+          ),
           _buildTimelineLine(true),
-          _buildTimelineStep('Đang xử lý', '', Icons.inventory_2_outlined, true, true),
+          _buildTimelineStep(
+            'Đang xử lý',
+            '',
+            Icons.inventory_2_outlined,
+            true,
+            true,
+          ),
           _buildTimelineLine(true),
-          _buildTimelineStep('Đang giao', '', Icons.local_shipping_outlined, true, true),
+          _buildTimelineStep(
+            'Đang giao',
+            '',
+            Icons.local_shipping_outlined,
+            true,
+            true,
+          ),
           _buildTimelineLine(true),
-          _buildTimelineStep('Đã nhận hàng', '', Icons.check, true, false, isLast: true),
+          _buildTimelineStep(
+            'Đã nhận hàng',
+            '',
+            Icons.check,
+            true,
+            false,
+            isLast: true,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTimelineStep(String title, String subtitle, IconData icon, bool isCompleted, bool hasCheck, {bool isLast = false}) {
+  Widget _buildTimelineStep(
+    String title,
+    String subtitle,
+    IconData icon,
+    bool isCompleted,
+    bool hasCheck, {
+    bool isLast = false,
+  }) {
     return Column(
       children: [
         Stack(
@@ -157,10 +203,16 @@ class OrderDetailScreen extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: isCompleted ? AppColors.primaryDark : Colors.grey.shade200,
+                color: isCompleted
+                    ? AppColors.primaryDark
+                    : Colors.grey.shade200,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: isCompleted ? Colors.white : Colors.grey.shade400, size: 20),
+              child: Icon(
+                icon,
+                color: isCompleted ? Colors.white : Colors.grey.shade400,
+                size: 20,
+              ),
             ),
             if (hasCheck && isCompleted)
               Positioned(
@@ -177,7 +229,11 @@ class OrderDetailScreen extends StatelessWidget {
                       color: AppColors.primaryDark,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.check, color: Colors.white, size: 10),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 10,
+                    ),
                   ),
                 ),
               ),
@@ -222,7 +278,11 @@ class OrderDetailScreen extends StatelessWidget {
               color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.location_on_outlined, color: AppColors.primaryDark, size: 20),
+            child: const Icon(
+              Icons.location_on_outlined,
+              color: AppColors.primaryDark,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -234,7 +294,11 @@ class OrderDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Địa chỉ nhận hàng',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textDark),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     Icon(Icons.chevron_right, color: AppColors.textGrey),
                   ],
@@ -244,7 +308,11 @@ class OrderDetailScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Jane Doe',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textDark),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Icon(Icons.phone, size: 12, color: AppColors.accent),
@@ -270,9 +338,27 @@ class OrderDetailScreen extends StatelessWidget {
 
   Widget _buildProductsCard() {
     final products = [
-      {'name': 'Nike Air Max 270', 'variant': 'Trắng/Xanh • Size 9', 'price': '590.000đ', 'image': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400'},
-      {'name': 'Adidas Ultraboost', 'variant': 'Đen/Đỏ • Size 9', 'price': '890.000đ', 'image': 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400'},
-      {'name': 'Puma RS-X', 'variant': 'Đen/Đỏ • Size 9', 'price': '890.000đ', 'image': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400'},
+      {
+        'name': 'Nike Air Max 270',
+        'variant': 'Trắng/Xanh • Size 9',
+        'price': '590.000đ',
+        'image':
+            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      },
+      {
+        'name': 'Adidas Ultraboost',
+        'variant': 'Đen/Đỏ • Size 9',
+        'price': '890.000đ',
+        'image':
+            'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400',
+      },
+      {
+        'name': 'Puma RS-X',
+        'variant': 'Đen/Đỏ • Size 9',
+        'price': '890.000đ',
+        'image':
+            'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
+      },
     ];
 
     return _buildCard(
@@ -284,59 +370,91 @@ class OrderDetailScreen extends StatelessWidget {
             children: [
               Text(
                 'Sản phẩm (${products.length})',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textDark),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: AppColors.textDark,
+                ),
               ),
               const Row(
                 children: [
-                  Text('Xem chi tiết', style: TextStyle(color: AppColors.primaryDark, fontSize: 12, fontWeight: FontWeight.bold)),
-                  Icon(Icons.chevron_right, color: AppColors.primaryDark, size: 16),
+                  Text(
+                    'Xem chi tiết',
+                    style: TextStyle(
+                      color: AppColors.primaryDark,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: AppColors.primaryDark,
+                    size: 16,
+                  ),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 16),
-          ...products.map((p) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        p['image']!,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      ),
+          ...products.map(
+            (p) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      p['image']!,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            p['name']!,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textDark),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          p['name']!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: AppColors.textDark,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            p['variant']!,
-                            style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          p['variant']!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textGrey,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'x1',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textDark),
+                  ),
+                  Text(
+                    'x1',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: AppColors.textDark,
                     ),
-                    const SizedBox(width: 24),
-                    Text(
-                      p['price']!,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textDark),
+                  ),
+                  const SizedBox(width: 24),
+                  Text(
+                    p['price']!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: AppColors.textDark,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -353,13 +471,23 @@ class OrderDetailScreen extends StatelessWidget {
             children: [
               const Text(
                 'Thanh toán',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textDark),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: AppColors.textDark,
+                ),
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Text('Phương thức: ', style: TextStyle(fontSize: 12, color: AppColors.textGrey)),
-                  const Text('Thanh toán khi nhận hàng (COD)', style: TextStyle(fontSize: 12, color: AppColors.textDark)),
+                  const Text(
+                    'Phương thức: ',
+                    style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                  ),
+                  const Text(
+                    'Thanh toán khi nhận hàng (COD)',
+                    style: TextStyle(fontSize: 12, color: AppColors.textDark),
+                  ),
                 ],
               ),
             ],
@@ -374,7 +502,11 @@ class OrderDetailScreen extends StatelessWidget {
               const SizedBox(height: 4),
               const Text(
                 '442.000đ',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.accentDark),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: AppColors.accentDark,
+                ),
               ),
             ],
           ),
@@ -392,7 +524,7 @@ class OrderDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -408,13 +540,15 @@ class OrderDetailScreen extends StatelessWidget {
         left: 16,
         right: 16,
         top: 16,
-        bottom: MediaQuery.of(context).padding.bottom > 0 ? MediaQuery.of(context).padding.bottom : 16,
+        bottom: MediaQuery.of(context).padding.bottom > 0
+            ? MediaQuery.of(context).padding.bottom
+            : 16,
       ),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -428,14 +562,27 @@ class OrderDetailScreen extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: AppColors.primaryDark),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.chat_bubble_outline, color: AppColors.primaryDark, size: 20),
+                  Icon(
+                    Icons.chat_bubble_outline,
+                    color: AppColors.primaryDark,
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
-                  Text('Liên hệ Shop', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    'Liên hệ Shop',
+                    style: TextStyle(
+                      color: AppColors.primaryDark,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -448,14 +595,27 @@ class OrderDetailScreen extends StatelessWidget {
                 backgroundColor: AppColors.primaryDark,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 20),
+                  Icon(
+                    Icons.shopping_bag_outlined,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
-                  Text('Mua sắm thêm', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    'Mua sắm thêm',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,12 +14,25 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   double _opacity = 1.0;
   bool _isNavigating = false;
+  final AuthService _authService = AuthService();
 
-  void _startNavigation() {
+  void _startNavigation() async {
     if (_isNavigating) return;
+
+    // Check if token exists
+    final token = await _authService.getAccessToken();
+
     setState(() {
       _isNavigating = true;
       _opacity = 0.0;
+    });
+
+    // Determine route
+    final nextRoute = token != null ? AppRoutes.home : AppRoutes.login;
+
+    // Wait for animation to finish before navigating
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (mounted) context.go(nextRoute);
     });
   }
 
@@ -29,11 +43,6 @@ class _SplashScreenState extends State<SplashScreen> {
         opacity: _opacity,
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOutCubic,
-        onEnd: () {
-          if (_isNavigating) {
-            context.go(AppRoutes.home);
-          }
-        },
         child: Stack(
           children: [
             // Background gradient matching Customer/1.png
@@ -89,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen> {
                             borderRadius: BorderRadius.circular(32),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.12),
+                                color: Colors.black.withValues(alpha: 0.12),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -127,7 +136,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             height: 1.4,
                           ),
                         ),

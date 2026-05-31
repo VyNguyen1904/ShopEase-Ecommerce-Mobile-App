@@ -55,9 +55,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
       groupedNotifications[n.group]!.add(n);
     }
 
-    final sortedGroups = ['Hôm nay', 'Hôm qua', 'Trước đó']
-        .where((g) => groupedNotifications.containsKey(g))
-        .toList();
+    final sortedGroups = [
+      'Hôm nay',
+      'Hôm qua',
+      'Trước đó',
+    ].where((g) => groupedNotifications.containsKey(g)).toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -96,8 +98,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 final isSelected = _activeTab == tab;
                 int? badgeCount;
                 if (tab == 'Tất cả') {
-                  badgeCount =
-                      mockNotifications.where((n) => n.isUnread).length;
+                  badgeCount = mockNotifications
+                      .where((n) => n.isUnread)
+                      .length;
                 }
 
                 return GestureDetector(
@@ -167,20 +170,27 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.notifications_none,
-                            size: 64, color: AppColors.textLight),
+                        Icon(
+                          Icons.notifications_none,
+                          size: 64,
+                          color: AppColors.textLight,
+                        ),
                         SizedBox(height: 12),
                         Text(
                           'Không có thông báo nào',
                           style: TextStyle(
-                              color: AppColors.textGrey, fontSize: 16),
+                            color: AppColors.textGrey,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     itemCount: sortedGroups.length,
                     itemBuilder: (context, groupIndex) {
                       final groupName = sortedGroups[groupIndex];
@@ -191,7 +201,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 12.0, horizontal: 4.0),
+                              vertical: 12.0,
+                              horizontal: 4.0,
+                            ),
                             child: Text(
                               groupName,
                               style: const TextStyle(
@@ -201,8 +213,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               ),
                             ),
                           ),
-                          ...items.map((item) =>
-                              _buildNotificationTile(context, item)),
+                          ...items.map(
+                            (item) => _buildNotificationTile(context, item),
+                          ),
                         ],
                       );
                     },
@@ -213,8 +226,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _buildNotificationTile(
-      BuildContext context, NotificationItem item) {
+  Widget _buildNotificationTile(BuildContext context, NotificationItem item) {
     Color iconBgColor;
     Color iconColor;
     IconData icon;
@@ -258,7 +270,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withValues(alpha: 0.01),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

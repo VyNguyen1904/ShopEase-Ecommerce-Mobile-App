@@ -10,13 +10,18 @@ class ShopEaseApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch, PointerDeviceKind.stylus, PointerDeviceKind.unknown},
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown,
+        },
       ),
       title: 'ShopEase',
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: ThemeData(
-        useMaterial3: true, 
+        useMaterial3: true,
         primaryColor: AppColors.primary,
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,

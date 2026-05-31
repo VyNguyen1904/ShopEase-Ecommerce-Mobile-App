@@ -45,7 +45,8 @@ final List<Product> mockProducts = [
     category: 'Giày Nam',
     price: 3160000,
     originalPrice: 3950000,
-    imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80',
     rating: 4.8,
     reviewsCount: 122,
     salesCount: 254,
@@ -60,7 +61,8 @@ final List<Product> mockProducts = [
     category: 'Giày Nam',
     price: 3160000,
     originalPrice: 3950000,
-    imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&auto=format&fit=crop&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&auto=format&fit=crop&q=80',
     rating: 4.9,
     reviewsCount: 140,
     salesCount: 310,
@@ -75,7 +77,8 @@ final List<Product> mockProducts = [
     category: 'Giày Nam',
     price: 3110000,
     originalPrice: 3880000,
-    imageUrl: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=600&auto=format&fit=crop&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=600&auto=format&fit=crop&q=80',
     rating: 4.6,
     reviewsCount: 90,
     salesCount: 185,
@@ -90,7 +93,8 @@ final List<Product> mockProducts = [
     category: 'Giày Unisex',
     price: 995000,
     originalPrice: 1250000,
-    imageUrl: 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=600&auto=format&fit=crop&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=600&auto=format&fit=crop&q=80',
     rating: 4.7,
     reviewsCount: 56,
     salesCount: 420,
@@ -105,7 +109,8 @@ final List<Product> mockProducts = [
     category: 'Phụ kiện',
     price: 750000,
     originalPrice: 950000,
-    imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80',
     rating: 4.5,
     reviewsCount: 38,
     salesCount: 92,
@@ -120,7 +125,8 @@ final List<Product> mockProducts = [
     category: 'Điện tử',
     price: 5490000,
     originalPrice: 6990000,
-    imageUrl: 'https://images.unsplash.com/photo-1588449668338-d15168836f43?w=600&auto=format&fit=crop&q=80',
+    imageUrl:
+        'https://images.unsplash.com/photo-1588449668338-d15168836f43?w=600&auto=format&fit=crop&q=80',
     rating: 4.9,
     reviewsCount: 320,
     salesCount: 850,

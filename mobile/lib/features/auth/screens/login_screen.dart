@@ -6,57 +6,31 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../providers/auth_provider.dart';
 
-class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
-  bool _agreedToTerms = false;
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   final AuthService _authService = AuthService();
 
-  Future<void> _handleRegister() async {
+  Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng đồng ý với điều khoản sử dụng'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mật khẩu không khớp'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     setState(() => _isLoading = true);
     try {
-      await _authService.register(
+      await _authService.login(
         _emailController.text.trim(),
         _passwordController.text,
-        _nameController.text.trim(),
       );
-
-      // Auto-fetch new profile next time it is read
       ref.invalidate(userProfileProvider);
-
       if (mounted) context.go(AppRoutes.home);
     } catch (e) {
       if (mounted) {
@@ -74,10 +48,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -93,25 +65,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Back Button → context.pop()
-                GestureDetector(
-                  onTap: () => context.pop(),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 20),
 
-                // Title and Cute Bag Graphic Row
+                // Title and Graphic Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -121,7 +77,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Tạo tài khoản',
+                            'Đăng nhập',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
@@ -131,7 +87,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Tham gia và bắt đầu mua sắm thông minh',
+                            'Chào mừng bạn trở lại với ShopEase',
                             style: TextStyle(
                               fontSize: 15,
                               color: AppColors.textGrey.withValues(alpha: 0.8),
@@ -164,12 +120,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 // Form Fields
                 _buildInputField(
-                  controller: _nameController,
-                  hintText: 'Họ và tên',
-                  icon: Icons.person_outline,
-                ),
-                const SizedBox(height: 16),
-                _buildInputField(
                   controller: _emailController,
                   hintText: 'Email',
                   icon: Icons.mail_outline,
@@ -193,93 +143,29 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 16),
-                _buildInputField(
-                  controller: _confirmPasswordController,
-                  hintText: 'Xác nhận mật khẩu',
-                  icon: Icons.lock_outline,
-                  obscureText: _obscureConfirmPassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: AppColors.textLight,
+                const SizedBox(height: 20),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'Quên mật khẩu?',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // Checkbox & Terms Agreement
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                      value: _agreedToTerms,
-                      onChanged: (val) {
-                        setState(() {
-                          _agreedToTerms = val ?? false;
-                        });
-                      },
-                      activeColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textDark,
-                            height: 1.3,
-                          ),
-                          children: [
-                            const TextSpan(text: 'Tôi đồng ý với '),
-                            WidgetSpan(
-                              alignment: PlaceholderAlignment.middle,
-                              child: GestureDetector(
-                                onTap: () {},
-                                child: const Text(
-                                  'Điều khoản sử dụng',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const TextSpan(text: ' và '),
-                            WidgetSpan(
-                              alignment: PlaceholderAlignment.middle,
-                              child: GestureDetector(
-                                onTap: () {},
-                                child: const Text(
-                                  'Chính sách bảo mật',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 36),
-
-                // Create Account Button
+                // Login Button
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleRegister,
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -298,7 +184,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                           )
                         : const Text(
-                            'Tạo tài khoản',
+                            'Đăng nhập',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -311,7 +197,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 // Footer link
                 Center(
                   child: GestureDetector(
-                    onTap: () => context.go(AppRoutes.home),
+                    onTap: () => context.push(AppRoutes.register),
                     child: RichText(
                       text: const TextSpan(
                         style: TextStyle(
@@ -319,9 +205,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           color: AppColors.textGrey,
                         ),
                         children: [
-                          TextSpan(text: 'Đã có tài khoản? '),
+                          TextSpan(text: 'Chưa có tài khoản? '),
                           TextSpan(
-                            text: 'Đăng nhập',
+                            text: 'Đăng ký ngay',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,

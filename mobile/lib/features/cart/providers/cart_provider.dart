@@ -4,14 +4,15 @@ import '../../../core/services/cart_service.dart';
 
 final cartServiceProvider = Provider((ref) => CartService());
 
-final cartProvider = StateNotifierProvider<CartNotifier, AsyncValue<CartResponse>>((ref) {
-  return CartNotifier(ref.watch(cartServiceProvider));
-});
+final cartProvider =
+    StateNotifierProvider<CartNotifier, AsyncValue<CartResponse>>((ref) {
+      return CartNotifier(ref.watch(cartServiceProvider));
+    });
 
 class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
   final CartService _cartService;
   // TODO: Use actual user ID from AuthProvider in the future
-  final String _userId = 'demo-buyer'; 
+  final String _userId = 'demo-buyer';
 
   CartNotifier(this._cartService) : super(const AsyncValue.loading()) {
     fetchCart();
@@ -32,7 +33,7 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       await removeItem(productId);
       return;
     }
-    
+
     // Optimistic UI update
     if (state.hasValue) {
       final currentCart = state.value!;
@@ -42,17 +43,19 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
         }
         return item;
       }).toList();
-      
+
       final newSubtotal = updatedItems
           .where((item) => item.selected)
           .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-          
-      state = AsyncValue.data(CartResponse(
-        userId: currentCart.userId,
-        items: updatedItems,
-        subtotal: newSubtotal,
-        totalItems: currentCart.totalItems,
-      ));
+
+      state = AsyncValue.data(
+        CartResponse(
+          userId: currentCart.userId,
+          items: updatedItems,
+          subtotal: newSubtotal,
+          totalItems: currentCart.totalItems,
+        ),
+      );
     }
 
     try {
@@ -69,17 +72,21 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       // Optimistic update
       if (state.hasValue) {
         final currentCart = state.value!;
-        final updatedItems = currentCart.items.where((item) => item.productId != productId).toList();
+        final updatedItems = currentCart.items
+            .where((item) => item.productId != productId)
+            .toList();
         final newSubtotal = updatedItems
             .where((item) => item.selected)
             .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-            
-        state = AsyncValue.data(CartResponse(
-          userId: currentCart.userId,
-          items: updatedItems,
-          subtotal: newSubtotal,
-          totalItems: currentCart.totalItems,
-        ));
+
+        state = AsyncValue.data(
+          CartResponse(
+            userId: currentCart.userId,
+            items: updatedItems,
+            subtotal: newSubtotal,
+            totalItems: currentCart.totalItems,
+          ),
+        );
       }
 
       await _cartService.removeItem(_userId, productId);
@@ -98,17 +105,19 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
         }
         return item;
       }).toList();
-      
+
       final newSubtotal = updatedItems
           .where((item) => item.selected)
           .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-          
-      state = AsyncValue.data(CartResponse(
-        userId: currentCart.userId,
-        items: updatedItems,
-        subtotal: newSubtotal,
-        totalItems: currentCart.totalItems,
-      ));
+
+      state = AsyncValue.data(
+        CartResponse(
+          userId: currentCart.userId,
+          items: updatedItems,
+          subtotal: newSubtotal,
+          totalItems: currentCart.totalItems,
+        ),
+      );
     }
   }
 
@@ -119,17 +128,22 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
         item.selected = selected;
         return item;
       }).toList();
-      
-      final newSubtotal = selected 
-          ? updatedItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity))
+
+      final newSubtotal = selected
+          ? updatedItems.fold(
+              0.0,
+              (sum, item) => sum + (item.price * item.quantity),
+            )
           : 0.0;
-          
-      state = AsyncValue.data(CartResponse(
-        userId: currentCart.userId,
-        items: updatedItems,
-        subtotal: newSubtotal,
-        totalItems: currentCart.totalItems,
-      ));
+
+      state = AsyncValue.data(
+        CartResponse(
+          userId: currentCart.userId,
+          items: updatedItems,
+          subtotal: newSubtotal,
+          totalItems: currentCart.totalItems,
+        ),
+      );
     }
   }
 }

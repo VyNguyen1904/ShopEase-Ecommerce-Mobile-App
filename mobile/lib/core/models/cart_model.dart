@@ -14,7 +14,9 @@ class CartResponse {
   factory CartResponse.fromJson(Map<String, dynamic> json) {
     return CartResponse(
       userId: json['userId']?.toString() ?? '',
-      items: (json['items'] as List?)?.map((e) => CartItem.fromJson(e)).toList() ?? [],
+      items:
+          (json['items'] as List?)?.map((e) => CartItem.fromJson(e)).toList() ??
+          [],
       subtotal: (json['subtotal'] ?? 0).toDouble(),
       totalItems: json['totalItems'] ?? 0,
     );

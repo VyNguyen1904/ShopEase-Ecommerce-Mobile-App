@@ -37,7 +37,11 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           child: const Row(
                             children: [
-                              Icon(Icons.search, color: AppColors.textLight, size: 20),
+                              Icon(
+                                Icons.search,
+                                color: AppColors.textLight,
+                                size: 20,
+                              ),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -62,10 +66,7 @@ class HomeScreen extends ConsumerWidget {
                       showBadge: true,
                     ),
                     const SizedBox(width: 10),
-                    _buildIconButton(
-                      icon: Icons.qr_code_scanner,
-                      onTap: () {},
-                    ),
+                    _buildIconButton(icon: Icons.qr_code_scanner, onTap: () {}),
                   ],
                 ),
               ),
@@ -80,18 +81,22 @@ class HomeScreen extends ConsumerWidget {
                     _buildPromoCard(
                       title: 'NIKE',
                       subtitle: 'Nike Air Max\nPhiên Bản Mới',
-                      description: 'Sự kết hợp hoàn hảo giữa phong\ncách cổ điển và công nghệ đệm\nAir hiện đại, mang lại cảm giác\nêm ái suốt cả ngày.',
+                      description:
+                          'Sự kết hợp hoàn hảo giữa phong\ncách cổ điển và công nghệ đệm\nAir hiện đại, mang lại cảm giác\nêm ái suốt cả ngày.',
                       buttonText: 'GIẢM 20% | MUA NGAY',
-                      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
+                      image:
+                          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
                       color: AppColors.primary,
                     ),
                     const SizedBox(width: 16),
                     _buildPromoCard(
                       title: 'ADIDAS',
                       subtitle: 'Bộ sưu tập\nThu Đông 2026',
-                      description: 'Đột phá phong cách với dòng\nsản phẩm mới nhất. Thiết kế\nthể thao, năng động và đầy\ncá tính.',
+                      description:
+                          'Đột phá phong cách với dòng\nsản phẩm mới nhất. Thiết kế\nthể thao, năng động và đầy\ncá tính.',
                       buttonText: 'GIẢM 25% | MUA NGAY',
-                      image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&auto=format&fit=crop&q=80',
+                      image:
+                          'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&auto=format&fit=crop&q=80',
                       color: AppColors.accent,
                     ),
                   ],
@@ -190,18 +195,27 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               SizedBox(
                 height: 280,
-                child: ref.watch(newArrivalsProvider).when(
-                  data: (products) => ListView.builder(
-                    padding: const EdgeInsets.only(left: 20),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      return _buildNewArrivalCard(context, ref, products[index], heroPrefix: 'new', showDiscount: false);
-                    },
-                  ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(child: Text('Lỗi: $err')),
-                ),
+                child: ref
+                    .watch(newArrivalsProvider)
+                    .when(
+                      data: (products) => ListView.builder(
+                        padding: const EdgeInsets.only(left: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return _buildNewArrivalCard(
+                            context,
+                            ref,
+                            products[index],
+                            heroPrefix: 'new',
+                            showDiscount: false,
+                          );
+                        },
+                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text('Lỗi: $err')),
+                    ),
               ),
               const SizedBox(height: 30),
 
@@ -243,18 +257,26 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               SizedBox(
                 height: 280,
-                child: ref.watch(recommendationsProvider).when(
-                  data: (products) => ListView.builder(
-                    padding: const EdgeInsets.only(left: 20),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      return _buildNewArrivalCard(context, ref, products[index], heroPrefix: 'rec');
-                    },
-                  ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(child: Text('Lỗi: $err')),
-                ),
+                child: ref
+                    .watch(recommendationsProvider)
+                    .when(
+                      data: (products) => ListView.builder(
+                        padding: const EdgeInsets.only(left: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return _buildNewArrivalCard(
+                            context,
+                            ref,
+                            products[index],
+                            heroPrefix: 'rec',
+                          );
+                        },
+                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text('Lỗi: $err')),
+                    ),
               ),
               const SizedBox(height: 30),
             ],
@@ -307,16 +329,19 @@ class HomeScreen extends ConsumerWidget {
                 Text(
                   description,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                     fontSize: 10,
                     height: 1.4,
                   ),
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.25),
+                    color: Colors.white.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -357,14 +382,16 @@ class HomeScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: isActive ? Colors.white : Colors.transparent,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: isActive ? Colors.transparent : Colors.grey.shade300),
+        border: Border.all(
+          color: isActive ? Colors.transparent : Colors.grey.shade300,
+        ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
-                )
+                ),
               ]
             : [],
       ),
@@ -379,7 +406,13 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNewArrivalCard(BuildContext context, WidgetRef ref, Product product, {bool showDiscount = true, String heroPrefix = 'item'}) {
+  Widget _buildNewArrivalCard(
+    BuildContext context,
+    WidgetRef ref,
+    Product product, {
+    bool showDiscount = true,
+    String heroPrefix = 'item',
+  }) {
     final heroTag = 'hero_${heroPrefix}_${product.id}';
     return GestureDetector(
       onTap: () {
@@ -395,7 +428,7 @@ class HomeScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -419,7 +452,8 @@ class HomeScreen extends ConsumerWidget {
                         child: Image.network(
                           product.imageUrl,
                           fit: BoxFit.cover,
-                          cacheWidth: 340, // 2x width for retina display, reduces memory usage
+                          cacheWidth:
+                              340, // 2x width for retina display, reduces memory usage
                           errorBuilder: (context, error, stackTrace) =>
                               const Icon(Icons.image, color: Colors.grey),
                         ),
@@ -432,8 +466,11 @@ class HomeScreen extends ConsumerWidget {
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 14,
-                        child: Icon(Icons.favorite_border,
-                            size: 16, color: AppColors.textLight),
+                        child: Icon(
+                          Icons.favorite_border,
+                          size: 16,
+                          color: AppColors.textLight,
+                        ),
                       ),
                     ),
                     // Discount badge
@@ -443,7 +480,9 @@ class HomeScreen extends ConsumerWidget {
                         left: 8,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 4),
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.accent,
                             borderRadius: BorderRadius.circular(6),
@@ -451,9 +490,10 @@ class HomeScreen extends ConsumerWidget {
                           child: Text(
                             '-${product.discountPercentage}%',
                             style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -476,15 +516,18 @@ class HomeScreen extends ConsumerWidget {
                           Text(
                             product.category,
                             style: const TextStyle(
-                                color: AppColors.textGrey, fontSize: 11),
+                              color: AppColors.textGrey,
+                              fontSize: 11,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             product.name,
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppColors.textDark),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: AppColors.textDark,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -498,7 +541,8 @@ class HomeScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (showDiscount && product.originalPrice != null)
+                                if (showDiscount &&
+                                    product.originalPrice != null)
                                   Text(
                                     '${product.originalPrice!.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
                                     style: const TextStyle(
@@ -529,8 +573,11 @@ class HomeScreen extends ConsumerWidget {
                               color: AppColors.primary,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(Icons.add,
-                                color: Colors.white, size: 18),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -545,8 +592,11 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildIconButton(
-      {required IconData icon, required VoidCallback onTap, bool showBadge = false}) {
+  Widget _buildIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    bool showBadge = false,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),

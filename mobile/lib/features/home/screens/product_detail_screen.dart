@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
-import '../../../core/router/app_routes.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -39,7 +38,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.textLight),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.textLight,
+              ),
               const SizedBox(height: 12),
               const Text('Không tìm thấy sản phẩm'),
               const SizedBox(height: 16),
@@ -68,8 +71,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           children: [
             // 1. Header with back and favorite
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -83,8 +88,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     },
                     child: Container(
                       padding: const EdgeInsets.all(8),
-                      child: const Icon(Icons.arrow_back_ios,
-                          color: AppColors.textDark, size: 22),
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        color: AppColors.textDark,
+                        size: 22,
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -111,7 +119,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             // 2. Scrollable Content (Image + Details)
             Expanded(
               child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(
+                  context,
+                ).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -119,13 +129,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       Container(
                         width: double.infinity,
                         height: 360, // Slightly taller for a more premium look
-                        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.bgLight,
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -139,356 +152,395 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 : 'hero_img_${product.id}_v',
                             child: Image.network(
                               product.imageUrl,
-                              fit: BoxFit.cover, // Fill the container beautifully
+                              fit: BoxFit
+                                  .cover, // Fill the container beautifully
                               cacheWidth: 800,
                               errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.image,
-                                    size: 100, color: AppColors.textLight);
+                                return const Icon(
+                                  Icons.image,
+                                  size: 100,
+                                  color: AppColors.textLight,
+                                );
                               },
                             ),
                           ),
                         ),
                       ),
-                      
+
                       // Detail Content
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                      // Product Title
-                      Text(
-                        product.name,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        product.category,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textGrey,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Ratings Row
-                      Row(
-                        children: [
-                          Row(
-                            children: List.generate(
-                              5,
-                              (index) => Icon(
-                                index < product.rating.floor()
-                                    ? Icons.star
-                                    : Icons.star_border,
-                                color: Colors.amber,
-                                size: 18,
+                            // Product Title
+                            Text(
+                              product.name,
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textDark,
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '(${product.reviewsCount} đánh giá)',
-                            style: const TextStyle(
-                                fontSize: 14, color: AppColors.textGrey),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '${product.salesCount} đã bán',
-                            style: const TextStyle(
-                                fontSize: 14, color: AppColors.textGrey),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Pricing block
-                      Row(
-                        children: [
-                          Text(
-                            '${_formatCurrency(product.price)}đ',
-                            style: const TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.accent,
-                            ),
-                          ),
-                          if (product.originalPrice != null) ...[
-                            const SizedBox(width: 12),
+                            const SizedBox(height: 4),
                             Text(
-                              '${_formatCurrency(product.originalPrice!)}đ',
+                              product.category,
                               style: const TextStyle(
                                 fontSize: 16,
-                                color: AppColors.textLight,
-                                decoration: TextDecoration.lineThrough,
+                                color: AppColors.textGrey,
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppColors.accentLight,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                '-$discountPercent%',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.accent,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                            const SizedBox(height: 12),
 
-                      // Description
-                      const Text(
-                        'Mô tả sản phẩm',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        product.description,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textGrey,
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Color selector
-                      Text(
-                        'Màu sắc: ${_colorOptions[_selectedColorIndex]['name']}',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: List.generate(
-                            _colorOptions.length,
-                            (index) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedColorIndex = index;
-                                });
-                              },
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 250),
-                                curve: Curves.easeInOut,
-                                margin: const EdgeInsets.only(right: 12),
-                                width: _selectedColorIndex == index ? 42 : 38,
-                                height: _selectedColorIndex == index ? 42 : 38,
-                                decoration: BoxDecoration(
-                                  color: _colorOptions[index]['color'],
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: _selectedColorIndex == index
-                                        ? AppColors.primary
-                                        : (_colorOptions[index]['hasBorder']
-                                            ? AppColors.border
-                                            : Colors.transparent),
-                                    width:
-                                        _selectedColorIndex == index ? 3.0 : 1,
-                                  ),
-                                  boxShadow: _selectedColorIndex == index
-                                      ? [
-                                          BoxShadow(
-                                            color: AppColors.primary
-                                                .withOpacity(0.2),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3),
-                                          )
-                                        ]
-                                      : null,
-                                ),
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 200),
-                                  child: _selectedColorIndex == index
-                                      ? Icon(
-                                          Icons.check,
-                                          key: const ValueKey('checked'),
-                                          color:
-                                              _colorOptions[index]['color'] ==
-                                                      Colors.white
-                                                  ? AppColors.primary
-                                                  : Colors.white,
-                                          size: 20,
-                                        )
-                                      : const SizedBox.shrink(
-                                          key: ValueKey('empty')),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Size Selector
-                      const Text(
-                        'Kích thước',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: product.sizes.map((size) {
-                            final isSelected = _selectedSize == size;
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedSize = size;
-                                });
-                              },
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 250),
-                                curve: Curves.easeInOut,
-                                margin: const EdgeInsets.only(right: 12),
-                                width: isSelected ? 48 : 42,
-                                height: isSelected ? 48 : 42,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppColors.accent
-                                      : Colors.white,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.accent
-                                        : AppColors.border,
-                                    width: 1,
-                                  ),
-                                  boxShadow: isSelected
-                                      ? [
-                                          BoxShadow(
-                                            color: AppColors.accent
-                                                .withOpacity(0.3),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 3),
-                                          )
-                                        ]
-                                      : null,
-                                ),
-                                child: Text(
-                                  size,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: isSelected
-                                        ? Colors.white
-                                        : AppColors.textDark,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      
-                      // Reviews Section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Đánh giá sản phẩm',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                          Text(
-                            'Xem tất cả',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      // Mock Review Item
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.bgLight,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            // Ratings Row
                             Row(
                               children: [
-                                const CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80'),
-                                ),
-                                const SizedBox(width: 12),
-                                const Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Trần Thị B',
-                                        style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
-                                      ),
-                                      Text(
-                                        '2 ngày trước',
-                                        style: TextStyle(fontSize: 12, color: AppColors.textLight),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                                 Row(
                                   children: List.generate(
                                     5,
-                                    (index) => const Icon(Icons.star, color: Colors.amber, size: 14),
+                                    (index) => Icon(
+                                      index < product.rating.floor()
+                                          ? Icons.star
+                                          : Icons.star_border,
+                                      color: Colors.amber,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '(${product.reviewsCount} đánh giá)',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textGrey,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  '${product.salesCount} đã bán',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textGrey,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Giày lên form rất đẹp và ôm chân, đi siêu êm. Hàng đóng gói cẩn thận. Rất ưng ý, 10 điểm không có nhưng nha!',
-                              style: TextStyle(color: AppColors.textDark, height: 1.5, fontSize: 13),
+                            const SizedBox(height: 16),
+
+                            // Pricing block
+                            Row(
+                              children: [
+                                Text(
+                                  '${_formatCurrency(product.price)}đ',
+                                  style: const TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.accent,
+                                  ),
+                                ),
+                                if (product.originalPrice != null) ...[
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    '${_formatCurrency(product.originalPrice!)}đ',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textLight,
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.accentLight,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      '-$discountPercent%',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.accent,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
+                            const SizedBox(height: 20),
+
+                            // Description
+                            const Text(
+                              'Mô tả sản phẩm',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              product.description,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textGrey,
+                                height: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Color selector
+                            Text(
+                              'Màu sắc: ${_colorOptions[_selectedColorIndex]['name']}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(
+                                  _colorOptions.length,
+                                  (index) => GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedColorIndex = index;
+                                      });
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 250,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                      margin: const EdgeInsets.only(right: 12),
+                                      width: _selectedColorIndex == index
+                                          ? 42
+                                          : 38,
+                                      height: _selectedColorIndex == index
+                                          ? 42
+                                          : 38,
+                                      decoration: BoxDecoration(
+                                        color: _colorOptions[index]['color'],
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: _selectedColorIndex == index
+                                              ? AppColors.primary
+                                              : (_colorOptions[index]['hasBorder']
+                                                    ? AppColors.border
+                                                    : Colors.transparent),
+                                          width: _selectedColorIndex == index
+                                              ? 3.0
+                                              : 1,
+                                        ),
+                                        boxShadow: _selectedColorIndex == index
+                                            ? [
+                                                BoxShadow(
+                                                  color: AppColors.primary
+                                                      .withValues(alpha: 0.2),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 3),
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
+                                        child: _selectedColorIndex == index
+                                            ? Icon(
+                                                Icons.check,
+                                                key: const ValueKey('checked'),
+                                                color:
+                                                    _colorOptions[index]['color'] ==
+                                                        Colors.white
+                                                    ? AppColors.primary
+                                                    : Colors.white,
+                                                size: 20,
+                                              )
+                                            : const SizedBox.shrink(
+                                                key: ValueKey('empty'),
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Size Selector
+                            const Text(
+                              'Kích thước',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: product.sizes.map((size) {
+                                  final isSelected = _selectedSize == size;
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedSize = size;
+                                      });
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 250,
+                                      ),
+                                      curve: Curves.easeInOut,
+                                      margin: const EdgeInsets.only(right: 12),
+                                      width: isSelected ? 48 : 42,
+                                      height: isSelected ? 48 : 42,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? AppColors.accent
+                                            : Colors.white,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? AppColors.accent
+                                              : AppColors.border,
+                                          width: 1,
+                                        ),
+                                        boxShadow: isSelected
+                                            ? [
+                                                BoxShadow(
+                                                  color: AppColors.accent
+                                                      .withValues(alpha: 0.3),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 3),
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: Text(
+                                        size,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSelected
+                                              ? Colors.white
+                                              : AppColors.textDark,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+
+                            // Reviews Section
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Đánh giá sản phẩm',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                                Text(
+                                  'Xem tất cả',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            // Mock Review Item
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.bgLight,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: NetworkImage(
+                                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      const Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Trần Thị B',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.textDark,
+                                              ),
+                                            ),
+                                            Text(
+                                              '2 ngày trước',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: AppColors.textLight,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        children: List.generate(
+                                          5,
+                                          (index) => const Icon(
+                                            Icons.star,
+                                            color: Colors.amber,
+                                            size: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Giày lên form rất đẹp và ôm chân, đi siêu êm. Hàng đóng gói cẩn thận. Rất ưng ý, 10 điểm không có nhưng nha!',
+                                    style: TextStyle(
+                                      color: AppColors.textDark,
+                                      height: 1.5,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 40),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 40),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
+            ),
 
             // 4. Sticky Bottom Action Buttons
             Container(
@@ -497,7 +549,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
@@ -526,11 +578,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        icon: const Icon(Icons.shopping_cart_outlined, size: 20),
+                        icon: const Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 20,
+                        ),
                         label: const Text(
                           'Thêm vào giỏ',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),
@@ -544,8 +601,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content:
-                                  Text('Chuyển đến màn hình thanh toán!'),
+                              content: Text('Chuyển đến màn hình thanh toán!'),
                               backgroundColor: AppColors.accent,
                             ),
                           );
@@ -561,7 +617,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         child: const Text(
                           'Mua ngay',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),

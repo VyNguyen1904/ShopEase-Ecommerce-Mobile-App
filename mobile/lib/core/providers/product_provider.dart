@@ -14,7 +14,7 @@ final productsProvider = FutureProvider<List<Product>>((ref) async {
 final newArrivalsProvider = FutureProvider<List<Product>>((ref) async {
   // TODO: Call a specific endpoint for new arrivals
   // final response = await apiClient.get('/products/new-arrivals');
-  
+
   final products = await ref.watch(productsProvider.future);
   return products.take(6).toList(); // Mock logic
 });
@@ -23,27 +23,32 @@ final newArrivalsProvider = FutureProvider<List<Product>>((ref) async {
 final recommendationsProvider = FutureProvider<List<Product>>((ref) async {
   // TODO: Call a specific endpoint for recommendations
   // final response = await apiClient.get('/products/recommendations');
-  
+
   final products = await ref.watch(productsProvider.future);
   return products.reversed.take(6).toList(); // Mock logic
 });
 
 /// Provider for a specific category
-final categoryProductsProvider = FutureProvider.family<List<Product>, String>((ref, categoryName) async {
+final categoryProductsProvider = FutureProvider.family<List<Product>, String>((
+  ref,
+  categoryName,
+) async {
   // TODO: Call API endpoint with category filter
   // final response = await apiClient.get('/products?category=$categoryName');
-  
+
   final products = await ref.watch(productsProvider.future);
   if (categoryName == 'Tất cả') return products;
-  
+
   return products.where((p) => p.category == categoryName).toList();
 });
 
 /// Provider for categories list
-final categoriesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final categoriesProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   // TODO: Replace with API call to get categories list
   // final response = await apiClient.get('/categories');
-  
+
   await Future.delayed(const Duration(milliseconds: 300));
   return [
     {'name': 'Thời trang Nữ', 'icon': Icons.woman_outlined},

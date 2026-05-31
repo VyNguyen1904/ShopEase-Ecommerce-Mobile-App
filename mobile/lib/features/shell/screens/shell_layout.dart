@@ -137,7 +137,9 @@ class ShellLayout extends StatelessWidget {
                         _buildPanelItem(
                           ctx,
                           'Order Detail (Customer/9.png)',
-                          () => context.push(AppRoutes.orderDetailPath('SE2405150001')),
+                          () => context.push(
+                            AppRoutes.orderDetailPath('SE2405150001'),
+                          ),
                         ),
                         _buildPanelItem(
                           ctx,

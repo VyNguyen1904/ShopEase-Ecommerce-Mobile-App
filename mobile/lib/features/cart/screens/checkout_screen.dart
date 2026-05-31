@@ -24,7 +24,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: _buildStepper(),
@@ -66,7 +70,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _buildStepLine(),
         _buildStepIndicator('3', isActive: false),
         const SizedBox(width: 8),
-        const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textGrey),
+        const Icon(
+          Icons.arrow_forward_ios,
+          size: 14,
+          color: AppColors.textGrey,
+        ),
       ],
     );
   }
@@ -121,14 +129,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.5)),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.person_outline, color: AppColors.primary, size: 20),
+              const Icon(
+                Icons.person_outline,
+                color: AppColors.primary,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
@@ -139,12 +151,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Text(
                   'Mặc định',
-                  style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -155,15 +171,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('123 Nguyễn Huệ, P. Bến Nghé,', style: TextStyle(color: AppColors.textDark, fontSize: 14, height: 1.5)),
-                const Text('Quận 1, TP. Hồ Chí Minh', style: TextStyle(color: AppColors.textDark, fontSize: 14, height: 1.5)),
+                const Text(
+                  '123 Nguyễn Huệ, P. Bến Nghé,',
+                  style: TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+                const Text(
+                  'Quận 1, TP. Hồ Chí Minh',
+                  style: TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(Icons.edit_outlined, color: AppColors.primary, size: 20),
+                    Icon(
+                      Icons.edit_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 16),
-                    Icon(Icons.delete_outline, color: AppColors.alertRed, size: 20),
+                    Icon(
+                      Icons.delete_outline,
+                      color: AppColors.alertRed,
+                      size: 20,
+                    ),
                   ],
                 ),
               ],
@@ -179,7 +217,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.border.withOpacity(0.5)),
+        side: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -189,19 +227,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             groupValue: _selectedShipping,
             onChanged: (val) => setState(() => _selectedShipping = val!),
             activeColor: AppColors.primary,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            title: const Text('Nhanh (2–3 ngày)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            secondary: const Text('32.000đ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
+            title: const Text(
+              'Nhanh (2–3 ngày)',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            secondary: const Text(
+              '32.000đ',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
           ),
-          const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.border),
+          const Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: AppColors.border,
+          ),
           RadioListTile<String>(
             value: 'tietkiem',
             groupValue: _selectedShipping,
             onChanged: (val) => setState(() => _selectedShipping = val!),
             activeColor: AppColors.primary,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            title: const Text('Tiết kiệm (3–5 ngày)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            secondary: const Text('15.000đ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
+            title: const Text(
+              'Tiết kiệm (3–5 ngày)',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            secondary: const Text(
+              '15.000đ',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
           ),
         ],
       ),
@@ -226,7 +287,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Nhập mã giảm giá',
-                    hintStyle: TextStyle(color: AppColors.textGrey, fontSize: 14),
+                    hintStyle: TextStyle(
+                      color: AppColors.textGrey,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ),
@@ -240,7 +304,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
-              child: const Text('Áp dụng', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Áp dụng',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -257,8 +324,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 style: TextStyle(color: AppColors.textDark, fontSize: 14),
                 children: [
                   TextSpan(text: 'Dùng '),
-                  TextSpan(text: '2.000 xu ', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.alertRed)),
-                  TextSpan(text: '(-2.000đ)', style: TextStyle(color: AppColors.alertRed)),
+                  TextSpan(
+                    text: '2.000 xu ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.alertRed,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '(-2.000đ)',
+                    style: TextStyle(color: AppColors.alertRed),
+                  ),
                 ],
               ),
             ),
@@ -266,7 +342,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Switch(
               value: _useCoins,
               onChanged: (val) => setState(() => _useCoins = val),
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
             ),
           ],
         ),
@@ -279,24 +355,61 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.border.withOpacity(0.5)),
+        side: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          _buildPaymentRadio('cod', 'Thanh toán khi nhận hàng (COD)', isSelected: _selectedPayment == 'cod'),
-          const Divider(height: 1, indent: 50, endIndent: 16, color: AppColors.border),
-          _buildPaymentRadio('vnpay', 'VNPay', isSelected: _selectedPayment == 'vnpay'),
-          const Divider(height: 1, indent: 50, endIndent: 16, color: AppColors.border),
-          _buildPaymentRadio('zalopay', 'Ví ZaloPay', subtitle: '(Giảm đến 150.000đ)', isSelected: _selectedPayment == 'zalopay'),
-          const Divider(height: 1, indent: 50, endIndent: 16, color: AppColors.border),
-          _buildPaymentRadio('credit', 'Thẻ tín dụng / ATM', isSelected: _selectedPayment == 'credit'),
+          _buildPaymentRadio(
+            'cod',
+            'Thanh toán khi nhận hàng (COD)',
+            isSelected: _selectedPayment == 'cod',
+          ),
+          const Divider(
+            height: 1,
+            indent: 50,
+            endIndent: 16,
+            color: AppColors.border,
+          ),
+          _buildPaymentRadio(
+            'vnpay',
+            'VNPay',
+            isSelected: _selectedPayment == 'vnpay',
+          ),
+          const Divider(
+            height: 1,
+            indent: 50,
+            endIndent: 16,
+            color: AppColors.border,
+          ),
+          _buildPaymentRadio(
+            'zalopay',
+            'Ví ZaloPay',
+            subtitle: '(Giảm đến 150.000đ)',
+            isSelected: _selectedPayment == 'zalopay',
+          ),
+          const Divider(
+            height: 1,
+            indent: 50,
+            endIndent: 16,
+            color: AppColors.border,
+          ),
+          _buildPaymentRadio(
+            'credit',
+            'Thẻ tín dụng / ATM',
+            isSelected: _selectedPayment == 'credit',
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPaymentRadio(String value, String title, {String? subtitle, bool isSelected = false}) {
+  Widget _buildPaymentRadio(
+    String value,
+    String title, {
+    String? subtitle,
+    bool isSelected = false,
+  }) {
     return RadioListTile<String>(
       value: value,
       groupValue: _selectedPayment,
@@ -305,12 +418,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       title: RichText(
         text: TextSpan(
-          style: const TextStyle(fontSize: 14, color: AppColors.textDark, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textDark,
+            fontWeight: FontWeight.w500,
+          ),
           children: [
             TextSpan(text: title),
             if (subtitle != null) ...[
               const TextSpan(text: ' '),
-              TextSpan(text: subtitle, style: const TextStyle(color: AppColors.textGrey)),
+              TextSpan(
+                text: subtitle,
+                style: const TextStyle(color: AppColors.textGrey),
+              ),
             ],
           ],
         ),
@@ -330,8 +450,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
-            Text('Tổng cộng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark)),
-            Text('442.000đ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.alertRed)),
+            Text(
+              'Tổng cộng',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+            ),
+            Text(
+              '442.000đ',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.alertRed,
+              ),
+            ),
           ],
         ),
       ],
@@ -342,8 +476,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: AppColors.textGrey)),
-        Text(value, style: const TextStyle(fontSize: 14, color: AppColors.textDark, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textDark,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
@@ -356,10 +500,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               offset: const Offset(0, -4),
               blurRadius: 16,
-            )
+            ),
           ],
         ),
         child: ElevatedButton(
@@ -367,10 +511,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             context.go(AppRoutes.orderDetailPath('SE2405150001'));
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.alertRed, // Using orange-red for checkout button
+            backgroundColor:
+                AppColors.alertRed, // Using orange-red for checkout button
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             elevation: 0,
           ),
           child: Row(
@@ -378,7 +525,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             children: const [
               Icon(Icons.lock_outline, size: 20),
               SizedBox(width: 8),
-              Text('Đặt hàng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'Đặt hàng',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),

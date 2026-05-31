@@ -45,7 +45,11 @@ class _AddressScreenState extends State<AddressScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: const Text(
@@ -61,7 +65,12 @@ class _AddressScreenState extends State<AddressScreen> {
       body: Stack(
         children: [
           ListView.separated(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 120),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: 120,
+            ),
             itemCount: _addresses.length,
             separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
@@ -74,7 +83,7 @@ class _AddressScreenState extends State<AddressScreen> {
                   border: Border.all(color: AppColors.border),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -101,7 +110,10 @@ class _AddressScreenState extends State<AddressScreen> {
                                 const SizedBox(width: 12),
                                 if (address['isDefault'])
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: AppColors.primaryLight,
                                       borderRadius: BorderRadius.circular(4),
@@ -158,13 +170,21 @@ class _AddressScreenState extends State<AddressScreen> {
                         IconButton(
                           constraints: const BoxConstraints(),
                           padding: const EdgeInsets.all(4),
-                          icon: const Icon(Icons.edit_outlined, color: AppColors.textDark, size: 20),
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            color: AppColors.textDark,
+                            size: 20,
+                          ),
                           onPressed: () {},
                         ),
                         IconButton(
                           constraints: const BoxConstraints(),
                           padding: const EdgeInsets.all(4),
-                          icon: const Icon(Icons.delete_outline, color: AppColors.alertRed, size: 20),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: AppColors.alertRed,
+                            size: 20,
+                          ),
                           onPressed: () {},
                         ),
                       ],
@@ -184,7 +204,7 @@ class _AddressScreenState extends State<AddressScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -5),
                   ),
