@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
+import '../../../core/router/app_routes.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;

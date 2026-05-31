@@ -36,6 +36,7 @@ public class TokenValidatorService {
 
         String userId = claims.getSubject();
         String role = claims.get("role", String.class);
-        return new UserTokenInfo(userId, role);
+        Integer tokenVersion = claims.get("token_version", Integer.class);
+        return new UserTokenInfo(userId, role, tokenVersion);
     }
 }

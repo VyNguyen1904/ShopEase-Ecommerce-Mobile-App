@@ -27,6 +27,7 @@ abstract class AppRoutes {
   static const String adminUsers = '/admin/users';
   static const String sellerOrderDetail = '/seller/order-detail';
   static const String sellerNotifications = '/seller/notifications';
+  static const String sellerShopProfile = '/seller/shop-profile';
 
   static String productDetailPath(String id) => '/product/$id';
   static String orderDetailPath(String id) => '/order-detail/$id';
