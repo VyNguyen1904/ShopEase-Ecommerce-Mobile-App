@@ -1,57 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/models/cart_model.dart';
+import '../providers/cart_provider.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
 
   @override
-  State<CartScreen> createState() => _CartScreenState();
+  ConsumerState<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends State<CartScreen> {
-  final List<Map<String, dynamic>> _cartItems = [
-    {
-      'id': '1',
-      'name': 'Green Propolis Ampule Mask',
-      'variant': '50pcs',
-      'price': 500000.0,
-      'originalPrice': null,
-      'image': 'https://images.unsplash.com/photo-1596462502278-27bf85033e5a?w=400&q=80',
-      'qty': 1,
-      'selected': true,
-    },
-    {
-      'id': '2',
-      'name': 'Propolis Light Cream',
-      'variant': '100ml',
-      'price': 320000.0,
-      'originalPrice': 400000.0,
-      'image': 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80',
-      'qty': 1,
-      'selected': true,
-    },
-    {
-      'id': '3',
-      'name': 'Real Flawless Luminous Perfecting Pressed...',
-      'variant': 'Translucent',
-      'price': 480000.0,
-      'originalPrice': null,
-      'image': 'https://images.unsplash.com/photo-1588806292723-5e929b357ff8?w=400&q=80',
-      'qty': 1,
-      'selected': true,
-    },
-  ];
-
-  double get _totalPrice {
-    return _cartItems
-        .where((item) => item['selected'] == true)
-        .fold(0, (sum, item) => sum + (item['price'] * item['qty']));
-  }
-
+class _CartScreenState extends ConsumerState<CartScreen> {
   @override
   Widget build(BuildContext context) {
+    final cartState = ref.watch(cartProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -65,7 +31,7 @@ class _CartScreenState extends State<CartScreen> {
           },
         ),
         title: const Text(
-          'Giỏ hàng', // Shopping Cart
+          'Giỏ hàng',
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -74,177 +40,194 @@ class _CartScreenState extends State<CartScreen> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          // Select All Checkbox
-          if (_cartItems.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: _cartItems.every((item) => item['selected'] == true),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        for (var item in _cartItems) {
-                          item['selected'] = value ?? false;
-                        }
-                      });
-                    },
-                    activeColor: AppColors.textDark,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                  ),
-                  const Text(
-                    'Chọn tất cả',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-          // Cart Items
-          Expanded(
-            child: _cartItems.isEmpty
-                ? const Center(child: Text('Giỏ hàng trống'))
-                : ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    itemCount: _cartItems.length,
-                    separatorBuilder: (context, index) => _buildDottedDivider(),
-                    itemBuilder: (context, index) {
-                      final item = _cartItems[index];
-                      return _buildCartItem(item, index);
-                    },
-                  ),
+      body: cartState.when(
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.textDark)),
+        error: (err, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Đã có lỗi xảy ra', style: TextStyle(color: Colors.red)),
+              TextButton(
+                onPressed: () => ref.read(cartProvider.notifier).fetchCart(),
+                child: const Text('Thử lại'),
+              )
+            ],
           ),
+        ),
+        data: (cart) {
+          final cartItems = cart.items;
+          final bool isAllSelected = cartItems.isNotEmpty && cartItems.every((item) => item.selected);
           
-          // Bottom Checkout Section
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 16,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-            ),
-            child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Coupon Code
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.bgLight,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.local_activity_outlined, color: AppColors.textLight, size: 22),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Text(
-                            'Thêm mã giảm giá',
-                            style: TextStyle(color: AppColors.textLight, fontSize: 15),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade400,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Row(
-                            children: [
-                              Text(
-                                '-10%',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                              ),
-                              SizedBox(width: 4),
-                              Icon(Icons.close, color: Colors.white, size: 14),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Total Amount
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          return Column(
+            children: [
+              // Select All Checkbox
+              if (cartItems.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
                     children: [
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Tổng cộng:',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Mua để nhận 34 điểm',
-                            style: TextStyle(fontSize: 12, color: AppColors.textGrey),
-                          ),
-                        ],
+                      Checkbox(
+                        value: isAllSelected,
+                        onChanged: (bool? value) {
+                          ref.read(cartProvider.notifier).toggleAll(value ?? false);
+                        },
+                        activeColor: AppColors.textDark,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${_totalPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
-                            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Miễn phí giao hàng',
-                            style: TextStyle(fontSize: 12, color: AppColors.textGrey),
-                          ),
-                        ],
+                      const Text(
+                        'Chọn tất cả',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textDark,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  
-                  // Checkout Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () => context.push(AppRoutes.checkout),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.textDark, // Following the reference image's black button
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                ),
+                
+              // Cart Items
+              Expanded(
+                child: cartItems.isEmpty
+                    ? const Center(child: Text('Giỏ hàng trống'))
+                    : ListView.separated(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        itemCount: cartItems.length,
+                        separatorBuilder: (context, index) => _buildDottedDivider(),
+                        itemBuilder: (context, index) {
+                          final item = cartItems[index];
+                          return _buildCartItem(item);
+                        },
+                      ),
+              ),
+              
+              // Bottom Checkout Section
+              if (cartItems.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 16,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                  ),
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Coupon Code
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.bgLight,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.local_activity_outlined, color: AppColors.textLight, size: 22),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  'Thêm mã giảm giá',
+                                  style: TextStyle(color: AppColors.textLight, fontSize: 15),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade400,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Text(
+                                      '-10%',
+                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                    ),
+                                    SizedBox(width: 4),
+                                    Icon(Icons.close, color: Colors.white, size: 14),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Tiến hành thanh toán',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
+                        const SizedBox(height: 24),
+                        
+                        // Total Amount
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Tổng cộng:',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Mua để nhận điểm',
+                                  style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${cart.subtotal.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
+                                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Miễn phí giao hàng',
+                                  style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        // Checkout Button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: () => context.push(AppRoutes.checkout),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.textDark,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Text(
+                              'Tiến hành thanh toán',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ],
+                ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildCartItem(Map<String, dynamic> item, int index) {
+  Widget _buildCartItem(CartItem item) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Row(
@@ -252,11 +235,9 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           // Checkbox
           Checkbox(
-            value: item['selected'] ?? true,
+            value: item.selected,
             onChanged: (bool? value) {
-              setState(() {
-                item['selected'] = value ?? false;
-              });
+              ref.read(cartProvider.notifier).toggleItemSelection(item.productId, value ?? false);
             },
             activeColor: AppColors.textDark,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -274,13 +255,14 @@ class _CartScreenState extends State<CartScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                item['image'],
-                fit: BoxFit.cover,
-                cacheWidth: 144, // Optimize image memory footprint
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.image, color: Colors.grey),
-              ),
+              child: item.productImageUrl != null 
+                ? Image.network(
+                    item.productImageUrl!,
+                    fit: BoxFit.cover,
+                    cacheWidth: 144,
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, color: Colors.grey),
+                  )
+                : const Icon(Icons.image, color: Colors.grey),
             ),
           ),
           const SizedBox(width: 16),
@@ -295,7 +277,7 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        item['name'],
+                        item.productName ?? 'Sản phẩm ${item.productId}',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -309,9 +291,7 @@ class _CartScreenState extends State<CartScreen> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
-                        setState(() {
-                          _cartItems.removeAt(index);
-                        });
+                        ref.read(cartProvider.notifier).removeItem(item.productId);
                       },
                       child: const Icon(Icons.close, color: AppColors.textLight, size: 18),
                     ),
@@ -319,7 +299,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  item['variant'],
+                  item.productVariant ?? 'Mặc định',
                   style: const TextStyle(fontSize: 12, color: AppColors.textLight),
                 ),
                 const SizedBox(height: 12),
@@ -330,17 +310,8 @@ class _CartScreenState extends State<CartScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (item['originalPrice'] != null)
-                          Text(
-                            '${item['originalPrice'].toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textLight,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
                         Text(
-                          '${item['price'].toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
+                          '${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -363,10 +334,8 @@ class _CartScreenState extends State<CartScreen> {
                           IconButton(
                             icon: const Icon(Icons.remove, size: 16),
                             onPressed: () {
-                              if (item['qty'] > 1) {
-                                setState(() {
-                                  item['qty']--;
-                                });
+                              if (item.quantity > 1) {
+                                ref.read(cartProvider.notifier).updateQuantity(item.productId, item.quantity - 1);
                               }
                             },
                             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -375,7 +344,7 @@ class _CartScreenState extends State<CartScreen> {
                             color: AppColors.textDark,
                           ),
                           Text(
-                            '${item['qty']}',
+                            '${item.quantity}',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -385,9 +354,7 @@ class _CartScreenState extends State<CartScreen> {
                           IconButton(
                             icon: const Icon(Icons.add, size: 16),
                             onPressed: () {
-                              setState(() {
-                                item['qty']++;
-                              });
+                              ref.read(cartProvider.notifier).updateQuantity(item.productId, item.quantity + 1);
                             },
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             constraints: const BoxConstraints(),

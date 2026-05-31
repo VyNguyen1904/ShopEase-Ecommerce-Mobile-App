@@ -40,6 +40,8 @@ dependencies:
 
   # Compile-safe state management
   flutter_riverpod: ^2.6.1
+  dio: ^5.9.2
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
