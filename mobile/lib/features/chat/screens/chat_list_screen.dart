@@ -223,6 +223,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   ),
                   trailing: Column(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
