@@ -26,6 +26,7 @@ import '../../features/seller/screens/seller_shop_profile.dart';
 import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
+import '../../features/seller/screens/seller_orders_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
@@ -175,6 +176,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.sellerAddProduct,
       builder: (context, state) => const SellerAddProductScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerOrders,
+      builder: (context, state) => const SellerOrdersScreen(),
     ),
   ],
 );

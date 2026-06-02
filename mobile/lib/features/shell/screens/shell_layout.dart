@@ -227,6 +227,11 @@ class ShellLayout extends StatelessWidget {
                             'Seller Add Product',
                             () => context.push(AppRoutes.sellerAddProduct),
                           ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Orders',
+                            () => context.push(AppRoutes.sellerOrders),
+                          ),
                         ],
                       ),
                     ],
