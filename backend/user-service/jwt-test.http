@@ -1,0 +1,183 @@
+### =============================================
+### JWT Flow Testing - ShopEase User Service
+### Tool: VS Code "REST Client" extension
+###        or IntelliJ HTTP Client (built-in)
+### Base URL: http://localhost:8081
+### =============================================
+
+@baseUrl = http://localhost:8081/api
+
+### ----- REGISTER FLOW -----
+
+### Test R3: Register Success (Happy Path - Auto Login)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123",
+  "fullName": "Test User",
+  "phone": "+84900000000"
+}
+
+### Test R1: Register - Payload Invalid (missing required fields)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "not-valid-email",
+  "password": "123"
+}
+
+### Test R2: Register - Email Already Exists
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "buyer@shopease.local",
+  "password": "password123",
+  "fullName": "Duplicate User"
+}
+
+### ----- LOGIN FLOW -----
+
+### Login - Happy Path (Buyer)
+# @name loginBuyer
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "buyer@shopease.local",
+  "password": "password123"
+}
+
+### Login - Happy Path (Seller)
+# @name loginSeller
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "seller@shopease.local",
+  "password": "password123"
+}
+
+### Login - Wrong Email
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com",
+  "password": "password123"
+}
+
+### Login - Wrong Password
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "buyer@shopease.local",
+  "password": "wrongpassword"
+}
+
+### ----- SAVE TOKENS FROM LOGIN RESPONSE -----
+### After running "Login - Happy Path (Buyer)", copy the tokens here:
+
+@accessToken = PASTE_ACCESS_TOKEN_HERE
+@refreshToken = PASTE_REFRESH_TOKEN_HERE
+
+### ----- REFRESH TOKEN FLOW -----
+
+### Test F5: Refresh - Happy Path
+### (After this, the old refreshToken is REVOKED. Save the new RT!)
+# @name refreshHappy
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Test F4: Refresh - Reuse Detection (use OLD refreshToken again)
+### This should FAIL and revoke the entire token family!
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Test F1: Refresh - Malformed/Fake Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYWtlLXVzZXIifQ.invalid-signature"
+}
+
+### Test F2: Refresh - Valid JWT but not in DB
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "not-even-a-jwt-token"
+}
+
+### ----- LOGOUT FLOW -----
+
+### Logout - Single Device
+### (Login again first to get fresh tokens, then paste refreshToken here)
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Verify: Try to refresh after logout (should fail)
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### ----- LOGOUT ALL DEVICES -----
+
+### Logout All - Requires valid Access Token
+POST {{baseUrl}}/auth/logout-all
+Authorization: Bearer {{accessToken}}
+
+### Verify: Use old AT after logout-all (should fail with token_version mismatch)
+POST {{baseUrl}}/auth/logout-all
+Authorization: Bearer {{accessToken}}
+
+### ----- PROTECTED API (User Profile) -----
+
+### Get User Profile with valid AT
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{accessToken}}
+
+### Get User Profile without AT (Case A1)
+GET {{baseUrl}}/users/me
+
+### Get User Profile with invalid AT (Case A2)
+GET {{baseUrl}}/users/me
+Authorization: Bearer invalid.token.here
+
+### ----- TEST VIA GATEWAY (port 8080) -----
+### Uncomment these if Gateway is running
+
+# @gatewayUrl = http://localhost:8080/api
+
+### Login via Gateway
+# POST {{gatewayUrl}}/auth/login
+# Content-Type: application/json
+#
+# {
+#   "email": "buyer@shopease.local",
+#   "password": "password123"
+# }
+
+### Access protected resource via Gateway
+# GET {{gatewayUrl}}/users/me
+# Authorization: Bearer {{accessToken}}

@@ -23,6 +23,7 @@ import '../../features/admin/screens/admin_users.dart';
 import '../../features/admin/screens/seller_order_detail.dart';
 import '../../features/admin/screens/seller_notifications.dart';
 import '../../features/seller/screens/seller_shop_profile.dart';
+import '../../features/seller/screens/seller_dashboard_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
@@ -160,6 +161,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.sellerShopProfile,
       builder: (context, state) => const SellerShopProfile(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerDashboard,
+      builder: (context, state) => const SellerDashboardScreen(),
     ),
   ],
 );

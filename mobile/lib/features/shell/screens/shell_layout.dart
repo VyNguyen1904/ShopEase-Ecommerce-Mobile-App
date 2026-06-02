@@ -97,6 +97,11 @@ class ShellLayout extends StatelessWidget {
                         ),
                         _buildPanelItem(
                           ctx,
+                          'Login (Customer/2.png)',
+                          () => context.go(AppRoutes.login),
+                        ),
+                        _buildPanelItem(
+                          ctx,
                           'Register (Customer/4.png)',
                           () => context.go(AppRoutes.register),
                         ),
@@ -201,6 +206,16 @@ class ShellLayout extends StatelessWidget {
                             ctx,
                             'Seller Notifications (Seller/2.png)',
                             () => context.push(AppRoutes.sellerNotifications),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Shop Profile (Seller/3.png)',
+                            () => context.push(AppRoutes.sellerShopProfile),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Dashboard (Seller/Dashboard.png)',
+                            () => context.push(AppRoutes.sellerDashboard),
                           ),
                         ],
                       ),
