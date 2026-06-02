@@ -420,12 +420,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   child: Container(
                     width: 52,
                     height: 52,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.accent,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Center(
-                      child: Icon(Icons.send, color: Colors.white, size: 20),
+                      child: Icon(Icons.send_outlined, color: Colors.white, size: 24),
                     ),
                   ),
                 ),

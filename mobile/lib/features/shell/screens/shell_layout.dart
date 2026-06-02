@@ -180,7 +180,7 @@ class ShellLayout extends StatelessWidget {
                         ),
                       ]),
                       _buildPanelSection(
-                        '4. Quản trị & Người bán (Admin & Seller)',
+                        '4. Quản trị (Admin)',
                         [
                           _buildPanelItem(
                             ctx,
@@ -197,6 +197,11 @@ class ShellLayout extends StatelessWidget {
                             'Admin User Management (Admin/3.png)',
                             () => context.push(AppRoutes.adminUsers),
                           ),
+                        ],
+                      ),
+                      _buildPanelSection(
+                        '5. Người bán (Seller)',
+                        [
                           _buildPanelItem(
                             ctx,
                             'Seller Order Detail (Seller/1.png)',
@@ -231,6 +236,11 @@ class ShellLayout extends StatelessWidget {
                             ctx,
                             'Seller Orders',
                             () => context.push(AppRoutes.sellerOrders),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Chat',
+                            () => context.push(AppRoutes.chats),
                           ),
                         ],
                       ),
