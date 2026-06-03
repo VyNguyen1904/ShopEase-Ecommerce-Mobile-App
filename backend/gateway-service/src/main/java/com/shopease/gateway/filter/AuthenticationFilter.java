@@ -168,6 +168,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(String path, String method) {
+        // Swagger and OpenAPI paths
+        if (path.startsWith("/v3/api-docs") ||
+            path.startsWith("/swagger-ui") ||
+            path.startsWith("/webjars/")) {
+            return true;
+        }
+
         // Auth paths that do not require access token
         if (path.startsWith("/api/auth/login") || 
             path.startsWith("/api/auth/register") || 
