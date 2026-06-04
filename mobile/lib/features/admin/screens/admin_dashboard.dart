@@ -55,14 +55,18 @@ class AdminDashboard extends StatelessWidget {
                               'https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.webp', // Waving hand gif/img
                               width: 20,
                               height: 20,
-                              errorBuilder: (context, error, stackTrace) => const Text('👋'),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Text('👋'),
                             ),
                           ],
                         ),
                         const SizedBox(height: 2),
                         const Text(
                           'Chúc bạn một ngày làm việc hiệu quả!',
-                          style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textGrey,
+                          ),
                         ),
                       ],
                     ),
@@ -79,7 +83,11 @@ class AdminDashboard extends StatelessWidget {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        const Icon(Icons.notifications_none, color: AppColors.textDark, size: 22),
+                        const Icon(
+                          Icons.notifications_none,
+                          color: AppColors.textDark,
+                          size: 22,
+                        ),
                         Positioned(
                           right: 12,
                           top: 12,
@@ -109,7 +117,7 @@ class AdminDashboard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Overview Cards Row
               Row(
                 children: [
@@ -155,7 +163,10 @@ class AdminDashboard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -165,10 +176,18 @@ class AdminDashboard extends StatelessWidget {
                       children: [
                         Text(
                           '7 ngày qua',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
                         ),
                         SizedBox(width: 4),
-                        Icon(Icons.keyboard_arrow_down, size: 16, color: AppColors.textGrey),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 16,
+                          color: AppColors.textGrey,
+                        ),
                       ],
                     ),
                   ),
@@ -193,13 +212,41 @@ class AdminDashboard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _buildDoubleBar('9 Thg 5', revenueHeight: 80, orderHeight: 100),
-                    _buildDoubleBar('10 Thg 5', revenueHeight: 120, orderHeight: 90),
-                    _buildDoubleBar('11 Thg 5', revenueHeight: 140, orderHeight: 160),
-                    _buildDoubleBar('12 Thg 5', revenueHeight: 150, orderHeight: 120),
-                    _buildDoubleBar('13 Thg 5', revenueHeight: 100, orderHeight: 110),
-                    _buildDoubleBar('14 Thg 5', revenueHeight: 150, orderHeight: 110),
-                    _buildDoubleBar('15 Thg 5', revenueHeight: 170, orderHeight: 110),
+                    _buildDoubleBar(
+                      '9 Thg 5',
+                      revenueHeight: 80,
+                      orderHeight: 100,
+                    ),
+                    _buildDoubleBar(
+                      '10 Thg 5',
+                      revenueHeight: 120,
+                      orderHeight: 90,
+                    ),
+                    _buildDoubleBar(
+                      '11 Thg 5',
+                      revenueHeight: 140,
+                      orderHeight: 160,
+                    ),
+                    _buildDoubleBar(
+                      '12 Thg 5',
+                      revenueHeight: 150,
+                      orderHeight: 120,
+                    ),
+                    _buildDoubleBar(
+                      '13 Thg 5',
+                      revenueHeight: 100,
+                      orderHeight: 110,
+                    ),
+                    _buildDoubleBar(
+                      '14 Thg 5',
+                      revenueHeight: 150,
+                      orderHeight: 110,
+                    ),
+                    _buildDoubleBar(
+                      '15 Thg 5',
+                      revenueHeight: 170,
+                      orderHeight: 110,
+                    ),
                   ],
                 ),
               ),
@@ -228,7 +275,7 @@ class AdminDashboard extends StatelessWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withValues(alpha: 0.01),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -241,23 +288,28 @@ class AdminDashboard extends StatelessWidget {
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(
-              color: iconBg,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(height: 18),
           // Title
           Text(
             title,
-            style: const TextStyle(fontSize: 13, color: AppColors.textGrey, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textGrey,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: 6),
           // Value
           Text(
             value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textDark),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
           ),
           const SizedBox(height: 8),
           // Percentage change row
@@ -299,21 +351,26 @@ class AdminDashboard extends StatelessWidget {
         Container(
           width: 10,
           height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textGrey),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textGrey,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildDoubleBar(String date, {required double revenueHeight, required double orderHeight}) {
+  Widget _buildDoubleBar(
+    String date, {
+    required double revenueHeight,
+    required double orderHeight,
+  }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -344,7 +401,11 @@ class AdminDashboard extends StatelessWidget {
         // Date Label
         Text(
           date,
-          style: const TextStyle(fontSize: 9, color: AppColors.textGrey, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            fontSize: 9,
+            color: AppColors.textGrey,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );

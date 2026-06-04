@@ -9,7 +9,6 @@ import lombok.*;
 import java.time.Instant;
 import java.util.UUID;
 
-
 @Entity
 @Table(name = "refresh_tokens")
 @Getter
@@ -25,6 +24,9 @@ public class RefreshToken {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
+    @Column(name = "family_id", nullable = false)
+    private UUID familyId;
+
     @Column(name = "token_hash", nullable = false, unique = true, length = 64)
     private String tokenHash;
 
@@ -37,8 +39,20 @@ public class RefreshToken {
     @Column(name = "revoked_at")
     private Instant revokedAt;
 
+    @Column(name = "revoked_reason", length = 100)
+    private String revokedReason;
+
     @Column(name = "replaced_by_token_hash", length = 64)
     private String replacedByTokenHash;
+
+    @Column(name = "created_by_ip", length = 45)
+    private String createdByIp;
+
+    @Column(name = "created_by_user_agent")
+    private String createdByUserAgent;
+
+    @Column(name = "last_used_at")
+    private Instant lastUsedAt;
 
     public boolean isRevoked() {
         return revokedAt != null;

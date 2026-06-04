@@ -1,4 +1,4 @@
-﻿spring:
+spring:
   application:
     name: gateway-service
   cloud:
@@ -42,6 +42,48 @@
           uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
           predicates:
             - Path=/api/search/**
+        - id: openapi-user-service
+          uri: ${USER_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/v3/api-docs/user-service
+          filters:
+            - RewritePath=/v3/api-docs/user-service, /v3/api-docs
+        - id: openapi-product-service
+          uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
+          predicates:
+            - Path=/v3/api-docs/product-service
+          filters:
+            - RewritePath=/v3/api-docs/product-service, /v3/api-docs
+        - id: openapi-inventory-service
+          uri: ${INVENTORY_SERVICE_URI:http://localhost:8083}
+          predicates:
+            - Path=/v3/api-docs/inventory-service
+          filters:
+            - RewritePath=/v3/api-docs/inventory-service, /v3/api-docs
+        - id: openapi-cart-service
+          uri: ${CART_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/v3/api-docs/cart-service
+          filters:
+            - RewritePath=/v3/api-docs/cart-service, /v3/api-docs
+        - id: openapi-order-service
+          uri: ${ORDER_SERVICE_URI:http://localhost:8085}
+          predicates:
+            - Path=/v3/api-docs/order-service
+          filters:
+            - RewritePath=/v3/api-docs/order-service, /v3/api-docs
+        - id: openapi-payment-service
+          uri: ${PAYMENT_SERVICE_URI:http://localhost:8086}
+          predicates:
+            - Path=/v3/api-docs/payment-service
+          filters:
+            - RewritePath=/v3/api-docs/payment-service, /v3/api-docs
+        - id: openapi-review-service
+          uri: ${REVIEW_SERVICE_URI:http://localhost:8089}
+          predicates:
+            - Path=/v3/api-docs/review-service
+          filters:
+            - RewritePath=/v3/api-docs/review-service, /v3/api-docs
 server:
   port: 8080
 management:
@@ -49,4 +91,22 @@ management:
     web:
       exposure:
         include: health,info
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: User Service
+        url: /v3/api-docs/user-service
+      - name: Product Service
+        url: /v3/api-docs/product-service
+      - name: Inventory Service
+        url: /v3/api-docs/inventory-service
+      - name: Cart Service
+        url: /v3/api-docs/cart-service
+      - name: Order Service
+        url: /v3/api-docs/order-service
+      - name: Payment Service
+        url: /v3/api-docs/payment-service
+      - name: Review Service
+        url: /v3/api-docs/review-service
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 
-
 class SellerNotifications extends StatefulWidget {
   const SellerNotifications({super.key});
 
@@ -39,14 +38,16 @@ class _SellerNotificationsState extends State<SellerNotifications> {
     },
     {
       'title': 'Yêu cầu hoàn hàng',
-      'content': 'Đơn hàng #DH2405180002 đang được yêu cầu hoàn hàng bởi khách.',
+      'content':
+          'Đơn hàng #DH2405180002 đang được yêu cầu hoàn hàng bởi khách.',
       'time': '15 phút trước',
       'type': 'return',
       'unread': true,
     },
     {
       'title': 'Đánh giá mới',
-      'content': 'Nguyễn Văn An vừa đánh giá 5 sao cho sản phẩm Nike Air Max 270.',
+      'content':
+          'Nguyễn Văn An vừa đánh giá 5 sao cho sản phẩm Nike Air Max 270.',
       'time': '1 giờ trước',
       'type': 'review',
       'unread': true,
@@ -60,28 +61,32 @@ class _SellerNotificationsState extends State<SellerNotifications> {
     },
     {
       'title': 'Đơn hàng đã giao',
-      'content': 'Đơn hàng #DH2405170003 đã được giao thành công cho khách hàng.',
+      'content':
+          'Đơn hàng #DH2405170003 đã được giao thành công cho khách hàng.',
       'time': '3 giờ trước',
       'type': 'delivered',
       'unread': false,
     },
     {
       'title': 'Thanh toán thành công',
-      'content': 'Bạn đã nhận được thanh toán cho đơn hàng #DH2405160004 qua Ví ShopeePay.',
+      'content':
+          'Bạn đã nhận được thanh toán cho đơn hàng #DH2405160004 qua Ví ShopeePay.',
       'time': '5 giờ trước',
       'type': 'payment',
       'unread': false,
     },
     {
       'title': 'Khách hàng mới',
-      'content': 'Bạn vừa có một khách hàng mới: Trần Thị Mai đã theo dõi cửa hàng của bạn.',
+      'content':
+          'Bạn vừa có một khách hàng mới: Trần Thị Mai đã theo dõi cửa hàng của bạn.',
       'time': 'Hôm qua',
       'type': 'customer',
       'unread': false,
     },
     {
       'title': 'Cập nhật từ hệ thống',
-      'content': 'Phí vận chuyển sẽ được cập nhật từ ngày 01/06/2024. Vui lòng kiểm tra chi tiết.',
+      'content':
+          'Phí vận chuyển sẽ được cập nhật từ ngày 01/06/2024. Vui lòng kiểm tra chi tiết.',
       'time': '2 ngày trước',
       'type': 'system',
       'unread': false,
@@ -110,7 +115,10 @@ class _SellerNotificationsState extends State<SellerNotifications> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: AppColors.textDark),
+            icon: const Icon(
+              Icons.settings_outlined,
+              color: AppColors.textDark,
+            ),
             onPressed: () {},
           ),
           const SizedBox(width: 8),
@@ -141,7 +149,9 @@ class _SellerNotificationsState extends State<SellerNotifications> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isSelected ? AppColors.primary : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.primary
+                              : Colors.transparent,
                           width: 2.5,
                         ),
                       ),
@@ -152,16 +162,25 @@ class _SellerNotificationsState extends State<SellerNotifications> {
                           tab.label,
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: isSelected ? AppColors.primary : AppColors.textGrey,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textGrey,
                           ),
                         ),
                         const SizedBox(width: 6),
                         // Tab Badge Count
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primary : AppColors.alertRed,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.alertRed,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
@@ -254,7 +273,7 @@ class _SellerNotificationsState extends State<SellerNotifications> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withValues(alpha: 0.01),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -269,10 +288,7 @@ class _SellerNotificationsState extends State<SellerNotifications> {
             Container(
               width: 48,
               height: 48,
-              decoration: BoxDecoration(
-                color: iconBg,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
               child: Icon(icon, color: iconColor, size: 22),
             ),
             const SizedBox(width: 14),
@@ -297,7 +313,10 @@ class _SellerNotificationsState extends State<SellerNotifications> {
                           if (note['tag'] != null) ...[
                             const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFFFECE5),
                                 borderRadius: BorderRadius.circular(4),
@@ -316,7 +335,10 @@ class _SellerNotificationsState extends State<SellerNotifications> {
                       ),
                       Text(
                         note['time'],
-                        style: const TextStyle(fontSize: 11, color: AppColors.textLight),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textLight,
+                        ),
                       ),
                     ],
                   ),

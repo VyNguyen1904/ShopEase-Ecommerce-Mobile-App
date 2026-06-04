@@ -1,6 +1,8 @@
 package com.shopease.user.service;
 
 import com.shopease.user.config.JWTProperties;
+import com.shopease.user.model.UserAccount;
+import com.shopease.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -26,6 +28,7 @@ import java.util.UUID;
 public class TokenService {
 
     private final JWTProperties jwtProperties;
+    private final UserRepository userRepository;
 
     private SecretKey secretKey() {
         return Keys.hmacShaKeyFor(
@@ -36,6 +39,10 @@ public class TokenService {
     public record TokenInfo(String token, Instant expiresAt) {}
 
     public TokenInfo sign(UUID userId, String role, String tokenType) {
+        return sign(userId, role, tokenType, null);
+    }
+
+    public TokenInfo sign(UUID userId, String role, String tokenType, Integer tokenVersion) {
         long ttl = "refresh".equals(tokenType)
                 ? jwtProperties.getRefreshTokenExpiry()
                 : jwtProperties.getAccessTokenExpiry();
@@ -43,12 +50,18 @@ public class TokenService {
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(ttl);
 
-        String token = Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(userId.toString())
                 .claim("role", role)
                 .claim("type", tokenType)
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(expiresAt))
+                .expiration(Date.from(expiresAt));
+
+        if (tokenVersion != null) {
+            builder.claim("token_version", tokenVersion);
+        }
+
+        String token = builder
                 .signWith(secretKey())
                 .compact();
 
@@ -81,7 +94,24 @@ public class TokenService {
             );
         }
 
-        return UUID.fromString(claims.getSubject());
+        UUID userId = UUID.fromString(claims.getSubject());
+        Integer tokenVersion = claims.get("token_version", Integer.class);
+
+        if (tokenVersion != null) {
+            UserAccount user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.UNAUTHORIZED,
+                            "User not found"
+                    ));
+            if (user.getTokenVersion() != tokenVersion) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Token has been invalidated (Force logout)"
+                );
+            }
+        }
+
+        return userId;
     }
 
     public UUID validateRefreshToken(String rawRefreshToken) {

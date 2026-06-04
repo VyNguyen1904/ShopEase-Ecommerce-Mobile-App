@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 
-
 class AdminUsers extends StatefulWidget {
   const AdminUsers({super.key});
 
@@ -28,7 +27,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFEAF5F6),
       'iconColor': AppColors.primary,
       'status': 'Đang hoạt động',
-      'avatar': 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'John Smith',
@@ -37,7 +37,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFEEF2F6),
       'iconColor': const Color(0xFF3B82F6),
       'status': 'Đang hoạt động',
-      'avatar': 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Mike Lee',
@@ -46,7 +47,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFEEF2F6),
       'iconColor': const Color(0xFF3B82F6),
       'status': 'Đang hoạt động',
-      'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Tom Brown',
@@ -55,7 +57,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFFFECE5),
       'iconColor': AppColors.accent,
       'status': 'Bị vô hiệu',
-      'avatar': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Emma Wilson',
@@ -64,7 +67,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFEEF2F6),
       'iconColor': const Color(0xFF3B82F6),
       'status': 'Đang hoạt động',
-      'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Alex Nguyen',
@@ -73,7 +77,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFEEF2F6),
       'iconColor': const Color(0xFF3B82F6),
       'status': 'Đang hoạt động',
-      'avatar': 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Sophia Tran',
@@ -82,7 +87,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFFFECE5),
       'iconColor': AppColors.accent,
       'status': 'Bị vô hiệu',
-      'avatar': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80',
     },
     {
       'name': 'David Kim',
@@ -91,7 +97,8 @@ class _AdminUsersState extends State<AdminUsers> {
       'roleColor': const Color(0xFFEEF2F6),
       'iconColor': const Color(0xFF3B82F6),
       'status': 'Đang hoạt động',
-      'avatar': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+      'avatar':
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
     },
   ];
 
@@ -121,7 +128,11 @@ class _AdminUsersState extends State<AdminUsers> {
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.filter_list, color: AppColors.textDark, size: 24),
+            icon: const Icon(
+              Icons.filter_list,
+              color: AppColors.textDark,
+              size: 24,
+            ),
             onPressed: () {},
           ),
           const SizedBox(width: 8),
@@ -152,7 +163,9 @@ class _AdminUsersState extends State<AdminUsers> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isSelected ? AppColors.primary : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.primary
+                              : Colors.transparent,
                           width: 2.5,
                         ),
                       ),
@@ -161,8 +174,12 @@ class _AdminUsersState extends State<AdminUsers> {
                       tab,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: isSelected ? AppColors.primary : AppColors.textGrey,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textGrey,
                       ),
                     ),
                   ),
@@ -177,7 +194,8 @@ class _AdminUsersState extends State<AdminUsers> {
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               itemCount: _users.length,
-              separatorBuilder: (context, index) => const Divider(height: 1, color: AppColors.border),
+              separatorBuilder: (context, index) =>
+                  const Divider(height: 1, color: AppColors.border),
               itemBuilder: (context, index) {
                 final user = _users[index];
                 final isActive = user['status'] == 'Đang hoạt động';
@@ -218,7 +236,10 @@ class _AdminUsersState extends State<AdminUsers> {
                                 const SizedBox(width: 8),
                                 // Role Badge
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: user['roleColor'],
                                     borderRadius: BorderRadius.circular(6),
@@ -237,7 +258,10 @@ class _AdminUsersState extends State<AdminUsers> {
                             const SizedBox(height: 4),
                             Text(
                               user['email'],
-                              style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textGrey,
+                              ),
                             ),
                           ],
                         ),
@@ -250,7 +274,9 @@ class _AdminUsersState extends State<AdminUsers> {
                             width: 8,
                             height: 8,
                             decoration: BoxDecoration(
-                              color: isActive ? AppColors.iconGreen : AppColors.alertRed,
+                              color: isActive
+                                  ? AppColors.iconGreen
+                                  : AppColors.alertRed,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -260,7 +286,9 @@ class _AdminUsersState extends State<AdminUsers> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: isActive ? AppColors.iconGreen : AppColors.alertRed,
+                              color: isActive
+                                  ? AppColors.iconGreen
+                                  : AppColors.alertRed,
                             ),
                           ),
                         ],
@@ -268,7 +296,11 @@ class _AdminUsersState extends State<AdminUsers> {
                       const SizedBox(width: 8),
                       // More icon
                       IconButton(
-                        icon: const Icon(Icons.more_vert, color: AppColors.textLight, size: 20),
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: AppColors.textLight,
+                          size: 20,
+                        ),
                         onPressed: () {},
                       ),
                     ],

@@ -74,7 +74,8 @@ final List<ChatRoom> mockChatRooms = [
         senderName: 'Trần Minh',
         senderImageUrl:
             'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-        messageText: 'Dạ vâng, bạn vui lòng cung cấp mã đơn hàng giúp mình nhé.',
+        messageText:
+            'Dạ vâng, bạn vui lòng cung cấp mã đơn hàng giúp mình nhé.',
         time: '09:42',
         isMe: false,
       ),

@@ -54,7 +54,8 @@ final List<NotificationItem> mockNotifications = [
   NotificationItem(
     id: 'n4',
     title: 'Flash Sale sắp diễn ra!',
-    content: 'Flash Sale 6.6 bắt đầu sau 2 giờ nữa. Săn deal cực sốc lên đến 70%!',
+    content:
+        'Flash Sale 6.6 bắt đầu sau 2 giờ nữa. Săn deal cực sốc lên đến 70%!',
     time: '08:00 AM',
     group: 'Hôm nay',
     type: NotificationType.promotion,
@@ -90,8 +91,7 @@ final List<NotificationItem> mockNotifications = [
   NotificationItem(
     id: 'n8',
     title: 'Chào mừng đến với ShopEase!',
-    content:
-        'Cảm ơn bạn đã đăng ký tài khoản. Bắt đầu mua sắm ngay nhé!',
+    content: 'Cảm ơn bạn đã đăng ký tài khoản. Bắt đầu mua sắm ngay nhé!',
     time: '05/05/2024',
     group: 'Trước đó',
     type: NotificationType.system,

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'core/constants/app_colors.dart';
 import 'core/router/app_router.dart';
@@ -8,13 +9,20 @@ class ShopEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown,
+        },
+      ),
       title: 'ShopEase',
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: ThemeData(
-        useMaterial3: true, // Enable Material Design 3
+        useMaterial3: true,
         primaryColor: AppColors.primary,
-        // Color scheme generated from a seed color (Material 3)
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,

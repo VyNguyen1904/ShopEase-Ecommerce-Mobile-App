@@ -1,0 +1,149 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/models/cart_model.dart';
+import '../../../core/services/cart_service.dart';
+
+final cartServiceProvider = Provider((ref) => CartService());
+
+final cartProvider =
+    StateNotifierProvider<CartNotifier, AsyncValue<CartResponse>>((ref) {
+      return CartNotifier(ref.watch(cartServiceProvider));
+    });
+
+class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
+  final CartService _cartService;
+  // TODO: Use actual user ID from AuthProvider in the future
+  final String _userId = 'demo-buyer';
+
+  CartNotifier(this._cartService) : super(const AsyncValue.loading()) {
+    fetchCart();
+  }
+
+  Future<void> fetchCart() async {
+    try {
+      state = const AsyncValue.loading();
+      final cart = await _cartService.getCart(_userId);
+      state = AsyncValue.data(cart);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> updateQuantity(int productId, int quantity) async {
+    if (quantity < 1) {
+      await removeItem(productId);
+      return;
+    }
+
+    // Optimistic UI update
+    if (state.hasValue) {
+      final currentCart = state.value!;
+      final updatedItems = currentCart.items.map((item) {
+        if (item.productId == productId) {
+          item.quantity = quantity;
+        }
+        return item;
+      }).toList();
+
+      final newSubtotal = updatedItems
+          .where((item) => item.selected)
+          .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+
+      state = AsyncValue.data(
+        CartResponse(
+          userId: currentCart.userId,
+          items: updatedItems,
+          subtotal: newSubtotal,
+          totalItems: currentCart.totalItems,
+        ),
+      );
+    }
+
+    try {
+      await _cartService.updateQuantity(_userId, productId, quantity);
+      // Refresh to ensure server sync
+      fetchCart();
+    } catch (e) {
+      fetchCart(); // Revert on failure
+    }
+  }
+
+  Future<void> removeItem(int productId) async {
+    try {
+      // Optimistic update
+      if (state.hasValue) {
+        final currentCart = state.value!;
+        final updatedItems = currentCart.items
+            .where((item) => item.productId != productId)
+            .toList();
+        final newSubtotal = updatedItems
+            .where((item) => item.selected)
+            .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+
+        state = AsyncValue.data(
+          CartResponse(
+            userId: currentCart.userId,
+            items: updatedItems,
+            subtotal: newSubtotal,
+            totalItems: currentCart.totalItems,
+          ),
+        );
+      }
+
+      await _cartService.removeItem(_userId, productId);
+      fetchCart();
+    } catch (e) {
+      fetchCart();
+    }
+  }
+
+  void toggleItemSelection(int productId, bool selected) {
+    if (state.hasValue) {
+      final currentCart = state.value!;
+      final updatedItems = currentCart.items.map((item) {
+        if (item.productId == productId) {
+          item.selected = selected;
+        }
+        return item;
+      }).toList();
+
+      final newSubtotal = updatedItems
+          .where((item) => item.selected)
+          .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+
+      state = AsyncValue.data(
+        CartResponse(
+          userId: currentCart.userId,
+          items: updatedItems,
+          subtotal: newSubtotal,
+          totalItems: currentCart.totalItems,
+        ),
+      );
+    }
+  }
+
+  void toggleAll(bool selected) {
+    if (state.hasValue) {
+      final currentCart = state.value!;
+      final updatedItems = currentCart.items.map((item) {
+        item.selected = selected;
+        return item;
+      }).toList();
+
+      final newSubtotal = selected
+          ? updatedItems.fold(
+              0.0,
+              (sum, item) => sum + (item.price * item.quantity),
+            )
+          : 0.0;
+
+      state = AsyncValue.data(
+        CartResponse(
+          userId: currentCart.userId,
+          items: updatedItems,
+          subtotal: newSubtotal,
+          totalItems: currentCart.totalItems,
+        ),
+      );
+    }
+  }
+}
