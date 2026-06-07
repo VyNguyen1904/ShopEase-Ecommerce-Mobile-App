@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/models/product.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
+import '../../cart/providers/cart_provider.dart';
 
 class HomeProductCard extends StatelessWidget {
   final Product product;
@@ -175,16 +176,43 @@ class HomeProductCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Colors.white,
-                              size: 18,
+                          GestureDetector(
+                            onTap: () async {
+                              try {
+                                final pId = int.tryParse(product.id) ?? 0;
+                                await ref.read(cartProvider.notifier).addToCart(pId, 1);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
+                                      backgroundColor: AppColors.primary,
+                                      duration: Duration(seconds: 1),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Không thể thêm: $e'),
+                                      backgroundColor: Colors.red,
+                                      duration: const Duration(seconds: 1),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                             ),
                           ),
                         ],

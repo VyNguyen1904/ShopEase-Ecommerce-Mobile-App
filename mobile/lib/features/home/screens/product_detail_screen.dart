@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
+import '../../cart/providers/cart_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -562,13 +563,28 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
-                              backgroundColor: AppColors.primary,
-                            ),
-                          );
+                        onPressed: () async {
+                          try {
+                            final pId = int.tryParse(product.id) ?? 0;
+                            await ref.read(cartProvider.notifier).addToCart(pId, 1);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
+                                  backgroundColor: AppColors.primary,
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Không thể thêm: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,

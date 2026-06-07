@@ -31,13 +31,49 @@ class Product {
     if (originalPrice == null || originalPrice! <= price) return 0;
     return (((originalPrice! - price) / originalPrice!) * 100).round();
   }
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    String extractImageUrl() {
+      if (json['imageUrls'] != null && (json['imageUrls'] as List).isNotEmpty) {
+        return json['imageUrls'][0].toString();
+      } else if (json['images'] != null && (json['images'] as List).isNotEmpty) {
+        return json['images'][0].toString();
+      }
+      return 'https://via.placeholder.com/600';
+    }
+
+    String categoryName = 'Chưa phân loại';
+    if (json['category'] != null) {
+      if (json['category'] is String) {
+        categoryName = json['category'];
+      } else if (json['category'] is Map && json['category']['name'] != null) {
+        categoryName = json['category']['name'];
+      }
+    }
+
+    double basePrice = (json['basePrice'] ?? json['price'] ?? 0.0).toDouble();
+    double? salePrice = json['salePrice'] != null ? (json['salePrice']).toDouble() : null;
+    
+    double finalPrice = salePrice ?? basePrice;
+    double? origPrice = salePrice != null ? basePrice : (json['originalPrice'] != null ? (json['originalPrice']).toDouble() : null);
+
+    return Product(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      category: categoryName,
+      price: finalPrice,
+      originalPrice: origPrice,
+      imageUrl: extractImageUrl(),
+      rating: (json['avgRating'] ?? json['rating'] ?? 5.0).toDouble(),
+      reviewsCount: json['reviewCount'] ?? json['reviewsCount'] ?? 0,
+      salesCount: json['soldCount'] ?? json['salesCount'] ?? 0,
+      sizes: json['sizes'] != null ? List<String>.from(json['sizes']) : ['Mặc định'],
+      colors: [0xFF000000],
+      description: json['description'] ?? '',
+    );
+  }
 }
 
-// Mock products data matching designs:
-// - Nike Air Max 270 (White/Teal)
-// - Adidas Ultraboost
-// - Puma RS-X
-// - Converse Chuck 70
 final List<Product> mockProducts = [
   Product(
     id: 'p1',

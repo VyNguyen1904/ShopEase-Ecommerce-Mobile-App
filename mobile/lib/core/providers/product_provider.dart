@@ -1,31 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
+import '../services/product_service.dart';
 
-/// Provider for fetching all products.
-/// TODO: Replace the mock data with actual API calls (e.g., Dio or http).
+final productServiceProvider = Provider((ref) => ProductService());
+
 final productsProvider = FutureProvider<List<Product>>((ref) async {
-  // Simulated network delay to show loading state (remove when using real API)
-  await Future.delayed(const Duration(milliseconds: 600));
-  return mockProducts;
+  final productService = ref.watch(productServiceProvider);
+  final products = await productService.getProducts(page: 0, size: 20);
+  return products;
 });
 
 /// Provider for New Arrivals
 final newArrivalsProvider = FutureProvider<List<Product>>((ref) async {
-  // TODO: Call a specific endpoint for new arrivals
-  // final response = await apiClient.get('/products/new-arrivals');
-
   final products = await ref.watch(productsProvider.future);
-  return products.take(6).toList(); // Mock logic
+  return products.take(6).toList();
 });
+
+/// Provider for Banner / Promotions
+final promotionsProvider = FutureProvider<List<Product>>((ref) async {
+  final products = await ref.watch(productsProvider.future);
+  final discounted = products.where((p) => p.originalPrice != null && p.originalPrice! > p.price).toList();
+  discounted.sort((a, b) => b.discountPercentage.compareTo(a.discountPercentage));
+  
+  // Nếu không có sản phẩm giảm giá, lấy 2 sản phẩm đầu tiên làm banner tạm
+  if (discounted.isEmpty && products.isNotEmpty) {
+    return products.take(2).toList();
+  }
+  return discounted.take(3).toList();
+});
+
 
 /// Provider for Recommendations
 final recommendationsProvider = FutureProvider<List<Product>>((ref) async {
-  // TODO: Call a specific endpoint for recommendations
-  // final response = await apiClient.get('/products/recommendations');
-
   final products = await ref.watch(productsProvider.future);
-  return products.reversed.take(6).toList(); // Mock logic
+  return products.length > 6 ? products.reversed.take(6).toList() : products.reversed.toList();
 });
 
 /// Provider for a specific category
@@ -42,22 +51,3 @@ final categoryProductsProvider = FutureProvider.family<List<Product>, String>((
   return products.where((p) => p.category == categoryName).toList();
 });
 
-/// Provider for categories list
-final categoriesProvider = FutureProvider<List<Map<String, dynamic>>>((
-  ref,
-) async {
-  // TODO: Replace with API call to get categories list
-  // final response = await apiClient.get('/categories');
-
-  await Future.delayed(const Duration(milliseconds: 300));
-  return [
-    {'name': 'Thời trang Nữ', 'icon': Icons.woman_outlined},
-    {'name': 'Thời trang Nam', 'icon': Icons.man_outlined},
-    {'name': 'Giày thể thao', 'icon': Icons.sports_kabaddi_outlined},
-    {'name': 'Túi xách', 'icon': Icons.shopping_bag_outlined},
-    {'name': 'Phụ kiện', 'icon': Icons.watch_outlined},
-    {'name': 'Làm đẹp', 'icon': Icons.face_retouching_natural_outlined},
-    {'name': 'Thể thao', 'icon': Icons.sports_tennis_outlined},
-    {'name': 'Nước hoa', 'icon': Icons.water_drop_outlined},
-  ];
-});

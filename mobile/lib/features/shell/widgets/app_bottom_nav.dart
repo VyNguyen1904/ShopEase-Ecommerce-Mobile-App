@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../cart/providers/cart_provider.dart';
 
-class AppBottomNav extends StatelessWidget {
+class AppBottomNav extends ConsumerWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
@@ -12,7 +14,13 @@ class AppBottomNav extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartState = ref.watch(cartProvider);
+    final int cartCount = cartState.maybeWhen(
+      data: (cart) => cart.items.fold(0, (sum, item) => sum + item.quantity),
+      orElse: () => 0,
+    );
+    
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
@@ -48,9 +56,17 @@ class AppBottomNav extends StatelessWidget {
                   selectedIcon: Icon(Icons.grid_view),
                   label: 'Danh mục',
                 ),
-                const NavigationDestination(
-                  icon: Icon(Icons.shopping_cart_outlined),
-                  selectedIcon: Icon(Icons.shopping_cart),
+                NavigationDestination(
+                  icon: Badge(
+                    label: Text(cartCount.toString()),
+                    isLabelVisible: cartCount > 0,
+                    child: const Icon(Icons.shopping_cart_outlined),
+                  ),
+                  selectedIcon: Badge(
+                    label: Text(cartCount.toString()),
+                    isLabelVisible: cartCount > 0,
+                    child: const Icon(Icons.shopping_cart),
+                  ),
                   label: 'Giỏ hàng',
                 ),
                 const NavigationDestination(

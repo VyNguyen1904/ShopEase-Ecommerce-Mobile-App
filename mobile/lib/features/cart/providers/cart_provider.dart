@@ -18,13 +18,17 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     fetchCart();
   }
 
-  Future<void> fetchCart() async {
+  Future<void> fetchCart({bool silent = false}) async {
     try {
-      state = const AsyncValue.loading();
+      if (!silent) {
+        state = const AsyncValue.loading();
+      }
       final cart = await _cartService.getCart(_userId);
       state = AsyncValue.data(cart);
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      if (!silent || !state.hasValue) {
+        state = AsyncValue.error(e, st);
+      }
     }
   }
 
@@ -61,9 +65,24 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     try {
       await _cartService.updateQuantity(_userId, productId, quantity);
       // Refresh to ensure server sync
-      fetchCart();
+      fetchCart(silent: true);
     } catch (e) {
-      fetchCart(); // Revert on failure
+      fetchCart(silent: true); // Revert on failure
+    }
+  }
+
+  Future<void> addToCart(int productId, int quantity) async {
+    try {
+      await _cartService.addItem(_userId, productId, quantity);
+      fetchCart(silent: true);
+    } catch (e) {
+      // Handle error or fallback to updateQuantity if POST is not supported
+      try {
+        await _cartService.updateQuantity(_userId, productId, quantity);
+        fetchCart(silent: true);
+      } catch (innerE) {
+        throw Exception('Lỗi khi thêm vào giỏ hàng');
+      }
     }
   }
 
@@ -90,9 +109,9 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       }
 
       await _cartService.removeItem(_userId, productId);
-      fetchCart();
+      fetchCart(silent: true);
     } catch (e) {
-      fetchCart();
+      fetchCart(silent: true);
     }
   }
 

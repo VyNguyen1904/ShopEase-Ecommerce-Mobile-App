@@ -31,7 +31,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             size: 20,
           ),
           onPressed: () {
-            if (context.canPop()) context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.home);
+            }
           },
         ),
         title: const Text(
@@ -107,7 +111,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.remove_shopping_cart_outlined, size: 64, color: AppColors.textLight),
+                            Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textLight),
                             SizedBox(height: 16),
                             Text('Giỏ hàng của bạn đang trống', style: TextStyle(color: AppColors.textGrey, fontSize: 16)),
                           ],
