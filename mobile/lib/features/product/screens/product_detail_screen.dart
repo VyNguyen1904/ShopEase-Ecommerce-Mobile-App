@@ -8,6 +8,8 @@ import '../../../core/models/product.dart';
 
 import '../widgets/product_options_selector.dart';
 import '../widgets/product_bottom_bar.dart';
+import '../../../core/providers/review_provider.dart';
+import '../../../core/models/review.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -76,7 +78,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           children: [
                             _buildInfo(product),
                             ProductOptionsSelector(sizes: product.sizes),
-                            _buildReviews(),
+                            _buildReviews(product.id),
                           ],
                         ),
                       ),
@@ -283,7 +285,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
-  Widget _buildReviews() {
+  Widget _buildReviews(String productId) {
+    final reviewsAsyncValue = ref.watch(productReviewsProvider(productId));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -309,67 +313,108 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.bgLight,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        reviewsAsyncValue.when(
+          data: (reviews) {
+            if (reviews.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  'Chưa có đánh giá nào cho sản phẩm này.',
+                  style: TextStyle(color: AppColors.textGrey, fontStyle: FontStyle.italic),
+                ),
+              );
+            }
+            // Display first review as a preview
+            final review = reviews.first;
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.bgLight,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage(
-                      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Trần Thị B',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
-                          ),
-                        ),
-                        Text(
-                          '2 ngày trước',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textLight,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   Row(
-                    children: List.generate(
-                      5,
-                      (index) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 14,
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                        child: Text(
+                          review.buyerId.isNotEmpty ? review.buyerId[0].toUpperCase() : 'U',
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              review.buyerId,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            Text(
+                              '${review.createdAt.day}/${review.createdAt.month}/${review.createdAt.year}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: List.generate(
+                          5,
+                          (index) => Icon(
+                            index < review.rating ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (review.title.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      review.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                        fontSize: 13,
                       ),
                     ),
-                  ),
+                  ],
+                  if (review.body.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      review.body,
+                      style: const TextStyle(
+                        color: AppColors.textDark,
+                        height: 1.5,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ],
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'Giày lên form rất đẹp và ôm chân, đi siêu êm. Hàng đóng gói cẩn thận. Rất ưng ý, 10 điểm không có nhưng nha!',
-                style: TextStyle(
-                  color: AppColors.textDark,
-                  height: 1.5,
-                  fontSize: 13,
-                ),
-              ),
-            ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(
+              'Chưa có đánh giá nào cho sản phẩm này.',
+              style: TextStyle(color: AppColors.textGrey, fontStyle: FontStyle.italic),
+            ),
           ),
         ),
         const SizedBox(height: 40),

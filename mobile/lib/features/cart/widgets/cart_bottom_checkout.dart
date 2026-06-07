@@ -11,7 +11,7 @@ class CartBottomCheckout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -22,7 +22,7 @@ class CartBottomCheckout extends StatelessWidget {
           ),
         ],
         borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(32),
+          top: Radius.circular(24),
         ),
       ),
       child: SafeArea(
@@ -33,18 +33,18 @@ class CartBottomCheckout extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16,
-                vertical: 12,
+                vertical: 10,
               ),
               decoration: BoxDecoration(
                 color: AppColors.bgLight,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
                   const Icon(
                     Icons.local_activity_outlined,
                     color: AppColors.textLight,
-                    size: 22,
+                    size: 20,
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
@@ -52,7 +52,7 @@ class CartBottomCheckout extends StatelessWidget {
                       'Thêm mã giảm giá',
                       style: TextStyle(
                         color: AppColors.textLight,
-                        fontSize: 15,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -63,7 +63,7 @@ class CartBottomCheckout extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.green.shade400,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: const Row(
                       children: [
@@ -87,7 +87,7 @@ class CartBottomCheckout extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             // Total Amount
             Row(
@@ -100,7 +100,7 @@ class CartBottomCheckout extends StatelessWidget {
                     Text(
                       'Tổng cộng:',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -121,7 +121,7 @@ class CartBottomCheckout extends StatelessWidget {
                     Text(
                       '${subtotal.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
@@ -138,17 +138,19 @@ class CartBottomCheckout extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             // Checkout Button
             SizedBox(
               width: double.infinity,
-              height: 56,
+              height: 52,
               child: ElevatedButton(
-                onPressed: () => context.push(AppRoutes.checkout),
+                onPressed: subtotal > 0 ? () => context.push(AppRoutes.checkout) : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.textDark,
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: AppColors.textLight.withValues(alpha: 0.5),
+                  disabledForegroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),

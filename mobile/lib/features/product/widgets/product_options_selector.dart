@@ -123,12 +123,15 @@ class _ProductOptionsSelectorState extends State<ProductOptionsSelector> {
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeInOut,
                   margin: const EdgeInsets.only(right: 12),
-                  width: isSelected ? 48 : 42,
-                  height: isSelected ? 48 : 42,
+                  padding: EdgeInsets.symmetric(horizontal: size.length > 3 ? 16.0 : 0.0),
+                  constraints: BoxConstraints(
+                    minWidth: isSelected ? 48 : 42,
+                    minHeight: isSelected ? 48 : 42,
+                  ),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.accent : Colors.white,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: isSelected ? AppColors.accent : AppColors.border,
                       width: 1,
