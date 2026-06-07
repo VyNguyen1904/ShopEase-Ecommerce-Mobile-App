@@ -23,23 +23,21 @@ class AuthService {
   String _handleDioError(DioException e) {
     String translateError(String message) {
       final lowerMsg = message.toLowerCase();
-      if (lowerMsg.contains('bad credentials') || lowerMsg.contains('invalid credentials') || lowerMsg.contains('password')) {
-        return 'Sai email hoặc mật khẩu.';
-      }
-      if (lowerMsg.contains('user not found')) {
-        return 'Không tìm thấy tài khoản với email này.';
-      }
-      if (lowerMsg.contains('already exists') || lowerMsg.contains('already taken')) {
-        return 'Email này đã được sử dụng. Vui lòng chọn email khác.';
-      }
-      if (lowerMsg.contains('unauthorized')) {
-        return 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
-      }
-      if (lowerMsg.contains('forbidden')) {
-        return 'Bạn không có quyền thực hiện thao tác này.';
-      }
-      if (lowerMsg.contains('internal server error')) {
-        return 'Lỗi máy chủ. Vui lòng thử lại sau.';
+      
+      const errorMappings = {
+        'bad credentials': 'Sai email hoặc mật khẩu.',
+        'invalid credentials': 'Sai email hoặc mật khẩu.',
+        'password': 'Sai email hoặc mật khẩu.',
+        'user not found': 'Không tìm thấy tài khoản với email này.',
+        'already exists': 'Email này đã được sử dụng. Vui lòng chọn email khác.',
+        'already taken': 'Email này đã được sử dụng. Vui lòng chọn email khác.',
+        'unauthorized': 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        'forbidden': 'Bạn không có quyền thực hiện thao tác này.',
+        'internal server error': 'Lỗi máy chủ. Vui lòng thử lại sau.',
+      };
+
+      for (final entry in errorMappings.entries) {
+        if (lowerMsg.contains(entry.key)) return entry.value;
       }
       return message; // fallback if not recognized
     }
