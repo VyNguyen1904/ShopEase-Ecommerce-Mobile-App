@@ -47,6 +47,9 @@ public class UserAccount {
     @CollectionTable(name = "user_addresses", joinColumns = @JoinColumn(name = "user_id"))
     private List<Address> addresses = new ArrayList<>();
 
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = true;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -70,6 +73,7 @@ public class UserAccount {
         this.tokenVersion = 0;
         this.addresses = addresses != null ? new ArrayList<>(addresses) : new ArrayList<>();
         this.createdAt = createdAt;
+        this.enabled = true;
     }
 
     public void incrementTokenVersion() {
@@ -81,11 +85,21 @@ public class UserAccount {
         this.phone = phone;
     }
 
+    public void updateAccount(String fullName, String email, Role role) {
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
+    }
+
     public void replaceAddresses(List<Address> addresses) {
         this.addresses = new ArrayList<>(addresses);
     }
 
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

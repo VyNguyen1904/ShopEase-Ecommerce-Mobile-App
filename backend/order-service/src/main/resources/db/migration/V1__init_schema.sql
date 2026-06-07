@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id       UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash TEXT         NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE users (
     created_at    TIMESTAMPTZ  NOT NULL
 );
 
-CREATE TABLE user_addresses (
+CREATE TABLE IF NOT EXISTS user_addresses (
     user_id         UUID         NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     address_id      UUID         NOT NULL,
     recipient_name  VARCHAR(100) NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE user_addresses (
     default_address BOOLEAN      NOT NULL
 );
 
-CREATE TABLE refresh_tokens (
+CREATE TABLE IF NOT EXISTS refresh_tokens (
     id                     UUID PRIMARY KEY,
     user_id                UUID                     NOT NULL,
     token_hash             VARCHAR(64)              NOT NULL UNIQUE,
@@ -36,13 +36,13 @@ CREATE TABLE refresh_tokens (
             ON DELETE CASCADE
 );
 
-CREATE INDEX idx_refresh_tokens_user_id
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id
     ON refresh_tokens (user_id);
 
-CREATE INDEX idx_refresh_tokens_expires_at
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires_at
     ON refresh_tokens (expires_at);
 
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id            BIGSERIAL PRIMARY KEY,
     name          TEXT NOT NULL,
     slug          TEXT NOT NULL UNIQUE,
@@ -53,7 +53,7 @@ CREATE TABLE categories (
     active        BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id              BIGSERIAL PRIMARY KEY,
     name            TEXT NOT NULL,
     slug            TEXT NOT NULL UNIQUE,
@@ -75,30 +75,30 @@ CREATE TABLE products (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE product_images (
+CREATE TABLE IF NOT EXISTS product_images (
     product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     image_url  TEXT NOT NULL
 );
 
-CREATE TABLE product_attributes (
+CREATE TABLE IF NOT EXISTS product_attributes (
     id         BIGSERIAL PRIMARY KEY,
     product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     attr_name  TEXT NOT NULL,
     attr_value TEXT NOT NULL
 );
 
-CREATE INDEX idx_products_seller ON products(seller_id);
-CREATE INDEX idx_products_status ON products(status);
-CREATE INDEX idx_products_featured ON products(is_featured);
+CREATE INDEX IF NOT EXISTS idx_products_seller ON products(seller_id);
+CREATE INDEX IF NOT EXISTS idx_products_status ON products(status);
+CREATE INDEX IF NOT EXISTS idx_products_featured ON products(is_featured);
 
-CREATE TABLE inventory_items (
+CREATE TABLE IF NOT EXISTS inventory_items (
     product_id    BIGINT      NOT NULL PRIMARY KEY,
     available_qty INT         NOT NULL,
     reserved_qty  INT         NOT NULL,
     updated_at    TIMESTAMPTZ NOT NULL
 );
 
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id              UUID          NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     buyer_id        TEXT          NOT NULL,
     status          VARCHAR(50)   NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE orders (
     created_at      TIMESTAMPTZ   NOT NULL
 );
 
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
     id            BIGSERIAL     PRIMARY KEY,
     order_id      UUID          NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     product_id    BIGINT        NOT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE order_items (
     subtotal      NUMERIC(12,2) NOT NULL
 );
 
-CREATE TABLE payment_transactions (
+CREATE TABLE IF NOT EXISTS payment_transactions (
     id             UUID          NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     order_id       UUID          NOT NULL,
     buyer_id       TEXT          NOT NULL,
@@ -141,7 +141,7 @@ CREATE TABLE payment_transactions (
     created_at     TIMESTAMPTZ   NOT NULL
 );
 
-CREATE TABLE refunds (
+CREATE TABLE IF NOT EXISTS refunds (
     id             UUID          NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     transaction_id UUID          NOT NULL REFERENCES payment_transactions(id),
     amount         NUMERIC(12,2) NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE refunds (
     refunded_at    TIMESTAMPTZ   NOT NULL
 );
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id            UUID          NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     product_id    BIGINT        NOT NULL,
     order_id      UUID          NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE reviews (
     created_at    TIMESTAMPTZ   NOT NULL
 );
 
-CREATE TABLE review_images (
+CREATE TABLE IF NOT EXISTS review_images (
     review_id UUID NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
     image_url TEXT NOT NULL
 );

@@ -24,7 +24,6 @@ abstract class AppRoutes {
 
   // Admin & Seller screens
   static const String adminDashboard = '/admin/dashboard';
-  static const String adminOrders = '/admin/orders';
   static const String adminUsers = '/admin/users';
   static const String sellerOrderDetail = '/seller/order-detail';
   static const String sellerNotifications = '/seller/notifications';

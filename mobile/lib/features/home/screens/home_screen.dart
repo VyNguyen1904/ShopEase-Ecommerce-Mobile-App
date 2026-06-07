@@ -24,6 +24,8 @@ class HomeScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     Expanded(
+                      /// GestureDetector — raw gestures, no visual feedback
+                      /// Use when you need pan, scale, swipe, or in non-Material UIs
                       child: GestureDetector(
                         onTap: () => context.push(AppRoutes.search),
                         child: Container(
@@ -36,6 +38,11 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           child: const Row(
                             children: [
+                              Icon(
+                                Icons.search,
+                                color: AppColors.textLight,
+                                size: 20,
+                              ),
                               Icon(
                                 Icons.search,
                                 color: AppColors.textLight,
@@ -402,8 +409,6 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-
-
 
   Widget _buildIconButton({
     required IconData icon,
