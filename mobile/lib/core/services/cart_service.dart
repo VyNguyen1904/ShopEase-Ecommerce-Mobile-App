@@ -8,11 +8,11 @@ class CartService {
   final Dio _dio;
 
   String get _host {
-    if (kIsWeb) return 'http://localhost:8080';
+    if (kIsWeb) return 'http://localhost:8000';
     try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:8080';
+      if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
-    return 'http://localhost:8080';
+    return 'http://localhost:8000';
   }
 
   String get _baseUrl => '$_host/api/cart';
