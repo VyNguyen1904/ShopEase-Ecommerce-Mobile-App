@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/models/product.dart';
-import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
-import '../../../core/widgets/countdown_timer.dart';
-import '../../../core/widgets/product_card.dart';
+import '../../../core/providers/product_provider.dart';
+import '../widgets/home_product_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -14,7 +12,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -45,6 +43,11 @@ class HomeScreen extends ConsumerWidget {
                                 color: AppColors.textLight,
                                 size: 20,
                               ),
+                              Icon(
+                                Icons.search,
+                                color: AppColors.textLight,
+                                size: 20,
+                              ),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -64,8 +67,9 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(width: 10),
                     _buildIconButton(
-                      icon: Icons.search,
-                      onTap: () => context.push(AppRoutes.search),
+                      icon: Icons.notifications_outlined,
+                      onTap: () => context.push(AppRoutes.notifications),
+                      showBadge: true,
                     ),
                     const SizedBox(width: 10),
                     _buildIconButton(icon: Icons.qr_code_scanner, onTap: () {}),
@@ -73,186 +77,68 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
 
-              // 2. Banner Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF034247), Color(0xFF0A6F75)],
-                      begin: Alignment.bottomLeft,
-                      end: Alignment.topRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.12),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'SIÊU GIẢM GIÁ',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            const Text(
-                              'GIẢM ĐẾN 90%',
-                              style: TextStyle(
-                                color: Color(0xFF5CFDF5),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: AppColors.primary,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                'Mua ngay',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        right: 8,
-                        bottom: 0,
-                        top: 0,
-                        child: Image.network(
-                          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80',
-                          width: 150,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const SizedBox.shrink();
-                          },
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 12,
-                        left: 0,
-                        right: 0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildBannerDot(isActive: true),
-                            const SizedBox(width: 4),
-                            _buildBannerDot(isActive: false),
-                            const SizedBox(width: 4),
-                            _buildBannerDot(isActive: false),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // 3. Quick Categories
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+              // 2. Banner / Promotions
+              SizedBox(
+                height: 250,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
-                    _buildCategoryItem(
-                      icon: Icons.headphones_outlined,
-                      label: 'Điện tử',
-                      color: const Color(0xFFFFECE5),
-                      iconColor: const Color(0xFFFF5D2E),
+                    _buildPromoCard(
+                      title: 'NIKE',
+                      subtitle: 'Nike Air Max\nPhiên Bản Mới',
+                      description:
+                          'Sự kết hợp hoàn hảo giữa phong\ncách cổ điển và công nghệ đệm\nAir hiện đại, mang lại cảm giác\nêm ái suốt cả ngày.',
+                      buttonText: 'GIẢM 20% | MUA NGAY',
+                      image:
+                          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
+                      color: AppColors.primary,
                     ),
-                    const SizedBox(width: 20),
-                    _buildCategoryItem(
-                      icon: Icons.checkroom_outlined,
-                      label: 'Thời trang',
-                      color: const Color(0xFFE6F5F6),
-                      iconColor: const Color(0xFF0A6F75),
-                    ),
-                    const SizedBox(width: 20),
-                    _buildCategoryItem(
-                      icon: Icons.home_outlined,
-                      label: 'Nhà cửa',
-                      color: const Color(0xFFECEFFF),
-                      iconColor: const Color(0xFF3B82F6),
-                    ),
-                    const SizedBox(width: 20),
-                    _buildCategoryItem(
-                      icon: Icons.face_retouching_natural_outlined,
-                      label: 'Làm đẹp',
-                      color: const Color(0xFFFFF0F0),
-                      iconColor: const Color(0xFFEF4444),
-                    ),
-                    const SizedBox(width: 20),
-                    _buildCategoryItem(
-                      icon: Icons.grid_view_outlined,
-                      label: 'Khác',
-                      color: const Color(0xFFF1F5F9),
-                      iconColor: const Color(0xFF64748B),
+                    const SizedBox(width: 16),
+                    _buildPromoCard(
+                      title: 'ADIDAS',
+                      subtitle: 'Bộ sưu tập\nThu Đông 2026',
+                      description:
+                          'Đột phá phong cách với dòng\nsản phẩm mới nhất. Thiết kế\nthể thao, năng động và đầy\ncá tính.',
+                      buttonText: 'GIẢM 25% | MUA NGAY',
+                      image:
+                          'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&auto=format&fit=crop&q=80',
+                      color: AppColors.accent,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 30),
 
-              // 4. Flash Sale Header
+              // 3. Categories
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
-                      children: [
-                        Text(
-                          'Flash Sale',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textDark,
-                          ),
+                    const Expanded(
+                      child: Text(
+                        'Danh mục',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
                         ),
-                        SizedBox(width: 12),
-                        CountdownTimer(),
-                      ],
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {},
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
                       child: const Text(
                         'Xem tất cả',
                         style: TextStyle(
                           color: AppColors.textGrey,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
                         ),
                       ),
                     ),
@@ -260,97 +146,141 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // 4b. Flash Sale Products
-              SizedBox(
-                height: 185,
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(left: 16),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    final product = mockProducts[index];
-                    final heroTag = 'hero_flash_${product.id}';
-                    return SizedBox(
-                      width: 152,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: ProductCard(
-                          product: product,
-                          heroTag: heroTag,
-                          onTap: () {
-                            ref.read(selectedProductProvider.notifier).state =
-                                product;
-                            ref.read(selectedHeroTagProvider.notifier).state =
-                                heroTag;
-                            context.push(
-                              AppRoutes.productDetailPath(product.id),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  },
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    _buildCategoryPill('Giày thể thao', isActive: true),
+                    const SizedBox(width: 12),
+                    _buildCategoryPill('Quần áo', isActive: false),
+                    const SizedBox(width: 12),
+                    _buildCategoryPill('Túi xách', isActive: false),
+                    const SizedBox(width: 12),
+                    _buildCategoryPill('Phụ kiện', isActive: false),
+                  ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 30),
 
-              // 5. Suggestions
+              // 4. New arrivals
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Gợi ý cho bạn',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                    const Expanded(
+                      child: Text(
+                        'Hàng mới về',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.textGrey,
-                      ),
+                    TextButton(
                       onPressed: () {},
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text(
+                        'Xem tất cả',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
+              SizedBox(
+                height: 280,
+                child: ref
+                    .watch(newArrivalsProvider)
+                    .when(
+                      data: (products) => ListView.builder(
+                        padding: const EdgeInsets.only(left: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return HomeProductCard(
+                            ref: ref,
+                            product: products[index],
+                            heroPrefix: 'new',
+                            showDiscount: false,
+                          );
+                        },
+                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text('Lỗi: $err')),
+                    ),
+              ),
+              const SizedBox(height: 30),
 
+              // 5. Gợi ý cho bạn
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: MediaQuery.of(context).size.width > 600
-                        ? 3
-                        : 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
-                  ),
-                  itemCount: mockProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = mockProducts[index];
-                    final heroTag = 'hero_suggest_${product.id}';
-                    return ProductCard(
-                      product: product,
-                      heroTag: heroTag,
-                      onTap: () {
-                        ref.read(selectedProductProvider.notifier).state =
-                            product;
-                        ref.read(selectedHeroTagProvider.notifier).state =
-                            heroTag;
-                        context.push(AppRoutes.productDetailPath(product.id));
-                      },
-                    );
-                  },
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Gợi ý cho bạn',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text(
+                        'Xem tất cả',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 280,
+                child: ref
+                    .watch(recommendationsProvider)
+                    .when(
+                      data: (products) => ListView.builder(
+                        padding: const EdgeInsets.only(left: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return HomeProductCard(
+                            ref: ref,
+                            product: products[index],
+                            heroPrefix: 'rec',
+                          );
+                        },
+                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text('Lỗi: $err')),
+                    ),
               ),
               const SizedBox(height: 30),
             ],
@@ -360,64 +290,161 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildPromoCard({
+    required String title,
+    required String subtitle,
+    required String description,
+    required String buttonText,
+    required String image,
+    required Color color,
+  }) {
+    return Container(
+      width: 320,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.85),
+                    fontSize: 10,
+                    height: 1.4,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    buttonText,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            right: -20,
+            bottom: 20,
+            child: Container(
+              width: 140,
+              height: 140,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: NetworkImage(image),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryPill(String label, {bool isActive = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: isActive ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isActive ? Colors.transparent : Colors.grey.shade300,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : [],
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isActive ? Colors.black : Colors.black87,
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
   Widget _buildIconButton({
     required IconData icon,
     required VoidCallback onTap,
+    bool showBadge = false,
   }) {
-    // InkWell: When you want to make ANY widget tappable
-    /// InkWell — Material ripple effect + gesture detection
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Icon(icon, color: AppColors.textDark, size: 22),
-      ),
-    );
-  }
-
-  Widget _buildBannerDot({required bool isActive}) {
-    return Container(
-      width: isActive ? 16 : 6,
-      height: 6,
-      decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.white.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(3),
-      ),
-    );
-  }
-
-  Widget _buildCategoryItem({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color iconColor,
-  }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: Icon(icon, color: iconColor, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textDark,
+      child: Stack(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Icon(icon, color: AppColors.textDark, size: 22),
           ),
-        ),
-      ],
+          if (showBadge)
+            Positioned(
+              right: 12,
+              top: 12,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.alertRed,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

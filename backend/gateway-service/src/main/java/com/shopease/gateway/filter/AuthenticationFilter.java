@@ -54,11 +54,16 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     if (apiResponse != null && apiResponse.success() && apiResponse.data() != null) {
                         String userId = null;
                         String role = null;
+                        Integer tokenVersion = null;
 
                         Object data = apiResponse.data();
                         if (data instanceof Map<?, ?> map) {
                             userId = (String) map.get("userId");
                             role = (String) map.get("role");
+                            Object v = map.get("tokenVersion");
+                            if (v instanceof Number num) {
+                                tokenVersion = num.intValue();
+                            }
                         } else if (data instanceof String) {
                             userId = (String) data;
                         }
@@ -73,11 +78,15 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                             return exchange.getResponse().setComplete();
                         }
 
-                        exchange.getRequest().mutate()
+                        var requestBuilder = exchange.getRequest().mutate()
                                 .header("X-User-Id", userId)
-                                .header("X-User-Role", role != null ? role : "")
-                                .build();
-                        return chain.filter(exchange);
+                                .header("X-User-Role", role != null ? role : "");
+
+                        if (tokenVersion != null) {
+                            requestBuilder.header("X-User-Token-Version", tokenVersion.toString());
+                        }
+
+                        return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
                     } else {
                         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                         return exchange.getResponse().setComplete();
@@ -159,6 +168,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(String path, String method) {
+        // Swagger and OpenAPI paths
+        if (path.startsWith("/v3/api-docs") ||
+            path.startsWith("/swagger-ui") ||
+            path.startsWith("/webjars/")) {
+            return true;
+        }
+
         // Auth paths that do not require access token
         if (path.startsWith("/api/auth/login") || 
             path.startsWith("/api/auth/register") || 

@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 import com.shopease.common.dto.ApiResponse;
 import com.shopease.user.service.AuthService;
+import com.shopease.user.service.TokenService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final TokenService tokenService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,6 +38,12 @@ public class AuthController {
     @PostMapping("/logout")
     ApiResponse<Void> logout(@Valid @RequestBody LogoutRequest request) {
         authService.logout(request.refreshToken());
+        return ApiResponse.ok(null);
+    }
+
+    @PostMapping("/logout-all")
+    ApiResponse<Void> logoutAll(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        authService.logoutAll(tokenService.getUserId(authorization));
         return ApiResponse.ok(null);
     }
 }

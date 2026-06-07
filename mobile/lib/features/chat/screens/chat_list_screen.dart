@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/models/chat_message.dart';
+import '../models/chat_message.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -223,6 +223,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   ),
                   trailing: Column(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -419,12 +420,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   child: Container(
                     width: 52,
                     height: 52,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.accent,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Center(
-                      child: Icon(Icons.send, color: Colors.white, size: 20),
+                      child: Icon(Icons.send_outlined, color: Colors.white, size: 24),
                     ),
                   ),
                 ),

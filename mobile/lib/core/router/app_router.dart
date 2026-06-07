@@ -1,22 +1,32 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
+import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
-import '../../features/shell/screens/category_screen.dart';
-import '../../features/shell/screens/notification_screen.dart';
-import '../../features/shell/screens/account_screen.dart';
-import '../../features/shell/screens/settings_screen.dart';
-import '../../features/shell/screens/chat_list_screen.dart';
+import '../../features/category/screens/category_screen.dart';
+import '../../features/cart/screens/cart_screen.dart';
+import '../../features/notifications/screens/notification_screen.dart';
+import '../../features/profile/screens/account_screen.dart';
+import '../../features/orders/screens/orders_screen.dart';
+import '../../features/cart/screens/checkout_screen.dart';
+import '../../features/orders/screens/order_detail_screen.dart';
+import '../../features/profile/screens/settings_screen.dart';
+import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/home/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
+import '../../features/profile/screens/address_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
 import '../../features/admin/screens/admin_orders.dart';
 import '../../features/admin/screens/admin_users.dart';
 import '../../features/admin/screens/seller_order_detail.dart';
 import '../../features/admin/screens/seller_notifications.dart';
+import '../../features/seller/screens/seller_shop_profile.dart';
+import '../../features/seller/screens/seller_dashboard_screen.dart';
+import '../../features/seller/screens/seller_products_screen.dart';
+import '../../features/seller/screens/seller_add_product_screen.dart';
+import '../../features/seller/screens/seller_orders_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
@@ -26,6 +36,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.splash,
       builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.login,
+      builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
       path: AppRoutes.register,
@@ -55,15 +69,12 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        // Tab 2: Cart (placeholder)
+        // Tab 2: Cart
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: AppRoutes.cart,
-              builder: (context, state) => const _PlaceholderScreen(
-                icon: Icons.shopping_cart_outlined,
-                label: 'Giỏ hàng (Trống)',
-              ),
+              builder: (context, state) => const CartScreen(),
             ),
           ],
         ),
@@ -72,19 +83,16 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.orders,
-              builder: (context, state) => const _PlaceholderScreen(
-                icon: Icons.assignment_outlined,
-                label: 'Đơn hàng (Trống)',
-              ),
+              builder: (context, state) => const OrdersScreen(),
             ),
           ],
         ),
-        // Tab 4: Notifications
+        // Tab 4: Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.notifications,
-              builder: (context, state) => const NotificationScreen(),
+              path: AppRoutes.account,
+              builder: (context, state) => const AccountScreen(),
             ),
           ],
         ),
@@ -92,6 +100,17 @@ final appRouter = GoRouter(
     ),
 
     // ── Detail Screens (pushed on top, no bottom nav) ────────────────────
+    GoRoute(
+      path: AppRoutes.checkout,
+      builder: (context, state) => const CheckoutScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.orderDetail,
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return OrderDetailScreen(orderId: id);
+      },
+    ),
     GoRoute(
       path: AppRoutes.productDetail,
       builder: (context, state) {
@@ -104,12 +123,17 @@ final appRouter = GoRouter(
       builder: (context, state) => const SearchResultsScreen(),
     ),
     GoRoute(
+      path: AppRoutes.address,
+      builder: (context, state) => const AddressScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
+
     GoRoute(
-      path: AppRoutes.account,
-      builder: (context, state) => const AccountScreen(),
+      path: AppRoutes.notifications,
+      builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(
       path: AppRoutes.chats,
@@ -137,37 +161,27 @@ final appRouter = GoRouter(
       path: AppRoutes.sellerNotifications,
       builder: (context, state) => const SellerNotifications(),
     ),
+    GoRoute(
+      path: AppRoutes.sellerShopProfile,
+      builder: (context, state) => const SellerShopProfile(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerDashboard,
+      builder: (context, state) => const SellerDashboardScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerProducts,
+      builder: (context, state) => const SellerProductsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerAddProduct,
+      builder: (context, state) => const SellerAddProductScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerOrders,
+      builder: (context, state) => const SellerOrdersScreen(),
+    ),
   ],
 );
 
-/// Simple placeholder for tabs not yet implemented (Cart, Orders).
-class _PlaceholderScreen extends StatelessWidget {
-  final IconData icon;
-  final String label;
 
-  const _PlaceholderScreen({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: const Color(0xFF94A3B8)),
-            const SizedBox(height: 16),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Color(0xFF64748B),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

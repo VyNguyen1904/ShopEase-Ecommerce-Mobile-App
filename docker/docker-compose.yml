@@ -29,7 +29,7 @@ services:
 
   user-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: user-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
@@ -43,14 +43,14 @@ services:
 
   authentication-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: authentication-service/Dockerfile
     ports:
       - "8088:8088"
 
   product-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: product-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
@@ -67,7 +67,7 @@ services:
 
   inventory-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: inventory-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
@@ -84,7 +84,7 @@ services:
 
   cart-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: cart-service/Dockerfile
     environment:
       SPRING_DATA_REDIS_HOST: redis
@@ -98,7 +98,7 @@ services:
 
   order-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: order-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
@@ -118,7 +118,7 @@ services:
 
   payment-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: payment-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
@@ -136,7 +136,7 @@ services:
 
   review-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: review-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
@@ -153,7 +153,7 @@ services:
 
   gateway-service:
     build:
-      context: ../shopease-parent
+      context: ../backend
       dockerfile: gateway-service/Dockerfile
     environment:
       USER_SERVICE_URI: http://user-service:8081

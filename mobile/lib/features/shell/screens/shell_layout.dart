@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../widgets/app_bottom_nav.dart';
 
 /// The main scaffold that holds the bottom navigation bar.
 /// Used as the shell for StatefulShellRoute in go_router.
@@ -21,6 +22,7 @@ class ShellLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: Stack(
         children: [
           navigationShell,
@@ -38,64 +40,9 @@ class ShellLayout extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onTap,
-
-        backgroundColor: Colors.white,
-        elevation: 8,
-
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-
-        destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Trang chủ',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view),
-            label: 'Danh mục',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart),
-            label: 'Giỏ hàng',
-          ),
-
-          const NavigationDestination(
-            icon: Icon(Icons.assignment_outlined),
-            selectedIcon: Icon(Icons.assignment),
-            label: 'Đơn hàng',
-          ),
-
-          NavigationDestination(
-            icon: Stack(
-              children: [
-                const Icon(Icons.notifications_outlined),
-
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppColors.alertRed,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            selectedIcon: const Icon(Icons.notifications),
-            label: 'Thông báo',
-          ),
-        ],
+      bottomNavigationBar: AppBottomNav(
+        currentIndex: navigationShell.currentIndex,
+        onTap: _onTap,
       ),
     );
   }
@@ -150,6 +97,11 @@ class ShellLayout extends StatelessWidget {
                         ),
                         _buildPanelItem(
                           ctx,
+                          'Login (Customer/2.png)',
+                          () => context.go(AppRoutes.login),
+                        ),
+                        _buildPanelItem(
+                          ctx,
                           'Register (Customer/4.png)',
                           () => context.go(AppRoutes.register),
                         ),
@@ -171,6 +123,33 @@ class ShellLayout extends StatelessWidget {
                           () {
                             context.push(AppRoutes.productDetailPath('p1'));
                           },
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Cart (Customer/3.png)',
+                          () => context.go(AppRoutes.cart),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Checkout (Customer/4.png)',
+                          () => context.push(AppRoutes.checkout),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Orders (Customer/8.png)',
+                          () => context.go(AppRoutes.orders),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Order Detail (Customer/9.png)',
+                          () => context.push(
+                            AppRoutes.orderDetailPath('SE2405150001'),
+                          ),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Address Screen (Customer/10.png)',
+                          () => context.push(AppRoutes.address),
                         ),
                       ]),
                       _buildPanelSection('3. Màn hình chung (Common Screens)', [
@@ -201,7 +180,7 @@ class ShellLayout extends StatelessWidget {
                         ),
                       ]),
                       _buildPanelSection(
-                        '4. Quản trị & Người bán (Admin & Seller)',
+                        '4. Quản trị (Admin)',
                         [
                           _buildPanelItem(
                             ctx,
@@ -218,6 +197,11 @@ class ShellLayout extends StatelessWidget {
                             'Admin User Management (Admin/3.png)',
                             () => context.push(AppRoutes.adminUsers),
                           ),
+                        ],
+                      ),
+                      _buildPanelSection(
+                        '5. Người bán (Seller)',
+                        [
                           _buildPanelItem(
                             ctx,
                             'Seller Order Detail (Seller/1.png)',
@@ -227,6 +211,36 @@ class ShellLayout extends StatelessWidget {
                             ctx,
                             'Seller Notifications (Seller/2.png)',
                             () => context.push(AppRoutes.sellerNotifications),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Shop Profile (Seller/3.png)',
+                            () => context.push(AppRoutes.sellerShopProfile),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Dashboard (Seller/Dashboard.png)',
+                            () => context.push(AppRoutes.sellerDashboard),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Products',
+                            () => context.push(AppRoutes.sellerProducts),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Add Product',
+                            () => context.push(AppRoutes.sellerAddProduct),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Orders',
+                            () => context.push(AppRoutes.sellerOrders),
+                          ),
+                          _buildPanelItem(
+                            ctx,
+                            'Seller Chat',
+                            () => context.push(AppRoutes.chats),
                           ),
                         ],
                       ),
