@@ -26,6 +26,8 @@ class HomeScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     Expanded(
+                      /// GestureDetector — raw gestures, no visual feedback
+                      /// Use when you need pan, scale, swipe, or in non-Material UIs
                       child: GestureDetector(
                         onTap: () => context.push(AppRoutes.search),
                         child: Container(
@@ -38,7 +40,11 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           child: const Row(
                             children: [
-                              Icon(Icons.search, color: AppColors.textLight, size: 20),
+                              Icon(
+                                Icons.search,
+                                color: AppColors.textLight,
+                                size: 20,
+                              ),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -62,10 +68,7 @@ class HomeScreen extends ConsumerWidget {
                       onTap: () => context.push(AppRoutes.search),
                     ),
                     const SizedBox(width: 10),
-                    _buildIconButton(
-                      icon: Icons.qr_code_scanner,
-                      onTap: () {},
-                    ),
+                    _buildIconButton(icon: Icons.qr_code_scanner, onTap: () {}),
                   ],
                 ),
               ),
@@ -125,7 +128,9 @@ class HomeScreen extends ConsumerWidget {
                                 foregroundColor: AppColors.primary,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 12),
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -133,7 +138,9 @@ class HomeScreen extends ConsumerWidget {
                               child: const Text(
                                 'Mua ngay',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 14),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ],
@@ -244,8 +251,9 @@ class HomeScreen extends ConsumerWidget {
                       child: const Text(
                         'Xem tất cả',
                         style: TextStyle(
-                            color: AppColors.textGrey,
-                            fontWeight: FontWeight.w500),
+                          color: AppColors.textGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -271,9 +279,13 @@ class HomeScreen extends ConsumerWidget {
                           product: product,
                           heroTag: heroTag,
                           onTap: () {
-                            ref.read(selectedProductProvider.notifier).state = product;
-                            ref.read(selectedHeroTagProvider.notifier).state = heroTag;
-                            context.push(AppRoutes.productDetailPath(product.id));
+                            ref.read(selectedProductProvider.notifier).state =
+                                product;
+                            ref.read(selectedHeroTagProvider.notifier).state =
+                                heroTag;
+                            context.push(
+                              AppRoutes.productDetailPath(product.id),
+                            );
                           },
                         ),
                       ),
@@ -298,8 +310,10 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.chevron_right,
-                          color: AppColors.textGrey),
+                      icon: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.textGrey,
+                      ),
                       onPressed: () {},
                     ),
                   ],
@@ -313,8 +327,9 @@ class HomeScreen extends ConsumerWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                        MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                    crossAxisCount: MediaQuery.of(context).size.width > 600
+                        ? 3
+                        : 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                     childAspectRatio: 0.85,
@@ -327,8 +342,10 @@ class HomeScreen extends ConsumerWidget {
                       product: product,
                       heroTag: heroTag,
                       onTap: () {
-                        ref.read(selectedProductProvider.notifier).state = product;
-                        ref.read(selectedHeroTagProvider.notifier).state = heroTag;
+                        ref.read(selectedProductProvider.notifier).state =
+                            product;
+                        ref.read(selectedHeroTagProvider.notifier).state =
+                            heroTag;
                         context.push(AppRoutes.productDetailPath(product.id));
                       },
                     );
@@ -343,8 +360,12 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildIconButton(
-      {required IconData icon, required VoidCallback onTap}) {
+  Widget _buildIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    // InkWell: When you want to make ANY widget tappable
+    /// InkWell — Material ripple effect + gesture detection
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -366,8 +387,7 @@ class HomeScreen extends ConsumerWidget {
       width: isActive ? 16 : 6,
       height: 6,
       decoration: BoxDecoration(
-        color:
-            isActive ? Colors.white : Colors.white.withOpacity(0.4),
+        color: isActive ? Colors.white : Colors.white.withOpacity(0.4),
         borderRadius: BorderRadius.circular(3),
       ),
     );
@@ -385,10 +405,7 @@ class HomeScreen extends ConsumerWidget {
         Container(
           width: 56,
           height: 56,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           child: Icon(icon, color: iconColor, size: 24),
         ),
         const SizedBox(height: 8),

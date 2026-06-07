@@ -267,11 +267,16 @@ class ShellLayout extends StatelessWidget {
     String name,
     VoidCallback onTap,
   ) {
+    // Card is a Material surface with elevation, rounded corners, and a shadow.
     return Card(
+      // elevation: shadow depth (0 = flat, 8 = very elevated)
       elevation: 0,
+      // color: background color
       color: AppColors.bgLight,
       margin: const EdgeInsets.only(bottom: 6),
+      // shape: the outline of the card
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      // ListTile is a one-to-three line list item. It handles layout, padding, and touch feedback automatically.
       child: ListTile(
         title: Text(
           name,
@@ -281,7 +286,9 @@ class ShellLayout extends StatelessWidget {
             color: AppColors.textDark,
           ),
         ),
+        // dense: reduces vertical height (good for compact lists)
         dense: true,
+        // trailing: widget on the far right
         trailing: const Icon(
           Icons.arrow_forward,
           size: 14,

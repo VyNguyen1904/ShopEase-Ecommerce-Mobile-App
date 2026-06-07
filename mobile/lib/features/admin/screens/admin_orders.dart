@@ -29,7 +29,8 @@ class _AdminOrdersState extends State<AdminOrders> {
       'stockText': 'Còn hàng (20)',
       'status': 'Còn hàng',
       'color': const Color(0xFFEAF5F6),
-      'image': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80',
     },
     {
       'code': '#SE2405180005',
@@ -39,7 +40,8 @@ class _AdminOrdersState extends State<AdminOrders> {
       'stockText': 'Còn hàng (15)',
       'status': 'Còn hàng',
       'color': const Color(0xFFEAF5F6),
-      'image': 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=200&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=200&auto=format&fit=crop&q=80',
     },
     {
       'code': '#SE2405200023',
@@ -49,7 +51,8 @@ class _AdminOrdersState extends State<AdminOrders> {
       'stockText': 'Sắp hết hàng (8)',
       'status': 'Sắp hết hàng',
       'color': const Color(0xFFFFF2EE),
-      'image': 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=200&auto=format&fit=crop&q=80',
     },
     {
       'code': '#SE2405210036',
@@ -59,7 +62,8 @@ class _AdminOrdersState extends State<AdminOrders> {
       'stockText': 'Hết hàng',
       'status': 'Hết hàng',
       'color': const Color(0xFFFFF0F0),
-      'image': 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=200&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=200&auto=format&fit=crop&q=80',
     },
   ];
 
@@ -89,7 +93,11 @@ class _AdminOrdersState extends State<AdminOrders> {
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.filter_list, color: AppColors.textDark, size: 24),
+            icon: const Icon(
+              Icons.filter_list,
+              color: AppColors.textDark,
+              size: 24,
+            ),
             onPressed: () {},
           ),
           const SizedBox(width: 8),
@@ -103,8 +111,13 @@ class _AdminOrdersState extends State<AdminOrders> {
             padding: const EdgeInsets.only(left: 16),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
+              // itemCount tells Flutter how many items exist
+              // Without it, the list is infinite!
               itemCount: _tabs.length,
+              // itemExtent: if all items have the same height, set this for better perf.
+              // itemExtent: 72,
               itemBuilder: (context, index) {
+                // index is 0-based, called only for visible items
                 final tab = _tabs[index];
                 final isSelected = _activeTab == tab;
 
@@ -120,7 +133,9 @@ class _AdminOrdersState extends State<AdminOrders> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: isSelected ? AppColors.primary : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.primary
+                              : Colors.transparent,
                           width: 2.5,
                         ),
                       ),
@@ -129,8 +144,12 @@ class _AdminOrdersState extends State<AdminOrders> {
                       tab,
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: isSelected ? AppColors.primary : AppColors.textGrey,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w500,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textGrey,
                       ),
                     ),
                   ),
@@ -222,10 +241,7 @@ class _AdminOrdersState extends State<AdminOrders> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                item['image'],
-                fit: BoxFit.contain,
-              ),
+              child: Image.network(item['image'], fit: BoxFit.contain),
             ),
           ),
           const SizedBox(width: 16),
@@ -239,11 +255,18 @@ class _AdminOrdersState extends State<AdminOrders> {
                   children: [
                     Text(
                       item['code'],
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     // Status Badge (Còn hàng, Sắp hết hàng, Hết hàng)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: badgeColor,
                         borderRadius: BorderRadius.circular(8),
@@ -262,17 +285,28 @@ class _AdminOrdersState extends State<AdminOrders> {
                 const SizedBox(height: 6),
                 Text(
                   item['name'],
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '\$${item['price'].toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   item['date'],
-                  style: const TextStyle(fontSize: 12, color: AppColors.textLight),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textLight,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 // Text status line
