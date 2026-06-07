@@ -43,6 +43,9 @@ public class AuthService {
         if (!encoder.matches(request.password(), user.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
+        if (!user.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User account is blocked");
+        }
         return returnToken(user);
     }
 
@@ -100,6 +103,9 @@ public class AuthService {
         // Case F5: Happy Path Rotation
         UserAccount user = users.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        if (!user.isEnabled()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User account is blocked");
+        }
 
         TokenService.TokenInfo newAccess = tokenService.sign(userId, role, "access", user.getTokenVersion());
         TokenService.TokenInfo newRefresh = tokenService.sign(userId, role, "refresh", user.getTokenVersion());

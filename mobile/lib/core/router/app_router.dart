@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
@@ -18,7 +20,6 @@ import '../../features/home/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
 import '../../features/profile/screens/address_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
-import '../../features/admin/screens/admin_orders.dart';
 import '../../features/admin/screens/admin_users.dart';
 import '../../features/admin/screens/seller_order_detail.dart';
 import '../../features/admin/screens/seller_notifications.dart';
@@ -28,9 +29,47 @@ import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
 
+Map<String, dynamic> _decodeJwt(String token) {
+  try {
+    final parts = token.split('.');
+    if (parts.length != 3) return {};
+    final payload = parts[1];
+    final normalized = base64Url.normalize(payload);
+    final decoded = utf8.decode(base64Url.decode(normalized));
+    return json.decode(decoded) as Map<String, dynamic>;
+  } catch (_) {
+    return {};
+  }
+}
+
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
   debugLogDiagnostics: true,
+  redirect: (context, state) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+
+    final location = state.matchedLocation;
+    final isAdminPath = location.startsWith('/admin');
+    final isSellerPath = location.startsWith('/seller');
+
+    if (isAdminPath || isSellerPath) {
+      if (token == null || token.isEmpty) {
+        return AppRoutes.login;
+      }
+
+      final payload = _decodeJwt(token);
+      final role = payload['role'] as String?;
+
+      if (isAdminPath && role != 'ADMIN') {
+        return AppRoutes.home;
+      }
+      if (isSellerPath && role != 'SELLER' && role != 'ADMIN') {
+        return AppRoutes.home;
+      }
+    }
+    return null;
+  },
   routes: [
     // ── Onboarding & Auth ──────────────────────────────────────────────────
     GoRoute(
@@ -142,16 +181,16 @@ final appRouter = GoRouter(
 
     // ── Admin & Seller Screens ─────────────────────────────────────────────
     GoRoute(
+      path: '/admin',
+      redirect: (context, state) => AppRoutes.adminDashboard,
+    ),
+    GoRoute(
       path: AppRoutes.adminDashboard,
       builder: (context, state) => const AdminDashboard(),
     ),
     GoRoute(
-      path: AppRoutes.adminOrders,
-      builder: (context, state) => const AdminOrders(),
-    ),
-    GoRoute(
       path: AppRoutes.adminUsers,
-      builder: (context, state) => const AdminUsers(),
+      builder: (context, state) => const UserDirectoryScreen(),
     ),
     GoRoute(
       path: AppRoutes.sellerOrderDetail,

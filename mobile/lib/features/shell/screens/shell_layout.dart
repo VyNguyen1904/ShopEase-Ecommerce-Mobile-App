@@ -189,11 +189,6 @@ class ShellLayout extends StatelessWidget {
                           ),
                           _buildPanelItem(
                             ctx,
-                            'Admin Orders & Stock (Admin/2.png)',
-                            () => context.push(AppRoutes.adminOrders),
-                          ),
-                          _buildPanelItem(
-                            ctx,
                             'Admin User Management (Admin/3.png)',
                             () => context.push(AppRoutes.adminUsers),
                           ),
