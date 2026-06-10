@@ -12,7 +12,7 @@ import '../../features/cart/screens/cart_screen.dart';
 import '../../features/notifications/screens/notification_screen.dart';
 import '../../features/profile/screens/account_screen.dart';
 import '../../features/orders/screens/orders_screen.dart';
-import '../../features/cart/screens/checkout_screen.dart';
+import '../../features/checkout/screens/checkout_screen.dart';
 import '../../features/orders/screens/order_detail_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/chat/screens/chat_list_screen.dart';

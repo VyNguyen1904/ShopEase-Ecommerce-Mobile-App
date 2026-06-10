@@ -5,11 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../providers/cart_provider.dart';
+import '../../cart/providers/cart_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../../core/models/address_model.dart';
 import '../../../core/models/cart_model.dart';
-import '../widgets/checkout_components.dart';
+import '../widgets/checkout_section_title.dart';
+import '../widgets/checkout_stepper.dart';
+import '../widgets/checkout_address_card.dart';
+import '../widgets/checkout_selected_items.dart';
+import '../widgets/checkout_order_summary.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
