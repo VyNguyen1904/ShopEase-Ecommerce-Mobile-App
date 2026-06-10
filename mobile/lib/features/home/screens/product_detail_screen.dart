@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/providers/product_provider.dart';
+import '../../cart/providers/cart_provider.dart';
 import '../../../core/models/product.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -568,13 +569,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
-                              backgroundColor: AppColors.primary,
-                            ),
-                          );
+                        onPressed: () async {
+                          final productIdInt = int.tryParse(product.id) ?? 0;
+                          await ref.read(cartProvider.notifier).addToCart(productIdInt, 1);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
+                                backgroundColor: AppColors.primary,
+                              ),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -604,13 +609,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Chuyển đến màn hình thanh toán!'),
-                              backgroundColor: AppColors.accent,
-                            ),
-                          );
+                        onPressed: () async {
+                          final productIdInt = int.tryParse(product.id) ?? 0;
+                          await ref.read(cartProvider.notifier).addToCart(productIdInt, 1);
+                          if (context.mounted) {
+                            context.push(AppRoutes.cart);
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accent,

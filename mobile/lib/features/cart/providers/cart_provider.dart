@@ -28,8 +28,10 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     try {
       state = const AsyncValue.loading();
       final cart = await _cartService.getCart(_userId);
+      if (!mounted) return;
       state = AsyncValue.data(cart);
     } catch (e, st) {
+      if (!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }
@@ -70,6 +72,15 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       fetchCart();
     } catch (e) {
       fetchCart(); // Revert on failure
+    }
+  }
+
+  Future<void> addToCart(int productId, int quantity) async {
+    try {
+      await _cartService.addItem(_userId, productId, quantity);
+      fetchCart();
+    } catch (e) {
+      fetchCart();
     }
   }
 
