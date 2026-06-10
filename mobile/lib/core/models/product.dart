@@ -27,6 +27,49 @@ class Product {
     required this.description,
   });
 
+  factory Product.fromJson(Map<String, dynamic> json) {
+    String imgUrl = '';
+    if (json['imageUrls'] != null && (json['imageUrls'] as List).isNotEmpty) {
+      imgUrl = json['imageUrls'][0].toString();
+    } else if (json['images'] != null && (json['images'] as List).isNotEmpty) {
+      imgUrl = json['images'][0].toString();
+    } else {
+      imgUrl = json['imageUrl']?.toString() ?? '';
+    }
+
+    return Product(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? '',
+      category: json['category'] ?? json['categoryId']?.toString() ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      originalPrice: (json['originalPrice'] as num?)?.toDouble(),
+      imageUrl: imgUrl,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      reviewsCount: (json['reviewsCount'] as num?)?.toInt() ?? 0,
+      salesCount: (json['salesCount'] as num?)?.toInt() ?? 0,
+      sizes: (json['sizes'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      colors: (json['colors'] as List?)?.map((e) => int.tryParse(e.toString()) ?? 0).toList() ?? [],
+      description: json['description'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (id.isNotEmpty) 'id': id,
+      'name': name,
+      'categoryId': category,
+      'price': price,
+      'originalPrice': originalPrice,
+      'imageUrl': imageUrl,
+      'rating': rating,
+      'reviewsCount': reviewsCount,
+      'salesCount': salesCount,
+      'sizes': sizes,
+      'colors': colors,
+      'description': description,
+    };
+  }
+
   int get discountPercentage {
     if (originalPrice == null || originalPrice! <= price) return 0;
     return (((originalPrice! - price) / originalPrice!) * 100).round();
@@ -126,7 +169,7 @@ final List<Product> mockProducts = [
     price: 5490000,
     originalPrice: 6990000,
     imageUrl:
-        'https://images.unsplash.com/photo-1588449668338-d15168836f43?w=600&auto=format&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&auto=format&fit=crop&q=80',
     rating: 4.9,
     reviewsCount: 320,
     salesCount: 850,
