@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../models/product.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 class ProductCard extends StatelessWidget {
   final Product product;
   final bool isHorizontal;
@@ -60,26 +60,21 @@ class ProductCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: Hero(
                       tag: activeHeroTag,
-                      child: Image.network(
-                        product.imageUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: product.imageUrl,
                         fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.shopping_bag_outlined,
-                            color: AppColors.textGrey,
-                            size: 40,
-                          );
-                        },
+                        placeholder: (context, url) => const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.shopping_bag_outlined,
+                          color: AppColors.textGrey,
+                          size: 40,
+                        ),
                       ),
                     ),
                   ),
@@ -154,16 +149,14 @@ class ProductCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 child: Hero(
                   tag: heroTag ?? 'hero_img_${product.id}_h',
-                  child: Image.network(
-                    product.imageUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: product.imageUrl,
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.shopping_bag_outlined,
-                        color: AppColors.textGrey,
-                        size: 30,
-                      );
-                    },
+                    errorWidget: (context, url, error) => const Icon(
+                      Icons.shopping_bag_outlined,
+                      color: AppColors.textGrey,
+                      size: 30,
+                    ),
                   ),
                 ),
               ),

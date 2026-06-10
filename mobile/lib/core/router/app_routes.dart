@@ -19,6 +19,7 @@ abstract class AppRoutes {
   static const String search = '/search';
   static const String settings = '/settings';
   static const String account = '/account';
+  static const String profileEdit = '/profile-edit';
   static const String address = '/address';
   static const String chats = '/chats';
 

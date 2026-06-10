@@ -113,11 +113,15 @@ class OrderDetailScreen extends StatelessWidget {
                       color: AppColors.textGrey.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      'Đặt ngày: 15 Thg 5, 2024 • 10:30 AM',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey.withValues(alpha: 0.8),
+                    Expanded(
+                      child: Text(
+                        'Đặt ngày: 15 Thg 5, 2024 • 10:30 AM',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textGrey.withValues(alpha: 0.8),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -466,32 +470,38 @@ class OrderDetailScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Thanh toán',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: AppColors.textDark,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Thanh toán',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: AppColors.textDark,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Text(
-                    'Phương thức: ',
-                    style: TextStyle(fontSize: 12, color: AppColors.textGrey),
-                  ),
-                  const Text(
-                    'Thanh toán khi nhận hàng (COD)',
-                    style: TextStyle(fontSize: 12, color: AppColors.textDark),
-                  ),
-                ],
-              ),
-            ],
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Phương thức: ',
+                      style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                    ),
+                    Expanded(
+                      child: const Text(
+                        'Thanh toán khi nhận hàng (COD)',
+                        style: TextStyle(fontSize: 12, color: AppColors.textDark),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

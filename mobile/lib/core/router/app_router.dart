@@ -19,6 +19,7 @@ import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/product/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
 import '../../features/profile/screens/address_screen.dart';
+import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
 import '../../features/admin/screens/admin_users.dart';
 import '../../features/admin/screens/seller_order_detail.dart';
@@ -164,6 +165,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.address,
       builder: (context, state) => const AddressScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.profileEdit,
+      builder: (context, state) => const ProfileEditScreen(),
     ),
     GoRoute(
       path: AppRoutes.settings,

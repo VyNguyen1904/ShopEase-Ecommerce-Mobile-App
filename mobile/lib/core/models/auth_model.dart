@@ -1,3 +1,5 @@
+import 'address_model.dart';
+
 class TokenResponse {
   final String accessToken;
   final String refreshToken;
@@ -19,6 +21,7 @@ class UserResponse {
   final String? phone;
   final String? avatar;
   final String role;
+  final List<AddressModel> addresses;
 
   UserResponse({
     required this.id,
@@ -27,6 +30,7 @@ class UserResponse {
     this.phone,
     this.avatar,
     required this.role,
+    this.addresses = const [],
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
@@ -37,6 +41,9 @@ class UserResponse {
       phone: json['phone'],
       avatar: json['avatar'],
       role: json['role'] ?? 'CUSTOMER',
+      addresses: json['addresses'] != null
+          ? (json['addresses'] as List).map((i) => AddressModel.fromJson(i)).toList()
+          : [],
     );
   }
 }

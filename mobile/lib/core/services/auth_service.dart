@@ -18,12 +18,37 @@ class AuthService {
   String get _authUrl => '$_host/api/auth';
   String get _userUrl => '$_host/api/users';
 
-  AuthService({Dio? dio}) : _dio = dio ?? Dio();
+  AuthService({Dio? dio}) : _dio = dio ?? Dio() {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final isAuthRoute = options.path.contains('/api/auth/login') || 
+                              options.path.contains('/api/auth/register');
+          
+          if (!isAuthRoute) {
+            final token = await getAccessToken();
+            if (token == null) {
+              return handler.reject(
+                DioException(
+                  requestOptions: options,
+                  error: 'Vui lòng đăng nhập lại',
+                  type: DioExceptionType.unknown,
+                ),
+              );
+            }
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          return handler.next(options);
+        },
+      ),
+    );
+  }
 
   String _handleDioError(DioException e) {
+    if (e.error == 'Vui lòng đăng nhập lại') return e.error.toString();
+
     String translateError(String message) {
       final lowerMsg = message.toLowerCase();
-      
       const errorMappings = {
         'bad credentials': 'Sai email hoặc mật khẩu.',
         'invalid credentials': 'Sai email hoặc mật khẩu.',
@@ -39,7 +64,7 @@ class AuthService {
       for (final entry in errorMappings.entries) {
         if (lowerMsg.contains(entry.key)) return entry.value;
       }
-      return message; // fallback if not recognized
+      return message;
     }
 
     if (e.response != null) {
@@ -52,49 +77,37 @@ class AuthService {
         }
       }
       return e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})';
-    } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+    } 
+    
+    if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
       return 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.';
-    } else if (e.type == DioExceptionType.connectionError) {
+    } 
+    
+    if (e.type == DioExceptionType.connectionError) {
       return 'Không thể kết nối đến máy chủ. Vui lòng thử lại.';
     }
+    
     return 'Đã có lỗi xảy ra: ${e.message}';
   }
 
   Future<TokenResponse> login(String email, String password) async {
     try {
-      final response = await _dio.post(
-        '$_authUrl/login',
-        data: {'email': email, 'password': password},
-      );
-
-      final data = response.data['data'];
-      final tokenResponse = TokenResponse.fromJson(data);
+      final response = await _dio.post('$_authUrl/login', data: {'email': email, 'password': password});
+      final tokenResponse = TokenResponse.fromJson(response.data['data']);
       await _saveTokens(tokenResponse);
-
       return tokenResponse;
     } on DioException catch (e) {
       throw Exception(_handleDioError(e));
     }
   }
 
-  Future<TokenResponse> register(
-    String email,
-    String password,
-    String fullName,
-  ) async {
+  Future<TokenResponse> register(String email, String password, String fullName) async {
     try {
       final response = await _dio.post(
         '$_authUrl/register',
-        data: {
-          'email': email,
-          'password': password,
-          'fullName': fullName,
-          'role': 'BUYER',
-        },
+        data: {'email': email, 'password': password, 'fullName': fullName, 'role': 'BUYER'},
       );
-
-      final data = response.data['data'];
-      final tokenResponse = TokenResponse.fromJson(data);
+      final tokenResponse = TokenResponse.fromJson(response.data['data']);
       await _saveTokens(tokenResponse);
       return tokenResponse;
     } on DioException catch (e) {
@@ -104,14 +117,47 @@ class AuthService {
 
   Future<UserResponse> getProfile() async {
     try {
-      final token = await getAccessToken();
-      if (token == null) throw Exception('Vui lòng đăng nhập lại');
+      final response = await _dio.get('$_userUrl/me');
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
 
-      final response = await _dio.get(
-        '$_userUrl/me',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
+  Future<UserResponse> updateProfile(String fullName, String? phone, String? avatarUrl) async {
+    try {
+      final data = {'fullName': fullName};
+      if (phone != null) data['phone'] = phone;
+      if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
 
+      final response = await _dio.put('$_userUrl/me', data: data);
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<UserResponse> addAddress(Map<String, dynamic> addressData) async {
+    try {
+      final response = await _dio.post('$_userUrl/me/addresses', data: addressData);
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<UserResponse> updateAddress(String addressId, Map<String, dynamic> addressData) async {
+    try {
+      final response = await _dio.put('$_userUrl/me/addresses/$addressId', data: addressData);
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<UserResponse> deleteAddress(String addressId) async {
+    try {
+      final response = await _dio.delete('$_userUrl/me/addresses/$addressId');
       return UserResponse.fromJson(response.data['data']);
     } on DioException catch (e) {
       throw Exception(_handleDioError(e));
@@ -122,14 +168,9 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final refreshToken = prefs.getString('refresh_token');
-      final accessToken = prefs.getString('access_token');
 
-      if (refreshToken != null && accessToken != null) {
-        await _dio.post(
-          '$_authUrl/logout',
-          data: {'refreshToken': refreshToken},
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
-        );
+      if (refreshToken != null) {
+        await _dio.post('$_authUrl/logout', data: {'refreshToken': refreshToken});
       }
     } catch (e) {
       // Ignore errors during logout

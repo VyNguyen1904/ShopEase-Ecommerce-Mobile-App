@@ -11,6 +11,7 @@ class AccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userProfileProvider);
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white bg
       appBar: AppBar(
@@ -33,57 +34,7 @@ class AccountScreen extends ConsumerWidget {
           children: [
             // User Info Card
             userProfileAsync.when(
-              data: (user) => Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 32,
-                      backgroundImage:
-                          user.avatar != null && user.avatar!.isNotEmpty
-                          ? NetworkImage(user.avatar!)
-                          : const NetworkImage(
-                              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
-                            ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.fullName,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user.email,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.textGrey.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              data: (user) => _UserInfoCard(user: user),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) => Center(child: Text('Lỗi: $err')),
             ),
@@ -95,7 +46,12 @@ class AccountScreen extends ConsumerWidget {
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.person_outline,
-                title: 'Quản lý thông tin',
+                title: 'Thông tin cá nhân',
+                onTap: () => context.push(AppRoutes.profileEdit),
+              ),
+              _buildMenuItem(
+                icon: Icons.location_on_outlined,
+                title: 'Sổ địa chỉ nhận hàng',
                 onTap: () => context.push(AppRoutes.address),
               ),
               _buildMenuItem(
@@ -246,6 +202,66 @@ class AccountScreen extends ConsumerWidget {
             const SizedBox(width: 8),
           ],
           const Icon(Icons.chevron_right, color: AppColors.textLight, size: 20),
+        ],
+      ),
+    );
+  }
+}
+
+class _UserInfoCard extends StatelessWidget {
+  final dynamic user;
+
+  const _UserInfoCard({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 32,
+            backgroundImage: user.avatar != null && user.avatar!.isNotEmpty
+                ? NetworkImage(user.avatar!)
+                : const NetworkImage(
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
+                  ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.fullName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  user.email,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textGrey.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
