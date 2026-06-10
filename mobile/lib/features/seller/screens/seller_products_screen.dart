@@ -1,53 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/product_provider.dart';
+import '../../../core/models/product.dart';
+import '../../auth/providers/auth_provider.dart';
 
-class SellerProductsScreen extends StatefulWidget {
+class SellerProductsScreen extends ConsumerStatefulWidget {
   const SellerProductsScreen({super.key});
 
   @override
-  State<SellerProductsScreen> createState() => _SellerProductsScreenState();
+  ConsumerState<SellerProductsScreen> createState() => _SellerProductsScreenState();
 }
 
-class _SellerProductsScreenState extends State<SellerProductsScreen>
+class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, dynamic>> _allProducts = [
-    {
-      'id': '1',
-      'name': 'Nike Air Max 270',
-      'price': '\$160.00',
-      'size': 'Size: 39',
-      'image':
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-      'id': '2',
-      'name': 'Adidas Ultraboost',
-      'price': '\$160.00',
-      'size': 'Size: 44',
-      'image':
-          'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-      'id': '3',
-      'name': 'Puma RS-X',
-      'price': '\$118.00',
-      'size': 'Size: 9',
-      'image':
-          'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&auto=format&fit=crop&q=80',
-    },
-    {
-      'id': '4',
-      'name': 'Converse Chuck 70',
-      'price': '\$98.00',
-      'size': 'Size: 42',
-      'image':
-          'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&auto=format&fit=crop&q=80',
-    },
-  ];
+  // Mock removed
 
   @override
   void initState() {
@@ -151,21 +122,40 @@ class _SellerProductsScreenState extends State<SellerProductsScreen>
   }
 
   Widget _buildProductList() {
-    return ListView.separated(
-      padding: const EdgeInsets.all(20),
-      itemCount: _allProducts.length,
-      separatorBuilder: (context, index) => Divider(
-        color: Colors.grey.withOpacity(0.1),
-        height: 32,
-      ),
-      itemBuilder: (context, index) {
-        final product = _allProducts[index];
-        return _buildProductItem(product);
+    final userAsync = ref.watch(userProfileProvider);
+    return userAsync.when(
+      data: (user) {
+        if (user == null) {
+          return const Center(child: Text('Vui lòng đăng nhập'));
+        }
+        return ref.watch(sellerProductsProvider(user.id)).when(
+          data: (products) {
+            if (products.isEmpty) {
+              return const Center(child: Text('Chưa có sản phẩm nào.'));
+            }
+            return ListView.separated(
+              padding: const EdgeInsets.all(20),
+              itemCount: products.length,
+              separatorBuilder: (context, index) => Divider(
+                color: Colors.grey.withValues(alpha: 0.1),
+                height: 32,
+              ),
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return _buildProductItem(product);
+              },
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(child: Text('Lỗi: $err')),
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('Lỗi: $err')),
     );
   }
 
-  Widget _buildProductItem(Map<String, dynamic> product) {
+  Widget _buildProductItem(Product product) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -176,7 +166,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen>
             color: const Color(0xFFF8F9FA),
             borderRadius: BorderRadius.circular(12),
             image: DecorationImage(
-              image: NetworkImage(product['image']),
+              image: NetworkImage(product.imageUrl),
               fit: BoxFit.cover,
             ),
           ),
@@ -187,7 +177,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                product['name'],
+                product.name,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -196,7 +186,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                product['price'],
+                '${product.price.toInt().toString().replaceAllMapped(RegExp(r"(\d)(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")} đ',
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -205,7 +195,7 @@ class _SellerProductsScreenState extends State<SellerProductsScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                product['size'],
+                product.category,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

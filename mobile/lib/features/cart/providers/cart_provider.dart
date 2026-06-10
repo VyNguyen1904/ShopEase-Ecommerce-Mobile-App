@@ -1,21 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/services/cart_service.dart';
+import '../../../core/providers/auth_provider.dart';
 
 final cartServiceProvider = Provider((ref) => CartService());
 
 final cartProvider =
     StateNotifierProvider<CartNotifier, AsyncValue<CartResponse>>((ref) {
-      return CartNotifier(ref.watch(cartServiceProvider));
+      final userAsync = ref.watch(userProfileProvider);
+      final userId = userAsync.value?.id ?? 'guest';
+      return CartNotifier(ref.watch(cartServiceProvider), userId);
     });
 
 class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
   final CartService _cartService;
-  // TODO: Use actual user ID from AuthProvider in the future
-  final String _userId = 'demo-buyer';
+  final String _userId;
 
-  CartNotifier(this._cartService) : super(const AsyncValue.loading()) {
-    fetchCart();
+  CartNotifier(this._cartService, this._userId) : super(const AsyncValue.loading()) {
+    if (_userId != 'guest') {
+      fetchCart();
+    } else {
+      state = AsyncValue.data(CartResponse(userId: 'guest', items: [], subtotal: 0, totalItems: 0));
+    }
   }
 
   Future<void> fetchCart() async {

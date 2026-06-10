@@ -146,20 +146,22 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  children: [
-                    _buildCategoryPill('Giày thể thao', isActive: true),
-                    const SizedBox(width: 12),
-                    _buildCategoryPill('Quần áo', isActive: false),
-                    const SizedBox(width: 12),
-                    _buildCategoryPill('Túi xách', isActive: false),
-                    const SizedBox(width: 12),
-                    _buildCategoryPill('Phụ kiện', isActive: false),
-                  ],
-                ),
+              SizedBox(
+                height: 40,
+                child: ref.watch(categoriesProvider).when(
+                      data: (categories) => ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        itemCount: categories.length,
+                        separatorBuilder: (context, _) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          final cat = categories[index];
+                          return _buildCategoryPill(cat.name, isActive: index == 0);
+                        },
+                      ),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => const SizedBox(),
+                    ),
               ),
               const SizedBox(height: 30),
 

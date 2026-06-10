@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
+import '../../../core/providers/product_provider.dart';
+import '../../../core/models/product.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -28,40 +30,44 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Read product from Riverpod provider (set before navigation)
-    final product = ref.watch(selectedProductProvider);
+    Product? product = ref.watch(selectedProductProvider);
     final heroTag = ref.watch(selectedHeroTagProvider);
 
     if (product == null) {
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 48,
-                color: AppColors.textLight,
-              ),
-              const SizedBox(height: 12),
-              const Text('Không tìm thấy sản phẩm'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  } else {
-                    context.go(AppRoutes.home);
-                  }
-                },
-                child: const Text('Quay lại'),
-              ),
-            ],
+      final productAsync = ref.watch(productDetailProvider(widget.productId));
+      return productAsync.when(
+        data: (data) => _buildDetail(context, data, heroTag),
+        loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+        error: (err, stack) => Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: AppColors.textLight),
+                const SizedBox(height: 12),
+                Text('Lỗi: $err'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go(AppRoutes.home);
+                    }
+                  },
+                  child: const Text('Quay lại'),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
+    return _buildDetail(context, product, heroTag);
+  }
+
+  Widget _buildDetail(BuildContext context, Product product, String heroTag) {
     final discountPercent = product.discountPercentage;
 
     return Scaffold(

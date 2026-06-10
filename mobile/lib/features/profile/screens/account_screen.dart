@@ -33,57 +33,74 @@ class AccountScreen extends ConsumerWidget {
           children: [
             // User Info Card
             userProfileAsync.when(
-              data: (user) => Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+              data: (user) {
+                if (user == null) {
+                  return Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 32,
-                      backgroundImage:
-                          user.avatar != null && user.avatar!.isNotEmpty
-                          ? NetworkImage(user.avatar!)
-                          : const NetworkImage(
-                              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
-                            ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.fullName,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            user.email,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.textGrey.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ],
+                    child: Center(
+                      child: ElevatedButton(
+                        onPressed: () => context.go(AppRoutes.login),
+                        child: const Text('Đăng nhập'),
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  );
+                }
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 32,
+                        backgroundImage:
+                            user.avatar != null && user.avatar!.isNotEmpty
+                            ? NetworkImage(user.avatar!)
+                            : const NetworkImage(
+                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
+                              ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.fullName,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user.email,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textGrey.withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) => Center(child: Text('Lỗi: $err')),
             ),

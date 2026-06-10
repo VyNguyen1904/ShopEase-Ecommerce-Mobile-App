@@ -57,11 +57,15 @@ class CategoryScreen extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(cat['icon'], color: AppColors.primary, size: 24),
+                        // Icon(cat['icon'], color: AppColors.primary, size: 24),
+                        if (cat.imageUrl != null)
+                          Image.network(cat.imageUrl!, width: 24, height: 24)
+                        else
+                          const Icon(Icons.category, color: AppColors.primary, size: 24),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
-                            cat['name'],
+                            cat.name,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
