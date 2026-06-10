@@ -52,20 +52,34 @@ final appRouter = GoRouter(
     final location = state.matchedLocation;
     final isAdminPath = location.startsWith('/admin');
     final isSellerPath = location.startsWith('/seller');
+    
+    // Paths that require a logged in user (any role)
+    final isProtectedPath = location == AppRoutes.checkout ||
+        location == AppRoutes.orders ||
+        location.startsWith('/order-detail') ||
+        location == AppRoutes.address ||
+        location == AppRoutes.settings ||
+        location == AppRoutes.notifications ||
+        location == AppRoutes.chats;
 
-    if (isAdminPath || isSellerPath) {
-      if (token == null || token.isEmpty) {
+    // Check auth status
+    final isAuthenticated = token != null && token.isNotEmpty;
+
+    if (isAdminPath || isSellerPath || isProtectedPath) {
+      if (!isAuthenticated) {
         return AppRoutes.login;
       }
 
-      final payload = _decodeJwt(token);
-      final role = payload['role'] as String?;
+      if (isAdminPath || isSellerPath) {
+        final payload = _decodeJwt(token);
+        final role = payload['role'] as String?;
 
-      if (isAdminPath && role != 'ADMIN') {
-        return AppRoutes.home;
-      }
-      if (isSellerPath && role != 'SELLER' && role != 'ADMIN') {
-        return AppRoutes.home;
+        if (isAdminPath && role != 'ADMIN') {
+          return AppRoutes.home;
+        }
+        if (isSellerPath && role != 'SELLER' && role != 'ADMIN') {
+          return AppRoutes.home;
+        }
       }
     }
     return null;

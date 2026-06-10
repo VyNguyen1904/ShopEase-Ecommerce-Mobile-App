@@ -34,19 +34,26 @@ class Product {
     } else if (json['images'] != null && (json['images'] as List).isNotEmpty) {
       imgUrl = json['images'][0].toString();
     } else {
-      imgUrl = json['imageUrl']?.toString() ?? '';
+      imgUrl = json['thumbnailUrl']?.toString() ?? json['imageUrl']?.toString() ?? '';
+    }
+
+    String categoryStr = '';
+    if (json['category'] is Map) {
+      categoryStr = json['category']['name']?.toString() ?? json['category']['id']?.toString() ?? '';
+    } else {
+      categoryStr = json['category']?.toString() ?? json['categoryId']?.toString() ?? '';
     }
 
     return Product(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
-      category: json['category'] ?? json['categoryId']?.toString() ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      originalPrice: (json['originalPrice'] as num?)?.toDouble(),
+      category: categoryStr,
+      price: (json['salePrice'] as num?)?.toDouble() ?? (json['price'] as num?)?.toDouble() ?? (json['basePrice'] as num?)?.toDouble() ?? 0.0,
+      originalPrice: (json['basePrice'] as num?)?.toDouble() ?? (json['originalPrice'] as num?)?.toDouble(),
       imageUrl: imgUrl,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      reviewsCount: (json['reviewsCount'] as num?)?.toInt() ?? 0,
-      salesCount: (json['salesCount'] as num?)?.toInt() ?? 0,
+      rating: (json['avgRating'] as num?)?.toDouble() ?? (json['rating'] as num?)?.toDouble() ?? 0.0,
+      reviewsCount: (json['reviewCount'] as num?)?.toInt() ?? (json['reviewsCount'] as num?)?.toInt() ?? 0,
+      salesCount: (json['soldCount'] as num?)?.toInt() ?? (json['salesCount'] as num?)?.toInt() ?? 0,
       sizes: (json['sizes'] as List?)?.map((e) => e.toString()).toList() ?? [],
       colors: (json['colors'] as List?)?.map((e) => int.tryParse(e.toString()) ?? 0).toList() ?? [],
       description: json['description'] ?? '',

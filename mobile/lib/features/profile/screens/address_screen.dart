@@ -121,30 +121,22 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                address.addressLine1,
+                                address.address1,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textGrey,
                                 ),
                               ),
-                              if (address.addressLine2 != null && address.addressLine2!.isNotEmpty) ...[
+                              if (address.address2.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(
-                                  address.addressLine2!,
+                                  address.address2,
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textGrey,
                                   ),
                                 ),
                               ],
-                              const SizedBox(height: 4),
-                              Text(
-                                '${address.city}, ${address.state}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textGrey,
-                                ),
-                              ),
                             ],
                           ),
                         ),
