@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../widgets/address_modal.dart';
 
 class AddressScreen extends ConsumerStatefulWidget {
   const AddressScreen({super.key});
@@ -52,30 +53,29 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
         data: (user) {
           final addresses = user.addresses;
           
-          if (addresses.isEmpty) {
-            return const Center(
-              child: Text(
-                'Bạn chưa có địa chỉ nào',
-                style: TextStyle(color: AppColors.textGrey, fontSize: 16),
-              ),
-            );
-          }
-
           return Stack(
             children: [
-              ListView.separated(
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  top: 16,
-                  bottom: 120,
+              if (addresses.isEmpty)
+                const Center(
+                  child: Text(
+                    'Bạn chưa có địa chỉ nào',
+                    style: TextStyle(color: AppColors.textGrey, fontSize: 16),
+                  ),
+                )
+              else
+                ListView.separated(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 16,
+                    bottom: 120,
+                  ),
+                  itemCount: addresses.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    return _AddressItemCard(address: addresses[index]);
+                  },
                 ),
-                itemCount: addresses.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
-                  return _AddressItemCard(address: addresses[index]);
-                },
-              ),
               const _AddAddressButton(),
             ],
           );
@@ -184,9 +184,11 @@ class _AddressItemCard extends ConsumerWidget {
                   size: 20,
                 ),
                 onPressed: () {
-                  // TODO: Implement edit logic using address.id
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Tính năng sửa đang được phát triển')),
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddressModal(address: address),
                   );
                 },
               ),
@@ -249,9 +251,11 @@ class _AddAddressButton extends StatelessWidget {
         child: SafeArea(
           child: ElevatedButton(
             onPressed: () {
-              // TODO: Implement add new address logic using AuthService.addAddress
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tính năng thêm mới đang được phát triển')),
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const AddressModal(),
               );
             },
             style: ElevatedButton.styleFrom(
