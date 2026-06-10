@@ -37,7 +37,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               backgroundColor: AppColors.primary,
             ),
           );
-          context.go('/profile/orders');
+          context.go(AppRoutes.orders);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -74,7 +74,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             backgroundColor: AppColors.primary,
           ),
         );
-        context.go('/profile/orders');
+        context.go(AppRoutes.orders);
       }
     } catch (e) {
       if (mounted) {
@@ -99,7 +99,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         title: const Text('Thanh toán đơn hàng', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
-          onPressed: () => context.go('/profile/orders'), // Cancel payment goes to orders
+          onPressed: () => context.go(AppRoutes.orders), // Cancel payment goes to orders
         ),
       ),
       body: SingleChildScrollView(
@@ -136,22 +136,44 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     ),
                   ],
                 ),
-                child: widget.qrPayload.trim().startsWith('<svg') 
-                  ? SvgPicture.string(
-                      widget.qrPayload,
-                      width: 250,
-                      height: 250,
-                    )
-                  : const SizedBox(
+                child: ref.watch(paymentQrProvider(widget.orderId)).when(
+                  data: (svgString) {
+                    if (svgString.contains('<svg')) {
+                      return SvgPicture.string(
+                        svgString,
+                        width: 250,
+                        height: 250,
+                      );
+                    }
+                    return SizedBox(
                       width: 250,
                       height: 250,
                       child: Center(
                         child: Text(
-                          'Mã QR không hợp lệ',
-                          style: TextStyle(color: AppColors.alertRed),
+                          'Mã QR không hợp lệ:\n$svgString',
+                          style: const TextStyle(color: AppColors.alertRed),
+                          textAlign: TextAlign.center,
                         ),
                       ),
+                    );
+                  },
+                  loading: () => const SizedBox(
+                    width: 250,
+                    height: 250,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (e, _) => SizedBox(
+                    width: 250,
+                    height: 250,
+                    child: Center(
+                      child: Text(
+                        'Lỗi tải mã QR: $e',
+                        style: const TextStyle(color: AppColors.alertRed),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
+                  ),
+                ),
               ),
               const SizedBox(height: 40),
               SizedBox(

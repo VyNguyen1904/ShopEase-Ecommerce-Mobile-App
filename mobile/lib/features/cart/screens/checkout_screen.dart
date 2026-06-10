@@ -618,7 +618,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       }
 
       if (mounted) {
-        context.go('/profile/orders'); // Navigate to orders page
+        context.go(AppRoutes.orders); // Navigate to orders page
       }
     } catch (e) {
       if (mounted) {

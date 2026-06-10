@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../core/models/address_model.dart';
 
 class AddressScreen extends ConsumerStatefulWidget {
   const AddressScreen({super.key});
@@ -12,6 +13,134 @@ class AddressScreen extends ConsumerStatefulWidget {
 }
 
 class _AddressScreenState extends ConsumerState<AddressScreen> {
+  bool _isLoading = false;
+
+  Future<void> _deleteAddress(String id) async {
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(authServiceProvider).deleteAddress(id);
+      ref.invalidate(userProfileProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Xóa địa chỉ thành công!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi xóa địa chỉ: $e'), backgroundColor: AppColors.alertRed),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showAddressDialog([AddressModel? address]) {
+    final isEdit = address != null;
+    final nameCtrl = TextEditingController(text: address?.name ?? '');
+    final phoneCtrl = TextEditingController(text: address?.phone ?? '');
+    final address1Ctrl = TextEditingController(text: address?.address1 ?? '');
+    bool isDefault = address?.isDefault ?? false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isEdit ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: nameCtrl,
+                    decoration: const InputDecoration(labelText: 'Họ tên', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: phoneCtrl,
+                    decoration: const InputDecoration(labelText: 'Số điện thoại', border: OutlineInputBorder()),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: address1Ctrl,
+                    decoration: const InputDecoration(labelText: 'Địa chỉ cụ thể', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 12),
+                  CheckboxListTile(
+                    title: const Text('Đặt làm địa chỉ mặc định'),
+                    value: isDefault,
+                    onChanged: (val) {
+                      setModalState(() => isDefault = val ?? false);
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final newAddress = AddressModel(
+                          id: address?.id,
+                          name: nameCtrl.text,
+                          phone: phoneCtrl.text,
+                          address1: address1Ctrl.text,
+                          isDefault: isDefault,
+                        );
+
+                        Navigator.pop(ctx);
+                        setState(() => _isLoading = true);
+                        try {
+                          if (isEdit) {
+                            await ref.read(authServiceProvider).updateAddress(address!.id!, newAddress);
+                          } else {
+                            await ref.read(authServiceProvider).addAddress(newAddress);
+                          }
+                          ref.invalidate(userProfileProvider);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(isEdit ? 'Cập nhật thành công!' : 'Thêm mới thành công!')),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Lỗi: $e'), backgroundColor: AppColors.alertRed),
+                            );
+                          }
+                        } finally {
+                          if (mounted) setState(() => _isLoading = false);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 16)),
+                      child: const Text('Lưu địa chỉ', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,18 +279,19 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                                 color: AppColors.textDark,
                                 size: 20,
                               ),
-                              onPressed: () {},
+                              onPressed: () => _showAddressDialog(address),
                             ),
-                            IconButton(
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.all(4),
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: AppColors.alertRed,
-                                size: 20,
+                            if (address.id != null)
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                padding: const EdgeInsets.all(4),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.alertRed,
+                                  size: 20,
+                                ),
+                                onPressed: () => _deleteAddress(address.id!),
                               ),
-                              onPressed: () {},
-                            ),
                           ],
                         ),
                       ],
@@ -191,7 +321,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
               ),
               child: SafeArea(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _showAddressDialog(),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryDark,
                     foregroundColor: Colors.white,
@@ -219,6 +349,11 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
               ),
             ),
           ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: const Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
     );
