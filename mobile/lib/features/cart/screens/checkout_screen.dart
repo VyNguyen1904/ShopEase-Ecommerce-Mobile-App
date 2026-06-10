@@ -8,6 +8,8 @@ import '../providers/cart_provider.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/payment_provider.dart';
+import '../../../core/models/payment_model.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -568,6 +570,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final items = cartState.value!.items.where((i) => i.selected).toList();
     if (items.isEmpty) return;
 
+    final subtotal = items.fold(0.0, (sum, i) => sum + (i.price * i.quantity));
+    final shippingFee = _selectedShipping == 'nhanh' ? 32000.0 : 15000.0;
+    final discount = _useCoins ? 2000.0 : 0.0;
+    final total = subtotal + shippingFee - discount;
+
     setState(() => _isLoading = true);
     try {
       final request = CreateOrderRequest(
@@ -587,6 +594,27 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       final cartNotifier = ref.read(cartProvider.notifier);
       for (var item in items) {
         await cartNotifier.removeItem(item.productId);
+      }
+
+      // Process payment if not COD
+      if (_selectedPayment != 'cod') {
+        final paymentReq = CheckoutPaymentRequest(
+          orderId: createdOrder.id,
+          amount: total,
+          paymentMethod: _selectedPayment.toUpperCase(),
+        );
+        final paymentService = ref.read(paymentServiceProvider);
+        final paymentResp = await paymentService.processCheckout(paymentReq);
+
+        if (mounted) {
+          if (paymentResp.qrPayload != null && paymentResp.qrPayload!.isNotEmpty) {
+            context.go('/payment', extra: {
+              'orderId': createdOrder.id,
+              'qrPayload': paymentResp.qrPayload,
+            });
+            return;
+          }
+        }
       }
 
       if (mounted) {

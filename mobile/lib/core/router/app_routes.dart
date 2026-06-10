@@ -36,4 +36,6 @@ abstract class AppRoutes {
   static String productDetailPath(String id) => '/product/$id';
   static String orderDetailPath(String id) => '/order-detail/$id';
   static String sellerOrderDetailPath(String id) => '/seller/order-detail/$id';
+  // Payment
+  static const String payment = '/payment';
 }

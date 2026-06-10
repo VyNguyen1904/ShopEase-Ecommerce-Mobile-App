@@ -28,6 +28,7 @@ import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
+import '../../features/cart/screens/payment_screen.dart';
 
 Map<String, dynamic> _decodeJwt(String token) {
   try {
@@ -156,6 +157,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.checkout,
       builder: (context, state) => const CheckoutScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.payment,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final orderId = extra?['orderId'] as String? ?? '';
+        final qrPayload = extra?['qrPayload'] as String? ?? '';
+        return PaymentScreen(orderId: orderId, qrPayload: qrPayload);
+      },
     ),
     GoRoute(
       path: AppRoutes.orderDetail,
