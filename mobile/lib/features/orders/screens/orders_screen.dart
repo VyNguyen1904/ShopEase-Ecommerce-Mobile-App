@@ -134,24 +134,29 @@ class _OrdersScreenState extends State<OrdersScreen>
         ),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
+          preferredSize: const Size.fromHeight(48),
           child: Container(
-            alignment: Alignment.centerLeft,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: AppColors.border, width: 1),
+              ),
+            ),
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
               tabAlignment: TabAlignment.start,
               padding: EdgeInsets.zero,
-              labelPadding: const EdgeInsets.symmetric(horizontal: 16),
+              labelPadding: const EdgeInsets.symmetric(horizontal: 20),
               dividerColor: Colors.transparent,
               indicatorColor: AppColors.primary,
               indicatorWeight: 3,
-              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorSize: TabBarIndicatorSize.label,
               indicatorPadding: EdgeInsets.zero,
               labelColor: AppColors.primary,
               unselectedLabelColor: AppColors.textGrey,
               labelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
               unselectedLabelStyle: const TextStyle(

@@ -20,6 +20,46 @@ class AuthService {
 
   AuthService({Dio? dio}) : _dio = dio ?? Dio();
 
+  String _handleDioError(DioException e) {
+    String translateError(String message) {
+      final lowerMsg = message.toLowerCase();
+      
+      const errorMappings = {
+        'bad credentials': 'Sai email hoặc mật khẩu.',
+        'invalid credentials': 'Sai email hoặc mật khẩu.',
+        'password': 'Sai email hoặc mật khẩu.',
+        'user not found': 'Không tìm thấy tài khoản với email này.',
+        'already exists': 'Email này đã được sử dụng. Vui lòng chọn email khác.',
+        'already taken': 'Email này đã được sử dụng. Vui lòng chọn email khác.',
+        'unauthorized': 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+        'forbidden': 'Bạn không có quyền thực hiện thao tác này.',
+        'internal server error': 'Lỗi máy chủ. Vui lòng thử lại sau.',
+      };
+
+      for (final entry in errorMappings.entries) {
+        if (lowerMsg.contains(entry.key)) return entry.value;
+      }
+      return message; // fallback if not recognized
+    }
+
+    if (e.response != null) {
+      final data = e.response!.data;
+      if (data is Map) {
+        if (data.containsKey('message')) return translateError(data['message'].toString());
+        if (data.containsKey('error')) return translateError(data['error'].toString());
+        if (data.containsKey('errors') && data['errors'] is List && data['errors'].isNotEmpty) {
+          return translateError(data['errors'][0].toString()); 
+        }
+      }
+      return e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})';
+    } else if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+      return 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.';
+    } else if (e.type == DioExceptionType.connectionError) {
+      return 'Không thể kết nối đến máy chủ. Vui lòng thử lại.';
+    }
+    return 'Đã có lỗi xảy ra: ${e.message}';
+  }
+
   Future<TokenResponse> login(String email, String password) async {
     try {
       final response = await _dio.post(
@@ -33,7 +73,7 @@ class AuthService {
 
       return tokenResponse;
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Login failed');
+      throw Exception(_handleDioError(e));
     }
   }
 
@@ -58,14 +98,14 @@ class AuthService {
       await _saveTokens(tokenResponse);
       return tokenResponse;
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Registration failed');
+      throw Exception(_handleDioError(e));
     }
   }
 
   Future<UserResponse> getProfile() async {
     try {
       final token = await getAccessToken();
-      if (token == null) throw Exception('No token found');
+      if (token == null) throw Exception('Vui lòng đăng nhập lại');
 
       final response = await _dio.get(
         '$_userUrl/me',
@@ -74,7 +114,7 @@ class AuthService {
 
       return UserResponse.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to get profile');
+      throw Exception(_handleDioError(e));
     }
   }
 
