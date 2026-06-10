@@ -27,6 +27,7 @@ class HomeScreen extends ConsumerWidget {
                       /// GestureDetector — raw gestures, no visual feedback
                       /// Use when you need pan, scale, swipe, or in non-Material UIs
                       child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () => context.push(AppRoutes.search),
                         child: Container(
                           height: 48,
@@ -38,11 +39,6 @@ class HomeScreen extends ConsumerWidget {
                           ),
                           child: const Row(
                             children: [
-                              Icon(
-                                Icons.search,
-                                color: AppColors.textLight,
-                                size: 20,
-                              ),
                               Icon(
                                 Icons.search,
                                 color: AppColors.textLight,
@@ -128,7 +124,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => context.push(AppRoutes.search),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
@@ -183,7 +179,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => context.push(AppRoutes.search),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
@@ -244,7 +240,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => context.push(AppRoutes.search),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,

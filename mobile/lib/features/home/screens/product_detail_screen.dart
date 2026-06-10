@@ -569,18 +569,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton.icon(
-                        onPressed: () async {
-                          final productIdInt = int.tryParse(product.id) ?? 0;
-                          await ref.read(cartProvider.notifier).addToCart(productIdInt, 1);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
-                                backgroundColor: AppColors.primary,
-                              ),
-                            );
-                          }
-                        },
+                        onPressed: () => _showActionBottomSheet(false, product),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
@@ -609,13 +598,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          final productIdInt = int.tryParse(product.id) ?? 0;
-                          await ref.read(cartProvider.notifier).addToCart(productIdInt, 1);
-                          if (context.mounted) {
-                            context.push(AppRoutes.cart);
-                          }
-                        },
+                        onPressed: () => _showActionBottomSheet(true, product),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accent,
                           foregroundColor: Colors.white,
@@ -640,6 +623,241 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showActionBottomSheet(bool isBuyNow, Product product) {
+    int localQuantity = 1;
+    int localColorIndex = _selectedColorIndex;
+    String localSize = _selectedSize;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product info summary
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          product.imageUrl,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          errorBuilder: (c, e, s) => Container(
+                            width: 80,
+                            height: 80,
+                            color: AppColors.bgLight,
+                            child: const Icon(Icons.image, color: AppColors.textLight),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${_formatCurrency(product.price)}đ',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accent,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Kho: 124',
+                              style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        icon: const Icon(Icons.close, color: AppColors.textGrey),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 32),
+
+                  // Color selection
+                  Text(
+                    'Màu sắc: ${_colorOptions[localColorIndex]['name']}',
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                  ),
+                  const SizedBox(height: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        _colorOptions.length,
+                        (index) => GestureDetector(
+                          onTap: () {
+                            setModalState(() => localColorIndex = index);
+                            setState(() => _selectedColorIndex = index);
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: const EdgeInsets.only(right: 12),
+                            width: localColorIndex == index ? 42 : 38,
+                            height: localColorIndex == index ? 42 : 38,
+                            decoration: BoxDecoration(
+                              color: _colorOptions[index]['color'],
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: localColorIndex == index
+                                    ? AppColors.primary
+                                    : (_colorOptions[index]['hasBorder'] ? AppColors.border : Colors.transparent),
+                                width: localColorIndex == index ? 3.0 : 1,
+                              ),
+                            ),
+                            child: localColorIndex == index
+                                ? Icon(
+                                    Icons.check,
+                                    color: _colorOptions[index]['color'] == Colors.white ? AppColors.primary : Colors.white,
+                                    size: 20,
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Size selection
+                  const Text(
+                    'Kích thước',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                  ),
+                  const SizedBox(height: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: product.sizes.map((size) {
+                        final isSelected = localSize == size;
+                        return GestureDetector(
+                          onTap: () {
+                            setModalState(() => localSize = size);
+                            setState(() => _selectedSize = size);
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.accent : Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isSelected ? AppColors.accent : AppColors.border,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              size,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? Colors.white : AppColors.textDark,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const Divider(height: 32),
+
+                  // Quantity
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Số lượng',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: localQuantity > 1 ? () => setModalState(() => localQuantity--) : null,
+                            icon: const Icon(Icons.remove_circle_outline),
+                            color: localQuantity > 1 ? AppColors.textDark : AppColors.textLight,
+                          ),
+                          Text(
+                            '$localQuantity',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          ),
+                          IconButton(
+                            onPressed: () => setModalState(() => localQuantity++),
+                            icon: const Icon(Icons.add_circle_outline),
+                            color: AppColors.textDark,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Action Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        final productIdInt = int.tryParse(product.id) ?? 0;
+                        await ref.read(cartProvider.notifier).addToCart(productIdInt, localQuantity);
+                        if (mounted) {
+                          if (isBuyNow) {
+                            context.push(AppRoutes.cart);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
+                                backgroundColor: AppColors.primary,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isBuyNow ? AppColors.accent : AppColors.primary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(
+                        isBuyNow ? 'Mua ngay' : 'Thêm vào giỏ',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

@@ -63,16 +63,25 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                           fontSize: 15,
                           color: AppColors.textDark,
                         ),
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: AppColors.textGrey,
-                            size: 20,
+                        decoration: InputDecoration(
+                          prefixIcon: IconButton(
+                            icon: const Icon(
+                              Icons.search,
+                              color: AppColors.textGrey,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {});
+                            },
                           ),
                           hintText: 'Tìm kiếm sản phẩm...',
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 14),
                         ),
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (value) {
+                          setState(() {});
+                        },
                       ),
                     ),
                   ),
@@ -178,27 +187,38 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
   }
 
   Widget _buildFilterButton({required IconData icon, required String label}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: AppColors.textDark),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textDark,
-            ),
+    return InkWell(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tính năng "$label" đang được phát triển'),
+            duration: const Duration(seconds: 1),
           ),
-        ],
+        );
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: AppColors.textDark),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
