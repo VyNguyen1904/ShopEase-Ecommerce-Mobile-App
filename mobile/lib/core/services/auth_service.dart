@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dio/dio.dart';
 import '../models/auth_model.dart';
+import '../models/address_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -78,6 +79,63 @@ class AuthService {
     }
   }
 
+  Future<UserResponse> updateProfile(Map<String, dynamic> data) async {
+    try {
+      final token = await getAccessToken();
+      if (token == null) throw Exception('No token found');
+
+      final response = await _dio.put(
+        '$_userUrl/me',
+        data: data,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to update profile');
+    }
+  }
+
+  Future<AddressModel> addAddress(AddressModel address) async {
+    try {
+      final token = await getAccessToken();
+      final response = await _dio.post(
+        '$_userUrl/me/addresses',
+        data: address.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return AddressModel.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to add address');
+    }
+  }
+
+  Future<AddressModel> updateAddress(String id, AddressModel address) async {
+    try {
+      final token = await getAccessToken();
+      final response = await _dio.put(
+        '$_userUrl/me/addresses/$id',
+        data: address.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return AddressModel.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to update address');
+    }
+  }
+
+  Future<void> deleteAddress(String id) async {
+    try {
+      final token = await getAccessToken();
+      await _dio.delete(
+        '$_userUrl/me/addresses/$id',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to delete address');
+    }
+  }
+
   Future<void> logout() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -89,6 +147,42 @@ class AuthService {
           '$_authUrl/logout',
           data: {'refreshToken': refreshToken},
           options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+        );
+      }
+    } catch (e) {
+      // Ignore errors during logout
+    } finally {
+      await _clearTokens();
+    }
+  }
+
+  Future<TokenResponse> refreshToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final refreshTokenStr = prefs.getString('refresh_token');
+      if (refreshTokenStr == null) throw Exception('No refresh token found');
+
+      final response = await _dio.post(
+        '$_authUrl/refresh',
+        data: {'refreshToken': refreshTokenStr},
+      );
+
+      final data = response.data['data'];
+      final tokenResponse = TokenResponse.fromJson(data);
+      await _saveTokens(tokenResponse);
+      return tokenResponse;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to refresh token');
+    }
+  }
+
+  Future<void> logoutAll() async {
+    try {
+      final token = await getAccessToken();
+      if (token != null) {
+        await _dio.post(
+          '$_authUrl/logout-all',
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
         );
       }
     } catch (e) {
