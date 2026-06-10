@@ -1,23 +1,44 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../providers/cart_provider.dart';
+import '../../orders/providers/order_provider.dart';
+import '../../../core/models/address_model.dart';
+import '../../../core/models/cart_model.dart';
+import '../widgets/checkout_components.dart';
 
-class CheckoutScreen extends StatefulWidget {
+class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
 
   @override
-  State<CheckoutScreen> createState() => _CheckoutScreenState();
+  ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
+class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String _selectedShipping = 'nhanh';
   String _selectedPayment = 'cod';
   bool _useCoins = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    final cartState = ref.watch(cartProvider);
+    final userState = ref.watch(userProfileProvider);
+
+    final selectedItems = cartState.value?.items.where((i) => i.selected).toList() ?? [];
+    final subtotal = cartState.value?.subtotal ?? 0;
+
+    final double shippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    final double discount = _useCoins ? 2000 : 0;
+    final double totalAmount = subtotal + shippingFee - discount;
+
+    final defaultAddress = userState.value?.addresses.where((a) => a.defaultAddress).firstOrNull 
+        ?? userState.value?.addresses.firstOrNull;
+
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
@@ -32,7 +53,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: _buildStepper(),
+        title: const CheckoutStepper(),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -40,176 +61,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Địa chỉ nhận hàng'),
-            _buildAddressCard(),
+            const CheckoutSectionTitle(title: 'Địa chỉ nhận hàng'),
+            CheckoutAddressCard(address: defaultAddress),
             const SizedBox(height: 24),
-            _buildSectionTitle('Đơn vị vận chuyển'),
+            const CheckoutSectionTitle(title: 'Sản phẩm đã chọn'),
+            CheckoutSelectedItems(items: selectedItems),
+            const SizedBox(height: 24),
+            const CheckoutSectionTitle(title: 'Đơn vị vận chuyển'),
             _buildShippingOptions(),
             const SizedBox(height: 24),
-            _buildSectionTitle('Mã giảm giá / Xu'),
+            const CheckoutSectionTitle(title: 'Mã giảm giá / Xu'),
             _buildDiscountSection(),
             const SizedBox(height: 24),
-            _buildSectionTitle('Phương thức thanh toán'),
+            const CheckoutSectionTitle(title: 'Phương thức thanh toán'),
             _buildPaymentOptions(),
             const SizedBox(height: 24),
-            _buildOrderSummary(),
+            CheckoutOrderSummary(
+              subtotal: subtotal,
+              shippingFee: shippingFee,
+              discount: discount,
+              totalAmount: totalAmount,
+            ),
             const SizedBox(height: 40),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(),
-    );
-  }
-
-  Widget _buildStepper() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildStepIndicator('1', isActive: true),
-        _buildStepLine(),
-        _buildStepIndicator('2', isActive: false),
-        _buildStepLine(),
-        _buildStepIndicator('3', isActive: false),
-        const SizedBox(width: 8),
-        const Icon(
-          Icons.arrow_forward_ios,
-          size: 14,
-          color: AppColors.textGrey,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStepIndicator(String number, {required bool isActive}) {
-    return Container(
-      width: 28,
-      height: 28,
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : AppColors.bgLight,
-        shape: BoxShape.circle,
-        border: isActive ? null : Border.all(color: AppColors.border),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        number,
-        style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textGrey,
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStepLine() {
-    return Container(
-      width: 40,
-      height: 1,
-      color: AppColors.border,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textDark,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddressCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.person_outline,
-                color: AppColors.primary,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Jane Doe',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  'Mặc định',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.only(left: 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '123 Nguyễn Huệ, P. Bến Nghé,',
-                  style: TextStyle(
-                    color: AppColors.textDark,
-                    fontSize: 14,
-                    height: 1.5,
-                  ),
-                ),
-                const Text(
-                  'Quận 1, TP. Hồ Chí Minh',
-                  style: TextStyle(
-                    color: AppColors.textDark,
-                    fontSize: 14,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(
-                      Icons.edit_outlined,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.delete_outline,
-                      color: AppColors.alertRed,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      bottomNavigationBar: _buildBottomBar(selectedItems, defaultAddress, totalAmount),
     );
   }
 
@@ -439,61 +316,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildOrderSummary() {
-    return Column(
-      children: [
-        _buildSummaryRow('Tạm tính', '420.000đ'),
-        const SizedBox(height: 8),
-        _buildSummaryRow('Phí vận chuyển', '32.000đ'),
-        const SizedBox(height: 8),
-        _buildSummaryRow('Giảm giá', '-10.000đ'),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'Tổng cộng',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-            Text(
-              '442.000đ',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.alertRed,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textDark,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount) {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -508,12 +331,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () {
-            context.go(AppRoutes.orderDetailPath('SE2405150001'));
+          onPressed: _isLoading ? null : () async {
+            if (address == null) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm địa chỉ nhận hàng!')));
+              return;
+            }
+            if (items.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Giỏ hàng trống!')));
+              return;
+            }
+
+            setState(() => _isLoading = true);
+            try {
+              final itemsReq = items.map((e) => {
+                'productId': e.productId,
+                'quantity': e.quantity,
+              }).toList();
+
+              final req = {
+                'items': itemsReq,
+                'shipRecipient': address.recipientName,
+                'shipPhone': address.phone,
+                'shipStreet': address.street,
+                'shipDistrict': address.district,
+                'shipCity': address.city,
+                'paymentMethod': _selectedPayment.toUpperCase(),
+                'note': '',
+              };
+
+              final orderService = ref.read(orderServiceProvider);
+              final newOrder = await orderService.createOrder(req);
+
+              ref.invalidate(cartProvider); // Clear cart
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đặt hàng thành công!')));
+                context.go(AppRoutes.orderDetailPath(newOrder.id));
+              }
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+              }
+            } finally {
+              if (mounted) setState(() => _isLoading = false);
+            }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-                AppColors.alertRed, // Using orange-red for checkout button
+            backgroundColor: AppColors.alertRed,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -521,7 +385,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             elevation: 0,
           ),
-          child: Row(
+          child: _isLoading 
+            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               Icon(Icons.lock_outline, size: 20),
