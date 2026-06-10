@@ -28,6 +28,7 @@ import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
+import '../../features/seller/screens/shell/seller_shell_layout.dart';
 import '../../features/cart/screens/payment_screen.dart';
 
 Map<String, dynamic> _decodeJwt(String token) {
@@ -232,20 +233,61 @@ final appRouter = GoRouter(
       builder: (context, state) => const SellerShopProfile(),
     ),
     GoRoute(
-      path: AppRoutes.sellerDashboard,
-      builder: (context, state) => const SellerDashboardScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.sellerProducts,
-      builder: (context, state) => const SellerProductsScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.sellerAddProduct,
       builder: (context, state) => const SellerAddProductScreen(),
     ),
-    GoRoute(
-      path: AppRoutes.sellerOrders,
-      builder: (context, state) => const SellerOrdersScreen(),
+
+    // ── Seller Shell with Bottom Navigation ────────────────────────────────
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          SellerShellLayout(navigationShell: navigationShell),
+      branches: [
+        // Tab 0: Dashboard
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.sellerDashboard,
+              builder: (context, state) => const SellerDashboardScreen(),
+            ),
+          ],
+        ),
+        // Tab 1: Products
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.sellerProducts,
+              builder: (context, state) => const SellerProductsScreen(),
+            ),
+          ],
+        ),
+        // Tab 2: Orders
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.sellerOrders,
+              builder: (context, state) => const SellerOrdersScreen(),
+            ),
+          ],
+        ),
+        // Tab 3: Chat
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/seller-chat',
+              builder: (context, state) => const ChatListScreen(),
+            ),
+          ],
+        ),
+        // Tab 4: Profile
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/seller-account',
+              builder: (context, state) => const AccountScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );

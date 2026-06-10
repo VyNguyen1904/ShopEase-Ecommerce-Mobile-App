@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _passwordController.text,
       );
       ref.invalidate(userProfileProvider);
-      if (mounted) context.go(AppRoutes.home);
+      if (mounted) {
+        final token = await _authService.getAccessToken();
+        String nextRoute = AppRoutes.home;
+        if (token != null) {
+          try {
+            final parts = token.split('.');
+            if (parts.length == 3) {
+              final payload = parts[1];
+              final normalized = base64Url.normalize(payload);
+              final decoded = utf8.decode(base64Url.decode(normalized));
+              final jwt = json.decode(decoded) as Map<String, dynamic>;
+              final role = jwt['role'];
+              if (role == 'SELLER') {
+                nextRoute = AppRoutes.sellerDashboard;
+              } else if (role == 'ADMIN') {
+                nextRoute = AppRoutes.adminDashboard;
+              }
+            }
+          } catch (_) {}
+        }
+        context.go(nextRoute);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

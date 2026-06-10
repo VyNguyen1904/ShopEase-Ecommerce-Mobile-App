@@ -558,14 +558,71 @@ class OrderDetailScreen extends ConsumerWidget {
           if (order.status == OrderStatus.PENDING) ...[
             Expanded(
               child: OutlinedButton(
-                onPressed: () async {
-                  try {
-                    await ref.read(orderServiceProvider).cancelOrder(order.id);
-                    ref.invalidate(orderDetailProvider(order.id));
-                    ref.invalidate(userOrdersProvider);
-                  } catch (e) {
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
-                  }
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Xác nhận huỷ'),
+                      content: const Text('Bạn có chắc chắn muốn huỷ đơn hàng này không?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Không', style: TextStyle(color: AppColors.textGrey)),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            Navigator.pop(ctx); // Đóng popup xác nhận
+
+                            // Hiển thị loading
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => const Center(child: CircularProgressIndicator()),
+                            );
+
+                            try {
+                              await ref.read(orderServiceProvider).cancelOrder(order.id);
+                              ref.invalidate(orderDetailProvider(order.id));
+                              ref.invalidate(userOrdersProvider);
+
+                              if (context.mounted) {
+                                Navigator.pop(context); // Đóng loading
+
+                                // Hiện popup thành công
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (successCtx) => AlertDialog(
+                                    title: const Text('Thành công', style: TextStyle(color: AppColors.primaryDark)),
+                                    content: const Text('Đơn hàng đã được huỷ thành công.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(successCtx); // Đóng popup thành công
+                                          if (context.canPop()) {
+                                            context.pop(); // Quay lại trang trước
+                                          } else {
+                                            context.go(AppRoutes.home);
+                                          }
+                                        },
+                                        child: const Text('Đóng'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                Navigator.pop(context); // Đóng loading
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                              }
+                            }
+                          },
+                          child: const Text('Đồng ý', style: TextStyle(color: AppColors.alertRed)),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
