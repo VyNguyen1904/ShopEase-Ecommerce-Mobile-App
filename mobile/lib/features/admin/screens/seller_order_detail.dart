@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
 
-class SellerOrderDetail extends StatefulWidget {
-  const SellerOrderDetail({super.key});
+class SellerOrderDetail extends ConsumerStatefulWidget {
+  final String orderId;
+
+  const SellerOrderDetail({super.key, required this.orderId});
 
   @override
-  State<SellerOrderDetail> createState() => _SellerOrderDetailState();
+  ConsumerState<SellerOrderDetail> createState() => _SellerOrderDetailState();
 }
 
-class _SellerOrderDetailState extends State<SellerOrderDetail> {
+class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
   int _activeStatusStep =
       0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
 
@@ -19,6 +25,13 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
     'Đang giao',
     'Hoàn thành',
   ];
+
+  String _formatCurrency(double amount) {
+    return amount.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,76 +60,84 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Order Code block (Seller/1.png)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: ref.watch(orderDetailProvider(widget.orderId)).when(
+        data: (order) {
+          int step = 0;
+          if (order.status == OrderStatus.CONFIRMED) step = 0;
+          if (order.status == OrderStatus.SHIPPING) step = 2; // Skipped Packed for now
+          if (order.status == OrderStatus.DELIVERED) step = 3;
+          if (order.status == OrderStatus.CANCELLED) step = -1;
+          
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 1. Order Code block
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              '#DH2405190001',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _activeStatusStep == 0
-                                    ? const Color(0xFFFFF7ED)
-                                    : (_activeStatusStep == 3
-                                          ? const Color(0xFFEAF5F6)
-                                          : const Color(0xFFECEFFF)),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                _statusTexts[_activeStatusStep],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: _activeStatusStep == 0
-                                      ? const Color(0xFFD97706)
-                                      : (_activeStatusStep == 3
-                                            ? AppColors.primary
-                                            : const Color(0xFF3B82F6)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '#${order.id.split('-').last.toUpperCase()}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
                                 ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: step == 0
+                                        ? const Color(0xFFFFF7ED)
+                                        : (step == 3
+                                              ? const Color(0xFFEAF5F6)
+                                              : const Color(0xFFECEFFF)),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    step == -1 ? 'Đã huỷ' : _statusTexts[step],
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: step == 0
+                                          ? const Color(0xFFD97706)
+                                          : (step == 3
+                                                ? AppColors.primary
+                                                : const Color(0xFF3B82F6)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt)}  •  Thanh toán: ${order.paymentMethod}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textGrey,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          '19/05/2024 • 10:24  •  Thanh toán: Đã thanh toán',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                      ),
+                      const SizedBox(height: 16),
 
                   // 2. Customer info "Thông tin khách hàng"
                   _buildSectionContainer(
@@ -138,22 +159,22 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                           ),
                         ),
                         const SizedBox(width: 14),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Nguyễn Văn An',
-                                style: TextStyle(
+                                order.shipRecipient,
+                                style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textDark,
                                 ),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
-                                '📞 0987 654 321',
-                                style: TextStyle(
+                                '📞 ${order.shipPhone}',
+                                style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.textGrey,
                                 ),
@@ -181,22 +202,22 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
                                   Text(
-                                    'Nguyễn Văn An',
-                                    style: TextStyle(
+                                    order.shipRecipient,
+                                    style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.textDark,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Text(
+                                  const SizedBox(width: 8),
+                                  const Text(
                                     'Mặc định',
                                     style: TextStyle(
                                       fontSize: 10,
@@ -206,19 +227,19 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 6),
+                              const SizedBox(height: 6),
                               Text(
-                                '123 Đường Lê Lai, Phường Bến Thành,\nQuận 1, TP. Hồ Chí Minh',
-                                style: TextStyle(
+                                '${order.shipStreet}, ${order.shipDistrict}, ${order.shipCity}',
+                                style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.textGrey,
                                   height: 1.4,
                                 ),
                               ),
-                              SizedBox(height: 6),
+                              const SizedBox(height: 6),
                               Text(
-                                '📞 0987 654 321',
-                                style: TextStyle(
+                                '📞 ${order.shipPhone}',
+                                style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.textGrey,
                                 ),
@@ -253,55 +274,58 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                     icon: Icons.inventory_2_outlined,
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 64,
-                              height: 64,
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: AppColors.bgLight,
-                                borderRadius: BorderRadius.circular(10),
+                        ...order.items.map((item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 64,
+                                height: 64,
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bgLight,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Image.network(
+                                  item.productImage.isNotEmpty ? item.productImage : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80',
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                              child: Image.network(
-                                'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Nike Air Max 270',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.textDark,
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.productName,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textDark,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Trắng / Đen  •  Size 42  •  x1',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: AppColors.textGrey,
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${_formatCurrency(item.unitPrice)}đ  •  x${item.quantity}',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.textGrey,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const Text(
-                              '1.250.000đ',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
+                              Text(
+                                '${_formatCurrency(item.subtotal)}đ',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textDark,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        )),
                         const SizedBox(height: 16),
                         const Divider(height: 1, color: AppColors.border),
                         const SizedBox(height: 12),
@@ -326,10 +350,10 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Tổng tiền',
                               style: TextStyle(
                                 fontSize: 15,
@@ -338,8 +362,8 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                               ),
                             ),
                             Text(
-                              '1.280.000đ',
-                              style: TextStyle(
+                              '${_formatCurrency(order.totalAmount)}đ',
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.accent,
@@ -356,12 +380,12 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                   _buildSectionContainer(
                     title: 'Thanh toán',
                     icon: Icons.credit_card_outlined,
-                    child: const Column(
+                    child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Phương thức',
                               style: TextStyle(
                                 fontSize: 13,
@@ -369,8 +393,8 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                               ),
                             ),
                             Text(
-                              'Ví ShopeePay',
-                              style: TextStyle(
+                              order.paymentMethod,
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textDark,
                                 fontWeight: FontWeight.bold,
@@ -378,27 +402,7 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Trạng thái',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textGrey,
-                              ),
-                            ),
-                            Text(
-                              'Đã thanh toán',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.iconGreen,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                        const SizedBox(height: 8),
                       ],
                     ),
                   ),
@@ -412,39 +416,27 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
                       children: [
                         _buildTimelineItem(
                           title: 'Đơn hàng đã được đặt',
-                          time: '19/05/2024 • 10:24',
+                          time: DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt),
                           user: 'Hệ thống',
                           isDone: true,
                         ),
                         _buildTimelineItem(
                           title: 'Đơn hàng đã xác nhận',
-                          time: '19/05/2024 • 10:30',
-                          user: 'Bạn',
-                          isDone: _activeStatusStep >= 0,
+                          time: step >= 0 ? DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt) : '--:--',
+                          user: step >= 0 ? 'Hệ thống' : '---',
+                          isDone: step >= 0,
                         ),
                         _buildTimelineItem(
-                          title: 'Đơn hàng đã đóng gói',
-                          time: _activeStatusStep >= 1
-                              ? '19/05/2024 • 11:15'
-                              : '--:--/--/----  •  --:--',
-                          user: _activeStatusStep >= 1 ? 'Bạn' : '---',
-                          isDone: _activeStatusStep >= 1,
-                        ),
-                        _buildTimelineItem(
-                          title: 'Đơn hàng đã bàn giao vận chuyển',
-                          time: _activeStatusStep >= 2
-                              ? '19/05/2024 • 14:00'
-                              : '--:--/--/----  •  --:--',
-                          user: _activeStatusStep >= 2 ? 'Bạn' : '---',
-                          isDone: _activeStatusStep >= 2,
+                          title: 'Đơn hàng đang giao',
+                          time: step >= 2 ? '--:--' : '--:--/--/----  •  --:--',
+                          user: step >= 2 ? 'Bạn' : '---',
+                          isDone: step >= 2,
                         ),
                         _buildTimelineItem(
                           title: 'Đơn hàng đã giao thành công',
-                          time: _activeStatusStep >= 3
-                              ? '21/05/2024 • 16:30'
-                              : '--:--/--/----  •  --:--',
-                          user: _activeStatusStep >= 3 ? 'Hệ thống' : '---',
-                          isDone: _activeStatusStep >= 3,
+                          time: step >= 3 ? '--:--' : '--:--/--/----  •  --:--',
+                          user: step >= 3 ? 'Hệ thống' : '---',
+                          isDone: step >= 3,
                           isLast: true,
                         ),
                       ],
@@ -456,61 +448,68 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
             ),
           ),
 
-          // 7. Bottom interactive action panel (Seller/1.png)
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 10,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Cập nhật trạng thái đơn hàng',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textGrey,
+          if (order.status != OrderStatus.CANCELLED && order.status != OrderStatus.DELIVERED)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, -4),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _buildActionButton(
-                      0,
-                      Icons.check_circle_outline,
-                      'Xác nhận',
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Cập nhật trạng thái đơn hàng',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textGrey,
                     ),
-                    const SizedBox(width: 8),
-                    _buildActionButton(
-                      1,
-                      Icons.inventory_2_outlined,
-                      'Đóng gói',
-                    ),
-                    const SizedBox(width: 8),
-                    _buildActionButton(
-                      2,
-                      Icons.local_shipping_outlined,
-                      'Bàn giao',
-                    ),
-                    const SizedBox(width: 8),
-                    _buildActionButton(3, Icons.done_all, 'Hoàn thành'),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              await ref.read(orderServiceProvider).markAsDelivered(order.id);
+                              ref.invalidate(orderDetailProvider(order.id));
+                              ref.invalidate(sellerOrdersProvider);
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('Xác nhận Đã giao', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
-      ),
-    );
+      );
+    },
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (e, _) => Center(child: Text('Lỗi: $e')),
+    ));
   }
 
   Widget _buildSectionContainer({
@@ -621,46 +620,5 @@ class _SellerOrderDetailState extends State<SellerOrderDetail> {
     );
   }
 
-  Widget _buildActionButton(int step, IconData icon, String label) {
-    final isSelected = _activeStatusStep == step;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _activeStatusStep = step;
-          });
-        },
-        child: Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryLight : Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected ? AppColors.primary : AppColors.border,
-              width: 1,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? AppColors.primary : AppColors.textGrey,
-                size: 18,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: isSelected ? AppColors.primary : AppColors.textGrey,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // _buildActionButton removed
 }

@@ -1,23 +1,33 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../providers/cart_provider.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
+import '../../../core/providers/auth_provider.dart';
 
-class CheckoutScreen extends StatefulWidget {
+class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
 
   @override
-  State<CheckoutScreen> createState() => _CheckoutScreenState();
+  ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> {
+class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String _selectedShipping = 'nhanh';
   String _selectedPayment = 'cod';
   bool _useCoins = false;
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
+    final cartState = ref.watch(cartProvider);
+    final userState = ref.watch(userProfileProvider);
+    
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
@@ -52,7 +62,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             _buildSectionTitle('Phương thức thanh toán'),
             _buildPaymentOptions(),
             const SizedBox(height: 24),
-            _buildOrderSummary(),
+            cartState.when(
+              data: (cart) {
+                final selectedItems = cart.items.where((i) => i.selected).toList();
+                final subtotal = selectedItems.fold(0.0, (sum, i) => sum + (i.price * i.quantity));
+                return _buildOrderSummary(subtotal);
+              },
+              loading: () => const CircularProgressIndicator(),
+              error: (e, _) => Text('Lỗi: $e'),
+            ),
             const SizedBox(height: 40),
           ],
         ),
@@ -439,19 +457,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildOrderSummary() {
+  Widget _buildOrderSummary(double subtotal) {
+    double shippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    double discount = _useCoins ? 2000 : 0;
+    double total = subtotal + shippingFee - discount;
+
     return Column(
       children: [
-        _buildSummaryRow('Tạm tính', '420.000đ'),
+        _buildSummaryRow('Tạm tính', '${subtotal.toInt()}đ'),
         const SizedBox(height: 8),
-        _buildSummaryRow('Phí vận chuyển', '32.000đ'),
+        _buildSummaryRow('Phí vận chuyển', '${shippingFee.toInt()}đ'),
         const SizedBox(height: 8),
-        _buildSummaryRow('Giảm giá', '-10.000đ'),
+        _buildSummaryRow('Giảm giá', '-${discount.toInt()}đ'),
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
+          children: [
+            const Text(
               'Tổng cộng',
               style: TextStyle(
                 fontSize: 16,
@@ -460,8 +482,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
             Text(
-              '442.000đ',
-              style: TextStyle(
+              '${total.toInt()}đ',
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.alertRed,
@@ -508,12 +530,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: () {
-            context.go(AppRoutes.orderDetailPath('SE2405150001'));
-          },
+          onPressed: _isLoading ? null : () => _placeOrder(),
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-                AppColors.alertRed, // Using orange-red for checkout button
+            backgroundColor: AppColors.alertRed,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -521,19 +540,64 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             elevation: 0,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.lock_outline, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Đặt hàng',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          child: _isLoading 
+            ? const SizedBox(
+                width: 20, height: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
+            : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.lock_outline, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Đặt hàng',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
         ),
       ),
     );
+  }
+
+  Future<void> _placeOrder() async {
+    final cartState = ref.read(cartProvider);
+    if (!cartState.hasValue) return;
+
+    final items = cartState.value!.items.where((i) => i.selected).toList();
+    if (items.isEmpty) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final request = CreateOrderRequest(
+        items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity)).toList(),
+        shipRecipient: 'Jane Doe',
+        shipPhone: '0123456789',
+        shipStreet: '123 Nguyen Hue',
+        shipDistrict: 'Q1',
+        shipCity: 'HCMC',
+        paymentMethod: _selectedPayment.toUpperCase(), // 'COD', 'VNPAY', 'ZALOPAY', 'CREDIT' 
+      );
+
+      final orderService = ref.read(orderServiceProvider);
+      final createdOrder = await orderService.createOrder(request);
+
+      // Remove items from cart
+      final cartNotifier = ref.read(cartProvider.notifier);
+      for (var item in items) {
+        await cartNotifier.removeItem(item.productId);
+      }
+
+      if (mounted) {
+        context.go('/profile/orders'); // Navigate to orders page
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 }

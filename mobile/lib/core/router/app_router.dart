@@ -208,7 +208,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.sellerOrderDetail,
-      builder: (context, state) => const SellerOrderDetail(),
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return SellerOrderDetail(orderId: id);
+      },
     ),
     GoRoute(
       path: AppRoutes.sellerNotifications,
