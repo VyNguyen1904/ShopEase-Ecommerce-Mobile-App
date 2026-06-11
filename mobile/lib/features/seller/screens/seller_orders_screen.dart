@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class SellerOrdersScreen extends ConsumerStatefulWidget {
   const SellerOrdersScreen({super.key});

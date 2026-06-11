@@ -34,6 +34,23 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final userAsync = ref.watch(userProfileProvider);
+    
+    int totalCount = 0;
+    int inStockCount = 0;
+    int outOfStockCount = 0;
+    
+    final user = userAsync.valueOrNull;
+    if (user != null) {
+      final productsAsync = ref.watch(sellerProductsProvider(user.id));
+      if (productsAsync.hasValue && productsAsync.value != null) {
+        totalCount = productsAsync.value!.length;
+        // Hiện tại model Product chưa có field stock, nên tạm tính là tất cả đều còn hàng
+        inStockCount = totalCount;
+        outOfStockCount = 0;
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -74,10 +91,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
                 fontWeight: FontWeight.normal,
                 fontSize: 14,
               ),
-              tabs: const [
-                Tab(text: 'Tất cả (40)'),
-                Tab(text: 'Còn hàng (30)'),
-                Tab(text: 'Hết hàng (10)'),
+              tabs: [
+                Tab(text: 'Tất cả ($totalCount)'),
+                Tab(text: 'Còn hàng ($inStockCount)'),
+                Tab(text: 'Hết hàng ($outOfStockCount)'),
               ],
             ),
           ),

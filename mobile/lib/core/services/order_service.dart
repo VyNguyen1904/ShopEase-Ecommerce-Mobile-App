@@ -50,7 +50,10 @@ class OrderService {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.get(_orderUrl, options: options);
-      final data = response.data['data'];
+      dynamic data = response.data['data'] ?? response.data['content'] ?? response.data;
+      if (data is Map) {
+        data = data['content'] ?? data['data'] ?? [];
+      }
       if (data == null) return [];
       return (data as List).map((json) => OrderResponse.fromJson(json)).toList();
     } catch (e) {
@@ -62,7 +65,10 @@ class OrderService {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.get('$_orderUrl/seller', options: options);
-      final data = response.data['data'];
+      dynamic data = response.data['data'] ?? response.data['content'] ?? response.data;
+      if (data is Map) {
+        data = data['content'] ?? data['data'] ?? [];
+      }
       if (data == null) return [];
       return (data as List).map((json) => OrderResponse.fromJson(json)).toList();
     } catch (e) {

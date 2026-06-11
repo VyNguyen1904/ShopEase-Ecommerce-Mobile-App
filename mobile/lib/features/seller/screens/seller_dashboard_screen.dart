@@ -54,13 +54,6 @@ class SellerDashboardScreen extends ConsumerWidget {
                 color: AppColors.textDark,
               ),
             ),
-            const SizedBox(width: 8),
-            Image.network(
-              'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Waving%20Hand.png',
-              width: 28,
-              height: 28,
-              errorBuilder: (context, error, stackTrace) => const Text('👋', style: TextStyle(fontSize: 24)),
-            ),
           ],
         ),
         const SizedBox(height: 4),
@@ -122,6 +115,7 @@ class SellerDashboardScreen extends ConsumerWidget {
       ],
     );
   }
+
 
   Widget _buildStatCard({
     required String title,
@@ -349,6 +343,7 @@ class SellerDashboardScreen extends ConsumerWidget {
       ],
     );
   }
+
 
   String _mapStatus(OrderStatus status) {
     switch (status) {
