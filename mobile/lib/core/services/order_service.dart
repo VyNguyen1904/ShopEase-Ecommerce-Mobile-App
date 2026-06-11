@@ -1,8 +1,8 @@
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dio/dio.dart';
-import '../models/order_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/order_model.dart';
 
 class OrderService {
   final Dio _dio;
@@ -17,57 +17,95 @@ class OrderService {
 
   String get _orderUrl => '$_host/api/orders';
 
-  OrderService({Dio? dio}) : _dio = dio ?? Dio() {
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          final prefs = await SharedPreferences.getInstance();
-          final token = prefs.getString('access_token');
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-          return handler.next(options);
-        },
-      ),
+  OrderService({Dio? dio}) : _dio = dio ?? Dio();
+
+  Future<Options> _getAuthOptions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+    return Options(
+      headers: {if (token != null) 'Authorization': 'Bearer $token'},
     );
   }
 
-  String _handleError(DioException e) {
-    if (e.response != null) {
-      final data = e.response!.data;
-      if (data is Map && data.containsKey('message')) {
-        return data['message'].toString();
-      }
-      return e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})';
-    }
-    return 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng.';
-  }
-
-  Future<OrderModel> createOrder(Map<String, dynamic> orderData) async {
+  Future<OrderResponse> createOrder(CreateOrderRequest request) async {
     try {
-      final response = await _dio.post(_orderUrl, data: orderData);
-      return OrderModel.fromJson(response.data['data']);
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
+      final options = await _getAuthOptions();
+      final response = await _dio.post(
+        _orderUrl,
+        data: request.toJson(),
+        options: options,
+      );
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to create order: $e');
     }
   }
 
-  Future<List<OrderModel>> getOrderHistory() async {
+  Future<List<OrderResponse>> getOrderHistory() async {
     try {
-      final response = await _dio.get(_orderUrl);
-      final List data = response.data['data'] ?? [];
-      return data.map((json) => OrderModel.fromJson(json)).toList();
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
+      final options = await _getAuthOptions();
+      final response = await _dio.get(_orderUrl, options: options);
+      final data = response.data['data'];
+      if (data == null) return [];
+      return (data as List).map((json) => OrderResponse.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to get order history: $e');
     }
   }
 
-  Future<OrderModel> getOrderDetail(String orderId) async {
+  Future<List<OrderResponse>> getSellerOrders() async {
     try {
-      final response = await _dio.get('$_orderUrl/$orderId');
-      return OrderModel.fromJson(response.data['data']);
-    } on DioException catch (e) {
-      throw Exception(_handleError(e));
+      final options = await _getAuthOptions();
+      final response = await _dio.get('$_orderUrl/seller', options: options);
+      final data = response.data['data'];
+      if (data == null) return [];
+      return (data as List).map((json) => OrderResponse.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to get seller orders: $e');
+    }
+  }
+
+  Future<OrderResponse> getOrderDetail(String id) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.get('$_orderUrl/$id', options: options);
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to get order detail: $e');
+    }
+  }
+
+  Future<OrderResponse> cancelOrder(String id) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.post('$_orderUrl/$id/cancel', options: options);
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to cancel order: $e');
+    }
+  }
+
+  Future<OrderResponse> updatePaymentStatus(String id, bool paid) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.post(
+        '$_orderUrl/$id/payment-status',
+        data: {'paid': paid},
+        options: options,
+      );
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to update payment status: $e');
+    }
+  }
+
+  Future<OrderResponse> markAsDelivered(String id) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.post('$_orderUrl/$id/deliver', options: options);
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to mark order as delivered: $e');
     }
   }
 }

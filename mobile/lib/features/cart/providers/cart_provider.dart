@@ -1,34 +1,38 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/services/cart_service.dart';
+import '../../../core/providers/auth_provider.dart';
 
 final cartServiceProvider = Provider((ref) => CartService());
 
 final cartProvider =
     StateNotifierProvider<CartNotifier, AsyncValue<CartResponse>>((ref) {
-      return CartNotifier(ref.watch(cartServiceProvider));
+      final userAsync = ref.watch(userProfileProvider);
+      final userId = userAsync.value?.id ?? 'guest';
+      return CartNotifier(ref.watch(cartServiceProvider), userId);
     });
 
 class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
   final CartService _cartService;
-  // TODO: Use actual user ID from AuthProvider in the future
-  final String _userId = 'demo-buyer';
+  final String _userId;
 
-  CartNotifier(this._cartService) : super(const AsyncValue.loading()) {
-    fetchCart();
+  CartNotifier(this._cartService, this._userId) : super(const AsyncValue.loading()) {
+    if (_userId != 'guest') {
+      fetchCart();
+    } else {
+      state = AsyncValue.data(CartResponse(userId: 'guest', items: [], subtotal: 0, totalItems: 0));
+    }
   }
 
-  Future<void> fetchCart({bool silent = false}) async {
+  Future<void> fetchCart() async {
     try {
-      if (!silent) {
-        state = const AsyncValue.loading();
-      }
+      state = const AsyncValue.loading();
       final cart = await _cartService.getCart(_userId);
+      if (!mounted) return;
       state = AsyncValue.data(cart);
     } catch (e, st) {
-      if (!silent || !state.hasValue) {
-        state = AsyncValue.error(e, st);
-      }
+      if (!mounted) return;
+      state = AsyncValue.error(e, st);
     }
   }
 
@@ -65,24 +69,18 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     try {
       await _cartService.updateQuantity(_userId, productId, quantity);
       // Refresh to ensure server sync
-      fetchCart(silent: true);
+      fetchCart();
     } catch (e) {
-      fetchCart(silent: true); // Revert on failure
+      fetchCart(); // Revert on failure
     }
   }
 
   Future<void> addToCart(int productId, int quantity) async {
     try {
       await _cartService.addItem(_userId, productId, quantity);
-      fetchCart(silent: true);
+      fetchCart();
     } catch (e) {
-      // Handle error or fallback to updateQuantity if POST is not supported
-      try {
-        await _cartService.updateQuantity(_userId, productId, quantity);
-        fetchCart(silent: true);
-      } catch (innerE) {
-        throw Exception('Lỗi khi thêm vào giỏ hàng');
-      }
+      fetchCart();
     }
   }
 
@@ -109,9 +107,9 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       }
 
       await _cartService.removeItem(_userId, productId);
-      fetchCart(silent: true);
+      fetchCart();
     } catch (e) {
-      fetchCart(silent: true);
+      fetchCart();
     }
   }
 

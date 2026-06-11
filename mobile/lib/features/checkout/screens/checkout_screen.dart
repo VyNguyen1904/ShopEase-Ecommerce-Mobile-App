@@ -1,19 +1,15 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
-import '../../auth/providers/auth_provider.dart';
-import '../../cart/providers/cart_provider.dart';
-import '../../orders/providers/order_provider.dart';
-import '../../../core/models/address_model.dart';
-import '../../../core/models/cart_model.dart';
-import '../widgets/checkout_section_title.dart';
-import '../widgets/checkout_stepper.dart';
-import '../widgets/checkout_address_card.dart';
-import '../widgets/checkout_selected_items.dart';
-import '../widgets/checkout_order_summary.dart';
+import '../providers/cart_provider.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
+import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/payment_provider.dart';
+import '../../../core/models/payment_model.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -26,23 +22,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String _selectedShipping = 'nhanh';
   String _selectedPayment = 'cod';
   bool _useCoins = false;
+
   bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final cartState = ref.watch(cartProvider);
     final userState = ref.watch(userProfileProvider);
-
-    final selectedItems = cartState.value?.items.where((i) => i.selected).toList() ?? [];
-    final subtotal = cartState.value?.subtotal ?? 0;
-
-    final double shippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
-    final double discount = _useCoins ? 2000 : 0;
-    final double totalAmount = subtotal + shippingFee - discount;
-
-    final defaultAddress = userState.value?.addresses.where((a) => a.defaultAddress).firstOrNull 
-        ?? userState.value?.addresses.firstOrNull;
-
+    
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
@@ -57,7 +44,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: const CheckoutStepper(),
+        title: _buildStepper(),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -65,32 +52,184 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CheckoutSectionTitle(title: 'Địa chỉ nhận hàng'),
-            CheckoutAddressCard(address: defaultAddress),
+            _buildSectionTitle('Địa chỉ nhận hàng'),
+            _buildAddressCard(),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Sản phẩm đã chọn'),
-            CheckoutSelectedItems(items: selectedItems),
-            const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Đơn vị vận chuyển'),
+            _buildSectionTitle('Đơn vị vận chuyển'),
             _buildShippingOptions(),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Mã giảm giá / Xu'),
+            _buildSectionTitle('Mã giảm giá / Xu'),
             _buildDiscountSection(),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Phương thức thanh toán'),
+            _buildSectionTitle('Phương thức thanh toán'),
             _buildPaymentOptions(),
             const SizedBox(height: 24),
-            CheckoutOrderSummary(
-              subtotal: subtotal,
-              shippingFee: shippingFee,
-              discount: discount,
-              totalAmount: totalAmount,
+            cartState.when(
+              data: (cart) {
+                final selectedItems = cart.items.where((i) => i.selected).toList();
+                final subtotal = selectedItems.fold(0.0, (sum, i) => sum + (i.price * i.quantity));
+                return _buildOrderSummary(subtotal);
+              },
+              loading: () => const CircularProgressIndicator(),
+              error: (e, _) => Text('Lỗi: $e'),
             ),
             const SizedBox(height: 40),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(selectedItems, defaultAddress, totalAmount),
+      bottomNavigationBar: _buildBottomBar(),
+    );
+  }
+
+  Widget _buildStepper() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildStepIndicator('1', isActive: true),
+        _buildStepLine(),
+        _buildStepIndicator('2', isActive: false),
+        _buildStepLine(),
+        _buildStepIndicator('3', isActive: false),
+        const SizedBox(width: 8),
+        const Icon(
+          Icons.arrow_forward_ios,
+          size: 14,
+          color: AppColors.textGrey,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStepIndicator(String number, {required bool isActive}) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: isActive ? AppColors.primary : AppColors.bgLight,
+        shape: BoxShape.circle,
+        border: isActive ? null : Border.all(color: AppColors.border),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        number,
+        style: TextStyle(
+          color: isActive ? Colors.white : AppColors.textGrey,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepLine() {
+    return Container(
+      width: 40,
+      height: 1,
+      color: AppColors.border,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textDark,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddressCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.person_outline,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Jane Doe',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'Mặc định',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '123 Nguyễn Huệ, P. Bến Nghé,',
+                  style: TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+                const Text(
+                  'Quận 1, TP. Hồ Chí Minh',
+                  style: TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.edit_outlined,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.delete_outline,
+                      color: AppColors.alertRed,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -320,7 +459,65 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount) {
+  Widget _buildOrderSummary(double subtotal) {
+    double shippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    double discount = _useCoins ? 2000 : 0;
+    double total = subtotal + shippingFee - discount;
+
+    return Column(
+      children: [
+        _buildSummaryRow('Tạm tính', '${subtotal.toInt()}đ'),
+        const SizedBox(height: 8),
+        _buildSummaryRow('Phí vận chuyển', '${shippingFee.toInt()}đ'),
+        const SizedBox(height: 8),
+        _buildSummaryRow('Giảm giá', '-${discount.toInt()}đ'),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Tổng cộng',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
+            ),
+            Text(
+              '${total.toInt()}đ',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.alertRed,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textDark,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar() {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -335,51 +532,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: _isLoading ? null : () async {
-            if (address == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm địa chỉ nhận hàng!')));
-              return;
-            }
-            if (items.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Giỏ hàng trống!')));
-              return;
-            }
-
-            setState(() => _isLoading = true);
-            try {
-              final itemsReq = items.map((e) => {
-                'productId': e.productId,
-                'quantity': e.quantity,
-              }).toList();
-
-              final req = {
-                'items': itemsReq,
-                'shipRecipient': address.recipientName,
-                'shipPhone': address.phone,
-                'shipStreet': address.street,
-                'shipDistrict': address.district,
-                'shipCity': address.city,
-                'paymentMethod': _selectedPayment.toUpperCase(),
-                'note': '',
-              };
-
-              final orderService = ref.read(orderServiceProvider);
-              final newOrder = await orderService.createOrder(req);
-
-              ref.invalidate(cartProvider); // Clear cart
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đặt hàng thành công!')));
-                context.go(AppRoutes.orderDetailPath(newOrder.id));
-              }
-            } catch (e) {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
-              }
-            } finally {
-              if (mounted) setState(() => _isLoading = false);
-            }
-          },
+          onPressed: _isLoading ? null : () => _placeOrder(),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.alertRed,
             foregroundColor: Colors.white,
@@ -390,20 +543,89 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             elevation: 0,
           ),
           child: _isLoading 
-            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            ? const SizedBox(
+                width: 20, height: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
             : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.lock_outline, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Đặt hàng',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.lock_outline, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Đặt hàng',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
         ),
       ),
     );
+  }
+
+  Future<void> _placeOrder() async {
+    final cartState = ref.read(cartProvider);
+    if (!cartState.hasValue) return;
+
+    final items = cartState.value!.items.where((i) => i.selected).toList();
+    if (items.isEmpty) return;
+
+    final subtotal = items.fold(0.0, (sum, i) => sum + (i.price * i.quantity));
+    final shippingFee = _selectedShipping == 'nhanh' ? 32000.0 : 15000.0;
+    final discount = _useCoins ? 2000.0 : 0.0;
+    final total = subtotal + shippingFee - discount;
+
+    setState(() => _isLoading = true);
+    try {
+      final request = CreateOrderRequest(
+        items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity)).toList(),
+        shipRecipient: 'Jane Doe',
+        shipPhone: '0123456789',
+        shipStreet: '123 Nguyen Hue',
+        shipDistrict: 'Q1',
+        shipCity: 'HCMC',
+        paymentMethod: _selectedPayment.toUpperCase(), // 'COD', 'VNPAY', 'ZALOPAY', 'CREDIT' 
+      );
+
+      final orderService = ref.read(orderServiceProvider);
+      final createdOrder = await orderService.createOrder(request);
+
+      // Remove items from cart
+      final cartNotifier = ref.read(cartProvider.notifier);
+      for (var item in items) {
+        await cartNotifier.removeItem(item.productId);
+      }
+
+      // Process payment if not COD
+      if (_selectedPayment != 'cod') {
+        final paymentReq = CheckoutPaymentRequest(
+          orderId: createdOrder.id,
+          amount: total,
+          paymentMethod: _selectedPayment.toUpperCase(),
+        );
+        final paymentService = ref.read(paymentServiceProvider);
+        final paymentResp = await paymentService.processCheckout(paymentReq);
+
+        if (mounted) {
+          if (paymentResp.qrPayload != null && paymentResp.qrPayload!.isNotEmpty) {
+            context.go('/payment', extra: {
+              'orderId': createdOrder.id,
+              'qrPayload': paymentResp.qrPayload,
+            });
+            return;
+          }
+        }
+      }
+
+      if (mounted) {
+        context.go(AppRoutes.orders); // Navigate to orders page
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../core/models/address_model.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
   final dynamic address; // Pass an address to edit, or null to create
@@ -31,10 +32,10 @@ class _AddressModalState extends ConsumerState<AddressModal> {
   void initState() {
     super.initState();
     final addr = widget.address;
-    _nameController = TextEditingController(text: addr?.recipientName ?? '');
+    _nameController = TextEditingController(text: addr?.name ?? '');
     _phoneController = TextEditingController(text: addr?.phone ?? '');
-    _streetController = TextEditingController(text: addr?.street ?? '');
-    _isDefault = addr?.defaultAddress ?? false;
+    _streetController = TextEditingController(text: addr?.address1 ?? '');
+    _isDefault = addr?.isDefault ?? false;
 
     _fetchProvinces();
   }
@@ -46,11 +47,11 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         setState(() {
           _provinces = response.data;
           // Try to select initial province if editing
-          final addrCity = widget.address?.city;
+          final addrCity = widget.address?.address2;
           if (addrCity != null && addrCity.isNotEmpty) {
             try {
               _selectedProvince = _provinces.firstWhere(
-                (p) => p['name'] == addrCity,
+                (p) => addrCity.contains(p['name']),
               );
               if (_selectedProvince != null) {
                 _fetchDistricts(_selectedProvince['code']);
@@ -73,11 +74,11 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         setState(() {
           _districts = response.data['districts'];
           // Try to select initial district if editing
-          final addrDistrict = widget.address?.district;
+          final addrDistrict = widget.address?.address2;
           if (addrDistrict != null && addrDistrict.isNotEmpty) {
             try {
               _selectedDistrict = _districts.firstWhere(
-                (d) => d['name'] == addrDistrict,
+                (d) => addrDistrict.contains(d['name']),
               );
             } catch (e) {
               // Not found
@@ -103,14 +104,13 @@ class _AddressModalState extends ConsumerState<AddressModal> {
 
     setState(() => _isLoading = true);
 
-    final addressData = {
-      'recipientName': _nameController.text.trim(),
-      'phone': _phoneController.text.trim(),
-      'street': _streetController.text.trim(),
-      'district': _selectedDistrict?['name'] ?? '',
-      'city': _selectedProvince?['name'] ?? '',
-      'defaultAddress': _isDefault,
-    };
+    final addressData = AddressModel(
+      name: _nameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      address1: _streetController.text.trim(),
+      address2: '${_selectedDistrict?['name'] ?? ''}, ${_selectedProvince?['name'] ?? ''}',
+      isDefault: _isDefault,
+    );
 
     try {
       final authService = ref.read(authServiceProvider);

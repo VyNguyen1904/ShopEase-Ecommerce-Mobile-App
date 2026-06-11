@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
+import '../../auth/providers/auth_provider.dart';
 
-class SellerDashboardScreen extends StatelessWidget {
+class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       body: SafeArea(
@@ -14,31 +19,36 @@ class SellerDashboardScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(ref),
               const SizedBox(height: 24),
-              _buildStatsCards(),
+              _buildStatsCards(ref),
               const SizedBox(height: 32),
               _buildQuickActions(),
               const SizedBox(height: 32),
-              _buildRecentOrders(),
+              _buildRecentOrders(ref),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(WidgetRef ref) {
+    final userAsync = ref.watch(userProfileProvider);
+    final userName = userAsync.maybeWhen(
+      data: (user) => user.fullName.split(' ').last,
+      orElse: () => 'Seller',
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 10),
         Row(
           children: [
-            const Text(
-              'Xin chào, Minh',
-              style: TextStyle(
+            Text(
+              'Xin chào, $userName',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDark,
@@ -65,15 +75,31 @@ class SellerDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsCards() {
+  Widget _buildStatsCards(WidgetRef ref) {
+    final ordersAsync = ref.watch(sellerOrdersProvider);
+    
+    int totalOrders = 0;
+    double totalRevenue = 0;
+    
+    ordersAsync.whenData((orders) {
+      totalOrders = orders.length;
+      for (var order in orders) {
+        if (order.status != OrderStatus.CANCELLED) {
+          totalRevenue += order.totalAmount;
+        }
+      }
+    });
+
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
-            title: 'Doanh thu hôm nay',
-            value: '12.560.000đ',
+            title: 'Doanh thu',
+            value: formatCurrency.format(totalRevenue),
             valueColor: AppColors.primary,
-            trend: '↑ 12,5% so với hôm qua',
+            trend: 'Tổng doanh thu',
             trendColor: Colors.green,
             icon: Icons.monetization_on_outlined,
             iconBgColor: AppColors.primary.withOpacity(0.1),
@@ -84,9 +110,9 @@ class SellerDashboardScreen extends StatelessWidget {
         Expanded(
           child: _buildStatCard(
             title: 'Đơn hàng',
-            value: '28',
+            value: '$totalOrders',
             valueColor: AppColors.textDark,
-            trend: '↑ 8 đơn so với hôm qua',
+            trend: 'Tổng số đơn',
             trendColor: Colors.green,
             icon: Icons.shopping_bag_outlined,
             iconBgColor: AppColors.accent.withOpacity(0.1),
@@ -242,7 +268,10 @@ class SellerDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentOrders() {
+  Widget _buildRecentOrders(WidgetRef ref) {
+    final ordersAsync = ref.watch(sellerOrdersProvider);
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -283,40 +312,72 @@ class SellerDashboardScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.grey.withOpacity(0.1)),
           ),
-          child: Column(
-            children: [
-              _buildOrderItem(
-                id: '#SE2405150001',
-                date: '15/05/2024 • 10:30',
-                price: '319.000đ',
-                status: 'Đang xử lý',
-                statusColor: AppColors.accent,
-                avatarUrl: 'https://i.pravatar.cc/150?img=11',
-                showDivider: true,
-              ),
-              _buildOrderItem(
-                id: '#SE2405150002',
-                date: '15/05/2024 • 09:15',
-                price: '549.000đ',
-                status: 'Đã giao',
-                statusColor: Colors.green,
-                avatarUrl: 'https://i.pravatar.cc/150?img=5',
-                showDivider: true,
-              ),
-              _buildOrderItem(
-                id: '#SE2405140003',
-                date: '14/05/2024 • 16:45',
-                price: '219.000đ',
-                status: 'Đã hủy',
-                statusColor: Colors.red,
-                avatarUrl: 'https://i.pravatar.cc/150?img=12',
-                showDivider: false,
-              ),
-            ],
+          child: ordersAsync.when(
+            data: (orders) {
+              if (orders.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(24.0),
+                  child: Center(child: Text('Chưa có đơn hàng nào')),
+                );
+              }
+              final recentOrders = orders.take(5).toList();
+              return Column(
+                children: List.generate(recentOrders.length, (index) {
+                  final order = recentOrders[index];
+                  return _buildOrderItem(
+                    id: '#${order.id.split('-').last.toUpperCase()}',
+                    date: DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt),
+                    price: formatCurrency.format(order.totalAmount),
+                    status: _mapStatus(order.status),
+                    statusColor: _getStatusColor(order.status),
+                    avatarUrl: 'https://i.pravatar.cc/150?img=${10 + index}',
+                    showDivider: index < recentOrders.length - 1,
+                  );
+                }),
+              );
+            },
+            loading: () => const Padding(
+              padding: EdgeInsets.all(24.0),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, s) => Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(child: Text('Lỗi tải đơn hàng: $e')),
+            ),
           ),
         ),
       ],
     );
+  }
+
+  String _mapStatus(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.PENDING:
+        return 'Chờ xác nhận';
+      case OrderStatus.CONFIRMED:
+        return 'Đã xác nhận';
+      case OrderStatus.SHIPPING:
+        return 'Đang giao';
+      case OrderStatus.DELIVERED:
+        return 'Đã giao';
+      case OrderStatus.CANCELLED:
+        return 'Đã huỷ';
+    }
+  }
+
+  Color _getStatusColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.PENDING:
+        return AppColors.accent;
+      case OrderStatus.CONFIRMED:
+        return Colors.blue;
+      case OrderStatus.SHIPPING:
+        return Colors.orange;
+      case OrderStatus.DELIVERED:
+        return Colors.green;
+      case OrderStatus.CANCELLED:
+        return Colors.red;
+    }
   }
 
   Widget _buildOrderItem({
@@ -400,58 +461,6 @@ class SellerDashboardScreen extends StatelessWidget {
             indent: 16,
             endIndent: 16,
           ),
-      ],
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, 'Tổng quan', true),
-              _buildNavItem(Icons.shopping_bag_outlined, 'Sản phẩm', false),
-              _buildNavItem(Icons.receipt_long_outlined, 'Đơn hàng', false),
-              _buildNavItem(Icons.chat_bubble_outline, 'Chat', false),
-              _buildNavItem(Icons.more_horiz, 'Thêm', false),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? AppColors.primary : AppColors.textGrey,
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            color: isSelected ? AppColors.primary : AppColors.textGrey,
-          ),
-        ),
       ],
     );
   }

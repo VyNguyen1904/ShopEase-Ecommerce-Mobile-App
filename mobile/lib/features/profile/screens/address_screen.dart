@@ -116,14 +116,14 @@ class _AddressItemCard extends ConsumerWidget {
                 Row(
                   children: [
                     Text(
-                      address.recipientName,
+                      address.name,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
                       ),
                     ),
-                    if (address.defaultAddress) ...[
+                    if (address.isDefault) ...[
                       const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -156,20 +156,22 @@ class _AddressItemCard extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  address.street,
+                  address.address1,
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textGrey,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '${address.district}, ${address.city}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textGrey,
+                if (address.address2 != null && address.address2!.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    address.address2!,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textGrey,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

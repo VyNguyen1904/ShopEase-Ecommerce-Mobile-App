@@ -29,6 +29,8 @@ import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
+import '../../features/seller/screens/shell/seller_shell_layout.dart';
+import '../../features/cart/screens/payment_screen.dart';
 
 Map<String, dynamic> _decodeJwt(String token) {
   try {
@@ -53,20 +55,34 @@ final appRouter = GoRouter(
     final location = state.matchedLocation;
     final isAdminPath = location.startsWith('/admin');
     final isSellerPath = location.startsWith('/seller');
+    
+    // Paths that require a logged in user (any role)
+    final isProtectedPath = location == AppRoutes.checkout ||
+        location == AppRoutes.orders ||
+        location.startsWith('/order-detail') ||
+        location == AppRoutes.address ||
+        location == AppRoutes.settings ||
+        location == AppRoutes.notifications ||
+        location == AppRoutes.chats;
 
-    if (isAdminPath || isSellerPath) {
-      if (token == null || token.isEmpty) {
+    // Check auth status
+    final isAuthenticated = token != null && token.isNotEmpty;
+
+    if (isAdminPath || isSellerPath || isProtectedPath) {
+      if (!isAuthenticated) {
         return AppRoutes.login;
       }
 
-      final payload = _decodeJwt(token);
-      final role = payload['role'] as String?;
+      if (isAdminPath || isSellerPath) {
+        final payload = _decodeJwt(token);
+        final role = payload['role'] as String?;
 
-      if (isAdminPath && role != 'ADMIN') {
-        return AppRoutes.home;
-      }
-      if (isSellerPath && role != 'SELLER' && role != 'ADMIN') {
-        return AppRoutes.home;
+        if (isAdminPath && role != 'ADMIN') {
+          return AppRoutes.home;
+        }
+        if (isSellerPath && role != 'SELLER' && role != 'ADMIN') {
+          return AppRoutes.home;
+        }
       }
     }
     return null;
@@ -145,6 +161,15 @@ final appRouter = GoRouter(
       builder: (context, state) => const CheckoutScreen(),
     ),
     GoRoute(
+      path: AppRoutes.payment,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final orderId = extra?['orderId'] as String? ?? '';
+        final qrPayload = extra?['qrPayload'] as String? ?? '';
+        return PaymentScreen(orderId: orderId, qrPayload: qrPayload);
+      },
+    ),
+    GoRoute(
       path: AppRoutes.orderDetail,
       builder: (context, state) {
         final id = state.pathParameters['id'] ?? '';
@@ -199,7 +224,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.sellerOrderDetail,
-      builder: (context, state) => const SellerOrderDetail(),
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return SellerOrderDetail(orderId: id);
+      },
     ),
     GoRoute(
       path: AppRoutes.sellerNotifications,
@@ -210,20 +238,61 @@ final appRouter = GoRouter(
       builder: (context, state) => const SellerShopProfile(),
     ),
     GoRoute(
-      path: AppRoutes.sellerDashboard,
-      builder: (context, state) => const SellerDashboardScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.sellerProducts,
-      builder: (context, state) => const SellerProductsScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.sellerAddProduct,
       builder: (context, state) => const SellerAddProductScreen(),
     ),
-    GoRoute(
-      path: AppRoutes.sellerOrders,
-      builder: (context, state) => const SellerOrdersScreen(),
+
+    // ── Seller Shell with Bottom Navigation ────────────────────────────────
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          SellerShellLayout(navigationShell: navigationShell),
+      branches: [
+        // Tab 0: Dashboard
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.sellerDashboard,
+              builder: (context, state) => const SellerDashboardScreen(),
+            ),
+          ],
+        ),
+        // Tab 1: Products
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.sellerProducts,
+              builder: (context, state) => const SellerProductsScreen(),
+            ),
+          ],
+        ),
+        // Tab 2: Orders
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.sellerOrders,
+              builder: (context, state) => const SellerOrdersScreen(),
+            ),
+          ],
+        ),
+        // Tab 3: Chat
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/seller-chat',
+              builder: (context, state) => const ChatListScreen(),
+            ),
+          ],
+        ),
+        // Tab 4: Profile
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/seller-account',
+              builder: (context, state) => const AccountScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );

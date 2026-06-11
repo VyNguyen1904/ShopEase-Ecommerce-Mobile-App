@@ -41,9 +41,10 @@ class UserResponse {
       phone: json['phone'],
       avatar: json['avatar'],
       role: json['role'] ?? 'CUSTOMER',
-      addresses: json['addresses'] != null
-          ? (json['addresses'] as List).map((i) => AddressModel.fromJson(i)).toList()
-          : [],
+      addresses: (json['addresses'] as List?)
+              ?.map((e) => AddressModel.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }

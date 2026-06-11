@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dio/dio.dart';
 import '../models/auth_model.dart';
+import '../models/address_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -67,27 +68,22 @@ class AuthService {
       return message;
     }
 
-    if (e.response != null) {
-      final data = e.response!.data;
-      if (data is Map) {
-        if (data.containsKey('message')) return translateError(data['message'].toString());
-        if (data.containsKey('error')) return translateError(data['error'].toString());
-        if (data.containsKey('errors') && data['errors'] is List && data['errors'].isNotEmpty) {
-          return translateError(data['errors'][0].toString()); 
-        }
-      }
-      return e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})';
-    } 
-    
-    if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
-      return 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.';
-    } 
-    
-    if (e.type == DioExceptionType.connectionError) {
-      return 'Không thể kết nối đến máy chủ. Vui lòng thử lại.';
-    }
-    
-    return 'Đã có lỗi xảy ra: ${e.message}';
+    final data = e.response?.data;
+    final serverMessage = switch (data) {
+      Map() when data['message'] != null => data['message'].toString(),
+      Map() when data['error'] != null => data['error'].toString(),
+      Map() when data['errors'] is List && (data['errors'] as List).isNotEmpty => (data['errors'] as List).first.toString(),
+      _ => null,
+    };
+
+    if (serverMessage != null) return translateError(serverMessage);
+    if (e.response != null) return e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})';
+
+    return switch (e.type) {
+      DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.',
+      DioExceptionType.connectionError => 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+      _ => 'Đã có lỗi xảy ra: ${e.message}',
+    };
   }
 
   Future<TokenResponse> login(String email, String password) async {
@@ -137,30 +133,61 @@ class AuthService {
     }
   }
 
-  Future<UserResponse> addAddress(Map<String, dynamic> addressData) async {
+
+  Future<UserResponse> updateProfile(Map<String, dynamic> data) async {
     try {
-      final response = await _dio.post('$_userUrl/me/addresses', data: addressData);
+      final token = await getAccessToken();
+      if (token == null) throw Exception('No token found');
+
+      final response = await _dio.put(
+        '$_userUrl/me',
+        data: data,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
       return UserResponse.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw Exception(_handleDioError(e));
+      throw Exception(e.response?.data['message'] ?? 'Failed to update profile');
     }
   }
 
-  Future<UserResponse> updateAddress(String addressId, Map<String, dynamic> addressData) async {
+  Future<AddressModel> addAddress(AddressModel address) async {
     try {
-      final response = await _dio.put('$_userUrl/me/addresses/$addressId', data: addressData);
-      return UserResponse.fromJson(response.data['data']);
+      final token = await getAccessToken();
+      final response = await _dio.post(
+        '$_userUrl/me/addresses',
+        data: address.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return AddressModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw Exception(_handleDioError(e));
+      throw Exception(e.response?.data['message'] ?? 'Failed to add address');
     }
   }
 
-  Future<UserResponse> deleteAddress(String addressId) async {
+  Future<AddressModel> updateAddress(String id, AddressModel address) async {
     try {
-      final response = await _dio.delete('$_userUrl/me/addresses/$addressId');
-      return UserResponse.fromJson(response.data['data']);
+      final token = await getAccessToken();
+      final response = await _dio.put(
+        '$_userUrl/me/addresses/$id',
+        data: address.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return AddressModel.fromJson(response.data['data']);
     } on DioException catch (e) {
-      throw Exception(_handleDioError(e));
+      throw Exception(e.response?.data['message'] ?? 'Failed to update address');
+    }
+  }
+
+  Future<void> deleteAddress(String id) async {
+    try {
+      final token = await getAccessToken();
+      await _dio.delete(
+        '$_userUrl/me/addresses/$id',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to delete address');
     }
   }
 
@@ -171,6 +198,42 @@ class AuthService {
 
       if (refreshToken != null) {
         await _dio.post('$_authUrl/logout', data: {'refreshToken': refreshToken});
+      }
+    } catch (e) {
+      // Ignore errors during logout
+    } finally {
+      await _clearTokens();
+    }
+  }
+
+  Future<TokenResponse> refreshToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final refreshTokenStr = prefs.getString('refresh_token');
+      if (refreshTokenStr == null) throw Exception('No refresh token found');
+
+      final response = await _dio.post(
+        '$_authUrl/refresh',
+        data: {'refreshToken': refreshTokenStr},
+      );
+
+      final data = response.data['data'];
+      final tokenResponse = TokenResponse.fromJson(data);
+      await _saveTokens(tokenResponse);
+      return tokenResponse;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to refresh token');
+    }
+  }
+
+  Future<void> logoutAll() async {
+    try {
+      final token = await getAccessToken();
+      if (token != null) {
+        await _dio.post(
+          '$_authUrl/logout-all',
+          options: Options(headers: {'Authorization': 'Bearer $token'}),
+        );
       }
     } catch (e) {
       // Ignore errors during logout

@@ -1,42 +1,43 @@
 class AddressModel {
-  final String id;
-  final String recipientName;
+  final String? id;
+  final String name;
   final String phone;
-  final String street;
-  final String district;
-  final String city;
-  final bool defaultAddress;
+  final String address1;
+  final String address2;
+  final String label;
+  final bool isDefault;
 
   AddressModel({
-    required this.id,
-    required this.recipientName,
+    this.id,
+    required this.name,
     required this.phone,
-    required this.street,
-    required this.district,
-    required this.city,
-    required this.defaultAddress,
+    required this.address1,
+    this.address2 = '',
+    this.label = '',
+    this.isDefault = false,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      id: json['id'] ?? '',
-      recipientName: json['recipientName'] ?? '',
+      id: json['id']?.toString(),
+      name: json['name'] ?? '',
       phone: json['phone'] ?? '',
-      street: json['street'] ?? '',
-      district: json['district'] ?? '',
-      city: json['city'] ?? '',
-      defaultAddress: json['defaultAddress'] ?? false,
+      address1: json['address1'] ?? '',
+      address2: json['address2'] ?? '',
+      label: json['label'] ?? '',
+      isDefault: json['isDefault'] ?? json['default'] ?? false,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'recipientName': recipientName,
+      if (id != null) 'id': id,
+      'name': name,
       'phone': phone,
-      'street': street,
-      'district': district,
-      'city': city,
-      'defaultAddress': defaultAddress,
+      'address1': address1,
+      'address2': address2,
+      'label': label,
+      'isDefault': isDefault,
     };
   }
 }

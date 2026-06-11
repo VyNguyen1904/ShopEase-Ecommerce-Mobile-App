@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  ConsumerState<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen>
+class _OrdersScreenState extends ConsumerState<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -22,64 +26,20 @@ class _OrdersScreenState extends State<OrdersScreen>
     'Đã huỷ',
   ];
 
-  final List<Map<String, dynamic>> _orders = [
-    {
-      'id': 'ORD-1092',
-      'status': 'Đã giao',
-      'date': '20 Tha 5, 2026',
-      'total': 480000.0,
-      'items': [
-        {
-          'name': 'Nike Air Max 270',
-          'image':
-              'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',
-          'variant': 'Trắng - Xanh Ngọc / Size 9',
-          'qty': 1,
-          'price': 3160000.0,
-        },
-      ],
-    },
-    {
-      'id': 'ORD-1093',
-      'status': 'Đang giao',
-      'date': '28 Tha 5, 2026',
-      'total': 820000.0,
-      'items': [
-        {
-          'name': 'Adidas Ultraboost',
-          'image':
-              'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80',
-          'variant': 'Đen / Size 8',
-          'qty': 1,
-          'price': 3160000.0,
-        },
-        {
-          'name': 'Converse Chuck 70',
-          'image':
-              'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=400&q=80',
-          'variant': 'Rêu / Size 7',
-          'qty': 1,
-          'price': 995000.0,
-        },
-      ],
-    },
-    {
-      'id': 'ORD-1085',
-      'status': 'Đã huỷ',
-      'date': '15 Tha 5, 2026',
-      'total': 1500000.0,
-      'items': [
-        {
-          'name': 'Puma RS-X',
-          'image':
-              'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&q=80',
-          'variant': 'Trắng - Cam / Size 9',
-          'qty': 1,
-          'price': 3110000.0,
-        },
-      ],
-    },
-  ];
+  String _mapStatus(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.PENDING:
+        return 'Chờ xác nhận';
+      case OrderStatus.CONFIRMED:
+        return 'Chờ xác nhận';
+      case OrderStatus.SHIPPING:
+        return 'Đang giao';
+      case OrderStatus.DELIVERED:
+        return 'Đã giao';
+      case OrderStatus.CANCELLED:
+        return 'Đã huỷ';
+    }
+  }
 
   @override
   void initState() {
@@ -170,12 +130,14 @@ class _OrdersScreenState extends State<OrdersScreen>
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: _tabs.map((tab) {
-          final filteredOrders = tab == 'Tất cả'
-              ? _orders
-              : _orders.where((o) => o['status'] == tab).toList();
+      body: ref.watch(userOrdersProvider).when(
+        data: (orders) {
+          return TabBarView(
+            controller: _tabController,
+            children: _tabs.map((tab) {
+              final filteredOrders = tab == 'Tất cả'
+                  ? orders
+                  : orders.where((o) => _mapStatus(o.status) == tab).toList();
 
           if (filteredOrders.isEmpty) {
             return Center(
@@ -208,18 +170,13 @@ class _OrdersScreenState extends State<OrdersScreen>
             separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               final order = filteredOrders[index];
-              final items = order['items'] as List<dynamic>;
-              final statusColor = _getStatusColor(order['status']);
+              final items = order.items;
+              final statusStr = _mapStatus(order.status);
+              final statusColor = _getStatusColor(statusStr);
 
               return GestureDetector(
                 onTap: () {
-                  final orderId =
-                      order['id']?.toString().replaceAll(
-                        'ORD-',
-                        'SE240515000',
-                      ) ??
-                      'SE2405150001';
-                  context.push(AppRoutes.orderDetailPath(orderId));
+                  context.push(AppRoutes.orderDetailPath(order.id));
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -242,7 +199,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Mã ĐH: ${order['id']}',
+                            'Mã ĐH: ${order.id.split('-').last.toUpperCase()}',
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textDark,
@@ -259,7 +216,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              order['status'],
+                              statusStr,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: statusColor,
@@ -271,7 +228,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        order['date'],
+                        DateFormat('dd MMM, yyyy').format(order.createdAt),
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textGrey,
@@ -300,7 +257,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(11),
                                   child: Image.network(
-                                    item['image'],
+                                    item.productImage.isNotEmpty ? item.productImage : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',
                                     width: 72,
                                     height: 72,
                                     fit: BoxFit.cover,
@@ -325,7 +282,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      item['name'],
+                                      item.productName,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -336,7 +293,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Phân loại: ${item['variant']}',
+                                      '${_formatCurrency(item.unitPrice)} đ',
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: AppColors.textGrey,
@@ -348,7 +305,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${_formatCurrency(item['price'])} đ',
+                                          '${_formatCurrency(item.subtotal)} đ',
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
@@ -356,7 +313,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                           ),
                                         ),
                                         Text(
-                                          'x${item['qty']}',
+                                          'x${item.quantity}',
                                           style: const TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w500,
@@ -396,7 +353,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                 ),
                               ),
                               Text(
-                                '${_formatCurrency(order['total'])} đ',
+                                '${_formatCurrency(order.totalAmount)} đ',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -411,7 +368,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if (order['status'] == 'Đã giao')
+                          if (statusStr == 'Đã giao')
                             OutlinedButton(
                               onPressed: () {},
                               style: OutlinedButton.styleFrom(
@@ -436,7 +393,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                           ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: order['status'] == 'Đang giao'
+                              backgroundColor: statusStr == 'Đang giao'
                                   ? AppColors.primary
                                   : AppColors.textDark,
                               foregroundColor: Colors.white,
@@ -450,7 +407,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                               ),
                             ),
                             child: Text(
-                              order['status'] == 'Đang giao'
+                              statusStr == 'Đang giao'
                                   ? 'Theo dõi đơn'
                                   : 'Mua lại',
                               style: const TextStyle(
@@ -467,6 +424,10 @@ class _OrdersScreenState extends State<OrdersScreen>
             },
           );
         }).toList(),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Lỗi: $e')),
       ),
     );
   }
