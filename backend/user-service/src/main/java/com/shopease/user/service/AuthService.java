@@ -31,9 +31,11 @@ public class AuthService {
     TokenService tokenService;
     RefreshTokenRepository refreshTokenRepository;
     RefreshTokenFamilyRepository refreshTokenFamilyRepository;
+    MailService mailService;
 
     public TokenResponse register(RegisterRequest request) {
         UserAccount user = userService.createUser(request);
+        mailService.sendWelcomeEmail(user.getEmail(), user.getFirstName());
         return returnToken(user);
     }
 

@@ -1,4 +1,4 @@
-﻿spring:
+spring:
   application:
     name: user-service
   datasource:
@@ -14,6 +14,17 @@
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyenvy1904@gmail.com
+    password: fsmjlpgkokvsnljv
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server:
   port: 8081
 management.endpoints.web.exposure.include: health,info
