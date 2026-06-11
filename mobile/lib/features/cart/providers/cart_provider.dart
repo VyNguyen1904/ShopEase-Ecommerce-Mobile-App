@@ -24,9 +24,11 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     }
   }
 
-  Future<void> fetchCart() async {
+  Future<void> fetchCart({bool silently = false}) async {
     try {
-      state = const AsyncValue.loading();
+      if (!silently) {
+        state = const AsyncValue.loading();
+      }
       final cart = await _cartService.getCart(_userId);
       if (!mounted) return;
       state = AsyncValue.data(cart);
@@ -68,19 +70,19 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
 
     try {
       await _cartService.updateQuantity(_userId, productId, quantity);
-      // Refresh to ensure server sync
-      fetchCart();
+      // Refresh to ensure server sync without showing loading spinner
+      fetchCart(silently: true);
     } catch (e) {
-      fetchCart(); // Revert on failure
+      fetchCart(silently: true); // Revert on failure
     }
   }
 
   Future<void> addToCart(int productId, int quantity) async {
     try {
       await _cartService.addItem(_userId, productId, quantity);
-      fetchCart();
+      fetchCart(silently: true);
     } catch (e) {
-      fetchCart();
+      fetchCart(silently: true);
     }
   }
 
@@ -107,9 +109,9 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       }
 
       await _cartService.removeItem(_userId, productId);
-      fetchCart();
+      fetchCart(silently: true);
     } catch (e) {
-      fetchCart();
+      fetchCart(silently: true);
     }
   }
 

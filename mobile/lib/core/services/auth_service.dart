@@ -62,10 +62,8 @@ class AuthService {
         'internal server error': 'Lỗi máy chủ. Vui lòng thử lại sau.',
       };
 
-      for (final entry in errorMappings.entries) {
-        if (lowerMsg.contains(entry.key)) return entry.value;
-      }
-      return message;
+      final match = errorMappings.entries.where((entry) => lowerMsg.contains(entry.key)).firstOrNull;
+      return match?.value ?? message;
     }
 
     final data = e.response?.data;
@@ -76,14 +74,15 @@ class AuthService {
       _ => null,
     };
 
-    if (serverMessage != null) return translateError(serverMessage);
-    if (e.response != null) return e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})';
-
-    return switch (e.type) {
-      DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.',
-      DioExceptionType.connectionError => 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
-      _ => 'Đã có lỗi xảy ra: ${e.message}',
-    };
+    return serverMessage != null 
+        ? translateError(serverMessage) 
+        : e.response != null 
+            ? (e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})')
+            : switch (e.type) {
+                DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.',
+                DioExceptionType.connectionError => 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+                _ => 'Đã có lỗi xảy ra: ${e.message}',
+              };
   }
 
   Future<TokenResponse> login(String email, String password) async {
@@ -122,9 +121,11 @@ class AuthService {
 
   Future<UserResponse> updateProfile(String fullName, String? phone, String? avatarUrl) async {
     try {
-      final data = {'fullName': fullName};
-      if (phone != null) data['phone'] = phone;
-      if (avatarUrl != null) data['avatarUrl'] = avatarUrl;
+      final data = {
+        'fullName': fullName,
+        ?'phone': phone,
+        ?'avatarUrl': avatarUrl,
+      };
 
       final response = await _dio.put('$_userUrl/me', data: data);
       return UserResponse.fromJson(response.data['data']);
@@ -133,23 +134,6 @@ class AuthService {
     }
   }
 
-
-  Future<UserResponse> updateProfile(Map<String, dynamic> data) async {
-    try {
-      final token = await getAccessToken();
-      if (token == null) throw Exception('No token found');
-
-      final response = await _dio.put(
-        '$_userUrl/me',
-        data: data,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
-
-      return UserResponse.fromJson(response.data['data']);
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to update profile');
-    }
-  }
 
   Future<AddressModel> addAddress(AddressModel address) async {
     try {

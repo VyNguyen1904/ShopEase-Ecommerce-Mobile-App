@@ -6,7 +6,7 @@ final orderServiceProvider = Provider<OrderService>((ref) {
   return OrderService();
 });
 
-final orderHistoryProvider = FutureProvider.autoDispose<List<OrderModel>>((ref) async {
+final orderHistoryProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref) async {
   final service = ref.watch(orderServiceProvider);
   return await service.getOrderHistory();
 });

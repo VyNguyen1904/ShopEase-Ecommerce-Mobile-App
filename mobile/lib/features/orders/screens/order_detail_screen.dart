@@ -139,6 +139,8 @@ class OrderDetailScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -149,11 +151,15 @@ class OrderDetailScreen extends ConsumerWidget {
                       color: AppColors.textGrey.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      'Đặt ngày: ${DateFormat('dd MMM yyyy • hh:mm a').format(order.createdAt)}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey.withValues(alpha: 0.8),
+                    Expanded(
+                      child: Text(
+                        'Đặt ngày: ${DateFormat('dd MMM yyyy • hh:mm a').format(order.createdAt)}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textGrey.withValues(alpha: 0.8),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -346,12 +352,16 @@ class OrderDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Text(
-                      order.shipRecipient,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        color: AppColors.textDark,
+                    Flexible(
+                      child: Text(
+                        order.shipRecipient,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: AppColors.textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 16),

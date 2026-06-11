@@ -37,6 +37,11 @@ class OrderService {
       );
       return OrderResponse.fromJson(response.data['data']);
     } catch (e) {
+      if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        final message = data['message'] ?? data['error'] ?? e.toString();
+        throw Exception(message);
+      }
       throw Exception('Failed to create order: $e');
     }
   }

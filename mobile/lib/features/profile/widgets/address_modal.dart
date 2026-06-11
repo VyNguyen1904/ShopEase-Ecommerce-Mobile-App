@@ -105,6 +105,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     setState(() => _isLoading = true);
 
     final addressData = AddressModel(
+      id: widget.address?.id,
       name: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
       address1: _streetController.text.trim(),

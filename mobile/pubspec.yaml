@@ -45,6 +45,7 @@ dependencies:
   flutter_svg: ^2.3.0
   uuid: ^4.5.3
   intl: ^0.20.2
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

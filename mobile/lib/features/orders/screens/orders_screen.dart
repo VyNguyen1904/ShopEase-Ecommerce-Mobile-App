@@ -104,10 +104,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
             ),
             child: TabBar(
               controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
+              isScrollable: false,
               padding: EdgeInsets.zero,
-              labelPadding: const EdgeInsets.symmetric(horizontal: 20),
+              labelPadding: EdgeInsets.zero,
               dividerColor: Colors.transparent,
               indicatorColor: AppColors.primary,
               indicatorWeight: 3,
@@ -117,11 +116,11 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
               unselectedLabelColor: AppColors.textGrey,
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontSize: 13,
               ),
               unselectedLabelStyle: const TextStyle(
                 fontWeight: FontWeight.w500,
-                fontSize: 15,
+                fontSize: 13,
               ),
               splashFactory: NoSplash.splashFactory,
               overlayColor: WidgetStateProperty.all(Colors.transparent),

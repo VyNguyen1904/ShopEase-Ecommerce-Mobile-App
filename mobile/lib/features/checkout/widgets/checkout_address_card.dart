@@ -48,11 +48,11 @@ class CheckoutAddressCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '${address!.recipientName} - ${address!.phone}',
+                  '${address!.name} - ${address!.phone}',
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
               ),
-              if (address!.defaultAddress)
+              if (address!.isDefault)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -70,13 +70,14 @@ class CheckoutAddressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${address!.street}, ${address!.district},',
+                  address!.address1,
                   style: const TextStyle(color: AppColors.textDark, fontSize: 14, height: 1.5),
                 ),
-                Text(
-                  address!.city,
-                  style: const TextStyle(color: AppColors.textDark, fontSize: 14, height: 1.5),
-                ),
+                if (address!.address2.isNotEmpty)
+                  Text(
+                    address!.address2,
+                    style: const TextStyle(color: AppColors.textDark, fontSize: 14, height: 1.5),
+                  ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
