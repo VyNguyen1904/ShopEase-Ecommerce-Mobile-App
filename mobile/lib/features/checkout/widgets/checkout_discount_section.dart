@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import '../../../../core/constants/app_colors.dart';
+
+class CheckoutDiscountSection extends StatelessWidget {
+  final bool useCoins;
+  final ValueChanged<bool> onUseCoinsChanged;
+
+  const CheckoutDiscountSection({
+    super.key,
+    required this.useCoins,
+    required this.onUseCoinsChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: 48,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Nhập mã giảm giá',
+                    hintStyle: TextStyle(
+                      color: AppColors.textGrey,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: AppColors.bgLight,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                'Áp dụng',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Checkbox(
+              value: useCoins,
+              onChanged: (val) => onUseCoinsChanged(val!),
+              activeColor: AppColors.primary,
+            ),
+            RichText(
+              text: const TextSpan(
+                style: TextStyle(color: AppColors.textDark, fontSize: 14),
+                children: [
+                  TextSpan(text: 'Dùng '),
+                  TextSpan(
+                    text: '2.000 xu ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.alertRed,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '(-2.000đ)',
+                    style: TextStyle(color: AppColors.alertRed),
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
+            Switch(
+              value: useCoins,
+              onChanged: onUseCoinsChanged,
+              activeThumbColor: AppColors.primary,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/product_provider.dart';
-import '../../../core/providers/category_provider.dart';
 
 class CategoryScreen extends ConsumerWidget {
   const CategoryScreen({super.key});
@@ -58,7 +57,11 @@ class CategoryScreen extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.category_outlined, color: AppColors.primary, size: 24),
+                        // Icon(cat['icon'], color: AppColors.primary, size: 24),
+                        if (cat.imageUrl != null)
+                          Image.network(cat.imageUrl!, width: 24, height: 24)
+                        else
+                          const Icon(Icons.category, color: AppColors.primary, size: 24),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(

@@ -1,61 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
+import '../../auth/providers/auth_provider.dart';
 
-class SellerOrdersScreen extends StatefulWidget {
+class SellerOrdersScreen extends ConsumerStatefulWidget {
   const SellerOrdersScreen({super.key});
 
   @override
-  State<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
+  ConsumerState<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
 }
 
-class _SellerOrdersScreenState extends State<SellerOrdersScreen>
+class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, dynamic>> _orders = [
-    {
-      'id': '#SE2405150001',
-      'name': 'John Doe',
-      'date': '15/05/2024 • 10:30',
-      'price': '\$442.000',
-      'status': 'Đang xử lý',
-      'statusColor': Colors.orange,
-      'statusBgColor': Colors.orange.shade50,
-      'avatar': 'https://i.pravatar.cc/150?img=11',
-    },
-    {
-      'id': '#SE2405180005',
-      'name': 'Mike Lee',
-      'date': '18/05/2024 • 09:15',
-      'price': '\$378.000',
-      'status': 'Đã giao',
-      'statusColor': Colors.green,
-      'statusBgColor': Colors.green.shade50,
-      'avatar': 'https://i.pravatar.cc/150?img=12',
-    },
-    {
-      'id': '#SE2405200023',
-      'name': 'Jane Smith',
-      'date': '20/05/2024 • 14:20',
-      'price': '\$279.000',
-      'status': 'Đang xử lý',
-      'statusColor': Colors.orange,
-      'statusBgColor': Colors.orange.shade50,
-      'avatar': 'https://i.pravatar.cc/150?img=5',
-    },
-    {
-      'id': '#SE2405210036',
-      'name': 'Tom Brown',
-      'date': '21/05/2024 • 16:45',
-      'price': '\$95.000',
-      'status': 'Đã hủy',
-      'statusColor': Colors.red,
-      'statusBgColor': Colors.red.shade50,
-      'avatar': 'https://i.pravatar.cc/150?img=9',
-    },
-  ];
+  String _mapStatus(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.PENDING:
+        return 'Mới';
+      case OrderStatus.CONFIRMED:
+        return 'Đang xử lý';
+      case OrderStatus.SHIPPING:
+        return 'Đang giao';
+      case OrderStatus.DELIVERED:
+        return 'Đã giao';
+      case OrderStatus.CANCELLED:
+        return 'Đã hủy';
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Đã giao':
+        return Colors.green;
+      case 'Đã hủy':
+        return Colors.red;
+      case 'Mới':
+      case 'Đang xử lý':
+      case 'Đang giao':
+      default:
+        return Colors.orange;
+    }
+  }
+
+  Color _getStatusBgColor(String status) {
+    switch (status) {
+      case 'Đã giao':
+        return Colors.green.shade50;
+      case 'Đã hủy':
+        return Colors.red.shade50;
+      case 'Mới':
+      case 'Đang xử lý':
+      case 'Đang giao':
+      default:
+        return Colors.orange.shade50;
+    }
+  }
+
+  String _formatCurrency(double amount) {
+    return amount.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
+  }
 
   @override
   void initState() {
@@ -126,15 +138,21 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildOrderList(),
-          _buildOrderList(),
-          _buildOrderList(),
-          _buildOrderList(),
-          _buildOrderList(),
-        ],
+      body: ref.watch(sellerOrdersProvider).when(
+        data: (orders) {
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              _buildOrderList(orders, 'Tất cả'),
+              _buildOrderList(orders, 'Mới'),
+              _buildOrderList(orders, 'Đang xử lý'),
+              _buildOrderList(orders, 'Đã giao'),
+              _buildOrderList(orders, 'Đã hủy'),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Lỗi: $e')),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -164,21 +182,33 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
     );
   }
 
-  Widget _buildOrderList() {
+  Widget _buildOrderList(List<OrderResponse> orders, String tabStatus) {
+    final filteredOrders = tabStatus == 'Tất cả' 
+      ? orders 
+      : orders.where((o) {
+          final st = _mapStatus(o.status);
+          if (tabStatus == 'Đang xử lý' && (st == 'Đang xử lý' || st == 'Đang giao')) return true;
+          return st == tabStatus;
+        }).toList();
+
+    if (filteredOrders.isEmpty) {
+      return const Center(child: Text('Không có đơn hàng nào', style: TextStyle(color: AppColors.textGrey)));
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _orders.length,
+      itemCount: filteredOrders.length,
       itemBuilder: (context, index) {
-        final order = _orders[index];
+        final order = filteredOrders[index];
         return _buildOrderItem(order);
       },
     );
   }
 
-  Widget _buildOrderItem(Map<String, dynamic> order) {
+  Widget _buildOrderItem(OrderResponse order) {
     return GestureDetector(
       onTap: () {
-        context.push(AppRoutes.sellerOrderDetail);
+        context.push(AppRoutes.sellerOrderDetailPath(order.id));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -193,7 +223,11 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
           children: [
             CircleAvatar(
               radius: 24,
-              backgroundImage: NetworkImage(order['avatar']),
+              backgroundColor: AppColors.bgLight,
+              child: Text(
+                order.shipRecipient.isNotEmpty ? order.shipRecipient[0].toUpperCase() : 'U',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -201,7 +235,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    order['id'],
+                    '#${order.id.split('-').last.toUpperCase()}',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -210,7 +244,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    order['name'],
+                    order.shipRecipient,
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textDark,
@@ -218,7 +252,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    order['date'],
+                    DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt),
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textGrey,
@@ -231,7 +265,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  order['price'],
+                  '${_formatCurrency(order.totalAmount)}đ',
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -242,15 +276,15 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: order['statusBgColor'],
+                    color: _getStatusBgColor(_mapStatus(order.status)),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    order['status'],
+                    _mapStatus(order.status),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: order['statusColor'],
+                      color: _getStatusColor(_mapStatus(order.status)),
                     ),
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -59,11 +60,10 @@ class HomeProductCard extends StatelessWidget {
                       height: double.infinity,
                       child: Hero(
                         tag: heroTag,
-                        child: Image.network(
-                          product.imageUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: product.imageUrl,
                           fit: BoxFit.cover,
-                          cacheWidth: 340,
-                          errorBuilder: (context, error, stackTrace) =>
+                          errorWidget: (context, url, error) =>
                               const Icon(Icons.image, color: Colors.grey),
                         ),
                       ),

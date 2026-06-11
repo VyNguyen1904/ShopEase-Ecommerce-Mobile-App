@@ -95,11 +95,7 @@ class CartService {
     }
   }
 
-  Future<void> addItem(
-    String userId,
-    int productId,
-    int quantity,
-  ) async {
+  Future<void> addItem(String userId, int productId, int quantity) async {
     try {
       final options = await _getAuthOptions();
       await _dio.post(
@@ -108,7 +104,7 @@ class CartService {
         data: {'productId': productId, 'quantity': quantity},
       );
     } catch (e) {
-      throw Exception('Failed to add item');
+      throw Exception('Failed to add item to cart: $e');
     }
   }
 

@@ -19,13 +19,14 @@ abstract class AppRoutes {
   static const String search = '/search';
   static const String settings = '/settings';
   static const String account = '/account';
+  static const String profileEdit = '/profile-edit';
   static const String address = '/address';
   static const String chats = '/chats';
 
   // Admin & Seller screens
   static const String adminDashboard = '/admin/dashboard';
   static const String adminUsers = '/admin/users';
-  static const String sellerOrderDetail = '/seller/order-detail';
+  static const String sellerOrderDetail = '/seller/order-detail/:id';
   static const String sellerNotifications = '/seller/notifications';
   static const String sellerShopProfile = '/seller/shop-profile';
   static const String sellerDashboard = '/seller/dashboard';
@@ -35,4 +36,7 @@ abstract class AppRoutes {
 
   static String productDetailPath(String id) => '/product/$id';
   static String orderDetailPath(String id) => '/order-detail/$id';
+  static String sellerOrderDetailPath(String id) => '/seller/order-detail/$id';
+  // Payment
+  static const String payment = '/payment';
 }

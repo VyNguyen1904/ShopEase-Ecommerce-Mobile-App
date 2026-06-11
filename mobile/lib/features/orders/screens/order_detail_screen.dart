@@ -1,77 +1,113 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/order_provider.dart';
+import '../../../core/models/order_model.dart';
 
-class OrderDetailScreen extends StatelessWidget {
+class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
 
   const OrderDetailScreen({super.key, required this.orderId});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + 20,
-          left: 16,
-          right: 16,
-          bottom: 120, // space for bottom buttons
-        ),
-        child: Column(
-          children: [
-            // Graphic header
-            Image.asset(
-              'assets/images/order_success_graphic.png',
-              height: 180,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                // Fallback in case asset is not loaded
-                return const Icon(
-                  Icons.check_circle,
-                  color: AppColors.primary,
-                  size: 100,
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Đã nhận hàng thành công!',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textGrey.withValues(alpha: 0.8),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            _buildOrderInfoCard(),
-            const SizedBox(height: 16),
-            _buildTimelineCard(),
-            const SizedBox(height: 16),
-            _buildAddressCard(),
-            const SizedBox(height: 16),
-            _buildProductsCard(),
-            const SizedBox(height: 16),
-            _buildPaymentCard(),
-          ],
-        ),
-      ),
-      bottomSheet: _buildBottomActions(context),
+  String _mapStatus(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.PENDING:
+        return 'Chờ xác nhận';
+      case OrderStatus.CONFIRMED:
+        return 'Đã xác nhận';
+      case OrderStatus.SHIPPING:
+        return 'Đang giao';
+      case OrderStatus.DELIVERED:
+        return 'Đã giao';
+      case OrderStatus.CANCELLED:
+        return 'Đã huỷ';
+    }
+  }
+
+  String _formatCurrency(double amount) {
+    return amount.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
     );
   }
 
-  Widget _buildOrderInfoCard() {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final orderAsync = ref.watch(orderDetailProvider(orderId));
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
+      body: orderAsync.when(
+        data: (order) {
+          final isDelivered = order.status == OrderStatus.DELIVERED;
+          return SingleChildScrollView(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              left: 16,
+              right: 16,
+              bottom: 120, // space for bottom buttons
+            ),
+            child: Column(
+              children: [
+                if (isDelivered) ...[
+                  // Graphic header
+                  Image.asset(
+                    'assets/images/order_success_graphic.png',
+                    height: 180,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.check_circle,
+                        color: AppColors.primary,
+                        size: 100,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Đã nhận hàng thành công!',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textGrey.withValues(alpha: 0.8),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                ],
+                _buildOrderInfoCard(order),
+                const SizedBox(height: 16),
+                _buildTimelineCard(order),
+                const SizedBox(height: 16),
+                _buildAddressCard(order),
+                const SizedBox(height: 16),
+                _buildProductsCard(order),
+                const SizedBox(height: 16),
+                _buildPaymentCard(order),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Lỗi: $e')),
+      ),
+      bottomSheet: orderAsync.hasValue ? _buildBottomActions(context, orderAsync.value!, ref) : null,
+    );
+  }
+
+  Widget _buildOrderInfoCard(OrderResponse order) {
     return _buildCard(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -97,12 +133,14 @@ class OrderDetailScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 13, color: AppColors.textGrey),
                 ),
                 Text(
-                  '#$orderId',
+                  '#${order.id.split('-').last.toUpperCase()}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDark,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -113,11 +151,15 @@ class OrderDetailScreen extends StatelessWidget {
                       color: AppColors.textGrey.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      'Đặt ngày: 15 Thg 5, 2024 • 10:30 AM',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey.withValues(alpha: 0.8),
+                    Expanded(
+                      child: Text(
+                        'Đặt ngày: ${DateFormat('dd MMM yyyy • hh:mm a').format(order.createdAt)}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textGrey.withValues(alpha: 0.8),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -131,9 +173,9 @@ class OrderDetailScreen extends StatelessWidget {
               color: AppColors.primaryLight.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'Hoàn tất',
-              style: TextStyle(
+            child: Text(
+              _mapStatus(order.status),
+              style: const TextStyle(
                 color: AppColors.primaryDark,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
@@ -145,40 +187,44 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineCard() {
+  Widget _buildTimelineCard(OrderResponse order) {
+    bool isConfirmed = order.status == OrderStatus.CONFIRMED || order.status == OrderStatus.SHIPPING || order.status == OrderStatus.DELIVERED;
+    bool isShipping = order.status == OrderStatus.SHIPPING || order.status == OrderStatus.DELIVERED;
+    bool isDelivered = order.status == OrderStatus.DELIVERED;
+
     return _buildCard(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildTimelineStep(
             'Đặt hàng',
-            '15/05, 10:30',
+            DateFormat('dd/MM, HH:mm').format(order.createdAt),
             Icons.shopping_bag_outlined,
             true,
             true,
           ),
-          _buildTimelineLine(true),
+          _buildTimelineLine(isConfirmed),
           _buildTimelineStep(
             'Đang xử lý',
             '',
             Icons.inventory_2_outlined,
-            true,
+            isConfirmed,
             true,
           ),
-          _buildTimelineLine(true),
+          _buildTimelineLine(isShipping),
           _buildTimelineStep(
             'Đang giao',
             '',
             Icons.local_shipping_outlined,
-            true,
+            isShipping,
             true,
           ),
-          _buildTimelineLine(true),
+          _buildTimelineLine(isDelivered),
           _buildTimelineStep(
             'Đã nhận hàng',
             '',
             Icons.check,
-            true,
+            isDelivered,
             false,
             isLast: true,
           ),
@@ -267,7 +313,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard() {
+  Widget _buildAddressCard(OrderResponse order) {
     return _buildCard(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,27 +352,31 @@ class OrderDetailScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Text(
-                      'Jane Doe',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        color: AppColors.textDark,
+                    Flexible(
+                      child: Text(
+                        order.shipRecipient,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: AppColors.textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Icon(Icons.phone, size: 12, color: AppColors.accent),
+                    const Icon(Icons.phone, size: 12, color: AppColors.accent),
                     const SizedBox(width: 4),
-                    const Text(
-                      '1234567890',
-                      style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+                    Text(
+                      order.shipPhone,
+                      style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  '123 Nguyễn Huệ, P. Bến Nghé, Quận 1, TP. Hồ Chí Minh',
-                  style: TextStyle(fontSize: 13, color: AppColors.textGrey),
+                Text(
+                  '${order.shipStreet}, ${order.shipDistrict}, ${order.shipCity}',
+                  style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
                 ),
               ],
             ),
@@ -336,31 +386,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProductsCard() {
-    final products = [
-      {
-        'name': 'Nike Air Max 270',
-        'variant': 'Trắng/Xanh • Size 9',
-        'price': '590.000đ',
-        'image':
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-      },
-      {
-        'name': 'Adidas Ultraboost',
-        'variant': 'Đen/Đỏ • Size 9',
-        'price': '890.000đ',
-        'image':
-            'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400',
-      },
-      {
-        'name': 'Puma RS-X',
-        'variant': 'Đen/Đỏ • Size 9',
-        'price': '890.000đ',
-        'image':
-            'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
-      },
-    ];
-
+  Widget _buildProductsCard(OrderResponse order) {
     return _buildCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,34 +395,17 @@ class OrderDetailScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Sản phẩm (${products.length})',
+                'Sản phẩm (${order.items.length})',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: AppColors.textDark,
                 ),
               ),
-              const Row(
-                children: [
-                  Text(
-                    'Xem chi tiết',
-                    style: TextStyle(
-                      color: AppColors.primaryDark,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: AppColors.primaryDark,
-                    size: 16,
-                  ),
-                ],
-              ),
             ],
           ),
           const SizedBox(height: 16),
-          ...products.map(
+          ...order.items.map(
             (p) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Row(
@@ -404,7 +413,7 @@ class OrderDetailScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      p['image']!,
+                      p.productImage.isNotEmpty ? p.productImage : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
                       width: 60,
                       height: 60,
                       fit: BoxFit.cover,
@@ -416,7 +425,7 @@ class OrderDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          p['name']!,
+                          p.productName,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -425,7 +434,7 @@ class OrderDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          p['variant']!,
+                          '${_formatCurrency(p.unitPrice)}đ',
                           style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textGrey,
@@ -435,7 +444,7 @@ class OrderDetailScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'x1',
+                    'x${p.quantity}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -444,7 +453,7 @@ class OrderDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 24),
                   Text(
-                    p['price']!,
+                    '${_formatCurrency(p.subtotal)}đ',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -460,7 +469,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentCard() {
+  Widget _buildPaymentCard(OrderResponse order) {
     return _buildCard(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -484,9 +493,9 @@ class OrderDetailScreen extends StatelessWidget {
                     'Phương thức: ',
                     style: TextStyle(fontSize: 12, color: AppColors.textGrey),
                   ),
-                  const Text(
-                    'Thanh toán khi nhận hàng (COD)',
-                    style: TextStyle(fontSize: 12, color: AppColors.textDark),
+                  Text(
+                    order.paymentMethod,
+                    style: const TextStyle(fontSize: 12, color: AppColors.textDark),
                   ),
                 ],
               ),
@@ -500,9 +509,9 @@ class OrderDetailScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 12, color: AppColors.textDark),
               ),
               const SizedBox(height: 4),
-              const Text(
-                '442.000đ',
-                style: TextStyle(
+              Text(
+                '${_formatCurrency(order.totalAmount)}đ',
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                   color: AppColors.accentDark,
@@ -534,7 +543,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomActions(BuildContext context) {
+  Widget _buildBottomActions(BuildContext context, OrderResponse order, WidgetRef ref) {
     return Container(
       padding: EdgeInsets.only(
         left: 16,
@@ -556,38 +565,94 @@ class OrderDetailScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                side: const BorderSide(color: AppColors.primaryDark),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          if (order.status == OrderStatus.PENDING) ...[
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Xác nhận huỷ'),
+                      content: const Text('Bạn có chắc chắn muốn huỷ đơn hàng này không?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Không', style: TextStyle(color: AppColors.textGrey)),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            Navigator.pop(ctx); // Đóng popup xác nhận
+
+                            // Hiển thị loading
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (_) => const Center(child: CircularProgressIndicator()),
+                            );
+
+                            try {
+                              await ref.read(orderServiceProvider).cancelOrder(order.id);
+                              ref.invalidate(orderDetailProvider(order.id));
+                              ref.invalidate(userOrdersProvider);
+
+                              if (context.mounted) {
+                                Navigator.pop(context); // Đóng loading
+
+                                // Hiện popup thành công
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (successCtx) => AlertDialog(
+                                    title: const Text('Thành công', style: TextStyle(color: AppColors.primaryDark)),
+                                    content: const Text('Đơn hàng đã được huỷ thành công.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(successCtx); // Đóng popup thành công
+                                          if (context.canPop()) {
+                                            context.pop(); // Quay lại trang trước
+                                          } else {
+                                            context.go(AppRoutes.home);
+                                          }
+                                        },
+                                        child: const Text('Đóng'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                Navigator.pop(context); // Đóng loading
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                              }
+                            }
+                          },
+                          child: const Text('Đồng ý', style: TextStyle(color: AppColors.alertRed)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: const BorderSide(color: AppColors.alertRed),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Huỷ đơn hàng',
+                  style: TextStyle(
+                    color: AppColors.alertRed,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.chat_bubble_outline,
-                    color: AppColors.primaryDark,
-                    size: 20,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Liên hệ Shop',
-                    style: TextStyle(
-                      color: AppColors.primaryDark,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
+          ],
           Expanded(
             child: ElevatedButton(
               onPressed: () => context.go(AppRoutes.home),

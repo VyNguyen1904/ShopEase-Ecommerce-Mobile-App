@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
@@ -27,8 +28,30 @@ class _SplashScreenState extends State<SplashScreen> {
       _opacity = 0.0;
     });
 
-    // Determine route
-    final nextRoute = token != null ? AppRoutes.home : AppRoutes.login;
+    String nextRoute = AppRoutes.login;
+    if (token != null) {
+      try {
+        final parts = token.split('.');
+        if (parts.length == 3) {
+          final payload = parts[1];
+          final normalized = base64Url.normalize(payload);
+          final decoded = utf8.decode(base64Url.decode(normalized));
+          final jwt = json.decode(decoded) as Map<String, dynamic>;
+          final role = jwt['role'];
+          if (role == 'SELLER') {
+            nextRoute = AppRoutes.sellerDashboard;
+          } else if (role == 'ADMIN') {
+            nextRoute = AppRoutes.adminDashboard;
+          } else {
+            nextRoute = AppRoutes.home;
+          }
+        } else {
+          nextRoute = AppRoutes.home;
+        }
+      } catch (e) {
+        nextRoute = AppRoutes.home;
+      }
+    }
 
     // Wait for animation to finish before navigating
     Future.delayed(const Duration(milliseconds: 250), () {
