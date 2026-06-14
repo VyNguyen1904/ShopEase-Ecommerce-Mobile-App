@@ -1,4 +1,4 @@
-/// Centralized route name constants — avoids magic strings across the app.
+/// Centralized route name constants  Eavoids magic strings across the app.
 abstract class AppRoutes {
   // Onboarding & auth
   static const String splash = '/splash';

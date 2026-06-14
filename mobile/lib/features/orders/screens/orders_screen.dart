@@ -104,9 +104,10 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
             ),
             child: TabBar(
               controller: _tabController,
-              isScrollable: false,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
               padding: EdgeInsets.zero,
-              labelPadding: EdgeInsets.zero,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 16),
               dividerColor: Colors.transparent,
               indicatorColor: AppColors.primary,
               indicatorWeight: 3,
@@ -367,6 +368,74 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          if (statusStr == 'Chờ xác nhận')
+                            OutlinedButton(
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Huỷ đơn hàng', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    content: const Text('Bạn có chắc chắn muốn huỷ đơn hàng này không?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, false),
+                                        child: const Text('Không', style: TextStyle(color: AppColors.textGrey)),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, true),
+                                        child: const Text('Huỷ đơn', style: TextStyle(color: AppColors.alertRed)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                
+                                if (confirm == true && context.mounted) {
+                                  // Must use rootNavigator because showDialog pushes to root by default
+                                  // and we are inside a ShellRoute
+                                  final rootNavigator = Navigator.of(context, rootNavigator: true);
+                                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                                  
+                                  try {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (_) => const Center(child: CircularProgressIndicator()),
+                                    );
+                                    
+                                    await ref.read(orderServiceProvider).cancelOrder(order.id);
+                                    
+                                    rootNavigator.pop(); // close loading dialog
+                                    ref.invalidate(userOrdersProvider); // refresh list
+                                    
+                                    scaffoldMessenger.showSnackBar(
+                                      const SnackBar(content: Text('Đã huỷ đơn hàng thành công')),
+                                    );
+                                  } catch (e) {
+                                    rootNavigator.pop(); // close loading dialog
+                                    scaffoldMessenger.showSnackBar(
+                                      SnackBar(content: Text('Lỗi: $e')),
+                                    );
+                                  }
+                                }
+                              },
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: AppColors.alertRed),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                              ),
+                              child: const Text(
+                                'Huỷ đơn',
+                                style: TextStyle(
+                                  color: AppColors.alertRed,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           if (statusStr == 'Đã giao')
                             OutlinedButton(
                               onPressed: () {},
@@ -388,11 +457,12 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                                 ),
                               ),
                             ),
-                          const SizedBox(width: 12),
+                          if (statusStr == 'Đã giao' || statusStr == 'Chờ xác nhận')
+                            const SizedBox(width: 12),
                           ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: statusStr == 'Đang giao'
+                              backgroundColor: (statusStr == 'Đang giao' || statusStr == 'Chờ xác nhận')
                                   ? AppColors.primary
                                   : AppColors.textDark,
                               foregroundColor: Colors.white,
@@ -406,8 +476,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                               ),
                             ),
                             child: Text(
-                              statusStr == 'Đang giao'
-                                  ? 'Theo dõi đơn'
+                              (statusStr == 'Đang giao' || statusStr == 'Chờ xác nhận')
+                                  ? 'Theo dõi'
                                   : 'Mua lại',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,

@@ -178,7 +178,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
+            color: Colors.black.withValues(alpha: 0.015),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -189,7 +189,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 22),
@@ -402,7 +402,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                                         border: Border.all(color: const Color(0xFFE2E8F0)),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(0.01),
+                                            color: Colors.black.withValues(alpha: 0.01),
                                             blurRadius: 10,
                                             offset: const Offset(0, 4),
                                           ),
@@ -491,19 +491,19 @@ class _UserRowState extends State<UserRow> {
           color: _isHovered ? const Color(0xFFF8FAFC) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isHovered ? AppColors.primary.withOpacity(0.3) : const Color(0xFFE2E8F0),
+            color: _isHovered ? AppColors.primary.withValues(alpha: 0.3) : const Color(0xFFE2E8F0),
             width: 1,
           ),
           boxShadow: [
             if (_isHovered)
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.06),
+                color: AppColors.primary.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               )
             else
               BoxShadow(
-                color: Colors.black.withOpacity(0.005),
+                color: Colors.black.withValues(alpha: 0.005),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -518,7 +518,7 @@ class _UserRowState extends State<UserRow> {
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundColor: roleColor.withOpacity(0.1),
+                    backgroundColor: roleColor.withValues(alpha: 0.1),
                     child: Text(
                       widget.user.username.isNotEmpty ? widget.user.username[0].toUpperCase() : 'U',
                       style: TextStyle(
@@ -568,7 +568,7 @@ class _UserRowState extends State<UserRow> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: roleColor.withOpacity(0.1),
+                    color: roleColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -667,7 +667,7 @@ class _ActionButtonState extends State<_ActionButton> {
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _isHovered ? widget.color.withOpacity(0.12) : Colors.transparent,
+              color: _isHovered ? widget.color.withValues(alpha: 0.12) : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -799,7 +799,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.08) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : const Color(0xFFE2E8F0),
@@ -808,7 +808,7 @@ class _CreateUserDialogState extends State<CreateUserDialog> {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -1125,7 +1125,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.08) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : const Color(0xFFE2E8F0),
@@ -1134,7 +1134,7 @@ class _EditUserDialogState extends State<EditUserDialog> {
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

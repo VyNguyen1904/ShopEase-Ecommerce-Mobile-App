@@ -17,14 +17,12 @@ class SearchResultsScreen extends ConsumerStatefulWidget {
 }
 
 class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
-  final TextEditingController _searchController = TextEditingController(
-    text: 'sneakers',
-  );
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final searchQuery = _searchController.text;
-    final searchAsyncValue = ref.watch(searchProductsProvider(searchQuery));
+    final searchAsyncValue = ref.watch(filteredSearchProductsProvider(searchQuery));
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
@@ -114,6 +112,8 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                   _buildFilterButton(
                     icon: Icons.local_offer_outlined,
                     label: 'Giá',
+                    isActive: ref.watch(sortOrderProvider) != 'none',
+                    onTap: () => _showSortOptions(context, ref),
                   ),
                   const SizedBox(width: 10),
                   _buildFilterButton(
@@ -145,7 +145,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                   ),
                 ),
                 loading: () => const SizedBox(),
-                error: (_, __) => const SizedBox(),
+                error: (_, _s) => const SizedBox(),
               ),
             ),
             const SizedBox(height: 12),
@@ -186,9 +186,14 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
     );
   }
 
-  Widget _buildFilterButton({required IconData icon, required String label}) {
+  Widget _buildFilterButton({
+    required IconData icon,
+    required String label,
+    bool isActive = false,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
-      onTap: () {
+      onTap: onTap ?? () {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Tính năng "$label" đang được phát triển'),
@@ -200,26 +205,86 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isActive ? AppColors.primary.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(
+            color: isActive ? AppColors.primary : AppColors.border,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: AppColors.textDark),
+            Icon(
+              icon,
+              size: 16,
+              color: isActive ? AppColors.primary : AppColors.textDark,
+            ),
             const SizedBox(width: 6),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
+                color: isActive ? AppColors.primary : AppColors.textDark,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showSortOptions(BuildContext context, WidgetRef ref) {
+    final currentSort = ref.read(sortOrderProvider);
+    
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 16.0, bottom: 32.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Sắp xếp theo giá',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                title: const Text('Mặc định'),
+                trailing: currentSort == 'none' ? const Icon(Icons.check, color: AppColors.primary) : null,
+                onTap: () {
+                  ref.read(sortOrderProvider.notifier).state = 'none';
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Giá: Từ thấp đến cao'),
+                trailing: currentSort == 'asc' ? const Icon(Icons.check, color: AppColors.primary) : null,
+                onTap: () {
+                  ref.read(sortOrderProvider.notifier).state = 'asc';
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Giá: Từ cao xuống thấp'),
+                trailing: currentSort == 'desc' ? const Icon(Icons.check, color: AppColors.primary) : null,
+                onTap: () {
+                  ref.read(sortOrderProvider.notifier).state = 'desc';
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

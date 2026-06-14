@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../widgets/address_modal.dart';
 
 class AddressScreen extends ConsumerStatefulWidget {
-  const AddressScreen({super.key});
+  final bool isSelecting;
+  const AddressScreen({super.key, this.isSelecting = false});
 
   @override
   ConsumerState<AddressScreen> createState() => _AddressScreenState();
@@ -31,7 +32,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Địa chỉ của tôi',
+          'Địa chỉcủa tôi',
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -46,19 +47,19 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
         ),
         error: (err, stack) => Center(
           child: Text(
-            'Lỗi tải địa chỉ: $err',
+            'Lỗi tải địa chỉ $err',
             style: const TextStyle(color: AppColors.alertRed),
           ),
         ),
         data: (user) {
-          final addresses = user.addresses;
+          final addresses = user?.addresses ?? [];
           
           return Stack(
             children: [
               if (addresses.isEmpty)
                 const Center(
                   child: Text(
-                    'Bạn chưa có địa chỉ nào',
+                    'Bạn chưa có địa chỉnào',
                     style: TextStyle(color: AppColors.textGrey, fontSize: 16),
                   ),
                 )
@@ -73,7 +74,10 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                   itemCount: addresses.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
-                    return _AddressItemCard(address: addresses[index]);
+                    return _AddressItemCard(
+                      address: addresses[index],
+                      isSelecting: widget.isSelecting,
+                    );
                   },
                 ),
               const _AddAddressButton(),
@@ -87,12 +91,16 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
 
 class _AddressItemCard extends ConsumerWidget {
   final dynamic address; // Should ideally be replaced with your Address model type
+  final bool isSelecting;
 
-  const _AddressItemCard({required this.address});
+  const _AddressItemCard({required this.address, this.isSelecting = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
+    return InkWell(
+      onTap: isSelecting ? () => context.pop(address) : null,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -100,7 +108,7 @@ class _AddressItemCard extends ConsumerWidget {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -209,7 +217,7 @@ class _AddressItemCard extends ConsumerWidget {
                     ref.invalidate(userProfileProvider);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Đã xóa địa chỉ thành công')),
+                        const SnackBar(content: Text('Đã xóa địa chỉthành công')),
                       );
                     }
                   } catch (e) {
@@ -225,7 +233,7 @@ class _AddressItemCard extends ConsumerWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
@@ -244,7 +252,7 @@ class _AddAddressButton extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -275,7 +283,7 @@ class _AddAddressButton extends StatelessWidget {
                 Icon(Icons.add, size: 20),
                 SizedBox(width: 8),
                 Text(
-                  'Thêm địa chỉ mới',
+                  'Thêm địa chỉmới',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

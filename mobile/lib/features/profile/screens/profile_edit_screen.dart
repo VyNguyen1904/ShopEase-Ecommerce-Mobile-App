@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -28,9 +28,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userState = ref.read(userProfileProvider);
       userState.whenData((user) {
-        _nameController.text = user.fullName;
-        _phoneController.text = user.phone ?? '';
-        _avatarController.text = user.avatar ?? '';
+        _nameController.text = user?.fullName ?? '';
+        _phoneController.text = user?.phone ?? '';
+        _avatarController.text = user?.avatar ?? '';
       });
     });
   }

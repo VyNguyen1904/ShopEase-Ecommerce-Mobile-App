@@ -33,6 +33,15 @@ class AddressModel {
   }
 
   Map<String, dynamic> toJson() {
+    String cityStr = address2;
+    String districtStr = '';
+    
+    if (address2.contains(', ')) {
+      final parts = address2.split(', ');
+      districtStr = parts[0];
+      cityStr = parts.length > 1 ? parts.sublist(1).join(', ') : parts[0];
+    }
+
     return {
       if (id != null) 'id': id,
       'name': name,
@@ -41,8 +50,8 @@ class AddressModel {
       'address1': address1,
       'street': address1,
       'address2': address2,
-      'city': address2,
-      'district': '',
+      'city': cityStr,
+      'district': districtStr,
       'label': label,
       'isDefault': isDefault,
       'defaultAddress': isDefault,

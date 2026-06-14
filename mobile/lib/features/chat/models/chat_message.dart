@@ -57,7 +57,7 @@ final List<ChatRoom> mockChatRooms = [
         senderName: 'Trần Minh',
         senderImageUrl:
             'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-        messageText: 'Xin chào! Mình có thể giúp gì cho bạn?',
+        messageText: 'Xin chào! Mình có thểgiúp gì cho bạn?',
         time: '09:41',
         isMe: false,
       ),
@@ -65,7 +65,7 @@ final List<ChatRoom> mockChatRooms = [
         id: 'm2',
         senderName: 'Jane Doe',
         senderImageUrl: '',
-        messageText: 'Mình muốn hỏi về đơn hàng của mình.',
+        messageText: 'Mình muốn hỏi vềEđơn hàng của mình.',
         time: '09:42',
         isMe: true,
       ),
@@ -112,7 +112,7 @@ final List<ChatRoom> mockChatRooms = [
     name: 'Cửa hàng Sneaker',
     imageUrl:
         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-    lastMessage: 'Chúng tôi có thể giúp gì cho bạn?',
+    lastMessage: 'Chúng tôi có thểgiúp gì cho bạn?',
     time: '10:21 SA',
     unreadCount: 2,
     messages: [
@@ -120,7 +120,7 @@ final List<ChatRoom> mockChatRooms = [
         id: 'mc1',
         senderName: 'Cửa hàng Sneaker',
         senderImageUrl: '',
-        messageText: 'Chúng tôi có thể giúp gì cho bạn?',
+        messageText: 'Chúng tôi có thểgiúp gì cho bạn?',
         time: '10:21 SA',
         isMe: false,
       ),
@@ -131,7 +131,7 @@ final List<ChatRoom> mockChatRooms = [
     name: 'John Smith',
     imageUrl:
         'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80',
-    lastMessage: 'Dạ vâng, không có vấn đề gì.',
+    lastMessage: 'Dạ vâng, không có vấn đềgì.',
     time: '09:15 SA',
     unreadCount: 0,
     messages: [
@@ -139,7 +139,7 @@ final List<ChatRoom> mockChatRooms = [
         id: 'ms1',
         senderName: 'John Smith',
         senderImageUrl: '',
-        messageText: 'Dạ vâng, không có vấn đề gì.',
+        messageText: 'Dạ vâng, không có vấn đềgì.',
         time: '09:15 SA',
         isMe: false,
       ),

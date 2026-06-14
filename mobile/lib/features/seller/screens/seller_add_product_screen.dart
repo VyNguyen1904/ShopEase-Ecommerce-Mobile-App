@@ -50,7 +50,7 @@ class SellerAddProductScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildInputField(
               icon: Icons.local_offer_outlined,
-              label: 'Giá bán (đ)',
+              label: 'Giá bán (āE',
               hintText: 'Nhập giá bán',
               keyboardType: TextInputType.number,
             ),
@@ -64,7 +64,7 @@ class SellerAddProductScreen extends StatelessWidget {
             _buildInputField(
               icon: Icons.inventory_2_outlined,
               label: 'Số lượng tồn kho',
-              hintText: 'Nhập số lượng tồn kho',
+              hintText: 'Nhập sềElượng tồn kho',
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
@@ -109,10 +109,10 @@ class SellerAddProductScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
+        color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.primary.withOpacity(0.3),
+          color: AppColors.primary.withValues(alpha: 0.3),
           width: 1.5,
         ),
         // To make a dotted border we would use a package like dotted_border,
@@ -128,7 +128,7 @@ class SellerAddProductScreen extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                 ),
               ],
@@ -175,7 +175,7 @@ class SellerAddProductScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),
@@ -202,11 +202,11 @@ class SellerAddProductScreen extends StatelessWidget {
             fillColor: Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -231,7 +231,7 @@ class SellerAddProductScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),
@@ -253,7 +253,7 @@ class SellerAddProductScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
@@ -290,7 +290,7 @@ class SellerAddProductScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: AppColors.primary, size: 20),
@@ -320,11 +320,11 @@ class SellerAddProductScreen extends StatelessWidget {
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

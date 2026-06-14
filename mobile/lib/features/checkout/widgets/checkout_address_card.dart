@@ -6,7 +6,8 @@ import '../../../../core/models/address_model.dart';
 
 class CheckoutAddressCard extends StatelessWidget {
   final AddressModel? address;
-  const CheckoutAddressCard({super.key, this.address});
+  final VoidCallback? onTap;
+  const CheckoutAddressCard({super.key, this.address, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +33,16 @@ class CheckoutAddressCard extends StatelessWidget {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
-      ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -93,6 +97,6 @@ class CheckoutAddressCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

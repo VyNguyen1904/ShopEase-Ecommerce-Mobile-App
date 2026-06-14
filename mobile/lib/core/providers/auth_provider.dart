@@ -10,6 +10,16 @@ final userProfileProvider = FutureProvider<UserResponse?>((ref) async {
   final authService = ref.watch(authServiceProvider);
   final token = await authService.getAccessToken();
   if (token == null || token.isEmpty) return null;
-  
-  return authService.getProfile();
+
+  try {
+    return await authService.getProfile();
+  } catch (e) {
+    // If 401/Unauthorized, clear tokens silently and return null (show login UI)
+    final msg = e.toString().toLowerCase();
+    if (msg.contains('unauthorized') || msg.contains('401') || msg.contains('đăng nhập')) {
+      await authService.logout();
+      return null;
+    }
+    rethrow;
+  }
 });

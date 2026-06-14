@@ -5,7 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
-import '../providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});

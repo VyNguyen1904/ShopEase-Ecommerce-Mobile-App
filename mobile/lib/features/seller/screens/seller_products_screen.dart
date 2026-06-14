@@ -5,7 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/product_provider.dart';
 import '../../../core/models/product.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class SellerProductsScreen extends ConsumerStatefulWidget {
   const SellerProductsScreen({super.key});

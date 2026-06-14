@@ -180,7 +180,7 @@ class ShellLayout extends StatelessWidget {
                         ),
                       ]),
                       _buildPanelSection(
-                        '4. Quản trị (Admin)',
+                        '4. Quản trị(Admin)',
                         [
                           _buildPanelItem(
                             ctx,

@@ -41,6 +41,12 @@ class AuthService {
           }
           return handler.next(options);
         },
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            await _clearTokens();
+          }
+          return handler.next(e);
+        },
       ),
     );
   }
@@ -80,7 +86,7 @@ class AuthService {
             ? (e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})')
             : switch (e.type) {
                 DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.',
-                DioExceptionType.connectionError => 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+                DioExceptionType.connectionError => 'Không thểkết nối đến máy chủ. Vui lòng thử lại.',
                 _ => 'Đã có lỗi xảy ra: ${e.message}',
               };
   }

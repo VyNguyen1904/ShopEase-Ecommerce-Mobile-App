@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});
@@ -36,7 +36,7 @@ class SellerDashboardScreen extends ConsumerWidget {
   Widget _buildHeader(WidgetRef ref) {
     final userAsync = ref.watch(userProfileProvider);
     final userName = userAsync.maybeWhen(
-      data: (user) => user.fullName.split(' ').last,
+      data: (user) => user?.fullName.split(' ').last ?? 'Seller',
       orElse: () => 'Seller',
     );
 
