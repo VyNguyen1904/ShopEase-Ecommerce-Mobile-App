@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -34,9 +34,79 @@ class AccountScreen extends ConsumerWidget {
           children: [
             // User Info Card
             userProfileAsync.when(
-              data: (user) => _UserInfoCard(user: user),
+              data: (user) {
+                if (user == null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.person_outline, size: 48, color: AppColors.textGrey),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Bạn chưa đăng nhập',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => context.go(AppRoutes.login),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            ),
+                            child: const Text('Đăng nhập ngay'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return _UserInfoCard(user: user);
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Lỗi: $err')),
+              error: (err, stack) {
+                final errorStr = err.toString().toLowerCase();
+                if (errorStr.contains('unauthorized') || errorStr.contains('đăng nhập')) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.lock_outline, size: 48, color: AppColors.textGrey),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Phiên đăng nhập đã hết hạn',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Vui lòng đăng nhập lại để xem thông tin tài khoản.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: AppColors.textGrey),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              ref.read(authServiceProvider).logout();
+                              context.go(AppRoutes.login);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            ),
+                            child: const Text('Đăng nhập lại'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Center(child: Text('Lỗi: $err'));
+              },
             ),
             const SizedBox(height: 32),
 
@@ -51,7 +121,7 @@ class AccountScreen extends ConsumerWidget {
               ),
               _buildMenuItem(
                 icon: Icons.location_on_outlined,
-                title: 'Sổ địa chỉ nhận hàng',
+               title: 'Sổ địa chỉ nhận hàng',
                 onTap: () => context.push(AppRoutes.address),
               ),
               _buildMenuItem(

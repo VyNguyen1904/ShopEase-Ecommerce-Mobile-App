@@ -189,7 +189,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.address,
-      builder: (context, state) => const AddressScreen(),
+      builder: (context, state) {
+        final isSelecting = state.extra is Map ? (state.extra as Map)['isSelecting'] == true : false;
+        return AddressScreen(isSelecting: isSelecting);
+      },
     ),
     GoRoute(
       path: AppRoutes.profileEdit,

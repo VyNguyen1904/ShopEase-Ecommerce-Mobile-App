@@ -5,7 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
-import '../providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -55,7 +55,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         _nameController.text.trim(),
       );
 
-      // Auto-fetch new profile next time it is read
       ref.invalidate(userProfileProvider);
 
       if (mounted) context.go(AppRoutes.home);
@@ -94,7 +93,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Back Button → context.pop()
                 GestureDetector(
                   onTap: () => context.pop(),
                   child: Container(
@@ -112,7 +110,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Title and Cute Bag Graphic Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -163,7 +160,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 36),
 
-                // Form Fields
                 _buildInputField(
                   controller: _nameController,
                   hintText: 'Họ và tên',
@@ -214,7 +210,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Checkbox & Terms Agreement
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

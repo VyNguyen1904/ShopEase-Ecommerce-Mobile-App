@@ -45,10 +45,9 @@ class CheckoutPaymentOptions extends StatelessWidget {
             color: AppColors.border,
           ),
           _buildPaymentRadio(
-            'zalopay',
-            'Ví ZaloPay',
-            subtitle: '(Giảm đến 150.000đ)',
-            isSelected: selectedPayment == 'zalopay',
+            'momo',
+            'Ví MoMo',
+            isSelected: selectedPayment == 'momo',
           ),
           const Divider(
             height: 1,
@@ -57,9 +56,9 @@ class CheckoutPaymentOptions extends StatelessWidget {
             color: AppColors.border,
           ),
           _buildPaymentRadio(
-            'credit',
+            'card',
             'Thẻ tín dụng / ATM',
-            isSelected: selectedPayment == 'credit',
+            isSelected: selectedPayment == 'card',
           ),
         ],
       ),

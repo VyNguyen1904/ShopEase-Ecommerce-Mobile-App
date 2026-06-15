@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../../core/models/cart_model.dart';
@@ -33,6 +33,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String _selectedPayment = 'cod';
   bool _useCoins = false;
   bool _isLoading = false;
+  AddressModel? _selectedAddress;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
     final defaultAddress = userState.value?.addresses.where((a) => a.isDefault).firstOrNull 
         ?? userState.value?.addresses.firstOrNull;
+
+    final addressToUse = _selectedAddress ?? defaultAddress;
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
@@ -71,13 +74,24 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CheckoutSectionTitle(title: 'Địa chỉ nhận hàng'),
-            CheckoutAddressCard(address: defaultAddress),
+            const CheckoutSectionTitle(title: 'Địa chỉnhận hàng'),
+            CheckoutAddressCard(
+              address: addressToUse,
+              onTap: () async {
+                final result = await context.push<AddressModel>(
+                  AppRoutes.address,
+                  extra: {'isSelecting': true},
+                );
+                if (result != null) {
+                  setState(() => _selectedAddress = result);
+                }
+              },
+            ),
             const SizedBox(height: 24),
             const CheckoutSectionTitle(title: 'Sản phẩm đã chọn'),
             CheckoutSelectedItems(items: selectedItems),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Đơn vị vận chuyển'),
+            const CheckoutSectionTitle(title: 'Đơn vịvận chuyển'),
             CheckoutShippingOptions(
               selectedShipping: _selectedShipping,
               onChanged: (val) => setState(() => _selectedShipping = val),
@@ -105,7 +119,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(selectedItems, defaultAddress, totalAmount),
+      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount),
     );
   }
 
@@ -126,7 +140,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: ElevatedButton(
           onPressed: _isLoading ? null : () async {
             if (address == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm địa chỉ nhận hàng!')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm địa chỉnhận hàng!')));
               return;
             }
             if (items.isEmpty) {

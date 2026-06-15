@@ -49,6 +49,23 @@ final searchProductsProvider = FutureProvider.family<List<Product>, String>((ref
   return service.searchProducts(query);
 });
 
+final sortOrderProvider = StateProvider<String>((ref) => 'none');
+
+final filteredSearchProductsProvider = Provider.family<AsyncValue<List<Product>>, String>((ref, query) {
+  final asyncProducts = ref.watch(searchProductsProvider(query));
+  final sortOrder = ref.watch(sortOrderProvider);
+
+  return asyncProducts.whenData((products) {
+    List<Product> sorted = List.from(products);
+    if (sortOrder == 'asc') {
+      sorted.sort((a, b) => a.price.compareTo(b.price));
+    } else if (sortOrder == 'desc') {
+      sorted.sort((a, b) => b.price.compareTo(a.price));
+    }
+    return sorted;
+  });
+});
+
 final productDetailProvider = FutureProvider.family<Product, String>((ref, id) async {
   final service = ref.watch(productServiceProvider);
   return service.getProductById(id);

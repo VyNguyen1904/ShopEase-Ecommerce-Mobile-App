@@ -14,7 +14,7 @@ class HomeRecommendations extends ConsumerWidget {
         const SectionTitle(title: 'Gợi ý cho bạn'),
         const SizedBox(height: 12),
         SizedBox(
-          height: 280,
+          height: 310,
           child: ref.watch(recommendationsProvider).when(
             data: (products) => ListView.builder(
               padding: const EdgeInsets.only(left: 20),

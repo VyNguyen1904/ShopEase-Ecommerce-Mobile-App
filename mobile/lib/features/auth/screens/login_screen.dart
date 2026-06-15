@@ -6,7 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
-import '../providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -265,8 +265,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (val == null || val.trim().isEmpty) {
           return 'Vui lòng nhập $hintText';
         }
-        if (obscureText && val.length < 6) {
-          return 'Mật khẩu phải có ít nhất 6 ký tự';
+        if (keyboardType == TextInputType.emailAddress) {
+          final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+          if (!emailRegex.hasMatch(val.trim())) {
+            return 'Email không hợp lệ';
+          }
         }
         return null;
       },

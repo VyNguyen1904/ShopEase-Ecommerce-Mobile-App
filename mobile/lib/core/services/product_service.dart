@@ -33,7 +33,8 @@ class ProductService {
 
   Future<List<CategoryModel>> getCategories() async {
     try {
-      final response = await _dio.get(_categoryUrl);
+      final options = await _getAuthOptions();
+      final response = await _dio.get(_categoryUrl, options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
       
@@ -62,7 +63,8 @@ class ProductService {
 
   Future<List<Product>> getProducts({int page = 0, int size = 20}) async {
     try {
-      final response = await _dio.get('$_productUrl?page=$page&size=$size');
+      final options = await _getAuthOptions();
+      final response = await _dio.get('$_productUrl?page=$page&size=$size', options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
       
@@ -75,7 +77,8 @@ class ProductService {
 
   Future<List<Product>> searchProducts(String query, {int page = 0, int size = 20}) async {
     try {
-      final response = await _dio.get('$_productUrl/search?query=$query&page=$page&size=$size');
+      final options = await _getAuthOptions();
+      final response = await _dio.get('$_productUrl/search?query=$query&page=$page&size=$size', options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
       
@@ -88,7 +91,8 @@ class ProductService {
 
   Future<List<String>> getSuggestions(String query) async {
     try {
-      final response = await _dio.get('$_productUrl/suggestions?query=$query');
+      final options = await _getAuthOptions();
+      final response = await _dio.get('$_productUrl/suggestions?query=$query', options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
       return (data as List).map((e) => e.toString()).toList();
@@ -99,7 +103,8 @@ class ProductService {
 
   Future<Product> getProductById(String id) async {
     try {
-      final response = await _dio.get('$_productUrl/$id');
+      final options = await _getAuthOptions();
+      final response = await _dio.get('$_productUrl/$id', options: options);
       return Product.fromJson(response.data['data']);
     } catch (e) {
       throw Exception('Failed to get product details: $e');

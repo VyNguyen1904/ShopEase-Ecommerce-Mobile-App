@@ -75,7 +75,7 @@ class CheckoutDiscountSection extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: '(-2.000đ)',
+                    text: '(-2.000āE',
                     style: TextStyle(color: AppColors.alertRed),
                   ),
                 ],
