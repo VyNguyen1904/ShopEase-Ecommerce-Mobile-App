@@ -21,10 +21,23 @@ class ProductAttributes extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _buildDetailRow('Danh mục', product.category),
-        _buildDetailRow('Tình trạng', 'Mới'),
-        _buildDetailRow('Kho hàng', 'Sẵn hàng'),
-        _buildDetailRow('Giao từ', 'Hà Nội'),
+        if (product.material != null && product.material!.isNotEmpty)
+          _buildDetailRow('Chất liệu', product.material!),
+        if (product.fit != null && product.fit!.isNotEmpty)
+          _buildDetailRow('Kiểu dáng', product.fit!),
+        if (product.careInstructions != null && product.careInstructions!.isNotEmpty)
+          _buildDetailRow('Bảo quản', product.careInstructions!),
+        if (product.features.isNotEmpty)
+          ...product.features.map((f) => Padding(
+                padding: const EdgeInsets.only(bottom: 6.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('• ', style: TextStyle(color: AppColors.textGrey)),
+                    Expanded(child: Text(f, style: const TextStyle(color: AppColors.textDark, fontSize: 14))),
+                  ],
+                ),
+              )),
       ],
     );
   }

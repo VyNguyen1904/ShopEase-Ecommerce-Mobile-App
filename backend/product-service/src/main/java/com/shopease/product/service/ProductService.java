@@ -130,6 +130,10 @@ public class ProductService {
                 request.imageUrls() == null ? List.of() : request.imageUrls(),
                 request.colors() == null ? List.of() : request.colors(),
                 request.sizes() == null ? List.of() : request.sizes(),
+                request.material(),
+                request.fit(),
+                request.careInstructions(),
+                request.features() == null ? List.of() : request.features(),
                 request.status() != null ? request.status() : existing.getStatus(),
                 request.isFeatured()
         );
@@ -180,6 +184,10 @@ public class ProductService {
                 request.imageUrls() == null ? List.of() : request.imageUrls(),
                 request.colors() == null ? List.of() : request.colors(),
                 request.sizes() == null ? List.of() : request.sizes(),
+                request.material(),
+                request.fit(),
+                request.careInstructions(),
+                request.features() == null ? List.of() : request.features(),
                 request.status() != null ? request.status() : ProductStatus.DRAFT,
                 request.isFeatured(),
                 true, // active

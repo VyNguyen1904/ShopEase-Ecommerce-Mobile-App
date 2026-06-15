@@ -22,6 +22,10 @@ public record ProductRequest(
         List<String> imageUrls,
         List<String> colors,
         List<String> sizes,
+        String material,
+        String fit,
+        String careInstructions,
+        List<String> features,
         ProductStatus status,
         boolean isFeatured
 ) {

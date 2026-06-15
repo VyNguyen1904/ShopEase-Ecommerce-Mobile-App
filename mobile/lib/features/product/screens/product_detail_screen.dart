@@ -11,6 +11,7 @@ import '../widgets/product_bottom_bar.dart';
 import '../widgets/product_header.dart';
 import '../widgets/product_image.dart';
 import '../widgets/product_info.dart';
+import '../widgets/product_attributes.dart';
 import '../widgets/product_reviews.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
@@ -90,6 +91,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           children: [
                             ProductInfo(product: product),
                             ProductOptionsSelector(sizes: product.sizes),
+                            const SizedBox(height: 24),
+                            ProductAttributes(product: product),
+                            const SizedBox(height: 24),
                             ProductReviews(productId: product.id),
                           ],
                         ),

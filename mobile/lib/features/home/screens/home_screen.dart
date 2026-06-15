@@ -81,25 +81,25 @@ class HomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _buildPromoCard(
-                      title: 'NIKE',
-                      subtitle: 'Nike Air Max\nPhiên Bản Mới',
+                      title: 'SIGNATURE COLLECTION',
+                      subtitle: 'Heavyweight\nT-Shirt',
                       description:
-                          'Sự kết hợp hoàn hảo giữa phong\ncách cổ điển và công nghệ đệm\nAir hiện đại, mang lại cảm giác\nêm ái suốt cả ngày.',
-                      buttonText: 'GIẢM 20% | MUA NGAY',
+                          'Chất liệu 100% Organic Cotton\n250gsm siêu dày dặn, form dáng\nboxy thời thượng mang lại sự\ntự tin tuyệt đối.',
+                      buttonText: 'MUA NGAY',
                       image:
-                          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
-                      color: AppColors.primary,
+                          'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=400',
+                      color: const Color(0xFF1A1A1A), // Đen tuyền sang trọng
                     ),
                     const SizedBox(width: 16),
                     _buildPromoCard(
-                      title: 'ADIDAS',
-                      subtitle: 'Bộ sưu tập\nThu Đông 2026',
+                      title: 'NEW ARRIVAL',
+                      subtitle: 'Premium\nWool Overcoat',
                       description:
-                          'Đột phá phong cách với dòng\nsản phẩm mới nhất. Thiết kế\nthể thao, năng động và đầy\ncá tính.',
-                      buttonText: 'GIẢM 25% | MUA NGAY',
+                          'Tôn vinh vẻ đẹp tối giản với\nchiếc áo măng tô được cắt may\ntỉ mỉ từ len lông cừu thượng\nhạng.',
+                      buttonText: 'XEM BỘ SƯU TẬP',
                       image:
-                          'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&auto=format&fit=crop&q=80',
-                      color: AppColors.accent,
+                          'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80&w=400',
+                      color: const Color(0xFF4A3E3D), // Nâu tây sang trọng
                     ),
                   ],
                 ),
@@ -145,16 +145,30 @@ class HomeScreen extends ConsumerWidget {
               SizedBox(
                 height: 40,
                 child: ref.watch(categoriesProvider).when(
-                      data: (categories) => ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        itemCount: categories.length,
-                        separatorBuilder: (context, _) => const SizedBox(width: 12),
-                        itemBuilder: (context, index) {
-                          final cat = categories[index];
-                          return _buildCategoryPill(cat.name, isActive: index == 0);
-                        },
-                      ),
+                      data: (categories) {
+                        final selectedCat = ref.watch(selectedCategoryHomeProvider);
+                        return ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          itemCount: categories.length + 1,
+                          separatorBuilder: (context, _) => const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              final isAll = selectedCat == null;
+                              return GestureDetector(
+                                onTap: () => ref.read(selectedCategoryHomeProvider.notifier).state = null,
+                                child: _buildCategoryPill('Tất cả', isActive: isAll),
+                              );
+                            }
+                            final cat = categories[index - 1];
+                            final isActive = selectedCat == cat.name;
+                            return GestureDetector(
+                              onTap: () => ref.read(selectedCategoryHomeProvider.notifier).state = cat.name,
+                              child: _buildCategoryPill(cat.name, isActive: isActive),
+                            );
+                          },
+                        );
+                      },
                       loading: () => const Center(child: CircularProgressIndicator()),
                       error: (err, stack) => const SizedBox(),
                     ),

@@ -11,6 +11,10 @@ class Product {
   final List<String> sizes;
   final List<String> colors;
   final String description;
+  final String? material;
+  final String? fit;
+  final String? careInstructions;
+  final List<String> features;
 
   const Product({
     required this.id,
@@ -25,6 +29,10 @@ class Product {
     required this.sizes,
     required this.colors,
     required this.description,
+    this.material,
+    this.fit,
+    this.careInstructions,
+    this.features = const [],
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -57,6 +65,10 @@ class Product {
       sizes: (json['sizes'] as List?)?.map((e) => e.toString()).toList() ?? [],
       colors: (json['colors'] as List?)?.map((e) => e.toString()).toList() ?? [],
       description: json['description'] ?? '',
+      material: json['material']?.toString(),
+      fit: json['fit']?.toString(),
+      careInstructions: json['careInstructions']?.toString(),
+      features: (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 
@@ -74,6 +86,10 @@ class Product {
       'sizes': sizes,
       'colors': colors,
       'description': description,
+      'material': material,
+      'fit': fit,
+      'careInstructions': careInstructions,
+      'features': features,
     };
   }
 
