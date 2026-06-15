@@ -57,7 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       ref.invalidate(userProfileProvider);
 
-      if (mounted) context.go(AppRoutes.home);
+      if (mounted) context.go(AppRoutes.verification, extra: {'email': _emailController.text.trim()});
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

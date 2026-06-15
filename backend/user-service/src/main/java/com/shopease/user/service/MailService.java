@@ -36,4 +36,24 @@ public class MailService {
             log.error("Failed to send welcome email to: {}", toEmail, e);
         }
     }
+
+    @Async
+    public void sendOtpEmail(String toEmail, String otp) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject("ShopEase - Your Verification Code");
+            message.setText("Hi,\n\n" +
+                    "Your verification code is: " + otp + "\n" +
+                    "This code will expire in 5 minutes.\n\n" +
+                    "Best regards,\n" +
+                    "ShopEase Team");
+
+            mailSender.send(message);
+            log.info("OTP email sent successfully to: {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send OTP email to: {}", toEmail, e);
+        }
+    }
 }

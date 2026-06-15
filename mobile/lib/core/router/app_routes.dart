@@ -4,6 +4,7 @@ abstract class AppRoutes {
   static const String splash = '/splash';
   static const String login = '/login';
   static const String register = '/register';
+  static const String verification = '/verification';
 
   // Main shell (bottom nav)
   static const String home = '/home';

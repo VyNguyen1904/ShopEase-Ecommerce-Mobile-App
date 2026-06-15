@@ -7,6 +7,8 @@ import com.shopease.user.model.UserAccount;
 import com.shopease.user.repository.RefreshTokenFamilyRepository;
 import com.shopease.user.repository.RefreshTokenRepository;
 import com.shopease.user.repository.UserRepository;
+import com.shopease.user.repository.VerificationOtpRepository;
+import com.shopease.user.model.VerificationOtp;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,12 +33,70 @@ public class AuthService {
     TokenService tokenService;
     RefreshTokenRepository refreshTokenRepository;
     RefreshTokenFamilyRepository refreshTokenFamilyRepository;
+    VerificationOtpRepository verificationOtpRepository;
     MailService mailService;
 
-    public TokenResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         UserAccount user = userService.createUser(request);
-        mailService.sendWelcomeEmail(user.getEmail(), user.getFirstName());
+        String otp = generateOtp();
+        saveOtp(user.getEmail(), otp);
+        mailService.sendOtpEmail(user.getEmail(), otp);
+        return new RegisterResponse(user.getEmail(), "Please verify your email with the OTP sent to your inbox.");
+    }
+
+    public TokenResponse verifyEmail(VerifyEmailRequest request) {
+        VerificationOtp storedOtp = verificationOtpRepository.findByEmailIgnoreCase(request.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP not found"));
+
+        if (!storedOtp.getOtp().equals(request.otp())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP");
+        }
+
+        if (storedOtp.getExpiresAt().isBefore(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP expired");
+        }
+
+        UserAccount user = users.findByEmailIgnoreCase(request.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        userService.verifyUser(user.getId());
+        verificationOtpRepository.delete(storedOtp);
+
         return returnToken(user);
+    }
+
+    public void resendOtp(ResendOtpRequest request) {
+        UserAccount user = users.findByEmailIgnoreCase(request.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (user.isVerified()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already verified");
+        }
+
+        verificationOtpRepository.findByEmailIgnoreCase(request.email())
+                .ifPresent(verificationOtpRepository::delete);
+
+        String newOtp = generateOtp();
+        saveOtp(user.getEmail(), newOtp);
+        mailService.sendOtpEmail(user.getEmail(), newOtp);
+    }
+
+    private String generateOtp() {
+        return String.format("%06d", new java.util.Random().nextInt(999999));
+    }
+
+    private void saveOtp(String email, String otp) {
+        VerificationOtp verificationOtp = verificationOtpRepository.findByEmailIgnoreCase(email)
+                .orElse(VerificationOtp.builder()
+                        .id(UUID.randomUUID())
+                        .email(email)
+                        .build());
+        
+        verificationOtp.setOtp(otp);
+        verificationOtp.setExpiresAt(Instant.now().plus(5, java.time.temporal.ChronoUnit.MINUTES));
+        verificationOtp.setCreatedAt(Instant.now());
+        
+        verificationOtpRepository.save(verificationOtp);
     }
 
     public TokenResponse login(LoginRequest request) {
@@ -44,6 +104,9 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email"));
         if (!encoder.matches(request.password(), user.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
+        }
+        if (!user.isVerified()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User account is not verified");
         }
         if (!user.isEnabled()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User account is blocked");

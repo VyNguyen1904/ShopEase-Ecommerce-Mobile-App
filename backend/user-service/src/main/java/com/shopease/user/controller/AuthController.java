@@ -20,8 +20,19 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    ApiResponse<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
+    ApiResponse<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ApiResponse.created(authService.register(request));
+    }
+
+    @PostMapping("/verify-email")
+    ApiResponse<TokenResponse> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        return ApiResponse.ok(authService.verifyEmail(request));
+    }
+
+    @PostMapping("/resend-otp")
+    ApiResponse<Void> resendOtp(@Valid @RequestBody ResendOtpRequest request) {
+        authService.resendOtp(request);
+        return ApiResponse.ok(null);
     }
 
     @PostMapping("/login")
