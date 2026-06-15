@@ -31,23 +31,24 @@ public class CartService {
         BigDecimal price = products.getProductPrice(request.productId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Product " + request.productId() + " not found"));
-        Map<Long, CartItem> cart = carts.find(userId);
-        CartItem existing = cart.get(request.productId());
+        Map<String, CartItem> cart = carts.find(userId);
+        String itemId = generateItemId(request.productId(), request.color(), request.size());
+        CartItem existing = cart.get(itemId);
         int quantity = request.quantity() + (existing == null ? 0 : existing.quantity());
-        carts.put(userId, new CartItem(request.productId(), price, quantity, Instant.now()));
+        carts.put(userId, itemId, new CartItem(request.productId(), price, quantity, request.color(), request.size(), Instant.now()));
         return toCart(userId);
     }
 
-    public CartResponse updateItemQuantity(String userId, Long productId, CartItemRequest request) {
-        BigDecimal price = products.getProductPrice(productId)
+    public CartResponse updateItemQuantity(String userId, String itemId, CartItemRequest request) {
+        BigDecimal price = products.getProductPrice(request.productId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Product " + productId + " not found"));
-        carts.put(userId, new CartItem(productId, price, request.quantity(), Instant.now()));
+                        "Product " + request.productId() + " not found"));
+        carts.put(userId, itemId, new CartItem(request.productId(), price, request.quantity(), request.color(), request.size(), Instant.now()));
         return toCart(userId);
     }
 
-    public CartResponse removeItemFromCart(String userId, Long productId) {
-        carts.remove(userId, productId);
+    public CartResponse removeItemFromCart(String userId, String itemId) {
+        carts.remove(userId, itemId);
         return toCart(userId);
     }
 
@@ -57,11 +58,18 @@ public class CartService {
     }
 
     private CartResponse toCart(String userId) {
-        List<CartItemResponse> items = carts.find(userId).values().stream()
-                .map(item -> new CartItemResponse(item.productId(), item.price(),
-                        item.quantity(), item.price().multiply(BigDecimal.valueOf(item.quantity()))))
+        List<CartItemResponse> items = carts.find(userId).entrySet().stream()
+                .map(entry -> {
+                    CartItem item = entry.getValue();
+                    return new CartItemResponse(entry.getKey(), item.productId(), item.color(), item.size(), item.price(),
+                            item.quantity(), item.price().multiply(BigDecimal.valueOf(item.quantity())));
+                })
                 .toList();
         return new CartResponse(userId, items, items.stream().map(CartItemResponse::subtotal).reduce(BigDecimal.ZERO, BigDecimal::add),
                 items.stream().mapToInt(CartItemResponse::quantity).sum());
+    }
+
+    private String generateItemId(Long productId, String color, String size) {
+        return productId + "_" + (color != null ? color : "null") + "_" + (size != null ? size : "null");
     }
 }

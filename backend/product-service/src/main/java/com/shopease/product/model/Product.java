@@ -74,6 +74,16 @@ public class Product {
     @Column(name = "image_url")
     private List<String> imageUrls = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_colors", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "color")
+    private List<String> colors = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_sizes", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "size")
+    private List<String> sizes = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductStatus status;
@@ -97,6 +107,7 @@ public class Product {
     public Product(String name, String slug, String description, Category category, BigDecimal basePrice,
                    BigDecimal salePrice, int stockQuantity, double avgRating, int reviewCount, int soldCount,
                    BigDecimal weightKg, String sellerId, String thumbnailUrl, List<String> imageUrls,
+                   List<String> colors, List<String> sizes,
                    ProductStatus status, boolean isFeatured, boolean active, Instant createdAt) {
         this.name = name;
         this.slug = slug;
@@ -112,6 +123,8 @@ public class Product {
         this.sellerId = sellerId;
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls = new ArrayList<>(imageUrls);
+        this.colors = colors != null ? new ArrayList<>(colors) : new ArrayList<>();
+        this.sizes = sizes != null ? new ArrayList<>(sizes) : new ArrayList<>();
         this.status = status;
         this.isFeatured = isFeatured;
         this.active = active;
@@ -121,7 +134,7 @@ public class Product {
 
     public void update(String name, String slug, String description, Category category, BigDecimal basePrice,
                        BigDecimal salePrice, int stockQuantity, BigDecimal weightKg, String sellerId,
-                       String thumbnailUrl, List<String> imageUrls, ProductStatus status, boolean isFeatured) {
+                       String thumbnailUrl, List<String> imageUrls, List<String> colors, List<String> sizes, ProductStatus status, boolean isFeatured) {
         this.name = name;
         this.slug = slug;
         this.description = description;
@@ -134,6 +147,10 @@ public class Product {
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls.clear();
         this.imageUrls.addAll(imageUrls);
+        this.colors.clear();
+        if (colors != null) this.colors.addAll(colors);
+        this.sizes.clear();
+        if (sizes != null) this.sizes.addAll(sizes);
         this.status = status;
         this.isFeatured = isFeatured;
     }

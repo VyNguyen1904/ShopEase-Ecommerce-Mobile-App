@@ -7,6 +7,7 @@ import '../../../core/models/product.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
 import '../../cart/providers/cart_provider.dart';
+import '../../product/widgets/product_variant_sheet.dart';
 
 class HomeProductCard extends StatelessWidget {
   final Product product;
@@ -158,6 +159,14 @@ class HomeProductCard extends StatelessWidget {
                                 color: AppColors.textGrey,
                               ),
                             ),
+                            const Spacer(),
+                            Text(
+                              'Đã bán ${product.salesCount}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -208,30 +217,16 @@ class HomeProductCard extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () async {
-                            try {
-                              final pId = int.tryParse(product.id) ?? 0;
-                              await ref.read(cartProvider.notifier).addToCart(pId, 1);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
-                                    backgroundColor: AppColors.primary,
-                                    duration: Duration(seconds: 1),
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Không thể thêm: $e'),
-                                    backgroundColor: Colors.red,
-                                    duration: const Duration(seconds: 1),
-                                  ),
-                                );
-                              }
-                            }
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => Padding(
+                                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                child: ProductVariantSheet(product: product),
+                              ),
+                            );
                           },
                           child: Container(
                             padding: const EdgeInsets.all(6),

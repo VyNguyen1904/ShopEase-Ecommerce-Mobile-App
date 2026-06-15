@@ -20,7 +20,7 @@ class CartItemWidget extends ConsumerWidget {
           Checkbox(
             value: item.selected,
             onChanged: (bool? value) {
-              ref.read(cartProvider.notifier).toggleItemSelection(item.productId, value ?? false);
+              ref.read(cartProvider.notifier).toggleItemSelection(item.itemId, value ?? false);
             },
             activeColor: AppColors.textDark,
             shape: RoundedRectangleBorder(
@@ -77,7 +77,7 @@ class CartItemWidget extends ConsumerWidget {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
-                        ref.read(cartProvider.notifier).removeItem(item.productId);
+                        ref.read(cartProvider.notifier).removeItem(item.itemId);
                       },
                       child: const Icon(
                         Icons.close,
@@ -129,7 +129,7 @@ class CartItemWidget extends ConsumerWidget {
                             onPressed: () {
                               if (item.quantity > 1) {
                                 ref.read(cartProvider.notifier).updateQuantity(
-                                      item.productId,
+                                      item.itemId,
                                       item.quantity - 1,
                                     );
                               }
@@ -151,7 +151,7 @@ class CartItemWidget extends ConsumerWidget {
                             icon: const Icon(Icons.add, size: 16),
                             onPressed: () {
                               ref.read(cartProvider.notifier).updateQuantity(
-                                    item.productId,
+                                    item.itemId,
                                     item.quantity + 1,
                                   );
                             },

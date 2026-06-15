@@ -63,7 +63,8 @@ class CartService {
                 item.productImageUrl = productData['images'][0];
               }
 
-              item.productVariant = 'Default';
+              item.productVariant = [item.color, item.size].where((e) => e != null && e.isNotEmpty).join(', ');
+              if (item.productVariant!.isEmpty) item.productVariant = 'Default';
             }
           } catch (e) {
             // Fallback if product cannot be fetched
@@ -80,38 +81,51 @@ class CartService {
 
   Future<void> updateQuantity(
     String userId,
+    String itemId,
     int productId,
     int quantity,
+    String? color,
+    String? size,
   ) async {
     try {
       final options = await _getAuthOptions();
       await _dio.put(
-        '$_baseUrl/items/$productId',
+        '$_baseUrl/items/$itemId',
         options: options,
-        data: {'productId': productId, 'quantity': quantity},
+        data: {
+          'productId': productId,
+          'quantity': quantity,
+          if (color != null) 'color': color,
+          if (size != null) 'size': size,
+        },
       );
     } catch (e) {
       throw Exception('Failed to update quantity');
     }
   }
 
-  Future<void> addItem(String userId, int productId, int quantity) async {
+  Future<void> addItem(String userId, int productId, int quantity, {String? color, String? size}) async {
     try {
       final options = await _getAuthOptions();
       await _dio.post(
         '$_baseUrl/items',
         options: options,
-        data: {'productId': productId, 'quantity': quantity},
+        data: {
+          'productId': productId,
+          'quantity': quantity,
+          if (color != null) 'color': color,
+          if (size != null) 'size': size,
+        },
       );
     } catch (e) {
       throw Exception('Failed to add item to cart: $e');
     }
   }
 
-  Future<void> removeItem(String userId, int productId) async {
+  Future<void> removeItem(String userId, String itemId) async {
     try {
       final options = await _getAuthOptions();
-      await _dio.delete('$_baseUrl/items/$productId', options: options);
+      await _dio.delete('$_baseUrl/items/$itemId', options: options);
     } catch (e) {
       throw Exception('Failed to remove item');
     }

@@ -9,7 +9,7 @@ class Product {
   final int reviewsCount;
   final int salesCount;
   final List<String> sizes;
-  final List<int> colors; // List of ARGB hex values
+  final List<String> colors;
   final String description;
 
   const Product({
@@ -55,7 +55,7 @@ class Product {
       reviewsCount: (json['reviewCount'] as num?)?.toInt() ?? (json['reviewsCount'] as num?)?.toInt() ?? 0,
       salesCount: (json['soldCount'] as num?)?.toInt() ?? (json['salesCount'] as num?)?.toInt() ?? 0,
       sizes: (json['sizes'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      colors: (json['colors'] as List?)?.map((e) => int.tryParse(e.toString()) ?? 0).toList() ?? [],
+      colors: (json['colors'] as List?)?.map((e) => e.toString()).toList() ?? [],
       description: json['description'] ?? '',
     );
   }

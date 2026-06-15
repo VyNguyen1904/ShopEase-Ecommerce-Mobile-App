@@ -155,7 +155,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               final city = addrParts.length > 1 ? addrParts[1] : (address.address2.isNotEmpty ? address.address2 : 'N/A');
 
               final req = CreateOrderRequest(
-                items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity)).toList(),
+                items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity, color: i.color, size: i.size)).toList(),
                 shipRecipient: address.name,
                 shipPhone: address.phone,
                 shipStreet: address.address1,
@@ -186,7 +186,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     
                     final cartNotifier = ref.read(cartProvider.notifier);
                     for (var item in items) {
-                      cartNotifier.removeItem(item.productId);
+                      cartNotifier.removeItem(item.itemId);
                     }
                     return;
                   }
@@ -200,7 +200,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
               final cartNotifier = ref.read(cartProvider.notifier);
               for (var item in items) {
-                cartNotifier.removeItem(item.productId);
+                cartNotifier.removeItem(item.itemId);
               }
             } catch (e) {
               if (mounted) {

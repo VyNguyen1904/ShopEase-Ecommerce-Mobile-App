@@ -15,10 +15,10 @@ spring:
   flyway:
     enabled: false
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: nguyenvy1904@gmail.com
-    password: fsmjlpgkokvsnljv
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:nguyenvy19042005@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:

@@ -14,20 +14,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CartRepository {
     private static final String KEY_PREFIX = "cart:";
-    private final HashOperations<String, Long, CartItem> carts;
+    private final HashOperations<String, String, CartItem> carts;
 
 
 
-    public Map<Long, CartItem> find(String userId) {
+    public Map<String, CartItem> find(String userId) {
         return new LinkedHashMap<>(carts.entries(key(userId)));
     }
 
-    public void put(String userId, CartItem item) {
-        carts.put(key(userId), item.productId(), item);
+    public void put(String userId, String itemId, CartItem item) {
+        carts.put(key(userId), itemId, item);
     }
 
-    public void remove(String userId, Long productId) {
-        carts.delete(key(userId), productId);
+    public void remove(String userId, String itemId) {
+        carts.delete(key(userId), itemId);
     }
 
     public void clear(String userId) {

@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.Comparator;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,14 +51,38 @@ public class ProductService {
         return CategoryResponse.from(categories.save(category));
     }
 
-    public List<ProductResponse> listProducts(String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice) {
+    public List<ProductResponse> listProducts(String keyword, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, String sortBy, String sortDir) {
         String q = keyword == null ? "" : keyword.toLowerCase(Locale.ROOT);
+
+        Comparator<Product> comparator;
+        switch (sortBy != null ? sortBy.toLowerCase() : "") {
+            case "price":
+                comparator = Comparator.comparing(p -> p.getSalePrice() != null ? p.getSalePrice() : p.getBasePrice());
+                break;
+            case "createdat":
+                comparator = Comparator.comparing(Product::getCreatedAt);
+                break;
+            case "soldcount":
+                comparator = Comparator.comparing(Product::getSoldCount);
+                break;
+            case "avgrating":
+                comparator = Comparator.comparing(Product::getAvgRating);
+                break;
+            default:
+                comparator = Comparator.comparing(Product::getId);
+        }
+
+        if ("desc".equalsIgnoreCase(sortDir)) {
+            comparator = comparator.reversed();
+        }
+
         return products.findByActiveTrueOrderByIdAsc().stream()
                 .filter(product -> q.isBlank() || product.getName().toLowerCase(Locale.ROOT).contains(q)
                         || product.getDescription().toLowerCase(Locale.ROOT).contains(q))
                 .filter(product -> categoryId == null || product.getCategory().getId().equals(categoryId))
                 .filter(product -> minPrice == null || product.getBasePrice().compareTo(minPrice) >= 0)
                 .filter(product -> maxPrice == null || (product.getSalePrice() != null ? product.getSalePrice().compareTo(maxPrice) <= 0 : product.getBasePrice().compareTo(maxPrice) <= 0))
+                .sorted(comparator)
                 .map(ProductResponse::from).toList();
     }
 
@@ -103,6 +128,8 @@ public class ProductService {
                 existing.getSellerId(), // Keep the original seller ID
                 request.thumbnailUrl(),
                 request.imageUrls() == null ? List.of() : request.imageUrls(),
+                request.colors() == null ? List.of() : request.colors(),
+                request.sizes() == null ? List.of() : request.sizes(),
                 request.status() != null ? request.status() : existing.getStatus(),
                 request.isFeatured()
         );
@@ -151,6 +178,8 @@ public class ProductService {
                 sellerId,
                 request.thumbnailUrl(),
                 request.imageUrls() == null ? List.of() : request.imageUrls(),
+                request.colors() == null ? List.of() : request.colors(),
+                request.sizes() == null ? List.of() : request.sizes(),
                 request.status() != null ? request.status() : ProductStatus.DRAFT,
                 request.isFeatured(),
                 true, // active

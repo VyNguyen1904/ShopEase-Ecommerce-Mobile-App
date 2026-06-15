@@ -61,10 +61,10 @@ class ProductService {
 
   // --- Products ---
 
-  Future<List<Product>> getProducts({int page = 0, int size = 20}) async {
+  Future<List<Product>> getProducts({int page = 0, int size = 20, String sortBy = 'createdAt', String sortDir = 'desc'}) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.get('$_productUrl?page=$page&size=$size', options: options);
+      final response = await _dio.get('$_productUrl?page=$page&size=$size&sortBy=$sortBy&sortDir=$sortDir', options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
       
@@ -75,10 +75,10 @@ class ProductService {
     }
   }
 
-  Future<List<Product>> searchProducts(String query, {int page = 0, int size = 20}) async {
+  Future<List<Product>> searchProducts(String query, {int page = 0, int size = 20, String sortBy = 'createdAt', String sortDir = 'desc'}) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.get('$_productUrl/search?query=$query&page=$page&size=$size', options: options);
+      final response = await _dio.get('$_productUrl/search?query=$query&page=$page&size=$size&sortBy=$sortBy&sortDir=$sortDir', options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
       

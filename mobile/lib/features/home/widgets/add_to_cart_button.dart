@@ -3,38 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../cart/providers/cart_provider.dart';
 
-class AddToCartButton extends ConsumerWidget {
-  final String productId;
+import '../../../core/models/product.dart';
+import '../../product/widgets/product_variant_sheet.dart';
 
-  const AddToCartButton({super.key, required this.productId});
+class AddToCartButton extends StatelessWidget {
+  final Product product;
+
+  const AddToCartButton({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        try {
-          final pId = int.tryParse(productId) ?? 0;
-          await ref.read(cartProvider.notifier).addToCart(pId, 1);
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Đã thêm sản phẩm vào giềEhàng!'),
-                backgroundColor: AppColors.primary,
-                duration: Duration(seconds: 1),
-              ),
-            );
-          }
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Không thểthêm: $e'),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          }
-        }
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: ProductVariantSheet(product: product),
+          ),
+        );
       },
       child: Container(
         padding: const EdgeInsets.all(6),

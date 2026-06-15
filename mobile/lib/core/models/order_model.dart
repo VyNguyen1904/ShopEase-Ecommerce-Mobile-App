@@ -16,12 +16,16 @@ enum PaymentStatus {
 class OrderItemRequest {
   final int productId;
   final int quantity;
+  final String? color;
+  final String? size;
 
-  OrderItemRequest({required this.productId, required this.quantity});
+  OrderItemRequest({required this.productId, required this.quantity, this.color, this.size});
 
   Map<String, dynamic> toJson() => {
     'productId': productId,
     'quantity': quantity,
+    if (color != null) 'color': color,
+    if (size != null) 'size': size,
   };
 }
 

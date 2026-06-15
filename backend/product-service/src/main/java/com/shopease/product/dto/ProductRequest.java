@@ -20,6 +20,8 @@ public record ProductRequest(
         BigDecimal weightKg,
         @Size(max = 1000) String thumbnailUrl,
         List<String> imageUrls,
+        List<String> colors,
+        List<String> sizes,
         ProductStatus status,
         boolean isFeatured
 ) {
