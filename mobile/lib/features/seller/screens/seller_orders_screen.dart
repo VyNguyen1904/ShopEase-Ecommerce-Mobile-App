@@ -7,6 +7,7 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerOrdersScreen extends ConsumerStatefulWidget {
   const SellerOrdersScreen({super.key});
@@ -22,43 +23,35 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
   String _mapStatus(OrderStatus status) {
     switch (status) {
       case OrderStatus.PENDING:
-        return 'Mới';
+        return AppStrings.newStatus;
       case OrderStatus.CONFIRMED:
-        return 'Đang xử lý';
+        return AppStrings.processingStatus;
       case OrderStatus.SHIPPING:
-        return 'Đang giao';
+        return AppStrings.shipping;
       case OrderStatus.DELIVERED:
-        return 'Đã giao';
+        return AppStrings.delivered;
       case OrderStatus.CANCELLED:
-        return 'Đã hủy';
+        return AppStrings.cancelled;
     }
   }
 
   Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Đã giao':
-        return Colors.green;
-      case 'Đã hủy':
-        return Colors.red;
-      case 'Mới':
-      case 'Đang xử lý':
-      case 'Đang giao':
-      default:
-        return Colors.orange;
+    if (status == AppStrings.delivered) {
+      return Colors.green;
+    } else if (status == AppStrings.cancelled) {
+      return Colors.red;
+    } else {
+      return Colors.orange;
     }
   }
 
   Color _getStatusBgColor(String status) {
-    switch (status) {
-      case 'Đã giao':
-        return Colors.green.shade50;
-      case 'Đã hủy':
-        return Colors.red.shade50;
-      case 'Mới':
-      case 'Đang xử lý':
-      case 'Đang giao':
-      default:
-        return Colors.orange.shade50;
+    if (status == AppStrings.delivered) {
+      return Colors.green.shade50;
+    } else if (status == AppStrings.cancelled) {
+      return Colors.red.shade50;
+    } else {
+      return Colors.orange.shade50;
     }
   }
 
@@ -94,7 +87,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Đơn hàng của tôi',
+          AppStrings.myOrders,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -128,11 +121,11 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
                 fontSize: 14,
               ),
               tabs: const [
-                Tab(text: 'Tất cả'),
-                Tab(text: 'Mới'),
-                Tab(text: 'Đang xử lý'),
-                Tab(text: 'Đã giao'),
-                Tab(text: 'Đã hủy'),
+                Tab(text: AppStrings.all),
+                Tab(text: AppStrings.newStatus),
+                Tab(text: AppStrings.processingStatus),
+                Tab(text: AppStrings.delivered),
+                Tab(text: AppStrings.cancelled),
               ],
             ),
           ),
@@ -143,11 +136,11 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
           return TabBarView(
             controller: _tabController,
             children: [
-              _buildOrderList(orders, 'Tất cả'),
-              _buildOrderList(orders, 'Mới'),
-              _buildOrderList(orders, 'Đang xử lý'),
-              _buildOrderList(orders, 'Đã giao'),
-              _buildOrderList(orders, 'Đã hủy'),
+              _buildOrderList(orders, AppStrings.all),
+              _buildOrderList(orders, AppStrings.newStatus),
+              _buildOrderList(orders, AppStrings.processingStatus),
+              _buildOrderList(orders, AppStrings.delivered),
+              _buildOrderList(orders, AppStrings.cancelled),
             ],
           );
         },
@@ -161,7 +154,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
             onPressed: () {},
             icon: const Icon(Icons.receipt_long, color: Colors.white),
             label: const Text(
-              'Xem tất cả đơn hàng',
+              AppStrings.viewAllOrders,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -183,16 +176,16 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
   }
 
   Widget _buildOrderList(List<OrderResponse> orders, String tabStatus) {
-    final filteredOrders = tabStatus == 'Tất cả' 
+    final filteredOrders = tabStatus == AppStrings.all 
       ? orders 
       : orders.where((o) {
           final st = _mapStatus(o.status);
-          if (tabStatus == 'Đang xử lý' && (st == 'Đang xử lý' || st == 'Đang giao')) return true;
+          if (tabStatus == AppStrings.processingStatus && (st == AppStrings.processingStatus || st == AppStrings.shipping)) return true;
           return st == tabStatus;
         }).toList();
 
     if (filteredOrders.isEmpty) {
-      return const Center(child: Text('Không có đơn hàng nào', style: TextStyle(color: AppColors.textGrey)));
+      return const Center(child: Text(AppStrings.noOrdersList, style: TextStyle(color: AppColors.textGrey)));
     }
 
     return ListView.builder(

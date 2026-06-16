@@ -233,13 +233,123 @@ class AppStrings {
   static const String noOrdersFound = "Chưa có đơn hàng nào";
   static const String cancelOrderSuccess = "Đã huỷ đơn hàng thành công";
 
+  // Seller Dashboard
+  static const String helloPrefix = "Xin chào, ";
+  static const String shopOverviewDesc = "Đây là tổng quan cửa hàng của bạn";
+  static const String revenue = "Doanh thu";
+  static const String totalRevenue = "Tổng doanh thu";
+  static const String totalOrders = "Tổng số đơn";
+  static const String quickActions = "Thao tác nhanh";
+  static const String addProduct = "Thêm sản phẩm";
+  static const String reports = "Báo cáo";
+  static const String recentOrders = "Đơn hàng gần đây";
+  static const String loadOrderError = "Lỗi tải đơn hàng: ";
+  
+  // Seller Orders & Products
+  static const String newStatus = "Mới";
+  static const String processingStatus = "Đang xử lý";
+  static const String confirmed = "Đã xác nhận";
+  static const String viewAllOrders = "Xem tất cả đơn hàng";
+  static const String noOrdersList = "Không có đơn hàng nào";
+  static const String inStock = "Còn hàng";
+  static const String outOfStock = "Hết hàng";
+  static const String pleaseLogin = "Vui lòng đăng nhập";
+  static const String noProductsList = "Chưa có sản phẩm nào.";
+  static const String packedStatus = "Đã đóng gói";
+  static const String completedStatus = "Hoàn thành";
+  static const String orderDetail = "Chi tiết đơn hàng";
+  static const String customerInfo = "Thông tin khách hàng";
+  static const String defaultAddress = "Mặc định";
+  static const String method = "Phương thức";
+  static const String orderHistory = "Lịch sử đơn hàng";
+  static const String orderPlacedHistory = "Đơn hàng đã được đặt";
+  static const String orderConfirmedMsg = "Đơn hàng đã xác nhận";
+  static const String you = "Bạn";
+  static const String orderShippingMsg = "Đơn hàng đang giao";
+  static const String orderDeliveredMsg = "Đơn hàng đã giao thành công";
+  static const String updateOrderStatus = "Cập nhật trạng thái đơn hàng";
+  static const String confirmDelivered = "Xác nhận Đã giao";
+
+  // Seller Add Product
+  static const String addNewProduct = "Thêm sản phẩm mới";
+  static const String productInfo = "Thông tin sản phẩm";
+  static const String productName = "Tên sản phẩm";
+  static const String enterProductName = "Nhập tên sản phẩm";
+  static const String sellingPrice = "Giá bán";
+  static const String enterPrice = "Nhập giá bán";
+  static const String category = "Danh mục";
+  static const String selectCategory = "Chọn danh mục";
+  static const String stockQuantity = "Số lượng tồn kho";
+  static const String enterStockQuantity = "Nhập số lượng tồn kho";
+  static const String enterProductDesc = "Nhập mô tả chi tiết về sản phẩm...";
+  static const String saveProduct = "Lưu sản phẩm";
+  static const String uploadProductImage = "Tải ảnh sản phẩm";
+  static const String imageUploadHint = "JPG, PNG hoặc WEBP. Tối đa 10MB";
+
+  // Seller Shop Profile
+  static const String followers = " Người theo dõi";
+  static const String follow = "Theo dõi";
+  static const String chat = "Chat";
+  static const String shop = "Shop";
+  static const String reviews = "Đánh giá";
+  static const String shopInfo = "Giới thiệu shop";
+  static const String featuredProducts = "Sản phẩm nổi bật";
+
+  // Admin Dashboard
+  static const String welcomeAdmin = "Chào mừng trở lại, Admin";
+  static const String adminGreeting = "Chúc bạn một ngày làm việc hiệu quả!";
+  static const String storefront = "Cửa hàng";
+  static const String loadDataErrorPrefix = "Không thể tải dữ liệu: ";
+  static const String activityOverview = "Tổng quan hoạt động";
+  static const String members = "Thành viên";
+  static const String activeStatus = " hoạt động";
+  static const String aov = "AOV (Đơn tb)";
+  static const String salesAndOrders = "Doanh số & Đơn hàng";
+  static const String last7Days = "7 ngày qua";
+  static const String popularCategories = "Danh mục phổ biến";
+  static const String memberGrowth = "Tăng trưởng thành viên";
+  static const String adminFunctions = "Chức năng quản trị";
+  static const String manageUsers = "Quản lý người dùng";
+  static const String systemConfig = "Cấu hình hệ thống";
+  static const String systemLogs = "Nhật ký hệ thống";
+  static const String returnToHome = "Trở về trang chủ";
+  static const String systemSettingsTitle = "Cài đặt hệ thống";
+  static const String maintenanceMode = "Bảo trì hệ thống";
+  static const String allowNewRegistration = "Cho phép đăng ký mới";
+  static const String saveConfig = "Lưu cấu hình";
+  static const String gatewayLogs = "Nhật ký Gateway";
+  static const String refresh = "Làm mới";
+  static const String actionLabel = "Thao tác";
+  static const String roleLabel = "Vai trò";
+  static const String customers = "Khách hàng";
+  static const String system = "Hệ thống";
+
+  // Admin User Management
+  static const String userManagement = "Quản lý người dùng";
+  static const String addUser = "Thêm người dùng";
+  static const String totalUsers = "Tổng số người dùng";
+  static const String activeAccounts = "Tài khoản hoạt động";
+  static const String totalSellers = "Tổng số người bán";
+  static const String administrators = "Quản trị viên";
+  static const String colUsername = "TÊN NGƯỜI DÙNG";
+  static const String colEmail = "ĐỊA CHỈ EMAIL";
+  static const String colRole = "VAI TRÒ";
+  static const String colStatus = "TRẠNG THÁI";
+  static const String colActions = "THAO TÁC";
+  static const String activeStatusLabel = "Đang hoạt động";
+  static const String blockedStatusLabel = "Đã khóa";
+  static const String createNewUser = "Tạo người dùng mới";
+  static const String editUser = "Chỉnh sửa người dùng";
+  static const String confirmDeleteTitle = "Xác nhận xóa";
+  static const String deleteUserConfirmMsgPrefix = "Bạn có chắc chắn muốn xóa người dùng \"";
+  static const String deleteUserConfirmMsgSuffix = "\"? Hành động này không thể hoàn tác.";
+
   // Notifications & Chat
   static const String notifications = "Thông báo";
   static const String orders = "Đơn hàng";
   static const String promotions = "Khuyến mãi";
   static const String vouchers = "Voucher";
   static const String messages = "Tin nhắn";
-  static const String system = "Hệ thống";
   static const String today = "Hôm nay";
   static const String yesterday = "Hôm qua";
   static const String earlier = "Trước đó";

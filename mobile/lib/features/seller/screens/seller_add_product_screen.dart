@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerAddProductScreen extends StatelessWidget {
   const SellerAddProductScreen({super.key});
@@ -17,7 +18,7 @@ class SellerAddProductScreen extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Thêm sản phẩm mới',
+          AppStrings.addNewProduct,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -34,7 +35,7 @@ class SellerAddProductScreen extends StatelessWidget {
             _buildImageUpload(),
             const SizedBox(height: 32),
             const Text(
-              'Thông tin sản phẩm',
+              AppStrings.productInfo,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -44,34 +45,34 @@ class SellerAddProductScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildInputField(
               icon: Icons.shopping_bag_outlined,
-              label: 'Tên sản phẩm',
-              hintText: 'Nhập tên sản phẩm',
+              label: AppStrings.productName,
+              hintText: AppStrings.enterProductName,
             ),
             const SizedBox(height: 16),
             _buildInputField(
               icon: Icons.local_offer_outlined,
-              label: 'Giá bán (āE',
-              hintText: 'Nhập giá bán',
+              label: AppStrings.sellingPrice,
+              hintText: AppStrings.enterPrice,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
             _buildDropdownField(
               icon: Icons.grid_view,
-              label: 'Danh mục',
-              hintText: 'Chọn danh mục',
+              label: AppStrings.category,
+              hintText: AppStrings.selectCategory,
             ),
             const SizedBox(height: 16),
             _buildInputField(
               icon: Icons.inventory_2_outlined,
-              label: 'Số lượng tồn kho',
-              hintText: 'Nhập sềElượng tồn kho',
+              label: AppStrings.stockQuantity,
+              hintText: AppStrings.enterStockQuantity,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
             _buildTextAreaField(
               icon: Icons.description_outlined,
-              label: 'Mô tả sản phẩm',
-              hintText: 'Nhập mô tả chi tiết về sản phẩm...',
+              label: AppStrings.productDescTitle,
+              hintText: AppStrings.enterProductDesc,
             ),
           ],
         ),
@@ -83,7 +84,7 @@ class SellerAddProductScreen extends StatelessWidget {
             onPressed: () {},
             icon: const Icon(Icons.save_outlined, color: Colors.white),
             label: const Text(
-              'Lưu sản phẩm',
+              AppStrings.saveProduct,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -141,7 +142,7 @@ class SellerAddProductScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Tải ảnh sản phẩm',
+            AppStrings.uploadProductImage,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -150,7 +151,7 @@ class SellerAddProductScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'JPG, PNG hoặc WEBP. Tối đa 10MB',
+            AppStrings.imageUploadHint,
             style: TextStyle(
               fontSize: 12,
               color: AppColors.textGrey,

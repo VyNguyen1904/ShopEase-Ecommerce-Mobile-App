@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/services/admin_user_service.dart';
+import '../../../core/constants/app_strings.dart';
 
 class UserDirectoryScreen extends StatefulWidget {
   const UserDirectoryScreen({super.key});
@@ -111,12 +112,12 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('Confirm Delete', style: TextStyle(fontWeight: FontWeight.bold)),
-          content: Text('Are you sure you want to delete user "${user.username}"? This action cannot be undone.'),
+          title: const Text(AppStrings.confirmDeleteTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Text('${AppStrings.deleteUserConfirmMsgPrefix}${user.username}${AppStrings.deleteUserConfirmMsgSuffix}'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text(AppStrings.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -129,7 +130,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
-              child: const Text('Delete'),
+              child: const Text(AppStrings.delete),
             ),
           ],
         );
@@ -158,10 +159,10 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
               mainAxisExtent: 88,
             ),
             children: [
-              _buildStatCard('Total Users', total.toString(), Icons.people_outline, Colors.indigo),
-              _buildStatCard('Active Accounts', active.toString(), Icons.check_circle_outline, Colors.teal),
-              _buildStatCard('Total Sellers', sellers.toString(), Icons.storefront_outlined, Colors.blue),
-              _buildStatCard('Administrators', admins.toString(), Icons.admin_panel_settings_outlined, Colors.red),
+              _buildStatCard(AppStrings.totalUsers, total.toString(), Icons.people_outline, Colors.indigo),
+              _buildStatCard(AppStrings.activeAccounts, active.toString(), Icons.check_circle_outline, Colors.teal),
+              _buildStatCard(AppStrings.totalSellers, sellers.toString(), Icons.storefront_outlined, Colors.blue),
+              _buildStatCard(AppStrings.administrators, admins.toString(), Icons.admin_panel_settings_outlined, Colors.red),
             ],
           );
         },
@@ -240,7 +241,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'User Management',
+          AppStrings.userManagement,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -312,7 +313,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                                         Expanded(
                                           flex: 3,
                                           child: Text(
-                                            'USERNAME',
+                                            AppStrings.colUsername,
                                             style: TextStyle(
                                               color: AppColors.textGrey,
                                               fontWeight: FontWeight.bold,
@@ -324,7 +325,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                                         Expanded(
                                           flex: 4,
                                           child: Text(
-                                            'EMAIL ADDRESS',
+                                            AppStrings.colEmail,
                                             style: TextStyle(
                                               color: AppColors.textGrey,
                                               fontWeight: FontWeight.bold,
@@ -336,7 +337,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                                         Expanded(
                                           flex: 2,
                                           child: Text(
-                                            'ROLE',
+                                            AppStrings.colRole,
                                             style: TextStyle(
                                               color: AppColors.textGrey,
                                               fontWeight: FontWeight.bold,
@@ -348,7 +349,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                                         Expanded(
                                           flex: 3,
                                           child: Text(
-                                            'STATUS',
+                                            AppStrings.colStatus,
                                             style: TextStyle(
                                               color: AppColors.textGrey,
                                               fontWeight: FontWeight.bold,
@@ -362,7 +363,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                                           child: Align(
                                             alignment: Alignment.centerRight,
                                             child: Text(
-                                              'ACTIONS',
+                                              AppStrings.colActions,
                                               style: TextStyle(
                                                 color: AppColors.textGrey,
                                                 fontWeight: FontWeight.bold,
@@ -436,7 +437,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
         onPressed: _showCreateUserDialog,
         backgroundColor: AppColors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add User', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: const Text(AppStrings.addUser, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -594,7 +595,7 @@ class _UserRowState extends State<UserRow> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    widget.user.isEnabled ? 'Active' : 'Blocked',
+                    widget.user.isEnabled ? AppStrings.activeStatusLabel : AppStrings.blockedStatusLabel,
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
@@ -613,14 +614,14 @@ class _UserRowState extends State<UserRow> {
                   _ActionButton(
                     icon: Icons.edit_outlined,
                     color: Colors.blue,
-                    tooltip: 'Edit User',
+                    tooltip: AppStrings.editUser,
                     onPressed: () => widget.onEdit(widget.user),
                   ),
                   const SizedBox(width: 8),
                   _ActionButton(
                     icon: Icons.delete_outline_rounded,
                     color: Colors.red,
-                    tooltip: 'Delete User',
+                    tooltip: AppStrings.delete,
                     onPressed: () => widget.onDelete(widget.user),
                   ),
                 ],

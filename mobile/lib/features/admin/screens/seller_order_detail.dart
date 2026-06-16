@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerOrderDetail extends ConsumerStatefulWidget {
   final String orderId;
@@ -20,10 +21,10 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
       0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
 
   final List<String> _statusTexts = [
-    'Đang xử lý',
-    'Đã đóng gói',
-    'Đang giao',
-    'Hoàn thành',
+    AppStrings.processingStatus,
+    AppStrings.packedStatus,
+    AppStrings.shipping,
+    AppStrings.completedStatus,
   ];
 
   String _formatCurrency(double amount) {
@@ -46,7 +47,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Chi tiết đơn hàng',
+          AppStrings.orderDetail,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -112,7 +113,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    step == -1 ? 'Đã huỷ' : _statusTexts[step],
+                                    step == -1 ? AppStrings.cancelled : _statusTexts[step],
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -128,7 +129,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt)}  •  Thanh toán: ${order.paymentMethod}',
+                              '${DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt)}  •  ${AppStrings.paymentMethodPrefix} ${order.paymentMethod}',
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textGrey,
@@ -141,7 +142,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
 
                   // 2. Customer info "Thông tin khách hàng"
                   _buildSectionContainer(
-                    title: 'Thông tin khách hàng',
+                    title: AppStrings.customerInfo,
                     icon: Icons.person_outline,
                     child: Row(
                       children: [
@@ -197,7 +198,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
 
                   // 3. Delivery address "Địa chỉ giao hàng" (with map)
                   _buildSectionContainer(
-                    title: 'Địa chỉ giao hàng',
+                    title: AppStrings.shippingAddress,
                     icon: Icons.location_on_outlined,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +219,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                   ),
                                   const SizedBox(width: 8),
                                   const Text(
-                                    'Mặc định',
+                                    AppStrings.defaultAddress,
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: AppColors.primary,
@@ -270,7 +271,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
 
                   // 4. Products section
                   _buildSectionContainer(
-                    title: 'Sản phẩm',
+                    title: AppStrings.products,
                     icon: Icons.inventory_2_outlined,
                     child: Column(
                       children: [
@@ -333,7 +334,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Phí vận chuyển',
+                              AppStrings.shippingFee,
                               style: TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textGrey,
@@ -354,7 +355,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              'Tổng tiền',
+                              AppStrings.totalAmount,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -378,7 +379,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
 
                   // 5. Payment Details
                   _buildSectionContainer(
-                    title: 'Thanh toán',
+                    title: AppStrings.paymentMethod,
                     icon: Icons.credit_card_outlined,
                     child: Column(
                       children: [
@@ -386,7 +387,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              'Phương thức',
+                              AppStrings.method,
                               style: TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textGrey,
@@ -410,32 +411,32 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
 
                   // 6. Timeline history "Lịch sử đơn hàng"
                   _buildSectionContainer(
-                    title: 'Lịch sử đơn hàng',
+                    title: AppStrings.orderHistory,
                     icon: Icons.history,
                     child: Column(
                       children: [
                         _buildTimelineItem(
-                          title: 'Đơn hàng đã được đặt',
+                          title: AppStrings.orderPlacedHistory,
                           time: DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt),
-                          user: 'Hệ thống',
+                          user: AppStrings.system,
                           isDone: true,
                         ),
                         _buildTimelineItem(
-                          title: 'Đơn hàng đã xác nhận',
+                          title: AppStrings.orderConfirmedMsg,
                           time: step >= 0 ? DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt) : '--:--',
-                          user: step >= 0 ? 'Hệ thống' : '---',
+                          user: step >= 0 ? AppStrings.system : '---',
                           isDone: step >= 0,
                         ),
                         _buildTimelineItem(
-                          title: 'Đơn hàng đang giao',
+                          title: AppStrings.orderShippingMsg,
                           time: step >= 2 ? '--:--' : '--:--/--/----  •  --:--',
-                          user: step >= 2 ? 'Bạn' : '---',
+                          user: step >= 2 ? AppStrings.you : '---',
                           isDone: step >= 2,
                         ),
                         _buildTimelineItem(
-                          title: 'Đơn hàng đã giao thành công',
+                          title: AppStrings.orderDeliveredMsg,
                           time: step >= 3 ? '--:--' : '--:--/--/----  •  --:--',
-                          user: step >= 3 ? 'Hệ thống' : '---',
+                          user: step >= 3 ? AppStrings.system : '---',
                           isDone: step >= 3,
                           isLast: true,
                         ),
@@ -466,7 +467,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Cập nhật trạng thái đơn hàng',
+                    AppStrings.updateOrderStatus,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -496,7 +497,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text('Xác nhận Đã giao', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          child: const Text(AppStrings.confirmDelivered, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ],
