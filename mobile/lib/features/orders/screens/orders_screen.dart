@@ -414,7 +414,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                                   } catch (e) {
                                     rootNavigator.pop(); // close loading dialog
                                     scaffoldMessenger.showSnackBar(
-                                      SnackBar(content: Text('Lỗi: $e')),
+                                      SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
                                     );
                                   }
                                 }
@@ -497,7 +497,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Lỗi: $e')),
+        error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
       ),
     );
   }

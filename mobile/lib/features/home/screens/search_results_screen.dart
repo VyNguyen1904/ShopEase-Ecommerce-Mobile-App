@@ -275,7 +275,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
                 error: (err, stack) =>
-                    Center(child: Text('Lỗi: $err')),
+                    Center(child: Text('${AppStrings.errorPrefix}$err')),
               ),
             ),
           ],

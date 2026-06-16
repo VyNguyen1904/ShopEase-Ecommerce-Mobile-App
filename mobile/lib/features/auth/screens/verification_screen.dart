@@ -85,7 +85,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: () => context.pop(),
+                onTap: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(AppRoutes.register);
+                  }
+                },
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -106,12 +112,35 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                '${AppStrings.verifySubtitle}${widget.email}',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: AppColors.textGrey.withValues(alpha: 0.8),
-                  height: 1.4,
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textGrey.withValues(alpha: 0.8),
+                    height: 1.4,
+                  ),
+                  children: [
+                    const TextSpan(text: AppStrings.verifySubtitle),
+                    TextSpan(
+                      text: widget.email,
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
+                    ),
+                    const WidgetSpan(child: SizedBox(width: 8)),
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: GestureDetector(
+                        onTap: () => context.go(AppRoutes.register),
+                        child: const Text(
+                          '(Sửa)',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 48),

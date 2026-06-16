@@ -1013,7 +1013,7 @@ class _SystemSettingsDialogState extends State<_SystemSettingsDialog> {
                       onPressed: () {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Cấu hình đã được lưu thành công!'), backgroundColor: Colors.green),
+                          const SnackBar(content: Text(AppStrings.saveConfigSuccess), backgroundColor: Colors.green),
                         );
                       },
                       style: ElevatedButton.styleFrom(

@@ -368,10 +368,33 @@ class AppStrings {
   static const String version = "Phiên bản 1.0.0";
 
   // Common Messages
+  static const String errorPrefix = "Lỗi: ";
+  static const String errorLoadCategory = "Lỗi tải danh mục";
+  static const String saveConfigSuccess = "Cấu hình đã được lưu thành công!";
+  static const String paymentSuccess = "Thanh toán thành công!";
+  static const String paymentFailedPrefix = "Thanh toán chưa hoàn tất. Trạng thái: ";
+  static const String paymentSimulatedSuccess = "Mô phỏng thanh toán thành công!";
+  static const String updateUserStatusFailed = "Failed to update status: ";
+  static const String userDeletedSuccess = "User deleted successfully";
+  static const String deleteUserFailed = "Failed to delete user: ";
+  static const String tryAgain = "Try Again";
+
   static const String networkError = "Không có kết nối mạng. Vui lòng thử lại.";
   static const String unknownError = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";
   static const String saveSuccess = "Lưu thành công";
   static const String updateSuccess = "Cập nhật thành công";
   static const String deleteSuccess = "Xóa thành công";
   static const String confirmDelete = "Bạn có chắc chắn muốn xóa không?";
+
+  // API Errors
+  static const String errBadCredentials = "Sai email hoặc mật khẩu.";
+  static const String errUserNotFound = "Không tìm thấy tài khoản với email này.";
+  static const String errEmailTaken = "Email này đã được sử dụng. Vui lòng chọn email khác.";
+  static const String errUnauthorized = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+  static const String errForbidden = "Bạn không có quyền thực hiện thao tác này.";
+  static const String errInternalServer = "Lỗi máy chủ. Vui lòng thử lại sau.";
+  static const String errConnectionTimeout = "Hết thời gian kết nối. Vui lòng kiểm tra mạng.";
+  static const String errConnectionError = "Không thể kết nối đến máy chủ. Vui lòng thử lại.";
+  static const String errServerStatus = "Lỗi máy chủ";
+  static const String errOccurred = "Đã có lỗi xảy ra: ";
 }

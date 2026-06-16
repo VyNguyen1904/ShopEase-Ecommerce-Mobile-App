@@ -486,7 +486,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                               ref.invalidate(sellerOrdersProvider);
                             } catch (e) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
                               }
                             }
                           },
@@ -509,7 +509,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
       );
     },
     loading: () => const Center(child: CircularProgressIndicator()),
-    error: (e, _) => Center(child: Text('Lỗi: $e')),
+    error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
     ));
   }
 

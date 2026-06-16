@@ -137,7 +137,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
         );
       }
     } finally {

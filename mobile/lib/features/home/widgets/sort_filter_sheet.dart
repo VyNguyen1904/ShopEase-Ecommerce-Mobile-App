@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SortFilterSheet extends StatefulWidget {
   final String currentSortBy;
@@ -59,7 +60,7 @@ class _SortFilterSheetState extends State<SortFilterSheet> {
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Áp dụng'),
+              child: const Text(AppStrings.apply),
             ),
           ),
           const SizedBox(height: 16),

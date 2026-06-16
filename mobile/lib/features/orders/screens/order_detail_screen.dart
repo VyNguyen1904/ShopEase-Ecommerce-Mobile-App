@@ -102,7 +102,7 @@ class OrderDetailScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Lỗi: $e')),
+        error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
       ),
       bottomSheet: orderAsync.hasValue ? _buildBottomActions(context, orderAsync.value!, ref) : null,
     );
@@ -637,7 +637,7 @@ class OrderDetailScreen extends ConsumerWidget {
                             } catch (e) {
                               if (context.mounted) {
                                 Navigator.pop(context); // Đóng loading
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
                               }
                             }
                           },

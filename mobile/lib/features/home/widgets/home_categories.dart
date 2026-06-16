@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/providers/category_provider.dart';
+import '../../../../core/providers/product_provider.dart';
 import 'section_title.dart';
 
 class HomeCategories extends ConsumerWidget {

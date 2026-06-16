@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/payment_provider.dart';
+import '../../../core/constants/app_strings.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -33,7 +34,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         if (statusResp.status == 'COMPLETED') {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Thanh toán thành công!'),
+              content: Text(AppStrings.paymentSuccess),
               backgroundColor: AppColors.primary,
             ),
           );
@@ -41,7 +42,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Thanh toán chưa hoàn tất. Trạng thái: ${statusResp.status}'),
+              content: Text('${AppStrings.paymentFailedPrefix}${statusResp.status}'),
               backgroundColor: AppColors.alertRed,
             ),
           );
@@ -51,7 +52,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: $e'),
+            content: Text('${AppStrings.errorPrefix}$e'),
             backgroundColor: AppColors.alertRed,
           ),
         );
@@ -70,7 +71,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Mô phỏng thanh toán thành công!'),
+            content: Text(AppStrings.paymentSimulatedSuccess),
             backgroundColor: AppColors.primary,
           ),
         );
@@ -80,7 +81,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: $e'),
+            content: Text('${AppStrings.errorPrefix}$e'),
             backgroundColor: AppColors.alertRed,
           ),
         );

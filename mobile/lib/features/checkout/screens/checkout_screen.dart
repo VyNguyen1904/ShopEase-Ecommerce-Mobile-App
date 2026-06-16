@@ -205,7 +205,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               }
             } catch (e) {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
               }
             } finally {
               if (mounted) setState(() => _isLoading = false);

@@ -224,7 +224,7 @@ class _AddressItemCard extends ConsumerWidget {
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Lỗi: $e')),
+                        SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
                       );
                     }
                   }

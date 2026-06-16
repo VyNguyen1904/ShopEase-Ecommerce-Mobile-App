@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/product_provider.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SearchFilterDrawer extends ConsumerStatefulWidget {
   const SearchFilterDrawer({super.key});
@@ -120,7 +121,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                             );
                           },
                           loading: () => const Center(child: CircularProgressIndicator()),
-                          error: (_, __) => const Text('Lỗi tải danh mục'),
+                          error: (_, __) => const Text(AppStrings.errorLoadCategory),
                         );
                       },
                     ),
@@ -231,7 +232,6 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                       onPressed: () {
                         ref.read(sortByProvider.notifier).state = 'none';
                         ref.read(sortDirProvider.notifier).state = 'desc';
-                        ref.read(sortOrderProvider.notifier).state = 'none';
                         ref.read(selectedCategorySearchProvider.notifier).state = null;
                         ref.read(minPriceProvider.notifier).state = null;
                         ref.read(maxPriceProvider.notifier).state = null;

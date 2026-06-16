@@ -145,7 +145,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Lỗi: $e')),
+        error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
