@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../widgets/address_modal.dart';
 
@@ -32,7 +33,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Địa chỉcủa tôi',
+          AppStrings.myAddress,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -47,7 +48,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
         ),
         error: (err, stack) => Center(
           child: Text(
-            'Lỗi tải địa chỉ $err',
+            '${AppStrings.addressLoadError}$err',
             style: const TextStyle(color: AppColors.alertRed),
           ),
         ),
@@ -59,7 +60,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
               if (addresses.isEmpty)
                 const Center(
                   child: Text(
-                    'Bạn chưa có địa chỉnào',
+                    AppStrings.noAddressFound,
                     style: TextStyle(color: AppColors.textGrey, fontSize: 16),
                   ),
                 )
@@ -143,7 +144,7 @@ class _AddressItemCard extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
-                          'Mặc định',
+                          AppStrings.defaultBadge,
                           style: TextStyle(
                             color: AppColors.primaryDark,
                             fontSize: 12,
@@ -217,7 +218,7 @@ class _AddressItemCard extends ConsumerWidget {
                     ref.invalidate(userProfileProvider);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Đã xóa địa chỉthành công')),
+                        const SnackBar(content: Text(AppStrings.deleteAddressSuccess)),
                       );
                     }
                   } catch (e) {
@@ -283,7 +284,7 @@ class _AddAddressButton extends StatelessWidget {
                 Icon(Icons.add, size: 20),
                 SizedBox(width: 8),
                 Text(
-                  'Thêm địa chỉmới',
+                  AppStrings.addNewAddress,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

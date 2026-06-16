@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
@@ -59,7 +60,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cập nhật thông tin thành công')),
+          const SnackBar(content: Text(AppStrings.updateProfileSuccess)),
         );
         context.pop();
       }
@@ -86,7 +87,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Thông tin cá nhân',
+          AppStrings.personalInfo,
           style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: false,
@@ -125,23 +126,23 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
               ),
               const SizedBox(height: 32),
               _buildTextField(
-                label: 'Họ và tên',
+                label: AppStrings.fullNameLabel,
                 controller: _nameController,
-                hintText: 'Nhập họ và tên',
-                validator: (value) => value == null || value.trim().isEmpty ? 'Vui lòng nhập họ tên' : null,
+                hintText: AppStrings.fullNameHint,
+                validator: (value) => value == null || value.trim().isEmpty ? AppStrings.fullNameRequired : null,
               ),
               const SizedBox(height: 24),
               _buildTextField(
-                label: 'Số điện thoại',
+                label: AppStrings.phoneLabel,
                 controller: _phoneController,
-                hintText: 'Nhập số điện thoại',
+                hintText: AppStrings.phoneHint,
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 24),
               _buildTextField(
-                label: 'Ảnh đại diện (URL)',
+                label: AppStrings.avatarLabel,
                 controller: _avatarController,
-                hintText: 'Nhập link ảnh (URL)',
+                hintText: AppStrings.avatarHint,
                 onChanged: (value) => setState(() {}),
               ),
               const SizedBox(height: 48),
@@ -156,7 +157,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   ),
                   child: _isLoading
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Lưu thay đổi', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      : const Text(AppStrings.saveChanges, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

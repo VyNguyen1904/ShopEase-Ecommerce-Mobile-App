@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
@@ -15,15 +16,15 @@ class OrderDetailScreen extends ConsumerWidget {
   String _mapStatus(OrderStatus status) {
     switch (status) {
       case OrderStatus.PENDING:
-        return 'Chờ xác nhận';
+        return AppStrings.pending;
       case OrderStatus.CONFIRMED:
-        return 'Đã xác nhận';
+        return AppStrings.pending;
       case OrderStatus.SHIPPING:
-        return 'Đang giao';
+        return AppStrings.shipping;
       case OrderStatus.DELIVERED:
-        return 'Đã giao';
+        return AppStrings.delivered;
       case OrderStatus.CANCELLED:
-        return 'Đã huỷ';
+        return AppStrings.cancelled;
     }
   }
 
@@ -68,7 +69,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Đã nhận hàng thành công!',
+                    AppStrings.receiveSuccess,
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -78,7 +79,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.',
+                    AppStrings.thankYouShopping,
                     style: TextStyle(
                       fontSize: 14,
                       color: AppColors.textGrey.withValues(alpha: 0.8),
@@ -129,7 +130,7 @@ class OrderDetailScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Mã đơn hàng',
+                  AppStrings.orderCode,
                   style: TextStyle(fontSize: 13, color: AppColors.textGrey),
                 ),
                 Text(
@@ -153,7 +154,7 @@ class OrderDetailScreen extends ConsumerWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        'Đặt ngày: ${DateFormat('dd MMM yyyy • hh:mm a').format(order.createdAt)}',
+                        '${AppStrings.orderedAt} ${DateFormat('dd MMM yyyy • hh:mm a').format(order.createdAt)}',
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textGrey.withValues(alpha: 0.8),
@@ -197,7 +198,7 @@ class OrderDetailScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildTimelineStep(
-            'Đặt hàng',
+            AppStrings.orderPlaced,
             DateFormat('dd/MM, HH:mm').format(order.createdAt),
             Icons.shopping_bag_outlined,
             true,
@@ -205,7 +206,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
           _buildTimelineLine(isConfirmed),
           _buildTimelineStep(
-            'Đang xử lý',
+            AppStrings.processing,
             '',
             Icons.inventory_2_outlined,
             isConfirmed,
@@ -213,7 +214,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
           _buildTimelineLine(isShipping),
           _buildTimelineStep(
-            'Đang giao',
+            AppStrings.shipping,
             '',
             Icons.local_shipping_outlined,
             isShipping,
@@ -221,7 +222,7 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
           _buildTimelineLine(isDelivered),
           _buildTimelineStep(
-            'Đã nhận hàng',
+            AppStrings.received,
             '',
             Icons.check,
             isDelivered,
@@ -339,7 +340,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Địa chỉ nhận hàng',
+                      AppStrings.shippingAddress,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -395,7 +396,7 @@ class OrderDetailScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Sản phẩm (${order.items.length})',
+                '${AppStrings.products} (${order.items.length})',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -479,7 +480,7 @@ class OrderDetailScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Thanh toán',
+                AppStrings.payment,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -490,7 +491,7 @@ class OrderDetailScreen extends ConsumerWidget {
               Row(
                 children: [
                   const Text(
-                    'Phương thức: ',
+                    AppStrings.paymentMethodPrefix,
                     style: TextStyle(fontSize: 12, color: AppColors.textGrey),
                   ),
                   Text(
@@ -505,7 +506,7 @@ class OrderDetailScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const Text(
-                'Tổng thanh toán',
+                AppStrings.totalPayment,
                 style: TextStyle(fontSize: 12, color: AppColors.textDark),
               ),
               const SizedBox(height: 4),
@@ -572,18 +573,31 @@ class OrderDetailScreen extends ConsumerWidget {
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: const Text('Xác nhận huỷ'),
-                      content: const Text('Bạn có chắc chắn muốn huỷ đơn hàng này không?'),
+                      title: const Text(AppStrings.cancelConfirmation),
+                      content: const Text(AppStrings.cancelPrompt),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: const Text('Không', style: TextStyle(color: AppColors.textGrey)),
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
                         ),
                         TextButton(
                           onPressed: () async {
-                            Navigator.pop(ctx); // Đóng popup xác nhận
+                            final shouldCancel = await showDialog<bool>(
+                              context: context,
+                              builder: (dCtx) => AlertDialog(
+                                title: const Text(AppStrings.cancelConfirmation),
+                                content: const Text(AppStrings.cancelPrompt),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(dCtx, false), child: const Text(AppStrings.no)),
+                                  TextButton(onPressed: () => Navigator.pop(dCtx, true), child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.alertRed))),
+                                ],
+                              ),
+                            ) ?? false;
 
-                            // Hiển thị loading
+                            if (!shouldCancel) return;
+
+                            Navigator.pop(ctx); 
+
                             showDialog(
                               context: context,
                               barrierDismissible: false,
@@ -596,26 +610,25 @@ class OrderDetailScreen extends ConsumerWidget {
                               ref.invalidate(userOrdersProvider);
 
                               if (context.mounted) {
-                                Navigator.pop(context); // Đóng loading
+                                Navigator.pop(context); 
 
-                                // Hiện popup thành công
                                 showDialog(
                                   context: context,
                                   barrierDismissible: false,
                                   builder: (successCtx) => AlertDialog(
-                                    title: const Text('Thành công', style: TextStyle(color: AppColors.primaryDark)),
-                                    content: const Text('Đơn hàng đã được huỷ thành công.'),
+                                    title: const Text(AppStrings.success, style: TextStyle(color: AppColors.primaryDark)),
+                                    content: const Text(AppStrings.cancelSuccessMsg),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
-                                          Navigator.pop(successCtx); // Đóng popup thành công
+                                          Navigator.pop(successCtx); 
                                           if (context.canPop()) {
-                                            context.pop(); // Quay lại trang trước
+                                            context.pop(); 
                                           } else {
                                             context.go(AppRoutes.home);
                                           }
                                         },
-                                        child: const Text('Đóng'),
+                                        child: const Text(AppStrings.close),
                                       ),
                                     ],
                                   ),
@@ -628,7 +641,7 @@ class OrderDetailScreen extends ConsumerWidget {
                               }
                             }
                           },
-                          child: const Text('Đồng ý', style: TextStyle(color: AppColors.alertRed)),
+                          child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.alertRed)),
                         ),
                       ],
                     ),
@@ -642,7 +655,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 child: const Text(
-                  'Huỷ đơn hàng',
+                  AppStrings.cancelOrder,
                   style: TextStyle(
                     color: AppColors.alertRed,
                     fontWeight: FontWeight.bold,
@@ -674,7 +687,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   ),
                   SizedBox(width: 8),
                   Text(
-                    'Mua sắm thêm',
+                    AppStrings.shopMore,
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

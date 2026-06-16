@@ -146,6 +146,117 @@ class AppStrings {
   static const String coinsDiscount = "(-2.000đ)";
   static const String yourCoins = "Bạn đang có 2.000 xu";
 
+  // Profile & Account
+  static const String notLoggedIn = "Bạn chưa đăng nhập";
+  static const String loginNow = "Đăng nhập ngay";
+  static const String sessionExpired = "Phiên đăng nhập đã hết hạn";
+  static const String loginAgainPrompt = "Vui lòng đăng nhập lại để xem thông tin tài khoản.";
+  static const String loginAgain = "Đăng nhập lại";
+  static const String accountSection = "Tài khoản";
+  static const String personalInfo = "Thông tin cá nhân";
+  static const String addressBook = "Sổ địa chỉ nhận hàng";
+  static const String passwordSecurity = "Mật khẩu & Bảo mật";
+  static const String notificationSettings = "Cài đặt thông báo";
+  static const String language = "Ngôn ngữ";
+  static const String vietnamese = "Tiếng Việt";
+  static const String preferencesSection = "Tùy chọn";
+  static const String settings = "Cài đặt";
+  static const String aboutUs = "Về chúng tôi";
+  static const String theme = "Giao diện";
+  static const String lightTheme = "Sáng";
+  static const String myOrders = "Đơn hàng của tôi";
+  static const String supportSection = "Hỗ trợ";
+  static const String helpCenter = "Trung tâm trợ giúp";
+  static const String logout = "Đăng xuất";
+
+  static const String updateProfileSuccess = "Cập nhật thông tin thành công";
+  static const String fullNameLabel = "Họ và tên";
+  static const String fullNameHint = "Nhập họ và tên";
+  static const String fullNameRequired = "Vui lòng nhập họ tên";
+  static const String phoneLabel = "Số điện thoại";
+  static const String phoneHint = "Nhập số điện thoại";
+  static const String avatarLabel = "Ảnh đại diện (URL)";
+  static const String avatarHint = "Nhập link ảnh (URL)";
+  static const String saveChanges = "Lưu thay đổi";
+
+  static const String myAddress = "Địa chỉ của tôi";
+  static const String addressLoadError = "Lỗi tải địa chỉ ";
+  static const String noAddressFound = "Bạn chưa có địa chỉ nào";
+  static const String defaultBadge = "Mặc định";
+  static const String deleteAddressSuccess = "Đã xóa địa chỉ thành công";
+  static const String addNewAddress = "Thêm địa chỉ mới";
+  static const String addAddressSuccess = "Thêm địa chỉ thành công";
+  static const String updateAddressSuccess = "Cập nhật địa chỉ thành công";
+  static const String editAddress = "Sửa địa chỉ";
+  static const String receiverName = "Tên người nhận";
+  static const String province = "Tỉnh/Thành phố";
+  static const String provinceHint = "Chọn Tỉnh/Thành phố";
+  static const String district = "Quận/Huyện";
+  static const String districtHint = "Chọn Quận/Huyện";
+  static const String streetAddress = "Tên đường, Tòa nhà, Số nhà";
+  static const String streetAddressHint = "Nhập địa chỉ chi tiết";
+  static const String setAsDefault = "Đặt làm địa chỉ mặc định";
+  static const String done = "Hoàn thành";
+  static const String notEmptyRequired = "Không được để trống";
+
+  // Orders
+  static const String pending = "Chờ xác nhận";
+  static const String shipping = "Đang giao";
+  static const String delivered = "Đã giao";
+  static const String cancelled = "Đã huỷ";
+  static const String receiveSuccess = "Đã nhận hàng thành công!";
+  static const String thankYouShopping = "Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.";
+  static const String orderCode = "Mã đơn hàng";
+  static const String orderedAt = "Đặt ngày:";
+  static const String orderPlaced = "Đặt hàng";
+  static const String processing = "Đang xử lý";
+  static const String received = "Đã nhận hàng";
+  static const String products = "Sản phẩm";
+  static const String payment = "Thanh toán";
+  static const String paymentMethodPrefix = "Phương thức: ";
+  static const String totalPayment = "Tổng thanh toán";
+  static const String cancelConfirmation = "Xác nhận huỷ";
+  static const String cancelPrompt = "Bạn có chắc chắn muốn huỷ đơn hàng này không?";
+  static const String no = "Không";
+  static const String success = "Thành công";
+  static const String cancelSuccessMsg = "Đơn hàng đã được huỷ thành công.";
+  static const String yes = "Đồng ý";
+  static const String cancelOrder = "Huỷ đơn hàng";
+  static const String shopMore = "Mua sắm thêm";
+  static const String orderCodePrefix = "Mã ĐH:";
+  static const String itemCount = "sản phẩm";
+  static const String totalPrice = "Thành tiền: ";
+  static const String cancelAction = "Huỷ đơn";
+  static const String reviewAction = "Đánh giá";
+  static const String trackAction = "Theo dõi";
+  static const String reorderAction = "Mua lại";
+  static const String noOrdersFound = "Chưa có đơn hàng nào";
+  static const String cancelOrderSuccess = "Đã huỷ đơn hàng thành công";
+
+  // Notifications & Chat
+  static const String notifications = "Thông báo";
+  static const String orders = "Đơn hàng";
+  static const String promotions = "Khuyến mãi";
+  static const String vouchers = "Voucher";
+  static const String messages = "Tin nhắn";
+  static const String system = "Hệ thống";
+  static const String today = "Hôm nay";
+  static const String yesterday = "Hôm qua";
+  static const String earlier = "Trước đó";
+  static const String noNotifications = "Không có thông báo nào";
+  static const String justNow = "Vừa xong";
+  static const String searchChat = "Tìm kiếm cuộc trò chuyện...";
+  static const String online = "Đang hoạt động";
+  static const String offline = "Ngoại tuyến";
+  static const String typeMessage = "Nhập tin nhắn...";
+  
+  static const String general = "Chung";
+  static const String currency = "Đơn vị tiền tệ";
+  static const String vnd = "VND (đ)";
+  static const String termsAndConditions = "Điều khoản & điều kiện";
+  static const String aboutApp = "Giới thiệu ứng dụng";
+  static const String version = "Phiên bản 1.0.0";
+
   // Common Messages
   static const String networkError = "Không có kết nối mạng. Vui lòng thử lại.";
   static const String unknownError = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../models/chat_message.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -48,7 +49,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           name: currentRoom.name,
           imageUrl: currentRoom.imageUrl,
           lastMessage: text,
-          time: 'Vừa xong',
+          time: AppStrings.justNow,
           unreadCount: 0,
           isActive: currentRoom.isActive,
           messages: updatedMessages,
@@ -92,7 +93,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Tin nhắn',
+          AppStrings.messages,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -124,7 +125,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Tìm kiếm cuộc trò chuyện...',
+                            AppStrings.searchChat,
                             style: TextStyle(
                               color: AppColors.textLight,
                               fontSize: 14,
@@ -329,7 +330,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  room.isActive ? 'Đang hoạt động' : 'Ngoại tuyến',
+                  room.isActive ? AppStrings.online : AppStrings.offline,
                   style: TextStyle(
                     fontSize: 11,
                     color: room.isActive
@@ -395,7 +396,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               color: AppColors.textDark,
                             ),
                             decoration: const InputDecoration(
-                              hintText: 'Nhập tin nhắn...',
+                              hintText: AppStrings.typeMessage,
                               hintStyle: TextStyle(color: AppColors.textLight),
                               border: InputBorder.none,
                             ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
@@ -19,25 +20,25 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
   late TabController _tabController;
 
   final List<String> _tabs = [
-    'Tất cả',
-    'Chờ xác nhận',
-    'Đang giao',
-    'Đã giao',
-    'Đã huỷ',
+    AppStrings.all,
+    AppStrings.pending,
+    AppStrings.shipping,
+    AppStrings.delivered,
+    AppStrings.cancelled,
   ];
 
   String _mapStatus(OrderStatus status) {
     switch (status) {
       case OrderStatus.PENDING:
-        return 'Chờ xác nhận';
+        return AppStrings.pending;
       case OrderStatus.CONFIRMED:
-        return 'Chờ xác nhận';
+        return AppStrings.pending;
       case OrderStatus.SHIPPING:
-        return 'Đang giao';
+        return AppStrings.shipping;
       case OrderStatus.DELIVERED:
-        return 'Đã giao';
+        return AppStrings.delivered;
       case OrderStatus.CANCELLED:
-        return 'Đã huỷ';
+        return AppStrings.cancelled;
     }
   }
 
@@ -58,11 +59,11 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'Đã giao':
+      case AppStrings.delivered:
         return Colors.green;
-      case 'Đang giao':
+      case AppStrings.shipping:
         return Colors.orange;
-      case 'Đã huỷ':
+      case AppStrings.cancelled:
         return AppColors.alertRed;
       default:
         return AppColors.primary;
@@ -85,7 +86,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
         elevation: 0,
         scrolledUnderElevation: 0,
         title: const Text(
-          'Đơn hàng của tôi',
+          AppStrings.myOrders,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -135,7 +136,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           return TabBarView(
             controller: _tabController,
             children: _tabs.map((tab) {
-              final filteredOrders = tab == 'Tất cả'
+              final filteredOrders = tab == AppStrings.all
                   ? orders
                   : orders.where((o) => _mapStatus(o.status) == tab).toList();
 
@@ -151,7 +152,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Chưa có đơn hàng nào',
+                    AppStrings.noOrdersFound,
                     style: TextStyle(color: AppColors.textGrey, fontSize: 16),
                   ),
                 ],
@@ -199,7 +200,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Mã ĐH: ${order.id.split('-').last.toUpperCase()}',
+                            '${AppStrings.orderCodePrefix} ${order.id.split('-').last.toUpperCase()}',
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textDark,
@@ -337,7 +338,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${items.length} sản phẩm',
+                            '${items.length} ${AppStrings.itemCount}',
                             style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.textGrey,
@@ -346,7 +347,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                           Row(
                             children: [
                               const Text(
-                                'Thành tiền: ',
+                                AppStrings.totalPrice,
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: AppColors.textDark,
@@ -368,22 +369,22 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if (statusStr == 'Chờ xác nhận')
+                          if (statusStr == AppStrings.pending)
                             OutlinedButton(
                               onPressed: () async {
                                 final confirm = await showDialog<bool>(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('Huỷ đơn hàng', style: TextStyle(fontWeight: FontWeight.bold)),
-                                    content: const Text('Bạn có chắc chắn muốn huỷ đơn hàng này không?'),
+                                    title: const Text(AppStrings.cancelOrder, style: TextStyle(fontWeight: FontWeight.bold)),
+                                    content: const Text(AppStrings.cancelPrompt),
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context, false),
-                                        child: const Text('Không', style: TextStyle(color: AppColors.textGrey)),
+                                        child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
                                       ),
                                       TextButton(
                                         onPressed: () => Navigator.pop(context, true),
-                                        child: const Text('Huỷ đơn', style: TextStyle(color: AppColors.alertRed)),
+                                        child: const Text(AppStrings.cancelAction, style: TextStyle(color: AppColors.alertRed)),
                                       ),
                                     ],
                                   ),
@@ -408,7 +409,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                                     ref.invalidate(userOrdersProvider); // refresh list
                                     
                                     scaffoldMessenger.showSnackBar(
-                                      const SnackBar(content: Text('Đã huỷ đơn hàng thành công')),
+                                      const SnackBar(content: Text(AppStrings.cancelOrderSuccess)),
                                     );
                                   } catch (e) {
                                     rootNavigator.pop(); // close loading dialog
@@ -429,14 +430,14 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                                 ),
                               ),
                               child: const Text(
-                                'Huỷ đơn',
+                                AppStrings.cancelAction,
                                 style: TextStyle(
                                   color: AppColors.alertRed,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                          if (statusStr == 'Đã giao')
+                          if (statusStr == AppStrings.delivered)
                             OutlinedButton(
                               onPressed: () {},
                               style: OutlinedButton.styleFrom(
@@ -450,19 +451,19 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                                 ),
                               ),
                               child: const Text(
-                                'Đánh giá',
+                                AppStrings.reviewAction,
                                 style: TextStyle(
                                   color: AppColors.textDark,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                          if (statusStr == 'Đã giao' || statusStr == 'Chờ xác nhận')
+                          if (statusStr == AppStrings.delivered || statusStr == AppStrings.pending)
                             const SizedBox(width: 12),
                           ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: (statusStr == 'Đang giao' || statusStr == 'Chờ xác nhận')
+                              backgroundColor: (statusStr == AppStrings.shipping || statusStr == AppStrings.pending)
                                   ? AppColors.primary
                                   : AppColors.textDark,
                               foregroundColor: Colors.white,
@@ -476,9 +477,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
                               ),
                             ),
                             child: Text(
-                              (statusStr == 'Đang giao' || statusStr == 'Chờ xác nhận')
-                                  ? 'Theo dõi'
-                                  : 'Mua lại',
+                              (statusStr == AppStrings.shipping || statusStr == AppStrings.pending)
+                                  ? AppStrings.trackAction
+                                  : AppStrings.reorderAction,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                               ),

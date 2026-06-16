@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../models/notification_item.dart';
 import '../../../core/router/app_routes.dart';
 
@@ -12,28 +13,28 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  String _activeTab = 'Tất cả';
+  String _activeTab = AppStrings.all;
 
   final List<String> _tabs = [
-    'Tất cả',
-    'Đơn hàng',
-    'Khuyến mãi',
-    'Voucher',
-    'Tin nhắn',
-    'Hệ thống',
+    AppStrings.all,
+    AppStrings.orders,
+    AppStrings.promotions,
+    AppStrings.vouchers,
+    AppStrings.messages,
+    AppStrings.system,
   ];
 
   NotificationType? _getTypeFromTab(String tab) {
     switch (tab) {
-      case 'Đơn hàng':
+      case AppStrings.orders:
         return NotificationType.order;
-      case 'Khuyến mãi':
+      case AppStrings.promotions:
         return NotificationType.promotion;
-      case 'Voucher':
+      case AppStrings.vouchers:
         return NotificationType.voucher;
-      case 'Tin nhắn':
+      case AppStrings.messages:
         return NotificationType.message;
-      case 'Hệ thống':
+      case AppStrings.system:
         return NotificationType.system;
       default:
         return null;
@@ -56,9 +57,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
 
     final sortedGroups = [
-      'Hôm nay',
-      'Hôm qua',
-      'Trước đó',
+      AppStrings.today,
+      AppStrings.yesterday,
+      AppStrings.earlier,
     ].where((g) => groupedNotifications.containsKey(g)).toList();
 
     return Scaffold(
@@ -68,7 +69,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         title: const Text(
-          'Thông báo',
+          AppStrings.notifications,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 24,
@@ -97,7 +98,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 final tab = _tabs[index];
                 final isSelected = _activeTab == tab;
                 int? badgeCount;
-                if (tab == 'Tất cả') {
+                if (tab == AppStrings.all) {
                   badgeCount = mockNotifications
                       .where((n) => n.isUnread)
                       .length;
@@ -177,7 +178,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          'Không có thông báo nào',
+                          AppStrings.noNotifications,
                           style: TextStyle(
                             color: AppColors.textGrey,
                             fontSize: 16,

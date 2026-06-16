@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -18,7 +19,7 @@ class SettingsScreen extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Cài đặt',
+          AppStrings.settings,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -30,52 +31,52 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader('Chung'),
+            _buildSectionHeader(AppStrings.general),
             _buildSettingsTile(
               icon: Icons.language,
-              title: 'Ngôn ngữ',
-              trailingText: 'Tiếng Việt',
+              title: AppStrings.language,
+              trailingText: AppStrings.vietnamese,
               onTap: () {},
             ),
             _buildDivider(),
             _buildSettingsTile(
               icon: Icons.monetization_on_outlined,
-              title: 'Đơn vị tiền tệ',
-              trailingText: 'VND (đ)',
+              title: AppStrings.currency,
+              trailingText: AppStrings.vnd,
               onTap: () {},
             ),
             _buildDivider(),
             _buildSettingsTile(
               icon: Icons.palette_outlined,
-              title: 'Giao diện',
-              trailingText: 'Sáng',
+              title: AppStrings.theme,
+              trailingText: AppStrings.lightTheme,
               onTap: () {},
               showChevronDown: true,
             ),
             const SizedBox(height: 16),
-            _buildSectionHeader('Hỗ trợ'),
+            _buildSectionHeader(AppStrings.supportSection),
             _buildSettingsTile(
               icon: Icons.help_outline,
-              title: 'Trung tâm trợ giúp',
+              title: AppStrings.helpCenter,
               onTap: () {},
             ),
             _buildDivider(),
             _buildSettingsTile(
               icon: Icons.description_outlined,
-              title: 'Điều khoản & điều kiện',
+              title: AppStrings.termsAndConditions,
               onTap: () {},
             ),
             _buildDivider(),
             _buildSettingsTile(
               icon: Icons.security_outlined,
-              title: 'Chính sách bảo mật',
+              title: AppStrings.privacyPolicy,
               onTap: () {},
             ),
             _buildDivider(),
             _buildSettingsTile(
               icon: Icons.info_outline,
-              title: 'Giới thiệu ứng dụng',
-              trailingText: 'Phiên bản 1.0.0',
+              title: AppStrings.aboutApp,
+              trailingText: AppStrings.version,
               onTap: () {},
             ),
             const SizedBox(height: 30),
