@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -100,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Đăng nhập',
+                            AppStrings.loginTitle,
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
@@ -110,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Chào mừng bạn trở lại với ShopEase',
+                            AppStrings.loginSubtitle,
                             style: TextStyle(
                               fontSize: 15,
                               color: AppColors.textGrey.withValues(alpha: 0.8),
@@ -144,14 +145,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Form Fields
                 _buildInputField(
                   controller: _emailController,
-                  hintText: 'Email',
+                  hintText: AppStrings.email,
                   icon: Icons.mail_outline,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 _buildInputField(
                   controller: _passwordController,
-                  hintText: 'Mật khẩu',
+                  hintText: AppStrings.password,
                   icon: Icons.lock_outline,
                   obscureText: _obscurePassword,
                   suffixIcon: IconButton(
@@ -173,7 +174,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: TextButton(
                     onPressed: () {},
                     child: const Text(
-                      'Quên mật khẩu?',
+                      AppStrings.forgotPassword,
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
@@ -185,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Login Button
                 CustomButton(
-                  text: 'Đăng nhập',
+                  text: AppStrings.loginTitle,
                   onPressed: _handleLogin,
                   isLoading: _isLoading,
                 ),
@@ -202,9 +203,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: AppColors.textGrey,
                         ),
                         children: [
-                          TextSpan(text: 'Chưa có tài khoản? '),
-                          TextSpan(
-                            text: 'Đăng ký ngay',
+                          const TextSpan(text: AppStrings.noAccount),
+                          const TextSpan(
+                            text: AppStrings.registerNow,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,
@@ -263,12 +264,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
       validator: (val) {
         if (val == null || val.trim().isEmpty) {
-          return 'Vui lòng nhập $hintText';
+          return '${AppStrings.errorEmptyField}$hintText';
         }
         if (keyboardType == TextInputType.emailAddress) {
           final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
           if (!emailRegex.hasMatch(val.trim())) {
-            return 'Email không hợp lệ';
+            return AppStrings.errorInvalidEmail;
           }
         }
         return null;

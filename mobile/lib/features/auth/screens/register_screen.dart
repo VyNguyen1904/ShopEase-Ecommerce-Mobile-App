@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -31,7 +32,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (!_agreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Vui lòng đồng ý với điều khoản sử dụng'),
+          content: Text(AppStrings.errorAgreeTerms),
           backgroundColor: Colors.red,
         ),
       );
@@ -40,7 +41,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Mật khẩu không khớp'),
+          content: Text(AppStrings.errorPasswordMismatch),
           backgroundColor: Colors.red,
         ),
       );
@@ -119,7 +120,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Tạo tài khoản',
+                            AppStrings.registerTitle,
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
@@ -129,7 +130,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Tham gia và bắt đầu mua sắm thông minh',
+                            AppStrings.registerSubtitle,
                             style: TextStyle(
                               fontSize: 15,
                               color: AppColors.textGrey.withValues(alpha: 0.8),
@@ -162,20 +163,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 _buildInputField(
                   controller: _nameController,
-                  hintText: 'Họ và tên',
+                  hintText: AppStrings.fullName,
                   icon: Icons.person_outline,
                 ),
                 const SizedBox(height: 16),
                 _buildInputField(
                   controller: _emailController,
-                  hintText: 'Email',
+                  hintText: AppStrings.email,
                   icon: Icons.mail_outline,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 _buildInputField(
                   controller: _passwordController,
-                  hintText: 'Mật khẩu',
+                  hintText: AppStrings.password,
                   icon: Icons.lock_outline,
                   obscureText: _obscurePassword,
                   suffixIcon: IconButton(
@@ -193,7 +194,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 _buildInputField(
                   controller: _confirmPasswordController,
-                  hintText: 'Xác nhận mật khẩu',
+                  hintText: AppStrings.confirmPassword,
                   icon: Icons.lock_outline,
                   obscureText: _obscureConfirmPassword,
                   suffixIcon: IconButton(
@@ -234,13 +235,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             height: 1.3,
                           ),
                           children: [
-                            const TextSpan(text: 'Tôi đồng ý với '),
+                            const TextSpan(text: AppStrings.agreeTermsPrefix),
                             WidgetSpan(
                               alignment: PlaceholderAlignment.middle,
                               child: GestureDetector(
                                 onTap: () {},
                                 child: const Text(
-                                  'Điều khoản sử dụng',
+                                  AppStrings.termsOfUse,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primary,
@@ -248,13 +249,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 ),
                               ),
                             ),
-                            const TextSpan(text: ' và '),
+                            const TextSpan(text: AppStrings.and),
                             WidgetSpan(
                               alignment: PlaceholderAlignment.middle,
                               child: GestureDetector(
                                 onTap: () {},
                                 child: const Text(
-                                  'Chính sách bảo mật',
+                                  AppStrings.privacyPolicy,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primary,
@@ -272,7 +273,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                 // Create Account Button
                 CustomButton(
-                  text: 'Tạo tài khoản',
+                  text: AppStrings.registerTitle,
                   onPressed: _handleRegister,
                   isLoading: _isLoading,
                 ),
@@ -289,9 +290,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           color: AppColors.textGrey,
                         ),
                         children: [
-                          TextSpan(text: 'Đã có tài khoản? '),
-                          TextSpan(
-                            text: 'Đăng nhập',
+                          const TextSpan(text: AppStrings.hasAccount),
+                          const TextSpan(
+                            text: AppStrings.loginTitle,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColors.primary,
@@ -350,10 +351,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ),
       validator: (val) {
         if (val == null || val.trim().isEmpty) {
-          return 'Vui lòng nhập $hintText';
+          return '${AppStrings.errorEmptyField}$hintText';
         }
         if (obscureText && val.length < 6) {
-          return 'Mật khẩu phải có ít nhất 6 ký tự';
+          return AppStrings.errorShortPassword;
         }
         return null;
       },

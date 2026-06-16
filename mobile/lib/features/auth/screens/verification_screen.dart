@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -26,7 +27,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     final otp = _otpController.text.trim();
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng nhập đủ 6 số OTP'), backgroundColor: Colors.red),
+        const SnackBar(content: Text(AppStrings.errorInvalidOtp), backgroundColor: Colors.red),
       );
       return;
     }
@@ -53,7 +54,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       await _authService.resendOtp(widget.email);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Mã OTP mới đã được gửi!'), backgroundColor: Colors.green),
+          const SnackBar(content: Text(AppStrings.otpSentSuccess), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
@@ -96,7 +97,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
               ),
               const SizedBox(height: 32),
               const Text(
-                'Xác thực Email',
+                AppStrings.verifyTitle,
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
@@ -106,7 +107,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Vui lòng nhập mã gồm 6 chữ số đã được gửi đến email:\n${widget.email}',
+                '${AppStrings.verifySubtitle}${widget.email}',
                 style: TextStyle(
                   fontSize: 15,
                   color: AppColors.textGrey.withValues(alpha: 0.8),
@@ -142,7 +143,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
               ),
               const SizedBox(height: 32),
               CustomButton(
-                text: 'Xác nhận',
+                text: AppStrings.confirm,
                 onPressed: _handleVerify,
                 isLoading: _isLoading,
               ),
@@ -153,7 +154,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                     : GestureDetector(
                         onTap: _handleResend,
                         child: const Text(
-                          'Gửi lại mã OTP',
+                          AppStrings.resendOtp,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,

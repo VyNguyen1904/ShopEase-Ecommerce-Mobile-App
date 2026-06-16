@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 
@@ -118,7 +119,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'ShopEase',
+                        AppStrings.appName,
                         style: TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.w800,
@@ -135,7 +136,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Mua sắm thông minh,\ncuộc sống dễ dàng',
+                        AppStrings.splashSlogan,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18,
@@ -178,9 +179,9 @@ class _SplashScreenState extends State<SplashScreen> {
                                     color: Colors.white,
                                   ),
                                   children: [
-                                    TextSpan(text: 'Chào mừng bạn đến với '),
-                                    TextSpan(
-                                      text: 'ShopEase',
+                                    const TextSpan(text: AppStrings.splashWelcome),
+                                    const TextSpan(
+                                      text: AppStrings.appName,
                                       style: TextStyle(
                                         color: Color(0xFF5CFDF5),
                                       ),

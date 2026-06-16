@@ -365,4 +365,4 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
       ),
     );
   }
-}}
+}
