@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../cart/providers/cart_provider.dart';
@@ -74,7 +75,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CheckoutSectionTitle(title: 'Địa chỉnhận hàng'),
+            const CheckoutSectionTitle(title: AppStrings.shippingAddress),
             CheckoutAddressCard(
               address: addressToUse,
               onTap: () async {
@@ -88,22 +89,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               },
             ),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Sản phẩm đã chọn'),
+            const CheckoutSectionTitle(title: AppStrings.selectedItems),
             CheckoutSelectedItems(items: selectedItems),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Đơn vịvận chuyển'),
+            const CheckoutSectionTitle(title: AppStrings.shippingUnit),
             CheckoutShippingOptions(
               selectedShipping: _selectedShipping,
               onChanged: (val) => setState(() => _selectedShipping = val),
             ),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Mã giảm giá / Xu'),
+            const CheckoutSectionTitle(title: AppStrings.discountCoins),
             CheckoutDiscountSection(
               useCoins: _useCoins,
               onUseCoinsChanged: (val) => setState(() => _useCoins = val),
             ),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Phương thức thanh toán'),
+            const CheckoutSectionTitle(title: AppStrings.paymentMethod),
             CheckoutPaymentOptions(
               selectedPayment: _selectedPayment,
               onChanged: (val) => setState(() => _selectedPayment = val),
@@ -140,11 +141,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: ElevatedButton(
           onPressed: _isLoading ? null : () async {
             if (address == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm địa chỉnhận hàng!')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.missingAddressError)));
               return;
             }
             if (items.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Giỏ hàng trống!')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.cartEmptyError)));
               return;
             }
 
@@ -194,7 +195,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               }
 
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đặt hàng thành công!')));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.orderSuccess)));
                 context.go(AppRoutes.orderDetailPath(newOrder.id));
               }
 
@@ -227,7 +228,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               Icon(Icons.lock_outline, size: 20),
               SizedBox(width: 8),
               Text(
-                'Đặt hàng',
+                AppStrings.placeOrder,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],

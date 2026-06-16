@@ -204,6 +204,7 @@ class AccountScreen extends ConsumerWidget {
 
   Widget _buildMenuGroup(List<Widget> children) {
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -215,25 +216,28 @@ class AccountScreen extends ConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        children: children.asMap().entries.map((entry) {
-          final int index = entry.key;
-          final Widget item = entry.value;
-          if (index != children.length - 1) {
-            return Column(
-              children: [
-                item,
-                const Divider(
-                  height: 1,
-                  indent: 56,
-                  endIndent: 20,
-                  color: AppColors.border,
-                ),
-              ],
-            );
-          }
-          return item;
-        }).toList(),
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          children: children.asMap().entries.map((entry) {
+            final int index = entry.key;
+            final Widget item = entry.value;
+            if (index != children.length - 1) {
+              return Column(
+                children: [
+                  item,
+                  const Divider(
+                    height: 1,
+                    indent: 56,
+                    endIndent: 20,
+                    color: AppColors.border,
+                  ),
+                ],
+              );
+            }
+            return item;
+          }).toList(),
+        ),
       ),
     );
   }

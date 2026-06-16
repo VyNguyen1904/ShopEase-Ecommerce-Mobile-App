@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/product_provider.dart';
 import '../widgets/home_product_card.dart';
@@ -47,8 +48,8 @@ class HomeScreen extends ConsumerWidget {
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Tìm kiếm sản phẩm, thương hiệu...',
-                                  style: TextStyle(
+                                  AppStrings.searchHomeHint,
+                                  style: const TextStyle(
                                     color: AppColors.textLight,
                                     fontSize: 14,
                                   ),
@@ -81,22 +82,20 @@ class HomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _buildPromoCard(
-                      title: 'SIGNATURE COLLECTION',
-                      subtitle: 'Heavyweight\nT-Shirt',
-                      description:
-                          'Chất liệu 100% Organic Cotton\n250gsm siêu dày dặn, form dáng\nboxy thời thượng mang lại sự\ntự tin tuyệt đối.',
-                      buttonText: 'MUA NGAY',
+                      title: AppStrings.promo1Title,
+                      subtitle: AppStrings.promo1Subtitle,
+                      description: AppStrings.promo1Desc,
+                      buttonText: AppStrings.buyNow,
                       image:
                           'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=400',
                       color: const Color(0xFF1A1A1A), // Đen tuyền sang trọng
                     ),
                     const SizedBox(width: 16),
                     _buildPromoCard(
-                      title: 'NEW ARRIVAL',
-                      subtitle: 'Premium\nWool Overcoat',
-                      description:
-                          'Tôn vinh vẻ đẹp tối giản với\nchiếc áo măng tô được cắt may\ntỉ mỉ từ len lông cừu thượng\nhạng.',
-                      buttonText: 'XEM BỘ SƯU TẬP',
+                      title: AppStrings.promo2Title,
+                      subtitle: AppStrings.promo2Subtitle,
+                      description: AppStrings.promo2Desc,
+                      buttonText: AppStrings.viewCollection,
                       image:
                           'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80&w=400',
                       color: const Color(0xFF4A3E3D), // Nâu tây sang trọng
@@ -114,7 +113,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const Expanded(
                       child: Text(
-                        'Danh mục',
+                        AppStrings.navCategory,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -131,7 +130,7 @@ class HomeScreen extends ConsumerWidget {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: const Text(
-                        'Xem tất cả',
+                        AppStrings.viewAll,
                         style: TextStyle(
                           color: AppColors.textGrey,
                           fontSize: 12,
@@ -157,7 +156,7 @@ class HomeScreen extends ConsumerWidget {
                               final isAll = selectedCat == null;
                               return GestureDetector(
                                 onTap: () => ref.read(selectedCategoryHomeProvider.notifier).state = null,
-                                child: _buildCategoryPill('Tất cả', isActive: isAll),
+                                child: _buildCategoryPill(AppStrings.all, isActive: isAll),
                               );
                             }
                             final cat = categories[index - 1];
@@ -183,7 +182,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const Expanded(
                       child: Text(
-                        'Hàng mới về',
+                        AppStrings.newArrivals,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -200,7 +199,7 @@ class HomeScreen extends ConsumerWidget {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: const Text(
-                        'Xem tất cả',
+                        AppStrings.viewAll,
                         style: TextStyle(
                           color: AppColors.textGrey,
                           fontSize: 12,
@@ -244,7 +243,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const Expanded(
                       child: Text(
-                        'Gợi ý cho bạn',
+                        AppStrings.recommendations,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -261,7 +260,7 @@ class HomeScreen extends ConsumerWidget {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: const Text(
-                        'Xem tất cả',
+                        AppStrings.viewAll,
                         style: TextStyle(
                           color: AppColors.textGrey,
                           fontSize: 12,

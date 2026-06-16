@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/cart_model.dart';
 
 class CheckoutSelectedItems extends StatelessWidget {
@@ -9,7 +10,7 @@ class CheckoutSelectedItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return const Text('Chưa có sản phẩm nào được chọn.');
+      return const Text(AppStrings.noSelectedItems);
     }
     return Container(
       padding: const EdgeInsets.all(12),
@@ -43,7 +44,7 @@ class CheckoutSelectedItems extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.productName ?? 'Sản phẩm', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
+                      Text(item.productName ?? AppStrings.product, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
                       const SizedBox(height: 4),
                       Text('x${item.quantity}', style: const TextStyle(fontSize: 12, color: AppColors.textGrey)),
                     ],

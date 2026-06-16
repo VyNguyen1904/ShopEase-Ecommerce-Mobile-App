@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
 import '../../../core/providers/product_provider.dart';
 import '../../../core/providers/selected_product_provider.dart';
@@ -90,7 +91,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                               setState(() {});
                             },
                           ),
-                          hintText: 'Tìm kiếm sản phẩm...',
+                          hintText: AppStrings.searchProduct,
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 14),
                         ),
@@ -128,28 +129,28 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                 children: [
                   _buildFilterButton(
                     icon: Icons.swap_vert,
-                    label: 'Sắp xếp',
+                    label: AppStrings.sortBy,
                     isActive: sortBy != 'none',
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
                   ),
                   const SizedBox(width: 10),
                   _buildFilterButton(
                     icon: Icons.grid_view,
-                    label: selectedCategory ?? 'Danh mục',
+                    label: selectedCategory ?? AppStrings.navCategory,
                     isActive: selectedCategory != null,
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
                   ),
                   const SizedBox(width: 10),
                   _buildFilterButton(
                     icon: Icons.local_offer_outlined,
-                    label: 'Giá',
+                    label: AppStrings.price,
                     isActive: ref.watch(sortOrderProvider) != 'none',
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
                   ),
                   const SizedBox(width: 10),
                   _buildFilterButton(
                     icon: Icons.filter_alt_outlined,
-                    label: 'Bộ lọc',
+                    label: AppStrings.filter,
                     isActive: _hasAdvancedFilters(),
                     badgeCount: filterCount,
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
@@ -178,7 +179,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                                 color: AppColors.textDark,
                               ),
                             ),
-                            const TextSpan(text: ' kết quả tìm thấy'),
+                            const TextSpan(text: AppStrings.resultsFound),
                           ],
                         ),
                       ),
@@ -193,15 +194,15 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                             color: AppColors.alertRed.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.clear_all,
+                              const Icon(Icons.clear_all,
                                   size: 14, color: AppColors.alertRed),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
-                                'Xóa lọc',
-                                style: TextStyle(
+                                AppStrings.clearFilter,
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.alertRed,
@@ -232,7 +233,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                               size: 64, color: AppColors.textLight),
                           const SizedBox(height: 16),
                           const Text(
-                            'Không tìm thấy sản phẩm nào.',
+                            AppStrings.noProductsFound,
                             style: TextStyle(
                               color: AppColors.textGrey,
                               fontSize: 16,
@@ -242,7 +243,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                             const SizedBox(height: 8),
                             TextButton(
                               onPressed: _clearAllFilters,
-                              child: const Text('Xóa bộ lọc'),
+                              child: const Text(AppStrings.clearAllFilters),
                             ),
                           ],
                         ],

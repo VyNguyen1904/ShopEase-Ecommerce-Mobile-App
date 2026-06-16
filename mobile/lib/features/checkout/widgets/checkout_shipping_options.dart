@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class CheckoutShippingOptions extends StatelessWidget {
   final String selectedShipping;
@@ -32,7 +33,7 @@ class CheckoutShippingOptions extends StatelessWidget {
               vertical: 4,
             ),
             title: const Text(
-              'Nhanh (2–3 ngày)',
+              AppStrings.fastShipping,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             secondary: const Text(
@@ -56,7 +57,7 @@ class CheckoutShippingOptions extends StatelessWidget {
               vertical: 4,
             ),
             title: const Text(
-              'Tiết kiệm (3–5 ngày)',
+              AppStrings.ecoShipping,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             secondary: const Text(

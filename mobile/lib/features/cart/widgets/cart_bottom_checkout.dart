@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/router/app_routes.dart';
 
 class CartBottomCheckout extends StatelessWidget {
@@ -49,7 +50,7 @@ class CartBottomCheckout extends StatelessWidget {
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      'Thêm mã giảm giá',
+                      AppStrings.addPromoCode,
                       style: TextStyle(
                         color: AppColors.textLight,
                         fontSize: 14,
@@ -98,7 +99,7 @@ class CartBottomCheckout extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tổng cộng:',
+                      AppStrings.total,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -107,7 +108,7 @@ class CartBottomCheckout extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Mua để nhận điểm',
+                      AppStrings.buyToGetPoints,
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textGrey,
@@ -128,7 +129,7 @@ class CartBottomCheckout extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Miễn phí giao hàng',
+                      AppStrings.freeShipping,
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textGrey,
@@ -157,7 +158,7 @@ class CartBottomCheckout extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Tiến hành thanh toán',
+                  AppStrings.proceedToCheckout,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,

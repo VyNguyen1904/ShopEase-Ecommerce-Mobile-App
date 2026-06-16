@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/models/product.dart';
@@ -43,7 +44,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 color: AppColors.textLight,
               ),
               const SizedBox(height: 12),
-              const Text('Không tìm thấy sản phẩm'),
+              const Text(AppStrings.productNotFound),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
@@ -53,7 +54,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     context.go(AppRoutes.home);
                   }
                 },
-                child: const Text('Quay lại'),
+                child: const Text(AppStrings.goBack),
               ),
             ],
           ),

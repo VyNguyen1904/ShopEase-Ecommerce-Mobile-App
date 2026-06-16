@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/cart_model.dart';
 import '../providers/cart_provider.dart';
 
@@ -63,7 +64,7 @@ class CartItemWidget extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.productName ?? 'Sản phẩm ${item.productId}',
+                        item.productName ?? '${AppStrings.productPrefix}${item.productId}',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -89,7 +90,7 @@ class CartItemWidget extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  item.productVariant ?? 'Mặc định',
+                  item.productVariant ?? AppStrings.defaultVariant,
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textLight,

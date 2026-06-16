@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
 
 class ProductInfo extends StatelessWidget {
@@ -49,12 +50,12 @@ class ProductInfo extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              '(${product.reviewsCount} đánh giá)',
+              '(${product.reviewsCount}${AppStrings.reviewsCountSuffix}',
               style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
             ),
             const Spacer(),
             Text(
-              '${product.salesCount} đã bán',
+              '${product.salesCount}${AppStrings.soldSuffix}',
               style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
             ),
           ],
@@ -101,7 +102,7 @@ class ProductInfo extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         const Text(
-          'Mô tả sản phẩm',
+          AppStrings.productDescTitle,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

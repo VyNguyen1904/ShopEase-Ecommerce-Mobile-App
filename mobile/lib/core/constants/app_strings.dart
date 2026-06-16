@@ -62,6 +62,90 @@ class AppStrings {
   static const String otpSentSuccess = "Mã OTP mới đã được gửi!";
   static const String resendOtp = "Gửi lại mã OTP";
 
+  // Home
+  static const String searchHomeHint = "Tìm kiếm sản phẩm, thương hiệu...";
+  static const String viewAll = "Xem tất cả";
+  static const String all = "Tất cả";
+  static const String newArrivals = "Hàng mới về";
+  static const String recommendations = "Gợi ý cho bạn";
+  static const String buyNow = "MUA NGAY";
+  static const String viewCollection = "XEM BỘ SƯU TẬP";
+
+  static const String promo1Title = "SIGNATURE COLLECTION";
+  static const String promo1Subtitle = "Heavyweight\nT-Shirt";
+  static const String promo1Desc = "Chất liệu 100% Organic Cotton\n250gsm siêu dày dặn, form dáng\nboxy thời thượng mang lại sự\ntự tin tuyệt đối.";
+
+  static const String promo2Title = "NEW ARRIVAL";
+  static const String promo2Subtitle = "Premium\nWool Overcoat";
+  static const String promo2Desc = "Tôn vinh vẻ đẹp tối giản với\nchiếc áo măng tô được cắt may\ntỉ mỉ từ len lông cừu thượng\nhạng.";
+
+  // Search
+  static const String searchProduct = "Tìm kiếm sản phẩm...";
+  static const String sortBy = "Sắp xếp";
+  static const String price = "Giá";
+  static const String filter = "Bộ lọc";
+  static const String resultsFound = " kết quả tìm thấy";
+  static const String clearFilter = "Xóa lọc";
+  static const String noProductsFound = "Không tìm thấy sản phẩm nào.";
+  static const String clearAllFilters = "Xóa bộ lọc";
+
+  // Product Details
+  static const String productNotFound = "Không tìm thấy sản phẩm";
+  static const String goBack = "Quay lại";
+  static const String selectColorError = "Vui lòng chọn màu sắc";
+  static const String selectSizeError = "Vui lòng chọn kích thước";
+  static const String addedToCart = "Đã thêm vào giỏ hàng";
+  static const String color = "Màu sắc";
+  static const String colorPrefix = "Màu sắc: ";
+  static const String size = "Kích thước";
+  static const String quantity = "Số lượng";
+  static const String addToCart = "Thêm Vào Giỏ Hàng";
+  static const String productReviews = "Đánh giá sản phẩm";
+  static const String noReviewsYet = "Chưa có đánh giá nào cho sản phẩm này.";
+  static const String productDescTitle = "Mô tả sản phẩm";
+  static const String reviewsCountSuffix = " đánh giá)";
+  static const String soldSuffix = " đã bán";
+
+  // Cart & Checkout
+  static const String retry = "Thử lại";
+  static const String selectAll = "Chọn tất cả";
+  static const String productPrefix = "Sản phẩm ";
+  static const String defaultVariant = "Mặc định";
+  static const String cartEmpty = "Giỏ hàng của bạn đang trống";
+  static const String addPromoCode = "Thêm mã giảm giá";
+  static const String total = "Tổng cộng:";
+  static const String buyToGetPoints = "Mua để nhận điểm";
+  static const String freeShipping = "Miễn phí giao hàng";
+  static const String proceedToCheckout = "Tiến hành thanh toán";
+  
+  static const String shippingAddress = "Địa chỉ nhận hàng";
+  static const String selectedItems = "Sản phẩm đã chọn";
+  static const String shippingUnit = "Đơn vị vận chuyển";
+  static const String discountCoins = "Mã giảm giá / Xu";
+  static const String paymentMethod = "Phương thức thanh toán";
+  static const String missingAddressError = "Vui lòng thêm địa chỉ nhận hàng!";
+  static const String cartEmptyError = "Giỏ hàng trống!";
+  static const String orderSuccess = "Đặt hàng thành công!";
+  static const String placeOrder = "Đặt hàng";
+  static const String fastShipping = "Nhanh (2–3 ngày)";
+  static const String ecoShipping = "Tiết kiệm (3–5 ngày)";
+  static const String noSelectedItems = "Chưa có sản phẩm nào được chọn.";
+  static const String product = "Sản phẩm";
+  static const String codPayment = "Thanh toán khi nhận hàng (COD)";
+  static const String vnpayPayment = "VNPay";
+  static const String momoPayment = "Ví MoMo";
+  static const String cardPayment = "Thẻ tín dụng / ATM";
+  static const String subtotal = "Tạm tính";
+  static const String shippingFee = "Phí vận chuyển";
+  static const String discount = "Giảm giá";
+  static const String totalAmount = "Tổng cộng";
+  static const String enterPromoCode = "Nhập mã giảm giá";
+  static const String apply = "Áp dụng";
+  static const String useCoinsPrefix = "Dùng ";
+  static const String coinsAmount = "2.000 xu ";
+  static const String coinsDiscount = "(-2.000đ)";
+  static const String yourCoins = "Bạn đang có 2.000 xu";
+
   // Common Messages
   static const String networkError = "Không có kết nối mạng. Vui lòng thử lại.";
   static const String unknownError = "Đã có lỗi xảy ra. Vui lòng thử lại sau.";

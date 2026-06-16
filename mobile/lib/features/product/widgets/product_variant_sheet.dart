@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
 import '../../cart/providers/cart_provider.dart';
 
@@ -36,13 +37,13 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
   void _confirm() {
     if (widget.product.colors.isNotEmpty && selectedColor == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn màu sắc')),
+        const SnackBar(content: Text(AppStrings.selectColorError)),
       );
       return;
     }
     if (widget.product.sizes.isNotEmpty && selectedSize == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn kích thước')),
+        const SnackBar(content: Text(AppStrings.selectSizeError)),
       );
       return;
     }
@@ -57,9 +58,11 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
       if (widget.isBuyNow) {
         // TODO: Navigate to checkout or cart
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã thêm vào giỏ hàng')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(AppStrings.addedToCart)),
+          );
+        }
       }
     });
   }
@@ -112,8 +115,8 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
           ),
           const Divider(height: 32),
           if (widget.product.colors.isNotEmpty) ...[
-            const Text('Màu sắc', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            const Text(AppStrings.color, style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               children: widget.product.colors.map((color) {
@@ -132,8 +135,8 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
             const SizedBox(height: 16),
           ],
           if (widget.product.sizes.isNotEmpty) ...[
-            const Text('Kích thước', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            const Text(AppStrings.size, style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               children: widget.product.sizes.map((size) {
@@ -154,7 +157,7 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Số lượng', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(AppStrings.quantity, style: TextStyle(fontWeight: FontWeight.bold)),
               Row(
                 children: [
                   IconButton(
@@ -186,7 +189,7 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
                 backgroundColor: widget.isBuyNow ? Colors.red : Colors.orange,
                 foregroundColor: Colors.white,
               ),
-              child: Text(widget.isBuyNow ? 'Mua Ngay' : 'Thêm Vào Giỏ Hàng'),
+              child: Text(widget.isBuyNow ? AppStrings.buyNow : AppStrings.addToCart),
             ),
           ),
           const SizedBox(height: 16),

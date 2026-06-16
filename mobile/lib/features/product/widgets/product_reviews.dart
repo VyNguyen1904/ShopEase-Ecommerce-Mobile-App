@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/review_provider.dart';
 
 class ProductReviews extends ConsumerWidget {
@@ -22,7 +23,7 @@ class ProductReviews extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
             Text(
-              'Đánh giá sản phẩm',
+              AppStrings.productReviews,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -30,7 +31,7 @@ class ProductReviews extends ConsumerWidget {
               ),
             ),
             Text(
-              'Xem tất cả',
+              AppStrings.viewAll,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -46,7 +47,7 @@ class ProductReviews extends ConsumerWidget {
               return const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
-                  'Chưa có đánh giá nào cho sản phẩm này.',
+                  AppStrings.noReviewsYet,
                   style: TextStyle(color: AppColors.textGrey, fontStyle: FontStyle.italic),
                 ),
               );
@@ -139,7 +140,7 @@ class ProductReviews extends ConsumerWidget {
           error: (err, stack) => const Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
-              'Chưa có đánh giá nào cho sản phẩm này.',
+              AppStrings.noReviewsYet,
               style: TextStyle(color: AppColors.textGrey, fontStyle: FontStyle.italic),
             ),
           ),

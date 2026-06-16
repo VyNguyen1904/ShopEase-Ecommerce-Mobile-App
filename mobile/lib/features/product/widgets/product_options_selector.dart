@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class ProductOptionsSelector extends StatefulWidget {
   final List<String> sizes;
@@ -34,7 +35,7 @@ class _ProductOptionsSelectorState extends State<ProductOptionsSelector> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Màu sắc: ${_colorOptions[_selectedColorIndex]['name']}',
+          '${AppStrings.colorPrefix}${_colorOptions[_selectedColorIndex]['name']}',
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
@@ -100,7 +101,7 @@ class _ProductOptionsSelectorState extends State<ProductOptionsSelector> {
         ),
         const SizedBox(height: 24),
         const Text(
-          'Kích thước',
+          AppStrings.size,
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,

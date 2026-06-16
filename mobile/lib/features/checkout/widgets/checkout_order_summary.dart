@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class CheckoutOrderSummary extends StatelessWidget {
   final double subtotal;
@@ -26,17 +27,17 @@ class CheckoutOrderSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _buildSummaryRow('Tạm tính', '${_formatPrice(subtotal)}đ'),
+        _buildSummaryRow(AppStrings.subtotal, '${_formatPrice(subtotal)}đ'),
         const SizedBox(height: 8),
-        _buildSummaryRow('Phí vận chuyển', '${_formatPrice(shippingFee)}đ'),
+        _buildSummaryRow(AppStrings.shippingFee, '${_formatPrice(shippingFee)}đ'),
         const SizedBox(height: 8),
-        _buildSummaryRow('Giảm giá', '-${_formatPrice(discount)}đ'),
+        _buildSummaryRow(AppStrings.discount, '-${_formatPrice(discount)}đ'),
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Tổng cộng',
+              AppStrings.totalAmount,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
             ),
             Text(
