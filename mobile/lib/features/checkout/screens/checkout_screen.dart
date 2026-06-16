@@ -14,7 +14,7 @@ import '../../../core/providers/payment_provider.dart';
 import '../../../core/models/payment_model.dart';
 import '../../../core/models/address_model.dart';
 import '../widgets/checkout_section_title.dart';
-import '../widgets/checkout_stepper.dart';
+
 import '../widgets/checkout_address_card.dart';
 import '../widgets/checkout_selected_items.dart';
 import '../widgets/checkout_shipping_options.dart';
@@ -23,7 +23,9 @@ import '../widgets/checkout_payment_options.dart';
 import '../widgets/checkout_order_summary.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
-  const CheckoutScreen({super.key});
+  final List<CartItem>? directItems;
+
+  const CheckoutScreen({super.key, this.directItems});
 
   @override
   ConsumerState<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -41,10 +43,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final cartState = ref.watch(cartProvider);
     final userState = ref.watch(userProfileProvider);
 
-    final selectedItems = cartState.value?.items.where((i) => i.selected).toList() ?? [];
-    final subtotal = cartState.value?.subtotal ?? 0;
+    final selectedItems = widget.directItems ?? 
+        (cartState.value?.items.where((i) => i.selected).toList() ?? []);
+    final subtotal = widget.directItems != null
+        ? selectedItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity))
+        : (cartState.value?.subtotal ?? 0);
 
-    final double shippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    final double shippingFee = subtotal >= 500000 ? 0 : 25000;
     final double discount = _useCoins ? 2000 : 0;
     final double totalAmount = subtotal + shippingFee - discount;
 
@@ -67,7 +72,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: const CheckoutStepper(),
+        title: const Text(
+          'Thanh toán',
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -199,9 +211,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 context.go(AppRoutes.orderDetailPath(newOrder.id));
               }
 
-              final cartNotifier = ref.read(cartProvider.notifier);
-              for (var item in items) {
-                cartNotifier.removeItem(item.itemId);
+              // Only clear from cart if we are checking out from cart
+              if (widget.directItems == null) {
+                final cartNotifier = ref.read(cartProvider.notifier);
+                for (var item in items) {
+                  cartNotifier.removeItem(item.itemId);
+                }
               }
             } catch (e) {
               if (mounted) {

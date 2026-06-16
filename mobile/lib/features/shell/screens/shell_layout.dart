@@ -288,6 +288,7 @@ class ShellLayout extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       // ListTile is a one-to-three line list item. It handles layout, padding, and touch feedback automatically.
       child: ListTile(
+        tileColor: AppColors.bgLight,
         title: Text(
           name,
           style: const TextStyle(

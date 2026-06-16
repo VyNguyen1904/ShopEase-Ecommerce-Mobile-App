@@ -90,7 +90,7 @@ class CartService {
     try {
       final options = await _getAuthOptions();
       await _dio.put(
-        '$_baseUrl/items/$itemId',
+        '$_baseUrl/items/${Uri.encodeComponent(itemId)}',
         options: options,
         data: {
           'productId': productId,
@@ -125,7 +125,7 @@ class CartService {
   Future<void> removeItem(String userId, String itemId) async {
     try {
       final options = await _getAuthOptions();
-      await _dio.delete('$_baseUrl/items/$itemId', options: options);
+      await _dio.delete('$_baseUrl/items/${Uri.encodeComponent(itemId)}', options: options);
     } catch (e) {
       throw Exception('Failed to remove item');
     }

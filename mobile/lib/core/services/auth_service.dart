@@ -166,31 +166,33 @@ class AuthService {
   }
 
 
-  Future<AddressModel> addAddress(AddressModel address) async {
+  Future<void> addAddress(AddressModel address) async {
     try {
       final token = await getAccessToken();
-      final response = await _dio.post(
+      await _dio.post(
         '$_userUrl/me/addresses',
         data: address.toJson(),
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      return AddressModel.fromJson(response.data['data']);
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Failed to add address');
+    } catch (e) {
+      throw Exception('Unexpected error: $e');
     }
   }
 
-  Future<AddressModel> updateAddress(String id, AddressModel address) async {
+  Future<void> updateAddress(String id, AddressModel address) async {
     try {
       final token = await getAccessToken();
-      final response = await _dio.put(
+      await _dio.put(
         '$_userUrl/me/addresses/$id',
         data: address.toJson(),
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      return AddressModel.fromJson(response.data['data']);
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Failed to update address');
+    } catch (e) {
+      throw Exception('Unexpected error: $e');
     }
   }
 

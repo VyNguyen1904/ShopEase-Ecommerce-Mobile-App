@@ -5,7 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
-import '../../../core/models/product.dart';
+
 
 import '../widgets/product_options_selector.dart';
 import '../widgets/product_bottom_bar.dart';

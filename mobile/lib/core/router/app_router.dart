@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
+import '../models/cart_model.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/auth/screens/verification_screen.dart';
@@ -167,7 +168,11 @@ final appRouter = GoRouter(
     // ── Detail Screens (pushed on top, no bottom nav) ────────────────────
     GoRoute(
       path: AppRoutes.checkout,
-      builder: (context, state) => const CheckoutScreen(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final directItems = extra?['directItems'] as List<CartItem>?;
+        return CheckoutScreen(directItems: directItems);
+      },
     ),
     GoRoute(
       path: AppRoutes.payment,

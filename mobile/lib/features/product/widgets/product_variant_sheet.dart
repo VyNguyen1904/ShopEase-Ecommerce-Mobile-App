@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
+import '../../../core/router/app_routes.dart';
 import '../../cart/providers/cart_provider.dart';
+import '../../../core/models/cart_model.dart';
 
 class ProductVariantSheet extends ConsumerStatefulWidget {
   final Product product;
@@ -48,32 +51,52 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
       return;
     }
 
-    ref.read(cartProvider.notifier).addToCart(
-      int.parse(widget.product.id),
-      quantity,
-      color: selectedColor,
-      size: selectedSize,
-    ).then((_) {
+    if (widget.isBuyNow) {
+      final directItem = CartItem(
+        itemId: 'direct_buy',
+        productId: int.parse(widget.product.id),
+        price: widget.product.price,
+        quantity: quantity,
+        subtotal: widget.product.price * quantity,
+        color: selectedColor,
+        size: selectedSize,
+        productName: widget.product.name,
+        productImageUrl: widget.product.imageUrl,
+        productVariant: [selectedColor, selectedSize].where((e) => e != null).join(', '),
+      );
+      
       Navigator.of(context).pop();
-      if (widget.isBuyNow) {
-        // TODO: Navigate to checkout or cart
-      } else {
+      context.push(AppRoutes.checkout, extra: {'directItems': [directItem]});
+    } else {
+      ref.read(cartProvider.notifier).addToCart(
+        int.parse(widget.product.id),
+        quantity,
+        color: selectedColor,
+        size: selectedSize,
+      ).then((_) {
+        Navigator.of(context).pop();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(AppStrings.addedToCart)),
           );
         }
-      }
-    });
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.fromLTRB(
+        16, 
+        0, 
+        16, 
+        MediaQuery.of(context).padding.bottom + 16,
+      ),
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

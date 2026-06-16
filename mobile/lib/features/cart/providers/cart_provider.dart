@@ -114,6 +114,7 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       await _cartService.removeItem(_userId, itemId);
       fetchCart(silently: true);
     } catch (e) {
+      print('CartProvider removeItem Error: $e');
       fetchCart(silently: true);
     }
   }
