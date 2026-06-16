@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -19,7 +20,7 @@ class AccountScreen extends ConsumerWidget {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Cá nhân',
+          AppStrings.navProfile,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -34,76 +35,146 @@ class AccountScreen extends ConsumerWidget {
           children: [
             // User Info Card
             userProfileAsync.when(
-              data: (user) => _UserInfoCard(user: user),
+              data: (user) {
+                if (user == null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.person_outline, size: 48, color: AppColors.textGrey),
+                          const SizedBox(height: 16),
+                          const Text(
+                            AppStrings.notLoggedIn,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => context.go(AppRoutes.login),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            ),
+                            child: const Text(AppStrings.loginNow),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return _UserInfoCard(user: user);
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Lỗi: $err')),
+              error: (err, stack) {
+                final errorStr = err.toString().toLowerCase();
+                if (errorStr.contains('unauthorized') || errorStr.contains('đăng nhập')) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.lock_outline, size: 48, color: AppColors.textGrey),
+                          const SizedBox(height: 16),
+                          const Text(
+                            AppStrings.sessionExpired,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            AppStrings.loginAgainPrompt,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: AppColors.textGrey),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              ref.read(authServiceProvider).logout();
+                              context.go(AppRoutes.login);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            ),
+                            child: const Text(AppStrings.loginAgain),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Center(child: Text('Lỗi: $err'));
+              },
             ),
             const SizedBox(height: 32),
 
             // Account Section
-            _buildSectionTitle('Tài khoản'),
+            _buildSectionTitle(AppStrings.accountSection),
             const SizedBox(height: 12),
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.person_outline,
-                title: 'Thông tin cá nhân',
+                title: AppStrings.personalInfo,
                 onTap: () => context.push(AppRoutes.profileEdit),
               ),
               _buildMenuItem(
                 icon: Icons.location_on_outlined,
-                title: 'Sổ địa chỉ nhận hàng',
+               title: AppStrings.addressBook,
                 onTap: () => context.push(AppRoutes.address),
               ),
               _buildMenuItem(
                 icon: Icons.lock_outline,
-                title: 'Mật khẩu & Bảo mật',
+                title: AppStrings.passwordSecurity,
               ),
               _buildMenuItem(
                 icon: Icons.notifications_none,
-                title: 'Cài đặt thông báo',
+                title: AppStrings.notificationSettings,
               ),
               _buildMenuItem(
                 icon: Icons.language,
-                title: 'Ngôn ngữ',
-                trailingText: 'Tiếng Việt',
+                title: AppStrings.language,
+                trailingText: AppStrings.vietnamese,
               ),
             ]),
             const SizedBox(height: 28),
 
             // Preferences Section
-            _buildSectionTitle('Tùy chọn'),
+            _buildSectionTitle(AppStrings.preferencesSection),
             const SizedBox(height: 12),
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.settings_outlined,
-                title: 'Cài đặt',
+                title: AppStrings.settings,
                 onTap: () => context.push(AppRoutes.settings),
               ),
-              _buildMenuItem(icon: Icons.feed_outlined, title: 'Về chúng tôi'),
+              _buildMenuItem(icon: Icons.feed_outlined, title: AppStrings.aboutUs),
               _buildMenuItem(
                 icon: Icons.contrast,
-                title: 'Giao diện',
-                trailingText: 'Sáng',
+                title: AppStrings.theme,
+                trailingText: AppStrings.lightTheme,
               ),
               _buildMenuItem(
                 icon: Icons.assignment_outlined,
-                title: 'Đơn hàng của tôi',
+                title: AppStrings.myOrders,
                 onTap: () => context.go(AppRoutes.orders),
               ),
             ]),
             const SizedBox(height: 28),
 
             // Support Section
-            _buildSectionTitle('Hỗ trợ'),
+            _buildSectionTitle(AppStrings.supportSection),
             const SizedBox(height: 12),
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.help_outline,
-                title: 'Trung tâm trợ giúp',
+                title: AppStrings.helpCenter,
               ),
               _buildMenuItem(
                 icon: Icons.logout_outlined,
-                title: 'Đăng xuất',
+                title: AppStrings.logout,
                 isDestructive: true,
                 onTap: () async {
                   await ref.read(authServiceProvider).logout();
@@ -134,6 +205,7 @@ class AccountScreen extends ConsumerWidget {
 
   Widget _buildMenuGroup(List<Widget> children) {
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -145,25 +217,28 @@ class AccountScreen extends ConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        children: children.asMap().entries.map((entry) {
-          final int index = entry.key;
-          final Widget item = entry.value;
-          if (index != children.length - 1) {
-            return Column(
-              children: [
-                item,
-                const Divider(
-                  height: 1,
-                  indent: 56,
-                  endIndent: 20,
-                  color: AppColors.border,
-                ),
-              ],
-            );
-          }
-          return item;
-        }).toList(),
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          children: children.asMap().entries.map((entry) {
+            final int index = entry.key;
+            final Widget item = entry.value;
+            if (index != children.length - 1) {
+              return Column(
+                children: [
+                  item,
+                  const Divider(
+                    height: 1,
+                    indent: 56,
+                    endIndent: 20,
+                    color: AppColors.border,
+                  ),
+                ],
+              );
+            }
+            return item;
+          }).toList(),
+        ),
       ),
     );
   }

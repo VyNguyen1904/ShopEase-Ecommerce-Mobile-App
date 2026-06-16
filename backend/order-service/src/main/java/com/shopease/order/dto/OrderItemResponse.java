@@ -8,6 +8,8 @@ public record OrderItemResponse(
     Long productId,
     String productName,
     String productImage,
+    String color,
+    String size,
     BigDecimal unitPrice,
     int quantity,
     BigDecimal subtotal
@@ -18,6 +20,8 @@ public record OrderItemResponse(
             item.getProductId(),
             item.getProductName(),
             item.getProductImage(),
+            item.getColor(),
+            item.getSize(),
             item.getUnitPrice(),
             item.getQuantity(),
             item.getSubtotal()

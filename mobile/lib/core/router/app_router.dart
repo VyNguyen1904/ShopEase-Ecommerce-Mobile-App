@@ -5,6 +5,7 @@ import 'app_routes.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
+import '../../features/auth/screens/verification_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/category/screens/category_screen.dart';
@@ -101,6 +102,14 @@ final appRouter = GoRouter(
       path: AppRoutes.register,
       builder: (context, state) => const RegisterScreen(),
     ),
+    GoRoute(
+      path: AppRoutes.verification,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final email = extra?['email'] as String? ?? '';
+        return VerificationScreen(email: email);
+      },
+    ),
 
     // ── Main Shell with Bottom Navigation ─────────────────────────────────
     StatefulShellRoute.indexedStack(
@@ -189,7 +198,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.address,
-      builder: (context, state) => const AddressScreen(),
+      builder: (context, state) {
+        final isSelecting = state.extra is Map ? (state.extra as Map)['isSelecting'] == true : false;
+        return AddressScreen(isSelecting: isSelecting);
+      },
     ),
     GoRoute(
       path: AppRoutes.profileEdit,

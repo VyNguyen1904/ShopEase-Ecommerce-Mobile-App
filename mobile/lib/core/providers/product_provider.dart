@@ -14,9 +14,15 @@ final productsProvider = FutureProvider<List<Product>>((ref) async {
   return service.getProducts();
 });
 
+final selectedCategoryHomeProvider = StateProvider<String?>((ref) => null);
+
 /// Provider for New Arrivals
 final newArrivalsProvider = FutureProvider<List<Product>>((ref) async {
   final products = await ref.watch(productsProvider.future);
+  final selectedCategory = ref.watch(selectedCategoryHomeProvider);
+  if (selectedCategory != null) {
+    return products.where((p) => p.category == selectedCategory).take(6).toList();
+  }
   return products.take(6).toList(); 
 });
 
@@ -44,9 +50,107 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) async {
 });
 
 final searchProductsProvider = FutureProvider.family<List<Product>, String>((ref, query) async {
-  if (query.isEmpty) return [];
   final service = ref.watch(productServiceProvider);
+  if (query.isEmpty) {
+    return service.getProducts();
+  }
   return service.searchProducts(query);
+});
+
+final sortOrderProvider = StateProvider<String>((ref) => 'none');
+
+// ---------- Search Filter Providers ----------
+
+/// Sort criteria: 'price', 'name', 'rating', 'salesCount', 'createdAt'
+final sortByProvider = StateProvider<String>((ref) => 'none');
+
+/// Sort direction: 'asc' or 'desc'
+final sortDirProvider = StateProvider<String>((ref) => 'desc');
+
+/// Selected category for search filtering (null = all categories)
+final selectedCategorySearchProvider = StateProvider<String?>((ref) => null);
+
+/// Price range filter
+final minPriceProvider = StateProvider<double?>((ref) => null);
+final maxPriceProvider = StateProvider<double?>((ref) => null);
+
+/// Minimum rating filter
+final minRatingProvider = StateProvider<double?>((ref) => null);
+
+/// Count of active filters (for badge on "Bộ lọc" button)
+final activeFilterCountProvider = Provider<int>((ref) {
+  int count = 0;
+  if (ref.watch(selectedCategorySearchProvider) != null) count++;
+  if (ref.watch(minPriceProvider) != null || ref.watch(maxPriceProvider) != null) count++;
+  if (ref.watch(minRatingProvider) != null) count++;
+  if (ref.watch(sortByProvider) != 'none') count++;
+  return count;
+});
+
+final filteredSearchProductsProvider = Provider.family<AsyncValue<List<Product>>, String>((ref, query) {
+  final asyncProducts = ref.watch(searchProductsProvider(query));
+  final sortOrder = ref.watch(sortOrderProvider);
+  final sortBy = ref.watch(sortByProvider);
+  final sortDir = ref.watch(sortDirProvider);
+  final selectedCategory = ref.watch(selectedCategorySearchProvider);
+  final minPrice = ref.watch(minPriceProvider);
+  final maxPrice = ref.watch(maxPriceProvider);
+  final minRating = ref.watch(minRatingProvider);
+
+  return asyncProducts.whenData((products) {
+    List<Product> filtered = List.from(products);
+
+    // --- Category filter ---
+    if (selectedCategory != null && selectedCategory.isNotEmpty) {
+      filtered = filtered.where((p) => p.category == selectedCategory).toList();
+    }
+
+    // --- Price range filter ---
+    if (minPrice != null) {
+      filtered = filtered.where((p) => p.price >= minPrice).toList();
+    }
+    if (maxPrice != null) {
+      filtered = filtered.where((p) => p.price <= maxPrice).toList();
+    }
+
+    // --- Rating filter ---
+    if (minRating != null) {
+      filtered = filtered.where((p) => p.rating >= minRating).toList();
+    }
+
+    // --- Sort (legacy sortOrder for "Giá" button compatibility) ---
+    if (sortOrder == 'asc') {
+      filtered.sort((a, b) => a.price.compareTo(b.price));
+    } else if (sortOrder == 'desc') {
+      filtered.sort((a, b) => b.price.compareTo(a.price));
+    }
+
+    // --- Sort (new multi-criteria sort) ---
+    if (sortBy != 'none') {
+      filtered.sort((a, b) {
+        int cmp;
+        switch (sortBy) {
+          case 'price':
+            cmp = a.price.compareTo(b.price);
+            break;
+          case 'name':
+            cmp = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+            break;
+          case 'rating':
+            cmp = a.rating.compareTo(b.rating);
+            break;
+          case 'salesCount':
+            cmp = a.salesCount.compareTo(b.salesCount);
+            break;
+          default:
+            cmp = 0;
+        }
+        return sortDir == 'desc' ? -cmp : cmp;
+      });
+    }
+
+    return filtered;
+  });
 });
 
 final productDetailProvider = FutureProvider.family<Product, String>((ref, id) async {

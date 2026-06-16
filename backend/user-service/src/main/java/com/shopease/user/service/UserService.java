@@ -126,6 +126,12 @@ public class UserService {
         return new UserStatsResponse(totalUsers, usersByRole, newUsersToday);
     }
 
+    public void verifyUser(UUID userId) {
+        UserAccount user = getUserById(userId);
+        user.verifyAccount();
+        users.save(user);
+    }
+
     private UserAccount getUserById(UUID id) {
         return users.findById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

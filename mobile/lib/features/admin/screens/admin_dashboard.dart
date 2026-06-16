@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/admin_user_service.dart';
 import '../../../core/models/admin_stats_model.dart';
+import '../../../core/constants/app_strings.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -95,7 +96,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.alertRed),
                           const SizedBox(height: 16),
                           Text(
-                            'Không thể tải dữ liệu: $_error',
+                            '${AppStrings.loadDataErrorPrefix}$_error',
                             style: const TextStyle(fontSize: 14, color: AppColors.textGrey, fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
@@ -103,7 +104,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ElevatedButton.icon(
                             onPressed: _fetchStats,
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Thử lại'),
+                            label: const Text(AppStrings.retry),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,
@@ -118,7 +119,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 else ...[
                   // 2. Overview Statistics Section
                   const Text(
-                    'Tổng quan hoạt động',
+                    AppStrings.activityOverview,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -139,7 +140,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
                   // 5. Quick Actions / Management Modules
                   const Text(
-                    'Chức năng quản trị',
+                    AppStrings.adminFunctions,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -192,7 +193,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               Row(
                 children: [
                   const Text(
-                    'Chào mừng trở lại, Admin',
+                    AppStrings.welcomeAdmin,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -211,7 +212,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               const SizedBox(height: 2),
               const Text(
-                'Chúc bạn một ngày làm việc hiệu quả!',
+                AppStrings.adminGreeting,
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.textGrey,
@@ -226,7 +227,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           onPressed: () => context.go('/home'),
           icon: const Icon(Icons.storefront_rounded, size: 18, color: AppColors.primary),
           label: const Text(
-            'Cửa hàng',
+            AppStrings.storefront,
             style: TextStyle(
               color: AppColors.primary,
               fontWeight: FontWeight.bold,
@@ -298,7 +299,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               icon: Icons.attach_money,
               iconColor: AppColors.primary,
               iconBg: const Color(0xFFEAF5F6),
-              title: 'Doanh thu',
+              title: AppStrings.revenue,
               value: '\$${oStats.totalRevenue.toStringAsFixed(2)}',
               percentage: 'Live',
               isIncrease: true,
@@ -307,7 +308,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               icon: Icons.shopping_bag_outlined,
               iconColor: Colors.teal,
               iconBg: const Color(0xFFE6FFFA),
-              title: 'Đơn hàng',
+              title: AppStrings.orders,
               value: oStats.totalOrders.toString(),
               percentage: 'Live',
               isIncrease: true,
@@ -316,16 +317,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
               icon: Icons.people_outline_rounded,
               iconColor: Colors.indigo,
               iconBg: const Color(0xFFEBF4FF),
-              title: 'Thành viên',
+              title: AppStrings.members,
               value: uStats.totalUsers.toString(),
-              percentage: '${uStats.activeUsers} hoạt động',
+              percentage: '${uStats.activeUsers}${AppStrings.activeStatus}',
               isIncrease: true,
             ),
             _buildOverviewCard(
               icon: Icons.analytics_rounded,
               iconColor: Colors.orange,
               iconBg: const Color(0xFFFFF3CD),
-              title: 'AOV (Đơn tb)',
+              title: AppStrings.aov,
               value: '\$${oStats.aov.toStringAsFixed(2)}',
               percentage: 'Live',
               isIncrease: true,
@@ -384,7 +385,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Doanh số & Đơn hàng',
+                AppStrings.salesAndOrders,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
               ),
               Container(
@@ -396,7 +397,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
                 child: Row(
                   children: const [
-                    Text('7 ngày qua', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                    Text(AppStrings.last7Days, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                     SizedBox(width: 4),
                     Icon(Icons.keyboard_arrow_down, size: 14, color: AppColors.textGrey),
                   ],
@@ -407,9 +408,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           const SizedBox(height: 12),
           Row(
             children: [
-              _buildLegendDot(AppColors.primary, 'Doanh thu'),
+              _buildLegendDot(AppColors.primary, AppStrings.revenue),
               const SizedBox(width: 16),
-              _buildLegendDot(const Color(0xFFCBECE8), 'Đơn hàng'),
+              _buildLegendDot(const Color(0xFFCBECE8), AppStrings.orders),
             ],
           ),
           const SizedBox(height: 24),
@@ -457,7 +458,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Danh mục phổ biến',
+            AppStrings.popularCategories,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
           ),
           const SizedBox(height: 20),
@@ -537,7 +538,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Tăng trưởng thành viên',
+            AppStrings.memberGrowth,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
           ),
           const SizedBox(height: 8),
@@ -590,7 +591,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               context: context,
               icon: Icons.people_alt_rounded,
               color: Colors.indigo,
-              title: 'Quản lý người dùng',
+              title: AppStrings.manageUsers,
               subtitle: 'Manage accounts',
               onTap: () => context.push(AppRoutes.adminUsers),
             ),
@@ -598,7 +599,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               context: context,
               icon: Icons.settings_suggest_rounded,
               color: Colors.orange,
-              title: 'Cấu hình hệ thống',
+              title: AppStrings.systemConfig,
               subtitle: 'Environment settings',
               onTap: () => _showSettingsDialog(context),
             ),
@@ -606,7 +607,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               context: context,
               icon: Icons.terminal_rounded,
               color: Colors.purple,
-              title: 'Nhật ký hệ thống',
+              title: AppStrings.systemLogs,
               subtitle: 'Gateway trace logs',
               onTap: () => _showLogsDialog(context),
             ),
@@ -614,7 +615,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               context: context,
               icon: Icons.storefront_rounded,
               color: AppColors.primary,
-              title: 'Trở về trang chủ',
+              title: AppStrings.returnToHome,
               subtitle: 'Exit admin panel',
               onTap: () => context.go('/home'),
             ),
@@ -942,7 +943,7 @@ class _SystemSettingsDialogState extends State<_SystemSettingsDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
                         Text(
-                          'Cấu hình hệ thống',
+                          AppStrings.systemSettingsTitle,
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         SizedBox(height: 4),
@@ -1091,7 +1092,7 @@ class _SystemLogsDialog extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
                         Text(
-                          'Nhật ký hệ thống',
+                          AppStrings.gatewayLogs,
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                         ),
                         SizedBox(height: 4),

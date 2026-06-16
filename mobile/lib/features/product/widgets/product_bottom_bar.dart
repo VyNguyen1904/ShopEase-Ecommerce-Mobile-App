@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/models/product.dart';
 import '../../cart/providers/cart_provider.dart';
+import 'product_variant_sheet.dart';
 
 class ProductBottomBar extends ConsumerWidget {
   final Product product;
@@ -30,28 +31,16 @@ class ProductBottomBar extends ConsumerWidget {
             child: SizedBox(
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () async {
-                  try {
-                    final pId = int.tryParse(product.id) ?? 0;
-                    await ref.read(cartProvider.notifier).addToCart(pId, 1);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Không thể thêm: $e'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Padding(
+                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: ProductVariantSheet(product: product),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
@@ -79,10 +68,13 @@ class ProductBottomBar extends ConsumerWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Chuyển đến màn hình thanh toán!'),
-                      backgroundColor: AppColors.accent,
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Padding(
+                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: ProductVariantSheet(product: product, isBuyNow: true),
                     ),
                   );
                 },

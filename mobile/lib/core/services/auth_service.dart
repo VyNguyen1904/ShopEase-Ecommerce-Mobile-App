@@ -24,7 +24,9 @@ class AuthService {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final isAuthRoute = options.path.contains('/api/auth/login') || 
-                              options.path.contains('/api/auth/register');
+                              options.path.contains('/api/auth/register') ||
+                              options.path.contains('/api/auth/verify-email') ||
+                              options.path.contains('/api/auth/resend-otp');
           
           if (!isAuthRoute) {
             final token = await getAccessToken();
@@ -40,6 +42,12 @@ class AuthService {
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
+        },
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            await _clearTokens();
+          }
+          return handler.next(e);
         },
       ),
     );
@@ -80,7 +88,7 @@ class AuthService {
             ? (e.response!.statusMessage ?? 'Lỗi máy chủ (${e.response!.statusCode})')
             : switch (e.type) {
                 DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => 'Hết thời gian kết nối. Vui lòng kiểm tra mạng.',
-                DioExceptionType.connectionError => 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+                DioExceptionType.connectionError => 'Không thểkết nối đến máy chủ. Vui lòng thử lại.',
                 _ => 'Đã có lỗi xảy ra: ${e.message}',
               };
   }
@@ -96,15 +104,37 @@ class AuthService {
     }
   }
 
-  Future<TokenResponse> register(String email, String password, String fullName) async {
+  Future<void> register(String email, String password, String fullName) async {
     try {
-      final response = await _dio.post(
+      await _dio.post(
         '$_authUrl/register',
         data: {'email': email, 'password': password, 'fullName': fullName, 'role': 'BUYER'},
+      );
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<TokenResponse> verifyEmail(String email, String otp) async {
+    try {
+      final response = await _dio.post(
+        '$_authUrl/verify-email',
+        data: {'email': email, 'otp': otp},
       );
       final tokenResponse = TokenResponse.fromJson(response.data['data']);
       await _saveTokens(tokenResponse);
       return tokenResponse;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<void> resendOtp(String email) async {
+    try {
+      await _dio.post(
+        '$_authUrl/resend-otp',
+        data: {'email': email},
+      );
     } on DioException catch (e) {
       throw Exception(_handleDioError(e));
     }

@@ -9,8 +9,12 @@ class Product {
   final int reviewsCount;
   final int salesCount;
   final List<String> sizes;
-  final List<int> colors; // List of ARGB hex values
+  final List<String> colors;
   final String description;
+  final String? material;
+  final String? fit;
+  final String? careInstructions;
+  final List<String> features;
 
   const Product({
     required this.id,
@@ -25,6 +29,10 @@ class Product {
     required this.sizes,
     required this.colors,
     required this.description,
+    this.material,
+    this.fit,
+    this.careInstructions,
+    this.features = const [],
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -55,8 +63,12 @@ class Product {
       reviewsCount: (json['reviewCount'] as num?)?.toInt() ?? (json['reviewsCount'] as num?)?.toInt() ?? 0,
       salesCount: (json['soldCount'] as num?)?.toInt() ?? (json['salesCount'] as num?)?.toInt() ?? 0,
       sizes: (json['sizes'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      colors: (json['colors'] as List?)?.map((e) => int.tryParse(e.toString()) ?? 0).toList() ?? [],
+      colors: (json['colors'] as List?)?.map((e) => e.toString()).toList() ?? [],
       description: json['description'] ?? '',
+      material: json['material']?.toString(),
+      fit: json['fit']?.toString(),
+      careInstructions: json['careInstructions']?.toString(),
+      features: (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 
@@ -74,6 +86,10 @@ class Product {
       'sizes': sizes,
       'colors': colors,
       'description': description,
+      'material': material,
+      'fit': fit,
+      'careInstructions': careInstructions,
+      'features': features,
     };
   }
 

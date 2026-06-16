@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class CheckoutPaymentOptions extends StatelessWidget {
   final String selectedPayment;
@@ -24,7 +25,7 @@ class CheckoutPaymentOptions extends StatelessWidget {
         children: [
           _buildPaymentRadio(
             'cod',
-            'Thanh toán khi nhận hàng (COD)',
+            AppStrings.codPayment,
             isSelected: selectedPayment == 'cod',
           ),
           const Divider(
@@ -35,7 +36,7 @@ class CheckoutPaymentOptions extends StatelessWidget {
           ),
           _buildPaymentRadio(
             'vnpay',
-            'VNPay',
+            AppStrings.vnpayPayment,
             isSelected: selectedPayment == 'vnpay',
           ),
           const Divider(
@@ -45,10 +46,9 @@ class CheckoutPaymentOptions extends StatelessWidget {
             color: AppColors.border,
           ),
           _buildPaymentRadio(
-            'zalopay',
-            'Ví ZaloPay',
-            subtitle: '(Giảm đến 150.000đ)',
-            isSelected: selectedPayment == 'zalopay',
+            'momo',
+            AppStrings.momoPayment,
+            isSelected: selectedPayment == 'momo',
           ),
           const Divider(
             height: 1,
@@ -57,9 +57,9 @@ class CheckoutPaymentOptions extends StatelessWidget {
             color: AppColors.border,
           ),
           _buildPaymentRadio(
-            'credit',
-            'Thẻ tín dụng / ATM',
-            isSelected: selectedPayment == 'credit',
+            'card',
+            AppStrings.cardPayment,
+            isSelected: selectedPayment == 'card',
           ),
         ],
       ),

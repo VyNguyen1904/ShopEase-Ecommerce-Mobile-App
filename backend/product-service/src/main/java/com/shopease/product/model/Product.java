@@ -74,6 +74,30 @@ public class Product {
     @Column(name = "image_url")
     private List<String> imageUrls = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_colors", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "color")
+    private List<String> colors = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_sizes", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "size")
+    private List<String> sizes = new ArrayList<>();
+
+    @Column(length = 255)
+    private String material;
+
+    @Column(length = 100)
+    private String fit;
+
+    @Column(length = 1000)
+    private String careInstructions;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "product_features", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "feature")
+    private List<String> features = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductStatus status;
@@ -97,6 +121,8 @@ public class Product {
     public Product(String name, String slug, String description, Category category, BigDecimal basePrice,
                    BigDecimal salePrice, int stockQuantity, double avgRating, int reviewCount, int soldCount,
                    BigDecimal weightKg, String sellerId, String thumbnailUrl, List<String> imageUrls,
+                   List<String> colors, List<String> sizes,
+                   String material, String fit, String careInstructions, List<String> features,
                    ProductStatus status, boolean isFeatured, boolean active, Instant createdAt) {
         this.name = name;
         this.slug = slug;
@@ -112,6 +138,12 @@ public class Product {
         this.sellerId = sellerId;
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls = new ArrayList<>(imageUrls);
+        this.colors = colors != null ? new ArrayList<>(colors) : new ArrayList<>();
+        this.sizes = sizes != null ? new ArrayList<>(sizes) : new ArrayList<>();
+        this.material = material;
+        this.fit = fit;
+        this.careInstructions = careInstructions;
+        this.features = features != null ? new ArrayList<>(features) : new ArrayList<>();
         this.status = status;
         this.isFeatured = isFeatured;
         this.active = active;
@@ -121,7 +153,9 @@ public class Product {
 
     public void update(String name, String slug, String description, Category category, BigDecimal basePrice,
                        BigDecimal salePrice, int stockQuantity, BigDecimal weightKg, String sellerId,
-                       String thumbnailUrl, List<String> imageUrls, ProductStatus status, boolean isFeatured) {
+                       String thumbnailUrl, List<String> imageUrls, List<String> colors, List<String> sizes,
+                       String material, String fit, String careInstructions, List<String> features,
+                       ProductStatus status, boolean isFeatured) {
         this.name = name;
         this.slug = slug;
         this.description = description;
@@ -134,6 +168,15 @@ public class Product {
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls.clear();
         this.imageUrls.addAll(imageUrls);
+        this.colors.clear();
+        if (colors != null) this.colors.addAll(colors);
+        this.sizes.clear();
+        if (sizes != null) this.sizes.addAll(sizes);
+        this.material = material;
+        this.fit = fit;
+        this.careInstructions = careInstructions;
+        this.features.clear();
+        if (features != null) this.features.addAll(features);
         this.status = status;
         this.isFeatured = isFeatured;
     }

@@ -38,9 +38,9 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     }
   }
 
-  Future<void> updateQuantity(int productId, int quantity) async {
+  Future<void> updateQuantity(String itemId, int quantity) async {
     if (quantity < 1) {
-      await removeItem(productId);
+      await removeItem(itemId);
       return;
     }
 
@@ -48,7 +48,7 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     if (state.hasValue) {
       final currentCart = state.value!;
       final updatedItems = currentCart.items.map((item) {
-        if (item.productId == productId) {
+        if (item.itemId == itemId) {
           item.quantity = quantity;
         }
         return item;
@@ -69,7 +69,10 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     }
 
     try {
-      await _cartService.updateQuantity(_userId, productId, quantity);
+      final item = state.value?.items.firstWhere((e) => e.itemId == itemId);
+      if (item != null) {
+        await _cartService.updateQuantity(_userId, itemId, item.productId, quantity, item.color, item.size);
+      }
       // Refresh to ensure server sync without showing loading spinner
       fetchCart(silently: true);
     } catch (e) {
@@ -77,22 +80,22 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
     }
   }
 
-  Future<void> addToCart(int productId, int quantity) async {
+  Future<void> addToCart(int productId, int quantity, {String? color, String? size}) async {
     try {
-      await _cartService.addItem(_userId, productId, quantity);
+      await _cartService.addItem(_userId, productId, quantity, color: color, size: size);
       fetchCart(silently: true);
     } catch (e) {
       fetchCart(silently: true);
     }
   }
 
-  Future<void> removeItem(int productId) async {
+  Future<void> removeItem(String itemId) async {
     try {
       // Optimistic update
       if (state.hasValue) {
         final currentCart = state.value!;
         final updatedItems = currentCart.items
-            .where((item) => item.productId != productId)
+            .where((item) => item.itemId != itemId)
             .toList();
         final newSubtotal = updatedItems
             .where((item) => item.selected)
@@ -108,18 +111,18 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
         );
       }
 
-      await _cartService.removeItem(_userId, productId);
+      await _cartService.removeItem(_userId, itemId);
       fetchCart(silently: true);
     } catch (e) {
       fetchCart(silently: true);
     }
   }
 
-  void toggleItemSelection(int productId, bool selected) {
+  void toggleItemSelection(String itemId, bool selected) {
     if (state.hasValue) {
       final currentCart = state.value!;
       final updatedItems = currentCart.items.map((item) {
-        if (item.productId == productId) {
+        if (item.itemId == itemId) {
           item.selected = selected;
         }
         return item;

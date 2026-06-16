@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class CheckoutDiscountSection extends StatelessWidget {
   final bool useCoins;
@@ -29,7 +30,7 @@ class CheckoutDiscountSection extends StatelessWidget {
                 child: const TextField(
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Nhập mã giảm giá',
+                    hintText: AppStrings.enterPromoCode,
                     hintStyle: TextStyle(
                       color: AppColors.textGrey,
                       fontSize: 14,
@@ -48,7 +49,7 @@ class CheckoutDiscountSection extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: const Text(
-                'Áp dụng',
+                AppStrings.apply,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -66,16 +67,16 @@ class CheckoutDiscountSection extends StatelessWidget {
               text: const TextSpan(
                 style: TextStyle(color: AppColors.textDark, fontSize: 14),
                 children: [
-                  TextSpan(text: 'Dùng '),
+                  TextSpan(text: AppStrings.useCoinsPrefix),
                   TextSpan(
-                    text: '2.000 xu ',
+                    text: AppStrings.coinsAmount,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.alertRed,
                     ),
                   ),
                   TextSpan(
-                    text: '(-2.000đ)',
+                    text: AppStrings.coinsDiscount,
                     style: TextStyle(color: AppColors.alertRed),
                   ),
                 ],

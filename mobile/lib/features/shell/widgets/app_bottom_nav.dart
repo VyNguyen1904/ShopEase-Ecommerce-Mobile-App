@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../cart/providers/cart_provider.dart';
 
 class AppBottomNav extends ConsumerWidget {
@@ -49,12 +50,12 @@ class AppBottomNav extends ConsumerWidget {
                 const NavigationDestination(
                   icon: Icon(Icons.home_outlined),
                   selectedIcon: Icon(Icons.home),
-                  label: 'Trang chủ',
+                  label: AppStrings.navHome,
                 ),
                 const NavigationDestination(
                   icon: Icon(Icons.grid_view_outlined),
                   selectedIcon: Icon(Icons.grid_view),
-                  label: 'Danh mục',
+                  label: AppStrings.navCategory,
                 ),
                 NavigationDestination(
                   icon: Badge(
@@ -67,17 +68,17 @@ class AppBottomNav extends ConsumerWidget {
                     isLabelVisible: cartCount > 0,
                     child: const Icon(Icons.shopping_cart),
                   ),
-                  label: 'Giỏ hàng',
+                  label: AppStrings.navCart,
                 ),
                 const NavigationDestination(
                   icon: Icon(Icons.assignment_outlined),
                   selectedIcon: Icon(Icons.assignment),
-                  label: 'Đơn hàng',
+                  label: AppStrings.navOrders,
                 ),
                 const NavigationDestination(
                   icon: Icon(Icons.person_outline),
                   selectedIcon: Icon(Icons.person),
-                  label: 'Cá nhân',
+                  label: AppStrings.navProfile,
                 ),
               ],
             ),

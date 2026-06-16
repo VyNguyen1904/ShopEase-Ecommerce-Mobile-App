@@ -35,12 +35,11 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(String buyerId, CreateOrderRequest request) {
-        // Synchronous validation and snapshotting
         List<OrderItem> items = request.items().stream().map(item -> {
             ProductCatalogClient.ProductResponse product = productCatalog.getProduct(item.productId());
             BigDecimal price = product.salePrice() != null ? product.salePrice() : product.basePrice();
             return new OrderItem(item.productId(), product.name(), product.thumbnailUrl(), price, item.quantity(),
-                    price.multiply(BigDecimal.valueOf(item.quantity())), product.sellerId());
+                    price.multiply(BigDecimal.valueOf(item.quantity())), product.sellerId(), item.color(), item.size());
         }).toList();
 
         BigDecimal subtotal = items.stream().map(OrderItem::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);

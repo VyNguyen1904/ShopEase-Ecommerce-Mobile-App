@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/models/product.dart';
 import '../../../core/widgets/product_card.dart';
 import '../widgets/seller_stats_card.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerShopProfile extends StatefulWidget {
   const SellerShopProfile({super.key});
@@ -28,7 +29,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
       rating: 4.8,
       reviewsCount: 172,
       salesCount: 256,
-      colors: [0xFF000000, 0xFFFFFFFF, 0xFFFF0000],
+      colors: ['Đen', 'Trắng', 'Đỏ'],
       sizes: ['7', '8', '9', '10', '11'],
       description: 'Giày Nike Air Max 270 chính hãng',
     ),
@@ -43,7 +44,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
       rating: 4.9,
       reviewsCount: 210,
       salesCount: 340,
-      colors: [0xFF000000, 0xFFFFFFFF],
+      colors: ['Đen', 'Trắng'],
       sizes: ['8', '9', '10'],
       description: 'Giày Adidas Ultraboost chính hãng',
     ),
@@ -58,7 +59,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
       rating: 4.7,
       reviewsCount: 150,
       salesCount: 200,
-      colors: [0xFF000000, 0xFFFFFFFF],
+      colors: ['Đen', 'Trắng'],
       sizes: ['7', '8', '9'],
       description: 'Giày Puma RS-X chính hãng',
     ),
@@ -164,7 +165,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                                       ),
                                       const SizedBox(width: 6),
                                       const Text(
-                                        'Online 2 giờ trước',
+                                        'Online 2 giờ trước', // có thể thay bằng chuỗi mock nếu muốn
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: Colors.white70,
@@ -225,7 +226,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                               ),
                             ),
                             const Text(
-                              ' Người theo dõi',
+                              AppStrings.followers,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.white70,
@@ -241,7 +242,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                               child: OutlinedButton.icon(
                                 onPressed: () {},
                                 icon: const Icon(Icons.add, size: 18),
-                                label: const Text('Theo dõi'),
+                                label: const Text(AppStrings.follow),
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: headerColor,
@@ -263,7 +264,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                                   Icons.chat_bubble_outline,
                                   size: 18,
                                 ),
-                                label: const Text('Chat'),
+                                label: const Text(AppStrings.chat),
                                 style: OutlinedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: headerColor,
@@ -303,10 +304,10 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                       fontSize: 14,
                     ),
                     tabs: const [
-                      Tab(text: 'Shop'),
-                      Tab(text: 'Sản phẩm'),
-                      Tab(text: 'Danh mục'),
-                      Tab(text: 'Đánh giá'),
+                      Tab(text: AppStrings.shop),
+                      Tab(text: AppStrings.products),
+                      Tab(text: AppStrings.category),
+                      Tab(text: AppStrings.reviews),
                     ],
                   ),
                 ),
@@ -318,9 +319,9 @@ class _SellerShopProfileState extends State<SellerShopProfile>
           controller: _tabController,
           children: [
             _buildShopTab(),
-            const Center(child: Text('Sản phẩm')),
-            const Center(child: Text('Danh mục')),
-            const Center(child: Text('Đánh giá')),
+            Center(child: Text(AppStrings.products)),
+            Center(child: Text(AppStrings.category)),
+            Center(child: Text(AppStrings.reviews)),
           ],
         ),
       ),
@@ -335,7 +336,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
         children: [
           // Giới thiệu shop
           const Text(
-            'Giới thiệu shop',
+            AppStrings.shopInfo,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -387,7 +388,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Sản phẩm nổi bật',
+                AppStrings.featuredProducts,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -401,7 +402,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                 child: Row(
                   children: const [
                     Text(
-                      'Xem tất cả',
+                      AppStrings.viewAll,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

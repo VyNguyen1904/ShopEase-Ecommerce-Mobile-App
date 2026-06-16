@@ -5,7 +5,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/product_provider.dart';
 import '../../../core/models/product.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerProductsScreen extends ConsumerStatefulWidget {
   const SellerProductsScreen({super.key});
@@ -61,7 +62,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Sản phẩm',
+          AppStrings.products,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,
@@ -92,9 +93,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
                 fontSize: 14,
               ),
               tabs: [
-                Tab(text: 'Tất cả ($totalCount)'),
-                Tab(text: 'Còn hàng ($inStockCount)'),
-                Tab(text: 'Hết hàng ($outOfStockCount)'),
+                Tab(text: '${AppStrings.all} ($totalCount)'),
+                Tab(text: '${AppStrings.inStock} ($inStockCount)'),
+                Tab(text: '${AppStrings.outOfStock} ($outOfStockCount)'),
               ],
             ),
           ),
@@ -117,7 +118,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
             },
             icon: const Icon(Icons.add, color: Colors.white),
             label: const Text(
-              'Thêm sản phẩm',
+              AppStrings.addProduct,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -143,12 +144,12 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
     return userAsync.when(
       data: (user) {
         if (user == null) {
-          return const Center(child: Text('Vui lòng đăng nhập'));
+          return const Center(child: Text(AppStrings.pleaseLogin));
         }
         return ref.watch(sellerProductsProvider(user.id)).when(
           data: (products) {
             if (products.isEmpty) {
-              return const Center(child: Text('Chưa có sản phẩm nào.'));
+              return const Center(child: Text(AppStrings.noProductsList));
             }
             return ListView.separated(
               padding: const EdgeInsets.all(20),

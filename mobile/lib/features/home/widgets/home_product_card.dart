@@ -7,6 +7,7 @@ import '../../../core/models/product.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
 import '../../cart/providers/cart_provider.dart';
+import '../../product/widgets/product_variant_sheet.dart';
 
 class HomeProductCard extends StatelessWidget {
   final Product product;
@@ -52,7 +53,6 @@ class HomeProductCard extends StatelessWidget {
             children: [
               // Image Section (Top)
               Expanded(
-                flex: 4,
                 child: Stack(
                   children: [
                     SizedBox(
@@ -111,114 +111,139 @@ class HomeProductCard extends StatelessWidget {
               ),
 
               // Details Section (Bottom)
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            product.category,
-                            style: const TextStyle(
-                              color: AppColors.textGrey,
-                              fontSize: 11,
-                            ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.category,
+                          style: const TextStyle(
+                            color: AppColors.textGrey,
+                            fontSize: 11,
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            product.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: AppColors.textDark,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          product.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: AppColors.textDark,
                           ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (showDiscount &&
-                                    product.originalPrice != null)
-                                  Text(
-                                    '${product.originalPrice!.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: AppColors.textLight,
-                                      decoration: TextDecoration.lineThrough,
-                                    ),
-                                  ),
-                                const SizedBox(height: 2),
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    '${product.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
-                                    style: const TextStyle(
-                                      color: AppColors.textDark,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 14,
-                                    ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.star, color: Colors.amber, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${product.rating}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${product.reviewsCount})',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                            const Spacer(),
+                            Text(
+                              'Đã bán ${product.salesCount}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppColors.textGrey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          product.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (showDiscount &&
+                                  product.originalPrice != null)
+                                Text(
+                                  '${product.originalPrice!.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: AppColors.textLight,
+                                    decoration: TextDecoration.lineThrough,
                                   ),
                                 ),
-                              ],
+                              const SizedBox(height: 2),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${product.price.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ',
+                                  style: const TextStyle(
+                                    color: AppColors.textDark,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => Padding(
+                                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                child: ProductVariantSheet(product: product),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 18,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              try {
-                                final pId = int.tryParse(product.id) ?? 0;
-                                await ref.read(cartProvider.notifier).addToCart(pId, 1);
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Đã thêm sản phẩm vào giỏ hàng!'),
-                                      backgroundColor: AppColors.primary,
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Không thể thêm: $e'),
-                                      backgroundColor: Colors.red,
-                                      duration: const Duration(seconds: 1),
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

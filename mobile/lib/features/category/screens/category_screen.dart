@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/product_provider.dart';
 
@@ -18,7 +19,7 @@ class CategoryScreen extends ConsumerWidget {
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: const Text(
-          'Danh mục',
+          AppStrings.navCategory,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 24,

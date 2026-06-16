@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../providers/cart_provider.dart';
 import '../widgets/cart_empty_state.dart';
@@ -41,7 +42,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           },
         ),
         title: const Text(
-          'Giỏ hàng',
+          AppStrings.navCart,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -58,10 +59,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Đã có lỗi xảy ra', style: TextStyle(color: Colors.red)),
+              const Text(AppStrings.unknownError, style: TextStyle(color: Colors.red)),
               TextButton(
                 onPressed: () => ref.read(cartProvider.notifier).fetchCart(),
-                child: const Text('Thử lại'),
+                child: const Text(AppStrings.retry),
               ),
             ],
           ),
@@ -95,7 +96,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                         ),
                       ),
                       const Text(
-                        'Chọn tất cả',
+                        AppStrings.selectAll,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,

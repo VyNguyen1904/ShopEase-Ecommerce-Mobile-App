@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../widgets/app_bottom_nav.dart';
 
@@ -33,7 +34,7 @@ class ShellLayout extends StatelessWidget {
             child: FloatingActionButton.small(
               backgroundColor: AppColors.accent,
               foregroundColor: Colors.white,
-              tooltip: 'Duyệt nhanh màn hình',
+              tooltip: AppStrings.devPanelTooltip,
               child: const Icon(Icons.developer_mode),
               onPressed: () => _showDevPanel(context),
             ),
@@ -70,8 +71,8 @@ class ShellLayout extends StatelessWidget {
                     Icon(Icons.developer_mode, color: AppColors.primary),
                     SizedBox(width: 8),
                     Text(
-                      'Bảng điều khiển kiểm thử giao diện',
-                      style: TextStyle(
+                      AppStrings.devPanelTitle,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,
@@ -81,7 +82,7 @@ class ShellLayout extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'Chọn nhanh một màn hình từ thiết kế PNG để đối chiếu:',
+                  AppStrings.devPanelSubtitle,
                   style: TextStyle(fontSize: 13, color: AppColors.textGrey),
                 ),
                 const SizedBox(height: 16),
@@ -180,7 +181,7 @@ class ShellLayout extends StatelessWidget {
                         ),
                       ]),
                       _buildPanelSection(
-                        '4. Quản trị (Admin)',
+                        '4. Quản trị(Admin)',
                         [
                           _buildPanelItem(
                             ctx,

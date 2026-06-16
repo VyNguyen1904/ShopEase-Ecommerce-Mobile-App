@@ -20,8 +20,10 @@ public class SearchController {
     ApiResponse<List<ProductResponse>> search(@RequestParam(required = false) String q,
                                               @RequestParam(required = false) Long categoryId,
                                               @RequestParam(required = false) BigDecimal minPrice,
-                                              @RequestParam(required = false) BigDecimal maxPrice) {
-        return ApiResponse.ok(products.listProducts(q, categoryId, minPrice, maxPrice));
+                                              @RequestParam(required = false) BigDecimal maxPrice,
+                                              @RequestParam(defaultValue = "id") String sortBy,
+                                              @RequestParam(defaultValue = "asc") String sortDir) {
+        return ApiResponse.ok(products.listProducts(q, categoryId, minPrice, maxPrice, sortBy, sortDir));
     }
 
     @GetMapping("/suggestions")

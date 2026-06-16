@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerNotifications extends StatefulWidget {
   const SellerNotifications({super.key});
@@ -17,14 +18,14 @@ class _ChatTabWithBadge {
 }
 
 class _SellerNotificationsState extends State<SellerNotifications> {
-  String _activeTab = 'Tất cả';
+  String _activeTab = AppStrings.all;
 
   final List<_ChatTabWithBadge> _tabs = [
-    _ChatTabWithBadge('Tất cả', 12),
-    _ChatTabWithBadge('Đơn hàng', 6),
-    _ChatTabWithBadge('Sản phẩm', 3),
-    _ChatTabWithBadge('Khách hàng', 3),
-    _ChatTabWithBadge('Hệ thống', 1),
+    _ChatTabWithBadge(AppStrings.all, 12),
+    _ChatTabWithBadge(AppStrings.orders, 6),
+    _ChatTabWithBadge(AppStrings.products, 3),
+    _ChatTabWithBadge(AppStrings.customers, 3),
+    _ChatTabWithBadge(AppStrings.system, 1),
   ];
 
   final List<Map<String, dynamic>> _notifications = [
@@ -106,7 +107,7 @@ class _SellerNotificationsState extends State<SellerNotifications> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Thông báo',
+          AppStrings.notifications,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,

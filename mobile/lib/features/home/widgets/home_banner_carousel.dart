@@ -20,7 +20,7 @@ class HomeBannerCarousel extends StatelessWidget {
           title: 'NIKE',
           subtitle: 'Nike Air Max\nPhiên Bản Mới',
           description:
-              'Sự kết hợp hoàn hảo giữa phong\ncách cổ điển và công nghệ đệm\nAir hiện đại, mang lại cảm giác\nêm ái suốt cả ngày.',
+              'Sự kết hợp hoàn hảo giữa phong\ncách cổ điển và công nghệđệm\nAir hiện đại, mang lại cảm giác\nêm ái suốt cả ngày.',
           buttonText: 'GIẢM 20% | MUA NGAY',
           image:
               'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
@@ -40,7 +40,7 @@ class HomeBannerCarousel extends StatelessWidget {
           title: 'APPLE',
           subtitle: 'MacBook Pro\nM3 Max 2026',
           description:
-              'Hiệu năng vượt trội với chip M3 Max thế hệ mới. Trải nghiệm làm việc chuyên nghiệp chưa từng có.',
+              'Hiệu năng vượt trội với chip M3 Max thế hệmới. Trải nghiệm làm việc chuyên nghiệp chưa từng có.',
           buttonText: 'MUA NGAY',
           image:
               'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&auto=format&fit=crop&q=80',
@@ -50,7 +50,7 @@ class HomeBannerCarousel extends StatelessWidget {
           title: 'SONY',
           subtitle: 'Tai Nghe\nChống Ồn',
           description:
-              'Đắm chìm trong không gian âm nhạc tĩnh lặng với công nghệ chống ồn chủ động hàng đầu thế giới.',
+              'Đắm chìm trong không gian âm nhạc tĩnh lặng với công nghệchống ồn chủ động hàng đầu thế giới.',
           buttonText: 'GIẢM 15% | MUA NGAY',
           image:
               'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&auto=format&fit=crop&q=80',

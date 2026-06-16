@@ -28,6 +28,12 @@ public class OrderItem {
     @Column(name = "product_image")
     private String productImage;
 
+    @Column(name = "color")
+    private String color;
+
+    @Column(name = "size")
+    private String size;
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice;
 
@@ -49,7 +55,7 @@ public class OrderItem {
     }
 
     public OrderItem(Long productId, String productName, String productImage, BigDecimal unitPrice, int quantity,
-                     BigDecimal subtotal, String sellerId) {
+                     BigDecimal subtotal, String sellerId, String color, String size) {
         this.productId = productId;
         this.productName = productName;
         this.productImage = productImage;
@@ -57,6 +63,8 @@ public class OrderItem {
         this.quantity = quantity;
         this.subtotal = subtotal;
         this.sellerId = sellerId;
+        this.color = color;
+        this.size = size;
     }
 
     public void setOrder(Order order) {

@@ -26,16 +26,16 @@ public class CartController {
         return ApiResponse.ok(carts.addItemToCart(userId, request));
     }
 
-    @PutMapping("/items/{productId}")
+    @PutMapping("/items/{itemId}")
     ApiResponse<CartResponse> updateItemQuantity(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
-                                                 @PathVariable Long productId, @Valid @RequestBody CartItemRequest request) {
-        return ApiResponse.ok(carts.updateItemQuantity(userId, productId, request));
+                                                 @PathVariable String itemId, @Valid @RequestBody CartItemRequest request) {
+        return ApiResponse.ok(carts.updateItemQuantity(userId, itemId, request));
     }
 
-    @DeleteMapping("/items/{productId}")
+    @DeleteMapping("/items/{itemId}")
     ApiResponse<CartResponse> removeItemFromCart(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
-                                                 @PathVariable Long productId) {
-        return ApiResponse.ok(carts.removeItemFromCart(userId, productId));
+                                                 @PathVariable String itemId) {
+        return ApiResponse.ok(carts.removeItemFromCart(userId, itemId));
     }
 
     @DeleteMapping

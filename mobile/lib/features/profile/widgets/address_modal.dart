@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/address_model.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
@@ -128,8 +129,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(widget.address == null
-                ? 'Thêm địa chỉ thành công'
-                : 'Cập nhật địa chỉ thành công'),
+                ? AppStrings.addAddressSuccess
+                : AppStrings.updateAddressSuccess),
           ),
         );
       }
@@ -170,7 +171,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEditing ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới',
+                    isEditing ? AppStrings.editAddress : AppStrings.addNewAddress,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -186,22 +187,22 @@ class _AddressModalState extends ConsumerState<AddressModal> {
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _nameController,
-                label: 'Tên người nhận',
-                hint: 'Nhập họ và tên',
-                validator: (v) => v!.isEmpty ? 'Không được để trống' : null,
+                label: AppStrings.receiverName,
+                hint: AppStrings.fullNameHint,
+                validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _phoneController,
-                label: 'Số điện thoại',
-                hint: 'Nhập số điện thoại',
+                label: AppStrings.phoneLabel,
+                hint: AppStrings.phoneHint,
                 keyboardType: TextInputType.phone,
-                validator: (v) => v!.isEmpty ? 'Không được để trống' : null,
+                validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
               _buildDropdown(
-                label: 'Tỉnh/Thành phố',
-                hint: 'Chọn Tỉnh/Thành phố',
+                label: AppStrings.province,
+                hint: AppStrings.provinceHint,
                 value: _selectedProvince,
                 items: _provinces,
                 onChanged: (val) {
@@ -218,8 +219,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
               ),
               const SizedBox(height: 16),
               _buildDropdown(
-                label: 'Quận/Huyện',
-                hint: 'Chọn Quận/Huyện',
+                label: AppStrings.district,
+                hint: AppStrings.districtHint,
                 value: _selectedDistrict,
                 items: _districts,
                 onChanged: (val) {
@@ -232,14 +233,14 @@ class _AddressModalState extends ConsumerState<AddressModal> {
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _streetController,
-                label: 'Tên đường, Tòa nhà, Số nhà',
-                hint: 'Nhập địa chỉ chi tiết',
-                validator: (v) => v!.isEmpty ? 'Không được để trống' : null,
+                label: AppStrings.streetAddress,
+                hint: AppStrings.streetAddressHint,
+                validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Đặt làm địa chỉ mặc định',
+                title: const Text(AppStrings.setAsDefault,
                     style: TextStyle(fontSize: 14, color: AppColors.textDark)),
                 activeColor: AppColors.primary,
                 value: _isDefault,
@@ -264,7 +265,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                               color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          isEditing ? 'Lưu thay đổi' : 'Hoàn thành',
+                          isEditing ? AppStrings.saveChanges : AppStrings.done,
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,

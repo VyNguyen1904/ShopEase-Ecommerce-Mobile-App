@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../../core/models/cart_model.dart';
@@ -33,6 +34,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   String _selectedPayment = 'cod';
   bool _useCoins = false;
   bool _isLoading = false;
+  AddressModel? _selectedAddress;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
     final defaultAddress = userState.value?.addresses.where((a) => a.isDefault).firstOrNull 
         ?? userState.value?.addresses.firstOrNull;
+
+    final addressToUse = _selectedAddress ?? defaultAddress;
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
@@ -71,25 +75,36 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CheckoutSectionTitle(title: 'Địa chỉ nhận hàng'),
-            CheckoutAddressCard(address: defaultAddress),
+            const CheckoutSectionTitle(title: AppStrings.shippingAddress),
+            CheckoutAddressCard(
+              address: addressToUse,
+              onTap: () async {
+                final result = await context.push<AddressModel>(
+                  AppRoutes.address,
+                  extra: {'isSelecting': true},
+                );
+                if (result != null) {
+                  setState(() => _selectedAddress = result);
+                }
+              },
+            ),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Sản phẩm đã chọn'),
+            const CheckoutSectionTitle(title: AppStrings.selectedItems),
             CheckoutSelectedItems(items: selectedItems),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Đơn vị vận chuyển'),
+            const CheckoutSectionTitle(title: AppStrings.shippingUnit),
             CheckoutShippingOptions(
               selectedShipping: _selectedShipping,
               onChanged: (val) => setState(() => _selectedShipping = val),
             ),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Mã giảm giá / Xu'),
+            const CheckoutSectionTitle(title: AppStrings.discountCoins),
             CheckoutDiscountSection(
               useCoins: _useCoins,
               onUseCoinsChanged: (val) => setState(() => _useCoins = val),
             ),
             const SizedBox(height: 24),
-            const CheckoutSectionTitle(title: 'Phương thức thanh toán'),
+            const CheckoutSectionTitle(title: AppStrings.paymentMethod),
             CheckoutPaymentOptions(
               selectedPayment: _selectedPayment,
               onChanged: (val) => setState(() => _selectedPayment = val),
@@ -105,7 +120,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(selectedItems, defaultAddress, totalAmount),
+      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount),
     );
   }
 
@@ -126,11 +141,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         child: ElevatedButton(
           onPressed: _isLoading ? null : () async {
             if (address == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng thêm địa chỉ nhận hàng!')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.missingAddressError)));
               return;
             }
             if (items.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Giỏ hàng trống!')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.cartEmptyError)));
               return;
             }
 
@@ -141,7 +156,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               final city = addrParts.length > 1 ? addrParts[1] : (address.address2.isNotEmpty ? address.address2 : 'N/A');
 
               final req = CreateOrderRequest(
-                items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity)).toList(),
+                items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity, color: i.color, size: i.size)).toList(),
                 shipRecipient: address.name,
                 shipPhone: address.phone,
                 shipStreet: address.address1,
@@ -172,7 +187,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     
                     final cartNotifier = ref.read(cartProvider.notifier);
                     for (var item in items) {
-                      cartNotifier.removeItem(item.productId);
+                      cartNotifier.removeItem(item.itemId);
                     }
                     return;
                   }
@@ -180,13 +195,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               }
 
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đặt hàng thành công!')));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.orderSuccess)));
                 context.go(AppRoutes.orderDetailPath(newOrder.id));
               }
 
               final cartNotifier = ref.read(cartProvider.notifier);
               for (var item in items) {
-                cartNotifier.removeItem(item.productId);
+                cartNotifier.removeItem(item.itemId);
               }
             } catch (e) {
               if (mounted) {
@@ -213,7 +228,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               Icon(Icons.lock_outline, size: 20),
               SizedBox(width: 8),
               Text(
-                'Đặt hàng',
+                AppStrings.placeOrder,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],

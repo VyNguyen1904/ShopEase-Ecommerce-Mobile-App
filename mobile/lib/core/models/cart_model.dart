@@ -24,10 +24,13 @@ class CartResponse {
 }
 
 class CartItem {
+  final String itemId;
   final int productId;
   final double price;
   int quantity;
   final double subtotal;
+  final String? color;
+  final String? size;
 
   // Local state for UI
   bool selected;
@@ -36,10 +39,13 @@ class CartItem {
   String? productVariant;
 
   CartItem({
+    required this.itemId,
     required this.productId,
     required this.price,
     required this.quantity,
     required this.subtotal,
+    this.color,
+    this.size,
     this.selected = true,
     this.productName,
     this.productImageUrl,
@@ -48,10 +54,13 @@ class CartItem {
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
+      itemId: json['itemId']?.toString() ?? '',
       productId: json['productId'] ?? 0,
       price: (json['price'] ?? 0).toDouble(),
       quantity: json['quantity'] ?? 0,
       subtotal: (json['subtotal'] ?? 0).toDouble(),
+      color: json['color']?.toString(),
+      size: json['size']?.toString(),
       selected: true,
     );
   }

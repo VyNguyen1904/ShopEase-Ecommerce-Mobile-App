@@ -67,6 +67,8 @@ services:
     container_name: shopease-user-service
     ports:
       - "8081:8081"
+    env_file:
+      - backend/user-service/.env
     depends_on:
       postgres:
         condition: service_healthy

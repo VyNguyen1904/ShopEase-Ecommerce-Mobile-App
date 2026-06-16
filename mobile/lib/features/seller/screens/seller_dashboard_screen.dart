@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
-import '../../auth/providers/auth_provider.dart';
+import '../../../core/providers/auth_provider.dart';
+import '../../../core/constants/app_strings.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});
@@ -36,7 +37,7 @@ class SellerDashboardScreen extends ConsumerWidget {
   Widget _buildHeader(WidgetRef ref) {
     final userAsync = ref.watch(userProfileProvider);
     final userName = userAsync.maybeWhen(
-      data: (user) => user.fullName.split(' ').last,
+      data: (user) => user?.fullName.split(' ').last ?? 'Seller',
       orElse: () => 'Seller',
     );
 
@@ -47,7 +48,7 @@ class SellerDashboardScreen extends ConsumerWidget {
         Row(
           children: [
             Text(
-              'Xin chào, $userName',
+              '${AppStrings.helloPrefix}$userName',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -58,7 +59,7 @@ class SellerDashboardScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 4),
         const Text(
-          'Đây là tổng quan cửa hàng của bạn',
+          AppStrings.shopOverviewDesc,
           style: TextStyle(
             fontSize: 14,
             color: AppColors.textGrey,
@@ -89,10 +90,10 @@ class SellerDashboardScreen extends ConsumerWidget {
       children: [
         Expanded(
           child: _buildStatCard(
-            title: 'Doanh thu',
+            title: AppStrings.revenue,
             value: formatCurrency.format(totalRevenue),
             valueColor: AppColors.primary,
-            trend: 'Tổng doanh thu',
+            trend: AppStrings.totalRevenue,
             trendColor: Colors.green,
             icon: Icons.monetization_on_outlined,
             iconBgColor: AppColors.primary.withOpacity(0.1),
@@ -102,10 +103,10 @@ class SellerDashboardScreen extends ConsumerWidget {
         const SizedBox(width: 16),
         Expanded(
           child: _buildStatCard(
-            title: 'Đơn hàng',
+            title: AppStrings.orders,
             value: '$totalOrders',
             valueColor: AppColors.textDark,
-            trend: 'Tổng số đơn',
+            trend: AppStrings.totalOrders,
             trendColor: Colors.green,
             icon: Icons.shopping_bag_outlined,
             iconBgColor: AppColors.accent.withOpacity(0.1),
@@ -204,7 +205,7 @@ class SellerDashboardScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Thao tác nhanh',
+          AppStrings.quickActions,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -215,10 +216,10 @@ class SellerDashboardScreen extends ConsumerWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildActionItem(Icons.inventory_2_outlined, 'Thêm sản phẩm'),
-            _buildActionItem(Icons.receipt_long_outlined, 'Đơn hàng'),
-            _buildActionItem(Icons.campaign_outlined, 'Khuyến mãi'),
-            _buildActionItem(Icons.pie_chart_outline, 'Báo cáo'),
+            _buildActionItem(Icons.inventory_2_outlined, AppStrings.addProduct),
+            _buildActionItem(Icons.receipt_long_outlined, AppStrings.orders),
+            _buildActionItem(Icons.campaign_outlined, AppStrings.promotions),
+            _buildActionItem(Icons.pie_chart_outline, AppStrings.reports),
           ],
         ),
       ],
@@ -273,7 +274,7 @@ class SellerDashboardScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Đơn hàng gần đây',
+              AppStrings.recentOrders,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -283,7 +284,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             Row(
               children: [
                 const Text(
-                  'Xem tất cả',
+                  AppStrings.viewAll,
                   style: TextStyle(
                     fontSize: 13,
                     color: AppColors.textGrey,
@@ -311,7 +312,7 @@ class SellerDashboardScreen extends ConsumerWidget {
               if (orders.isEmpty) {
                 return const Padding(
                   padding: EdgeInsets.all(24.0),
-                  child: Center(child: Text('Chưa có đơn hàng nào')),
+                  child: Center(child: Text(AppStrings.noOrdersFound)),
                 );
               }
               final recentOrders = orders.take(5).toList();
@@ -336,7 +337,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             ),
             error: (e, s) => Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Center(child: Text('Lỗi tải đơn hàng: $e')),
+              child: Center(child: Text('${AppStrings.loadOrderError}$e')),
             ),
           ),
         ),
@@ -348,15 +349,15 @@ class SellerDashboardScreen extends ConsumerWidget {
   String _mapStatus(OrderStatus status) {
     switch (status) {
       case OrderStatus.PENDING:
-        return 'Chờ xác nhận';
+        return AppStrings.pending;
       case OrderStatus.CONFIRMED:
-        return 'Đã xác nhận';
+        return AppStrings.confirmed;
       case OrderStatus.SHIPPING:
-        return 'Đang giao';
+        return AppStrings.shipping;
       case OrderStatus.DELIVERED:
-        return 'Đã giao';
+        return AppStrings.delivered;
       case OrderStatus.CANCELLED:
-        return 'Đã huỷ';
+        return AppStrings.cancelled;
     }
   }
 

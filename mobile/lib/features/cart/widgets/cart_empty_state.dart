@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class CartEmptyState extends StatelessWidget {
   const CartEmptyState({super.key});
@@ -13,7 +14,7 @@ class CartEmptyState extends StatelessWidget {
           Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textLight),
           SizedBox(height: 16),
           Text(
-            'Giỏ hàng của bạn đang trống',
+            AppStrings.cartEmpty,
             style: TextStyle(color: AppColors.textGrey, fontSize: 16),
           ),
         ],

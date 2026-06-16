@@ -99,6 +99,13 @@ public class UserAccount {
         this.role = role;
     }
 
+    @Column(name = "email_verified", nullable = false)
+    private boolean isVerified = false;
+
+    public void verifyAccount() {
+        this.isVerified = true;
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
