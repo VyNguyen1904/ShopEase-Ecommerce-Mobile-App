@@ -8,6 +8,8 @@ import '../providers/cart_provider.dart';
 import '../widgets/cart_empty_state.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/cart_bottom_checkout.dart';
+import '../../../core/providers/auth_provider.dart';
+import '../../../core/models/cart_model.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -51,7 +53,44 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         ),
         centerTitle: true,
       ),
-      body: cartState.when(
+      body: _buildBody(context, cartState),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, AsyncValue<CartResponse> cartState) {
+    final userAsync = ref.watch(userProfileProvider);
+    final isGuest = userAsync.value == null && !userAsync.isLoading;
+
+    if (isGuest) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textLight),
+            const SizedBox(height: 16),
+            const Text(
+              'Vui lòng đăng nhập để xem giỏ hàng',
+              style: TextStyle(color: AppColors.textGrey, fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.push(AppRoutes.login),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Đăng nhập ngay', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return cartState.when(
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.textDark),
         ),
@@ -128,8 +167,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             ],
           );
         },
-      ),
-    );
+      );
   }
 
   Widget _buildDottedDivider() {

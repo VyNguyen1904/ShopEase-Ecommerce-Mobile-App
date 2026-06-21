@@ -6,7 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/models/product.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
-import '../../cart/providers/cart_provider.dart';
+
 import '../../product/widgets/product_variant_sheet.dart';
 
 class HomeProductCard extends StatelessWidget {

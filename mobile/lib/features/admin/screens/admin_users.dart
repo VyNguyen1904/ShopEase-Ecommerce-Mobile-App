@@ -50,7 +50,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update status: $e'),
+          content: Text('${AppStrings.updateUserStatusFailed}$e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -63,7 +63,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('User deleted successfully'),
+            content: Text(AppStrings.userDeletedSuccess),
             backgroundColor: Colors.green,
           ),
         );
@@ -73,7 +73,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to delete user: $e'),
+            content: Text('${AppStrings.deleteUserFailed}$e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -272,7 +272,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: _loadUsers,
-                          child: const Text('Try Again'),
+                          child: const Text(AppStrings.tryAgain),
                         ),
                       ],
                     ),

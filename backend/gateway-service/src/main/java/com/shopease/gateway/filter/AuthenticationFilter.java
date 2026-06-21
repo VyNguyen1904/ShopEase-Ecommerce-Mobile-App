@@ -13,6 +13,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.List;
 
 @Component
 public class AuthenticationFilter implements GlobalFilter, Ordered {
@@ -167,6 +168,14 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return true;
     }
 
+    private static final List<String> PUBLIC_AUTH_PATHS = List.of(
+        "/api/auth/login",
+        "/api/auth/register",
+        "/api/auth/refresh",
+        "/api/auth/verify-email",
+        "/api/auth/resend-otp"
+    );
+
     private boolean isPublicEndpoint(String path, String method) {
         // Swagger and OpenAPI paths
         if (path.startsWith("/v3/api-docs") ||
@@ -176,9 +185,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
 
         // Auth paths that do not require access token
-        if (path.startsWith("/api/auth/login") || 
-            path.startsWith("/api/auth/register") || 
-            path.startsWith("/api/auth/refresh")) {
+        if (PUBLIC_AUTH_PATHS.stream().anyMatch(path::startsWith)) {
             return true;
         }
 

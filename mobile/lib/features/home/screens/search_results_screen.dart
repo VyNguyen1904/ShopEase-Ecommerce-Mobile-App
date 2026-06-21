@@ -144,7 +144,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                   _buildFilterButton(
                     icon: Icons.local_offer_outlined,
                     label: AppStrings.price,
-                    isActive: ref.watch(sortOrderProvider) != 'none',
+                    isActive: sortBy == 'price',
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
                   ),
                   const SizedBox(width: 10),
@@ -275,7 +275,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
                 error: (err, stack) =>
-                    Center(child: Text('Lỗi: $err')),
+                    Center(child: Text('${AppStrings.errorPrefix}$err')),
               ),
             ),
           ],
@@ -297,7 +297,6 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
   void _clearAllFilters() {
     ref.read(sortByProvider.notifier).state = 'none';
     ref.read(sortDirProvider.notifier).state = 'desc';
-    ref.read(sortOrderProvider.notifier).state = 'none';
     ref.read(selectedCategorySearchProvider.notifier).state = null;
     ref.read(minPriceProvider.notifier).state = null;
     ref.read(maxPriceProvider.notifier).state = null;

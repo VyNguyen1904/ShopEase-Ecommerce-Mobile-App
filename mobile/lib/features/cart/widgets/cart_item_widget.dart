@@ -76,15 +76,13 @@ class CartItemWidget extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
+                    IconButton(
+                      icon: const Icon(Icons.close, color: AppColors.textLight, size: 18),
+                      onPressed: () {
                         ref.read(cartProvider.notifier).removeItem(item.itemId);
                       },
-                      child: const Icon(
-                        Icons.close,
-                        color: AppColors.textLight,
-                        size: 18,
-                      ),
+                      padding: const EdgeInsets.all(8),
+                      constraints: const BoxConstraints(),
                     ),
                   ],
                 ),

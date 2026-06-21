@@ -106,7 +106,7 @@ class AccountScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return Center(child: Text('Lỗi: $err'));
+                return Center(child: Text('${AppStrings.errorPrefix}$err'));
               },
             ),
             const SizedBox(height: 32),

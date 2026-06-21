@@ -165,11 +165,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('Lỗi: $err')),
+          error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Lỗi: $err')),
+      error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
     );
   }
 

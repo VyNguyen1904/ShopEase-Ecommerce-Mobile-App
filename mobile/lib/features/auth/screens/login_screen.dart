@@ -7,6 +7,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -143,14 +144,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 36),
 
                 // Form Fields
-                _buildInputField(
+                CustomTextField(
                   controller: _emailController,
                   hintText: AppStrings.email,
                   icon: Icons.mail_outline,
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
-                _buildInputField(
+                CustomTextField(
                   controller: _passwordController,
                   hintText: AppStrings.password,
                   icon: Icons.lock_outline,
@@ -222,58 +223,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required String hintText,
-    required IconData icon,
-    bool obscureText = false,
-    TextInputType? keyboardType,
-    Widget? suffixIcon,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      style: const TextStyle(fontSize: 15, color: AppColors.textDark),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: AppColors.textLight, fontSize: 15),
-        prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
-        suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 18,
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-      ),
-      validator: (val) {
-        if (val == null || val.trim().isEmpty) {
-          return '${AppStrings.errorEmptyField}$hintText';
-        }
-        if (keyboardType == TextInputType.emailAddress) {
-          final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-          if (!emailRegex.hasMatch(val.trim())) {
-            return AppStrings.errorInvalidEmail;
-          }
-        }
-        return null;
-      },
     );
   }
 }

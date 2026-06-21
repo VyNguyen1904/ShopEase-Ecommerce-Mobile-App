@@ -46,6 +46,13 @@ class CheckoutSelectedItems extends StatelessWidget {
                     children: [
                       Text(item.productName ?? AppStrings.product, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
                       const SizedBox(height: 4),
+                      Text(
+                        [item.color, item.size].where((e) => e != null && e.isNotEmpty).join(', ').isNotEmpty 
+                            ? [item.color, item.size].where((e) => e != null && e.isNotEmpty).join(', ') 
+                            : (item.productVariant ?? AppStrings.defaultVariant),
+                        style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+                      ),
+                      const SizedBox(height: 4),
                       Text('x${item.quantity}', style: const TextStyle(fontSize: 12, color: AppColors.textGrey)),
                     ],
                   ),

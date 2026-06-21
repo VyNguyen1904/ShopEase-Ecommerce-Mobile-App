@@ -1,10 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/category.dart';
-import '../services/category_service.dart';
-
-final categoryServiceProvider = Provider((ref) => CategoryService());
-
-final categoriesProvider = FutureProvider<List<Category>>((ref) async {
-  final service = ref.watch(categoryServiceProvider);
-  return await service.getCategories();
-});
+// Deprecated: categoriesProvider is now defined in product_provider.dart
+// and returns List<CategoryModel>. This file re-exports it for backward compatibility.
+export '../providers/product_provider.dart' show categoriesProvider;

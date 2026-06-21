@@ -8,11 +8,11 @@ class CartService {
   final Dio _dio;
 
   String get _host {
-    if (kIsWeb) return 'http://localhost:8000';
+    if (kIsWeb) return 'http://127.0.0.1:8000';
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
-    return 'http://localhost:8000';
+    return 'http://127.0.0.1:8000';
   }
 
   String get _baseUrl => '$_host/api/cart';
@@ -90,7 +90,7 @@ class CartService {
     try {
       final options = await _getAuthOptions();
       await _dio.put(
-        '$_baseUrl/items/$itemId',
+        '$_baseUrl/items/${Uri.encodeComponent(itemId)}',
         options: options,
         data: {
           'productId': productId,
@@ -125,7 +125,7 @@ class CartService {
   Future<void> removeItem(String userId, String itemId) async {
     try {
       final options = await _getAuthOptions();
-      await _dio.delete('$_baseUrl/items/$itemId', options: options);
+      await _dio.delete('$_baseUrl/items/${Uri.encodeComponent(itemId)}', options: options);
     } catch (e) {
       throw Exception('Failed to remove item');
     }

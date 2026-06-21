@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
 import '../models/category_model.dart';
@@ -57,8 +56,6 @@ final searchProductsProvider = FutureProvider.family<List<Product>, String>((ref
   return service.searchProducts(query);
 });
 
-final sortOrderProvider = StateProvider<String>((ref) => 'none');
-
 // ---------- Search Filter Providers ----------
 
 /// Sort criteria: 'price', 'name', 'rating', 'salesCount', 'createdAt'
@@ -89,7 +86,6 @@ final activeFilterCountProvider = Provider<int>((ref) {
 
 final filteredSearchProductsProvider = Provider.family<AsyncValue<List<Product>>, String>((ref, query) {
   final asyncProducts = ref.watch(searchProductsProvider(query));
-  final sortOrder = ref.watch(sortOrderProvider);
   final sortBy = ref.watch(sortByProvider);
   final sortDir = ref.watch(sortDirProvider);
   final selectedCategory = ref.watch(selectedCategorySearchProvider);
@@ -118,14 +114,7 @@ final filteredSearchProductsProvider = Provider.family<AsyncValue<List<Product>>
       filtered = filtered.where((p) => p.rating >= minRating).toList();
     }
 
-    // --- Sort (legacy sortOrder for "Giá" button compatibility) ---
-    if (sortOrder == 'asc') {
-      filtered.sort((a, b) => a.price.compareTo(b.price));
-    } else if (sortOrder == 'desc') {
-      filtered.sort((a, b) => b.price.compareTo(a.price));
-    }
-
-    // --- Sort (new multi-criteria sort) ---
+    // --- Sort ---
     if (sortBy != 'none') {
       filtered.sort((a, b) {
         int cmp;

@@ -91,6 +91,13 @@ public class UserAccount {
         this.role = role;
     }
 
+    public void updateUnverifiedAccount(String passwordHash, String fullName, String phone, Role role) {
+        this.passwordHash = passwordHash;
+        this.fullName = fullName;
+        this.phone = phone;
+        this.role = role;
+    }
+
     public void replaceAddresses(List<Address> addresses) {
         this.addresses = new ArrayList<>(addresses);
     }

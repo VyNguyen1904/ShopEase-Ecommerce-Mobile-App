@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/models/product.dart';
-import '../../cart/providers/cart_provider.dart';
+
 import 'product_variant_sheet.dart';
 
 class ProductBottomBar extends ConsumerWidget {

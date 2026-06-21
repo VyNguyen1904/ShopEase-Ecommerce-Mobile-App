@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/product_provider.dart';
 import 'home_product_card.dart';
 import 'section_title.dart';
+import '../../../core/constants/app_strings.dart';
 
 class HomeNewArrivals extends ConsumerWidget {
   const HomeNewArrivals({super.key});
@@ -30,7 +31,7 @@ class HomeNewArrivals extends ConsumerWidget {
               },
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('Lỗi: $err')),
+            error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
           ),
         ),
       ],

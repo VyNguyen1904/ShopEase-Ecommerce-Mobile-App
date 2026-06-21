@@ -70,6 +70,8 @@ class OrderItemResponse {
   final double unitPrice;
   final int quantity;
   final double subtotal;
+  final String? color;
+  final String? size;
 
   OrderItemResponse({
     required this.id,
@@ -79,6 +81,8 @@ class OrderItemResponse {
     required this.unitPrice,
     required this.quantity,
     required this.subtotal,
+    this.color,
+    this.size,
   });
 
   factory OrderItemResponse.fromJson(Map<String, dynamic> json) {
@@ -90,6 +94,8 @@ class OrderItemResponse {
       unitPrice: (json['unitPrice'] as num?)?.toDouble() ?? 0.0,
       quantity: json['quantity'] ?? 0,
       subtotal: (json['subtotal'] as num?)?.toDouble() ?? 0.0,
+      color: json['color']?.toString(),
+      size: json['size']?.toString(),
     );
   }
 }

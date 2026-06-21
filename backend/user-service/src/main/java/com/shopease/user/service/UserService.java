@@ -33,11 +33,21 @@ public class UserService {
     @Transactional
     public UserAccount createUser(RegisterRequest request) {
         String email = request.email().toLowerCase(Locale.ROOT);
-        if (users.existsByEmailIgnoreCase(email)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already registered");
-        }
+        java.util.Optional<UserAccount> existingOpt = users.findByEmailIgnoreCase(email);
+        
         String hashedPassword = encoder.encode(request.password());
         Role role = request.role() == null ? Role.BUYER : Role.valueOf(request.role().toUpperCase(Locale.ROOT));
+
+        if (existingOpt.isPresent()) {
+            UserAccount existing = existingOpt.get();
+            if (existing.isVerified()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already registered");
+            }
+            // User existsbut unverified. Update details and resend OTP
+            existing.updateUnverifiedAccount(hashedPassword, request.fullName(), request.phone(), role);
+            return users.save(existing);
+        }
+
         UserAccount user =
                 new UserAccount(UUID.randomUUID(), email, hashedPassword,
                         request.fullName(), request.phone(),
