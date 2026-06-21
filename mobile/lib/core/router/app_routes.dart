@@ -17,6 +17,7 @@ abstract class AppRoutes {
   static const String productDetail = '/product/:id';
   static const String checkout = '/checkout';
   static const String orderDetail = '/order-detail/:id';
+  static const String review = '/review';
   static const String search = '/search';
   static const String settings = '/settings';
   static const String account = '/account';

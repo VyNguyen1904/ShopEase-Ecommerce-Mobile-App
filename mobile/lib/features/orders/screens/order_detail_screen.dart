@@ -7,6 +7,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
+import '../widgets/order_bottom_actions.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -104,7 +105,7 @@ class OrderDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
       ),
-      bottomSheet: orderAsync.hasValue ? _buildBottomActions(context, orderAsync.value!, ref) : null,
+      bottomSheet: orderAsync.hasValue ? OrderBottomActions(order: orderAsync.value!) : null,
     );
   }
 
@@ -547,165 +548,6 @@ class OrderDetailScreen extends ConsumerWidget {
         ],
       ),
       child: child,
-    );
-  }
-
-  Widget _buildBottomActions(BuildContext context, OrderResponse order, WidgetRef ref) {
-    return Container(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: MediaQuery.of(context).padding.bottom > 0
-            ? MediaQuery.of(context).padding.bottom
-            : 16,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (order.status == OrderStatus.PENDING) ...[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text(AppStrings.cancelConfirmation),
-                      content: const Text(AppStrings.cancelPrompt),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            final shouldCancel = await showDialog<bool>(
-                              context: context,
-                              builder: (dCtx) => AlertDialog(
-                                title: const Text(AppStrings.cancelConfirmation),
-                                content: const Text(AppStrings.cancelPrompt),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(dCtx, false), child: const Text(AppStrings.no)),
-                                  TextButton(onPressed: () => Navigator.pop(dCtx, true), child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.alertRed))),
-                                ],
-                              ),
-                            ) ?? false;
-
-                            if (!shouldCancel) return;
-
-                            Navigator.pop(ctx); 
-
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (_) => const Center(child: CircularProgressIndicator()),
-                            );
-
-                            try {
-                              await ref.read(orderServiceProvider).cancelOrder(order.id);
-                              ref.invalidate(orderDetailProvider(order.id));
-                              ref.invalidate(userOrdersProvider);
-
-                              if (context.mounted) {
-                                Navigator.pop(context); 
-
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (successCtx) => AlertDialog(
-                                    title: const Text(AppStrings.success, style: TextStyle(color: AppColors.primaryDark)),
-                                    content: const Text(AppStrings.cancelSuccessMsg),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(successCtx); 
-                                          if (context.canPop()) {
-                                            context.pop(); 
-                                          } else {
-                                            context.go(AppRoutes.home);
-                                          }
-                                        },
-                                        child: const Text(AppStrings.close),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                Navigator.pop(context); // Đóng loading
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
-                              }
-                            }
-                          },
-                          child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.alertRed)),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: AppColors.alertRed),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  AppStrings.cancelOrder,
-                  style: TextStyle(
-                    color: AppColors.alertRed,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-          ],
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () => context.go(AppRoutes.home),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryDark,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    AppStrings.shopMore,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

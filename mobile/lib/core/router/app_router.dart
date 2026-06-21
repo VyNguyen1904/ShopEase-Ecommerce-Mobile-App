@@ -16,6 +16,7 @@ import '../../features/profile/screens/account_screen.dart';
 import '../../features/orders/screens/orders_screen.dart';
 import '../../features/checkout/screens/checkout_screen.dart';
 import '../../features/orders/screens/order_detail_screen.dart';
+import '../../features/orders/screens/review_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/product/screens/product_detail_screen.dart';
@@ -61,6 +62,7 @@ final appRouter = GoRouter(
     // Paths that require a logged in user (any role)
     final isProtectedPath = location == AppRoutes.checkout ||
         location == AppRoutes.orders ||
+        location == AppRoutes.review ||
         location.startsWith('/order-detail') ||
         location == AppRoutes.address ||
         location == AppRoutes.settings ||
@@ -188,6 +190,14 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final id = state.pathParameters['id'] ?? '';
         return OrderDetailScreen(orderId: id);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.review,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final order = extra?['order'];
+        return ReviewScreen(order: order);
       },
     ),
     GoRoute(
