@@ -590,7 +590,7 @@ class _UserRowState extends State<UserRow> {
                 children: [
                   Switch(
                     value: widget.user.isEnabled,
-                    activeColor: AppColors.primary,
+                    activeThumbColor: AppColors.primary,
                     onChanged: (val) => widget.onToggleStatus(widget.user, val),
                   ),
                   const SizedBox(width: 4),

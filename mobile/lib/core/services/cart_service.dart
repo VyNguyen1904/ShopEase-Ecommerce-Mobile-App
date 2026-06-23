@@ -95,8 +95,8 @@ class CartService {
         data: {
           'productId': productId,
           'quantity': quantity,
-          if (color != null) 'color': color,
-          if (size != null) 'size': size,
+          'color': ?color,
+          'size': ?size,
         },
       );
     } catch (e) {
@@ -113,8 +113,8 @@ class CartService {
         data: {
           'productId': productId,
           'quantity': quantity,
-          if (color != null) 'color': color,
-          if (size != null) 'size': size,
+          'color': ?color,
+          'size': ?size,
         },
       );
     } catch (e) {

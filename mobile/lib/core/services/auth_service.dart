@@ -176,8 +176,8 @@ class AuthService {
     try {
       final data = {
         'fullName': fullName,
-        ?'phone': phone,
-        ?'avatarUrl': avatarUrl,
+        'phone': phone,
+        'avatarUrl': avatarUrl,
       };
 
       final response = await _dio.put('$_userUrl/me', data: data);

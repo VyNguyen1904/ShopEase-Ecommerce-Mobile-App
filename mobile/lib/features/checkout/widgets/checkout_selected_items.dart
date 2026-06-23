@@ -33,7 +33,7 @@ class CheckoutSelectedItems extends StatelessWidget {
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       width: 50, height: 50, color: Colors.grey[200],
                       child: const Icon(Icons.image_not_supported, size: 20, color: Colors.grey),
                     ),

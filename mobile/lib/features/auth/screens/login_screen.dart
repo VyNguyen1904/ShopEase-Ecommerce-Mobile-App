@@ -204,8 +204,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: AppColors.textGrey,
                         ),
                         children: [
-                          const TextSpan(text: AppStrings.noAccount),
-                          const TextSpan(
+                          TextSpan(text: AppStrings.noAccount),
+                          TextSpan(
                             text: AppStrings.registerNow,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

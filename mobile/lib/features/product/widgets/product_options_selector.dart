@@ -19,7 +19,7 @@ class ProductOptionsSelector extends ConsumerStatefulWidget {
 }
 
 class _ProductOptionsSelectorState extends ConsumerState<ProductOptionsSelector> {
-  int _selectedColorIndex = 1;
+  final int _selectedColorIndex = 1;
   @override
   void initState() {
     super.initState();

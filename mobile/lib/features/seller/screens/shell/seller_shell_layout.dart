@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/constants/app_colors.dart';
 import 'seller_app_bottom_nav.dart';
 
 class SellerShellLayout extends StatelessWidget {

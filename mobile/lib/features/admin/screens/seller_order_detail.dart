@@ -17,7 +17,7 @@ class SellerOrderDetail extends ConsumerStatefulWidget {
 }
 
 class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
-  int _activeStatusStep =
+  final int _activeStatusStep =
       0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
 
   final List<String> _statusTexts = [

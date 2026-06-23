@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/models/product.dart';
 import '../../../core/providers/product_provider.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
@@ -215,7 +214,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                   ],
                 ),
                 loading: () => const SizedBox(),
-                error: (_, _s) => const SizedBox(),
+                error: (_, s) => const SizedBox(),
               ),
             ),
             const SizedBox(height: 12),

@@ -49,7 +49,7 @@ class HomeScreen extends ConsumerWidget {
                               Expanded(
                                 child: Text(
                                   AppStrings.searchHomeHint,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: AppColors.textLight,
                                     fontSize: 14,
                                   ),

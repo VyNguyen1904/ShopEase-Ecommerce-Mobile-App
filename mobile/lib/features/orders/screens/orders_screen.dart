@@ -166,7 +166,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
             bottom: 120,
           ),
           itemCount: filtered.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          separatorBuilder: (_, _) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final order = filtered[index];
             final statusStr = _mapStatus(order.status);

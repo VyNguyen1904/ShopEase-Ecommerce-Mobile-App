@@ -119,7 +119,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: widget.order.items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 24),
+              separatorBuilder: (_, _) => const SizedBox(height: 24),
               itemBuilder: (context, index) {
                 final item = widget.order.items[index];
                 return Container(
@@ -129,7 +129,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -147,7 +147,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                               width: 60,
                               height: 60,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
+                              errorBuilder: (_, _, _) => Container(
                                 width: 60,
                                 height: 60,
                                 color: Colors.grey[200],

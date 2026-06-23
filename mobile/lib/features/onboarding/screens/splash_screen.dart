@@ -179,8 +179,8 @@ class _SplashScreenState extends State<SplashScreen> {
                                     color: Colors.white,
                                   ),
                                   children: [
-                                    const TextSpan(text: AppStrings.splashWelcome),
-                                    const TextSpan(
+                                    TextSpan(text: AppStrings.splashWelcome),
+                                    TextSpan(
                                       text: AppStrings.appName,
                                       style: TextStyle(
                                         color: Color(0xFF5CFDF5),

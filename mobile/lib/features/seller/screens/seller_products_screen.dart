@@ -75,7 +75,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
               ),
             ),
             child: TabBar(
