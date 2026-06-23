@@ -31,6 +31,34 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
       }
       final cart = await _cartService.getCart(_userId);
       if (!mounted) return;
+
+      // Preserve selection state from current cart
+      if (state.hasValue) {
+        final currentItems = state.value!.items;
+        for (var item in cart.items) {
+          try {
+            final existing = currentItems.firstWhere((e) => e.itemId == item.itemId);
+            item.selected = existing.selected;
+          } catch (_) {
+            // New item, keeps default selected = true
+          }
+        }
+        
+        // Recalculate subtotal based on preserved selections
+        final newSubtotal = cart.items
+            .where((item) => item.selected)
+            .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+            
+        final updatedCart = CartResponse(
+          userId: cart.userId,
+          items: cart.items,
+          subtotal: newSubtotal,
+          totalItems: cart.totalItems,
+        );
+        state = AsyncValue.data(updatedCart);
+        return;
+      }
+
       state = AsyncValue.data(cart);
     } catch (e, st) {
       if (!mounted) return;

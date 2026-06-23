@@ -94,18 +94,32 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.textDark),
         ),
-        error: (err, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(AppStrings.unknownError, style: TextStyle(color: Colors.red)),
-              TextButton(
-                onPressed: () => ref.read(cartProvider.notifier).fetchCart(),
-                child: const Text(AppStrings.retry),
-              ),
-            ],
-          ),
-        ),
+        error: (err, stack) {
+          final isAuthError = err.toString().toLowerCase().contains('đăng nhập');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  isAuthError ? 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.' : AppStrings.unknownError,
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    if (isAuthError) {
+                      context.push(AppRoutes.login);
+                    } else {
+                      ref.read(cartProvider.notifier).fetchCart();
+                    }
+                  },
+                  child: Text(isAuthError ? 'Đăng nhập lại' : AppStrings.retry),
+                ),
+              ],
+            ),
+          );
+        },
         data: (cart) {
           final cartItems = cart.items;
           final bool isAllSelected =

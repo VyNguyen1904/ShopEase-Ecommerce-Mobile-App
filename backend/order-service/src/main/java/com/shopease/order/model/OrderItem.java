@@ -55,6 +55,11 @@ public class OrderItem {
     }
 
     public OrderItem(Long productId, String productName, String productImage, BigDecimal unitPrice, int quantity,
+                     BigDecimal subtotal, String sellerId) {
+        this(productId, productName, productImage, unitPrice, quantity, subtotal, sellerId, null, null);
+    }
+
+    public OrderItem(Long productId, String productName, String productImage, BigDecimal unitPrice, int quantity,
                      BigDecimal subtotal, String sellerId, String color, String size) {
         this.productId = productId;
         this.productName = productName;

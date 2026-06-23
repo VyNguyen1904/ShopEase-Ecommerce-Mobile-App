@@ -5,7 +5,7 @@ void main() {
   group('Cart Logic Unit Tests', () {
     test('Calculate subtotal of selected items in cart', () {
       final item1 = CartItem(
-        itemId: 1,
+        itemId: '1',
         productId: 1,
         price: 150000,
         quantity: 2,
@@ -13,7 +13,7 @@ void main() {
         selected: true,
       );
       final item2 = CartItem(
-        itemId: 2,
+        itemId: '2',
         productId: 2,
         price: 50000,
         quantity: 1,

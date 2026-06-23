@@ -45,10 +45,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
     if (user != null) {
       final productsAsync = ref.watch(sellerProductsProvider(user.id));
       if (productsAsync.hasValue && productsAsync.value != null) {
-        totalCount = productsAsync.value!.length;
-        // Hiện tại model Product chưa có field stock, nên tạm tính là tất cả đều còn hàng
-        inStockCount = totalCount;
-        outOfStockCount = 0;
+        final products = productsAsync.value!;
+        totalCount = products.length;
+        inStockCount = products.where((p) => p.stockQuantity > 0).length;
+        outOfStockCount = totalCount - inStockCount;
       }
     }
 
@@ -104,9 +104,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildProductList(),
-          _buildProductList(),
-          _buildProductList(),
+          _buildProductList(0),
+          _buildProductList(1),
+          _buildProductList(2),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -139,7 +139,7 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
     );
   }
 
-  Widget _buildProductList() {
+  Widget _buildProductList(int tabIndex) {
     final userAsync = ref.watch(userProfileProvider);
     return userAsync.when(
       data: (user) {
@@ -147,7 +147,13 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
           return const Center(child: Text(AppStrings.pleaseLogin));
         }
         return ref.watch(sellerProductsProvider(user.id)).when(
-          data: (products) {
+          data: (allProducts) {
+            final products = allProducts.where((p) {
+              if (tabIndex == 1) return p.stockQuantity > 0;
+              if (tabIndex == 2) return p.stockQuantity <= 0;
+              return true;
+            }).toList();
+
             if (products.isEmpty) {
               return const Center(child: Text(AppStrings.noProductsList));
             }
@@ -212,13 +218,35 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                product.category,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                ),
+              Row(
+                children: [
+                  Text(
+                    product.category,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    decoration: const BoxDecoration(
+                      color: AppColors.textGrey,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Còn lại: ${product.stockQuantity}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textGrey,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

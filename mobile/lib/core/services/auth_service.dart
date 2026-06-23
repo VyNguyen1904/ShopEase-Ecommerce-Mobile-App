@@ -45,6 +45,28 @@ class AuthService {
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401 && !e.requestOptions.path.contains('/api/auth/refresh')) {
+            try {
+              // Automatically refresh the token
+              final tokenResponse = await refreshToken();
+              
+              // Update the original request with the new token
+              e.requestOptions.headers['Authorization'] = 'Bearer ${tokenResponse.accessToken}';
+              
+              // Create a new Dio instance to retry the request without triggering interceptor loops
+              final retryDio = Dio();
+              final retryResponse = await retryDio.fetch(e.requestOptions);
+              return handler.resolve(retryResponse);
+            } catch (refreshError) {
+              await _clearTokens();
+              // Force redirect to login by throwing a specific error
+              return handler.next(DioException(
+                requestOptions: e.requestOptions,
+                error: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.',
+                type: DioExceptionType.unknown,
+              ));
+            }
+          }
           if (e.response?.statusCode == 401) {
             await _clearTokens();
           }

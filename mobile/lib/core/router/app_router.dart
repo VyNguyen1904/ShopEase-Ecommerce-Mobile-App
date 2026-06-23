@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
@@ -23,6 +24,7 @@ import '../../features/product/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
 import '../../features/profile/screens/address_screen.dart';
 import '../../features/profile/screens/profile_edit_screen.dart';
+import '../../features/profile/screens/my_reviews_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
 import '../../features/admin/screens/admin_users.dart';
 import '../../features/admin/screens/seller_order_detail.dart';
@@ -91,6 +93,21 @@ final appRouter = GoRouter(
     }
     return null;
   },
+  errorBuilder: (context, state) => Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Phiên đăng nhập đã hết hạn hoặc trang không tồn tại.', style: TextStyle(fontSize: 16)),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () => context.go(AppRoutes.login),
+            child: const Text('Quay lại Đăng nhập'),
+          ),
+        ],
+      ),
+    ),
+  ),
   routes: [
     // ── Onboarding & Auth ──────────────────────────────────────────────────
     GoRoute(
@@ -226,6 +243,10 @@ final appRouter = GoRouter(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
     ),
+    GoRoute(
+      path: AppRoutes.myReviews,
+      builder: (context, state) => const MyReviewsScreen(),
+    ),
 
     GoRoute(
       path: AppRoutes.notifications,
@@ -240,6 +261,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/admin',
       redirect: (context, state) => AppRoutes.adminDashboard,
+    ),
+    GoRoute(
+      path: '/seller',
+      redirect: (context, state) => AppRoutes.sellerDashboard,
     ),
     GoRoute(
       path: AppRoutes.adminDashboard,

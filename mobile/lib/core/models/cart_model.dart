@@ -53,8 +53,12 @@ class CartItem {
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    final parsedItemId = json['itemId']?.toString() ?? json['id']?.toString() ?? '';
+    final fallbackId = '${json['productId']}_${json['color']}_${json['size']}';
+    final finalId = parsedItemId.isNotEmpty ? parsedItemId : fallbackId;
+
     return CartItem(
-      itemId: json['itemId']?.toString() ?? '',
+      itemId: finalId,
       productId: json['productId'] ?? 0,
       price: (json['price'] ?? 0).toDouble(),
       quantity: json['quantity'] ?? 0,

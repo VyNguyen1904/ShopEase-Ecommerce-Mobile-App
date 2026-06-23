@@ -122,8 +122,6 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         await authService.updateAddress(widget.address!.id, addressData);
       }
 
-      ref.invalidate(userProfileProvider);
-
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -134,6 +132,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
           ),
         );
       }
+
+      ref.invalidate(userProfileProvider);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

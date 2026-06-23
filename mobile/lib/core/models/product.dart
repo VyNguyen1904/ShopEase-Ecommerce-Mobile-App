@@ -15,6 +15,7 @@ class Product {
   final String? fit;
   final String? careInstructions;
   final List<String> features;
+  final int stockQuantity;
 
   const Product({
     required this.id,
@@ -33,6 +34,7 @@ class Product {
     this.fit,
     this.careInstructions,
     this.features = const [],
+    this.stockQuantity = 0,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -69,6 +71,7 @@ class Product {
       fit: json['fit']?.toString(),
       careInstructions: json['careInstructions']?.toString(),
       features: (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      stockQuantity: (json['stockQuantity'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -77,9 +80,10 @@ class Product {
       if (id.isNotEmpty) 'id': id,
       'name': name,
       'categoryId': category,
-      'price': price,
-      'originalPrice': originalPrice,
-      'imageUrl': imageUrl,
+      'basePrice': price,
+      'salePrice': originalPrice ?? price,
+      'thumbnailUrl': imageUrl,
+      'imageUrls': [imageUrl],
       'rating': rating,
       'reviewsCount': reviewsCount,
       'salesCount': salesCount,
@@ -90,6 +94,7 @@ class Product {
       'fit': fit,
       'careInstructions': careInstructions,
       'features': features,
+      'stockQuantity': stockQuantity,
     };
   }
 
