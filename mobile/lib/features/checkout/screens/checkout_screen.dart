@@ -49,7 +49,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ? selectedItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity))
         : (cartState.value?.subtotal ?? 0);
 
-    final double shippingFee = subtotal >= 500000 ? 0 : 25000;
+    final double baseShippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    final double shippingFee = subtotal >= 500000 ? 0 : baseShippingFee;
     final double discount = _useCoins ? 2000 : 0;
     final double totalAmount = subtotal + shippingFee - discount;
 

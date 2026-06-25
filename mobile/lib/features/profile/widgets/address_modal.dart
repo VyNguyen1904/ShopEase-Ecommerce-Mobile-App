@@ -122,8 +122,6 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         await authService.updateAddress(widget.address!.id, addressData);
       }
 
-      ref.invalidate(userProfileProvider);
-
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -134,6 +132,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
           ),
         );
       }
+
+      ref.invalidate(userProfileProvider);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -242,7 +242,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 contentPadding: EdgeInsets.zero,
                 title: const Text(AppStrings.setAsDefault,
                     style: TextStyle(fontSize: 14, color: AppColors.textDark)),
-                activeColor: AppColors.primary,
+                activeThumbColor: AppColors.primary,
                 value: _isDefault,
                 onChanged: (val) => setState(() => _isDefault = val),
               ),
@@ -330,7 +330,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 color: AppColors.textGrey)),
         const SizedBox(height: 4),
         DropdownButtonFormField<dynamic>(
-          value: value,
+          initialValue: value,
           isExpanded: true,
           decoration: InputDecoration(
             isDense: true,

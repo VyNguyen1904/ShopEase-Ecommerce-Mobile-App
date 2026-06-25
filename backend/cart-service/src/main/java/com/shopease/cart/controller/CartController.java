@@ -32,9 +32,21 @@ public class CartController {
         return ApiResponse.ok(carts.updateItemQuantity(userId, itemId, request));
     }
 
+    @PutMapping("/items/update")
+    ApiResponse<CartResponse> updateItemQuantityParam(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
+                                                 @RequestParam String itemId, @Valid @RequestBody CartItemRequest request) {
+        return ApiResponse.ok(carts.updateItemQuantity(userId, itemId, request));
+    }
+
     @DeleteMapping("/items/{itemId}")
     ApiResponse<CartResponse> removeItemFromCart(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
                                                  @PathVariable String itemId) {
+        return ApiResponse.ok(carts.removeItemFromCart(userId, itemId));
+    }
+
+    @DeleteMapping("/items/remove")
+    ApiResponse<CartResponse> removeItemFromCartParam(@RequestHeader(value = "X-User-Id", defaultValue = "demo-buyer") String userId,
+                                                 @RequestParam String itemId) {
         return ApiResponse.ok(carts.removeItemFromCart(userId, itemId));
     }
 

@@ -161,6 +161,11 @@ class AccountScreen extends ConsumerWidget {
                 title: AppStrings.myOrders,
                 onTap: () => context.go(AppRoutes.orders),
               ),
+              _buildMenuItem(
+                icon: Icons.rate_review_outlined,
+                title: 'Đánh giá của tôi',
+                onTap: () => context.push(AppRoutes.myReviews),
+              ),
             ]),
             const SizedBox(height: 28),
 

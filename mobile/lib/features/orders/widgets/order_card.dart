@@ -160,7 +160,10 @@ class OrderCardActions extends ConsumerWidget {
         alignment: WrapAlignment.end,
         children: [
           if (statusStr == AppStrings.pending) _buildCancelButton(context, ref),
-          if (statusStr == AppStrings.delivered) _buildReviewButton(),
+          if (statusStr == AppStrings.delivered || statusStr == AppStrings.completedStatus) ...[
+            _buildReturnRefundButton(context),
+            _buildReviewButton(context),
+          ],
           _buildPrimaryButton(context, ref),
         ],
       ),
@@ -182,36 +185,78 @@ class OrderCardActions extends ConsumerWidget {
     );
   }
 
-  Widget _buildReviewButton() {
+  Widget _buildReviewButton(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {},
+      onPressed: () {
+        context.push(AppRoutes.review, extra: {'order': order});
+      },
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.primary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       ),
       child: const Text(
         AppStrings.reviewAction,
-        style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600),
+        style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  Widget _buildReturnRefundButton(BuildContext context) {
+    return OutlinedButton(
+      onPressed: () => _handleReturnRefund(context),
+      style: OutlinedButton.styleFrom(
+        side: const BorderSide(color: AppColors.textGrey),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      ),
+      child: const Text(
+        AppStrings.returnRefundAction,
+        style: TextStyle(color: AppColors.textGrey, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  void _handleReturnRefund(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(AppStrings.returnRefundAction, style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text(AppStrings.returnRefundPrompt),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text(AppStrings.returnRefundSuccess)),
+              );
+            },
+            child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPrimaryButton(BuildContext context, WidgetRef ref) {
-    final isDelivered = statusStr == AppStrings.delivered;
+    final isDeliveredOrCompleted = statusStr == AppStrings.delivered || statusStr == AppStrings.completedStatus;
     return ElevatedButton(
-      onPressed: () => isDelivered
+      onPressed: () => isDeliveredOrCompleted
           ? _handleReorder(context, ref)
           : _handleTrack(context),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isDelivered ? AppColors.textDark : AppColors.primary,
+        backgroundColor: isDeliveredOrCompleted ? AppColors.textDark : AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       ),
       child: Text(
-        isDelivered ? AppStrings.reorderAction : AppStrings.trackAction,
+        isDeliveredOrCompleted ? AppStrings.reorderAction : AppStrings.trackAction,
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
     );

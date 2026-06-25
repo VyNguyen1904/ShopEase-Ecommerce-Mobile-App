@@ -121,7 +121,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                             );
                           },
                           loading: () => const Center(child: CircularProgressIndicator()),
-                          error: (_, __) => const Text(AppStrings.errorLoadCategory),
+                          error: (_, _) => const Text(AppStrings.errorLoadCategory),
                         );
                       },
                     ),

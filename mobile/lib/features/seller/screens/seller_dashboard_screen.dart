@@ -96,7 +96,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             trend: AppStrings.totalRevenue,
             trendColor: Colors.green,
             icon: Icons.monetization_on_outlined,
-            iconBgColor: AppColors.primary.withOpacity(0.1),
+            iconBgColor: AppColors.primary.withValues(alpha: 0.1),
             iconColor: AppColors.primary,
           ),
         ),
@@ -109,7 +109,7 @@ class SellerDashboardScreen extends ConsumerWidget {
             trend: AppStrings.totalOrders,
             trendColor: Colors.green,
             icon: Icons.shopping_bag_outlined,
-            iconBgColor: AppColors.accent.withOpacity(0.1),
+            iconBgColor: AppColors.accent.withValues(alpha: 0.1),
             iconColor: AppColors.accent,
           ),
         ),
@@ -135,7 +135,7 @@ class SellerDashboardScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -235,10 +235,10 @@ class SellerDashboardScreen extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.withOpacity(0.1)),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.01),
+                color: Colors.black.withValues(alpha: 0.01),
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),
@@ -305,7 +305,7 @@ class SellerDashboardScreen extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.withOpacity(0.1)),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
           ),
           child: ordersAsync.when(
             data: (orders) {
@@ -453,7 +453,7 @@ class SellerDashboardScreen extends ConsumerWidget {
         if (showDivider)
           Divider(
             height: 1,
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             indent: 16,
             endIndent: 16,
           ),

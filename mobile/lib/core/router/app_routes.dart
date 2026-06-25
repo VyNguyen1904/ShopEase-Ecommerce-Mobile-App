@@ -17,11 +17,13 @@ abstract class AppRoutes {
   static const String productDetail = '/product/:id';
   static const String checkout = '/checkout';
   static const String orderDetail = '/order-detail/:id';
+  static const String review = '/review';
   static const String search = '/search';
+  static const String address = '/address';
+  static const String myReviews = '/my-reviews';
   static const String settings = '/settings';
   static const String account = '/account';
   static const String profileEdit = '/profile-edit';
-  static const String address = '/address';
   static const String chats = '/chats';
 
   // Admin & Seller screens

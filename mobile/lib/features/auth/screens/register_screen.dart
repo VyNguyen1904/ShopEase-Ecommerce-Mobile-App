@@ -291,8 +291,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           color: AppColors.textGrey,
                         ),
                         children: [
-                          const TextSpan(text: AppStrings.hasAccount),
-                          const TextSpan(
+                          TextSpan(text: AppStrings.hasAccount),
+                          TextSpan(
                             text: AppStrings.loginTitle,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,

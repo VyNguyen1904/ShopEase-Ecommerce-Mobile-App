@@ -6,6 +6,7 @@ import '../../../core/models/product.dart';
 import '../../../core/router/app_routes.dart';
 import '../../cart/providers/cart_provider.dart';
 import '../../../core/models/cart_model.dart';
+import '../../../core/providers/selected_product_provider.dart';
 
 class ProductVariantSheet extends ConsumerStatefulWidget {
   final Product product;
@@ -29,12 +30,20 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
   @override
   void initState() {
     super.initState();
-    if (widget.product.colors.isNotEmpty) {
-      selectedColor = widget.product.colors.first;
-    }
-    if (widget.product.sizes.isNotEmpty) {
-      selectedSize = widget.product.sizes.first;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        selectedColor = ref.read(selectedProductColorProvider);
+        selectedSize = ref.read(selectedProductSizeProvider);
+        
+        // Fallback if providers are empty
+        if (selectedColor == null && widget.product.colors.isNotEmpty) {
+          selectedColor = widget.product.colors.first;
+        }
+        if (selectedSize == null && widget.product.sizes.isNotEmpty) {
+          selectedSize = widget.product.sizes.first;
+        }
+      });
+    });
   }
 
   void _confirm() {
@@ -151,6 +160,7 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
                     setState(() {
                       selectedColor = selected ? color : null;
                     });
+                    ref.read(selectedProductColorProvider.notifier).state = selectedColor;
                   },
                 );
               }).toList(),
@@ -171,6 +181,7 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
                     setState(() {
                       selectedSize = selected ? size : null;
                     });
+                    ref.read(selectedProductSizeProvider.notifier).state = selectedSize;
                   },
                 );
               }).toList(),

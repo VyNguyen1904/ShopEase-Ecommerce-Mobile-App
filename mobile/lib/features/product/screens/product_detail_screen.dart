@@ -91,7 +91,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ProductInfo(product: product),
-                            ProductOptionsSelector(sizes: product.sizes),
+                            ProductOptionsSelector(
+                              sizes: product.sizes,
+                              colors: product.colors,
+                            ),
                             const SizedBox(height: 24),
                             ProductAttributes(product: product),
                             const SizedBox(height: 24),

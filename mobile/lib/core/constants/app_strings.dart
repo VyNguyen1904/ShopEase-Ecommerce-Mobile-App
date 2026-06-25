@@ -232,6 +232,9 @@ class AppStrings {
   static const String reorderAction = "Mua lại";
   static const String noOrdersFound = "Chưa có đơn hàng nào";
   static const String cancelOrderSuccess = "Đã huỷ đơn hàng thành công";
+  static const String returnRefundAction = "Đổi trả/Hoàn tiền";
+  static const String returnRefundPrompt = "Bạn muốn yêu cầu đổi trả/hoàn tiền cho đơn hàng này?";
+  static const String returnRefundSuccess = "Yêu cầu của bạn đã được gửi. CSKH sẽ liên hệ trong 24h.";
 
   // Seller Dashboard
   static const String helloPrefix = "Xin chào, ";
