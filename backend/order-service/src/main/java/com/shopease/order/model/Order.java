@@ -129,6 +129,18 @@ public class Order {
         this.status = OrderStatus.DELIVERED;
     }
 
+    public void markConfirmed() {
+        this.status = OrderStatus.CONFIRMED;
+    }
+
+    public void markPacked() {
+        this.status = OrderStatus.PACKED;
+    }
+
+    public void markShipped() {
+        this.status = OrderStatus.SHIPPED;
+    }
+
     public boolean hasReleasableInventory() {
         return OrderStatus.PENDING.equals(status) || OrderStatus.CONFIRMED.equals(status);
     }

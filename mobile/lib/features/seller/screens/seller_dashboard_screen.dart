@@ -352,7 +352,9 @@ class SellerDashboardScreen extends ConsumerWidget {
         return AppStrings.pending;
       case OrderStatus.CONFIRMED:
         return AppStrings.confirmed;
-      case OrderStatus.SHIPPING:
+      case OrderStatus.PACKED:
+        return AppStrings.packedStatus;
+      case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;
@@ -367,7 +369,9 @@ class SellerDashboardScreen extends ConsumerWidget {
         return AppColors.accent;
       case OrderStatus.CONFIRMED:
         return Colors.blue;
-      case OrderStatus.SHIPPING:
+      case OrderStatus.PACKED:
+        return Colors.blueGrey;
+      case OrderStatus.SHIPPED:
         return Colors.orange;
       case OrderStatus.DELIVERED:
         return Colors.green;

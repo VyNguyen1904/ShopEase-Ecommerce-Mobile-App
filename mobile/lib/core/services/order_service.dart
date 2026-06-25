@@ -119,4 +119,34 @@ class OrderService {
       throw Exception('Failed to mark order as delivered: $e');
     }
   }
+
+  Future<OrderResponse> confirmOrder(String id) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.post('$_orderUrl/$id/confirm', options: options);
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to confirm order: $e');
+    }
+  }
+
+  Future<OrderResponse> packOrder(String id) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.post('$_orderUrl/$id/pack', options: options);
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to pack order: $e');
+    }
+  }
+
+  Future<OrderResponse> shipOrder(String id) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.post('$_orderUrl/$id/ship', options: options);
+      return OrderResponse.fromJson(response.data['data']);
+    } catch (e) {
+      throw Exception('Failed to ship order: $e');
+    }
+  }
 }

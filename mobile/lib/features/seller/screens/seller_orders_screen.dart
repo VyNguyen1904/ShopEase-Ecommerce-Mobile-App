@@ -25,7 +25,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
         return AppStrings.newStatus;
       case OrderStatus.CONFIRMED:
         return AppStrings.processingStatus;
-      case OrderStatus.SHIPPING:
+      case OrderStatus.PACKED:
+        return AppStrings.packedStatus;
+      case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;

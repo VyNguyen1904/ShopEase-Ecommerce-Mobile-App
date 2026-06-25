@@ -8,6 +8,8 @@ import '../../../core/models/product.dart';
 import '../../../core/models/category_model.dart';
 import '../widgets/seller_input_field.dart';
 import '../widgets/seller_dropdown_field.dart';
+import '../widgets/multi_select_field.dart';
+import '../widgets/save_product_button.dart';
 
 class SellerAddProductScreen extends ConsumerStatefulWidget {
   const SellerAddProductScreen({super.key});
@@ -191,18 +193,36 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
-            _buildMultiSelectField(
+            MultiSelectField(
               icon: Icons.straighten_outlined,
               label: 'Kích cỡ (Sizes)',
               options: _availableSizes,
               selectedOptions: _selectedSizes,
+              onSelectionChanged: (option, selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedSizes.add(option);
+                  } else {
+                    _selectedSizes.remove(option);
+                  }
+                });
+              },
             ),
             const SizedBox(height: 16),
-            _buildMultiSelectField(
+            MultiSelectField(
               icon: Icons.color_lens_outlined,
               label: 'Màu sắc (Colors)',
               options: _availableColors,
               selectedOptions: _selectedColors,
+              onSelectionChanged: (option, selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedColors.add(option);
+                  } else {
+                    _selectedColors.remove(option);
+                  }
+                });
+              },
             ),
             const SizedBox(height: 16),
             SellerInputField(
@@ -216,103 +236,13 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
         ),
       ),
       bottomNavigationBar: categoriesAsync.maybeWhen(
-        data: (categories) => SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: ElevatedButton.icon(
-              onPressed: _isLoading ? null : () => _saveProduct(categories),
-              icon: _isLoading 
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Icon(Icons.save_outlined, color: Colors.white),
-              label: Text(
-                _isLoading ? 'Đang lưu...' : AppStrings.saveProduct,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accent, // Orange color
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
-            ),
-          ),
+        data: (categories) => SaveProductButton(
+          isLoading: _isLoading,
+          onPressed: () => _saveProduct(categories),
         ),
         orElse: () => const SizedBox.shrink(),
       ),
     );
   }
 
-  Widget _buildMultiSelectField({
-    required IconData icon,
-    required String label,
-    required List<String> options,
-    required List<String> selectedOptions,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: options.map((option) {
-            final isSelected = selectedOptions.contains(option);
-            return FilterChip(
-              label: Text(option),
-              selected: isSelected,
-              onSelected: (bool selected) {
-                setState(() {
-                  if (selected) {
-                    selectedOptions.add(option);
-                  } else {
-                    selectedOptions.remove(option);
-                  }
-                });
-              },
-              selectedColor: AppColors.primary.withValues(alpha: 0.2),
-              checkmarkColor: AppColors.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? AppColors.primary : AppColors.textDark,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(
-                  color: isSelected ? AppColors.primary : Colors.grey.withValues(alpha: 0.3),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
 }
