@@ -31,8 +31,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     switch (status) {
       case OrderStatus.PENDING:
       case OrderStatus.CONFIRMED:
+      case OrderStatus.PACKED:
         return AppStrings.pending;
-      case OrderStatus.SHIPPING:
+      case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;
@@ -166,7 +167,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
             bottom: 120,
           ),
           itemCount: filtered.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          separatorBuilder: (_, _) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final order = filtered[index];
             final statusStr = _mapStatus(order.status);

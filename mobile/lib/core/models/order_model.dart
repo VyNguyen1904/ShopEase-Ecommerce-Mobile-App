@@ -1,7 +1,8 @@
 enum OrderStatus {
   PENDING,
   CONFIRMED,
-  SHIPPING,
+  PACKED,
+  SHIPPED,
   DELIVERED,
   CANCELLED
 }

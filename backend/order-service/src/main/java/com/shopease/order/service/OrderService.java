@@ -122,14 +122,49 @@ public class OrderService {
     public OrderResponse markAsDelivered(UUID id, String userId, String userRole) {
         Order order = requireOrder(id);
         if (!"ADMIN".equalsIgnoreCase(userRole)) {
-            boolean isSellerOfOrderItem = order.getItems().stream()
+            boolean isBuyer = order.getBuyerId().equals(userId);
+            boolean isSeller = order.getItems().stream()
                     .anyMatch(item -> item.getSellerId().equals(userId));
-            if (!isSellerOfOrderItem) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the seller of the items in this order can mark it as delivered");
+            if (!isBuyer && !isSeller) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the buyer or seller can mark this order as delivered");
             }
         }
         order.markDelivered();
         return OrderResponse.from(orders.save(order));
+    }
+
+    @Transactional
+    public OrderResponse confirmOrder(UUID id, String userId, String userRole) {
+        Order order = requireOrder(id);
+        requireSellerOrAdmin(order, userId, userRole, "confirm");
+        order.markConfirmed();
+        return OrderResponse.from(orders.save(order));
+    }
+
+    @Transactional
+    public OrderResponse packOrder(UUID id, String userId, String userRole) {
+        Order order = requireOrder(id);
+        requireSellerOrAdmin(order, userId, userRole, "pack");
+        order.markPacked();
+        return OrderResponse.from(orders.save(order));
+    }
+
+    @Transactional
+    public OrderResponse shipOrder(UUID id, String userId, String userRole) {
+        Order order = requireOrder(id);
+        requireSellerOrAdmin(order, userId, userRole, "ship");
+        order.markShipped();
+        return OrderResponse.from(orders.save(order));
+    }
+
+    private void requireSellerOrAdmin(Order order, String userId, String userRole, String action) {
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            boolean isSellerOfOrderItem = order.getItems().stream()
+                    .anyMatch(item -> item.getSellerId().equals(userId));
+            if (!isSellerOfOrderItem) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the seller of the items in this order can " + action + " it");
+            }
+        }
     }
 
     public ReviewEligibilityResponse checkReviewEligibility(UUID id, String buyerId, Long productId) {

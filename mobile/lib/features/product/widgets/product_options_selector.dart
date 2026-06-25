@@ -1,105 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/providers/selected_product_provider.dart';
 
-class ProductOptionsSelector extends StatefulWidget {
+class ProductOptionsSelector extends ConsumerStatefulWidget {
   final List<String> sizes;
+  final List<String> colors;
 
-  const ProductOptionsSelector({super.key, required this.sizes});
+  const ProductOptionsSelector({
+    super.key, 
+    required this.sizes,
+    required this.colors,
+  });
 
   @override
-  State<ProductOptionsSelector> createState() => _ProductOptionsSelectorState();
+  ConsumerState<ProductOptionsSelector> createState() => _ProductOptionsSelectorState();
 }
 
-class _ProductOptionsSelectorState extends State<ProductOptionsSelector> {
-  int _selectedColorIndex = 1;
-  String _selectedSize = '9';
-
-  final List<Map<String, dynamic>> _colorOptions = [
-    {'name': 'Trắng', 'color': Colors.white, 'hasBorder': true},
-    {'name': 'Xanh Ngọc', 'color': AppColors.primary, 'hasBorder': false},
-    {'name': 'Đen', 'color': Colors.black, 'hasBorder': false},
-  ];
-
+class _ProductOptionsSelectorState extends ConsumerState<ProductOptionsSelector> {
+  final int _selectedColorIndex = 1;
   @override
   void initState() {
     super.initState();
-    if (widget.sizes.isNotEmpty) {
-      _selectedSize = widget.sizes.first;
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.colors.isNotEmpty) {
+        ref.read(selectedProductColorProvider.notifier).state = widget.colors.first;
+      } else {
+        ref.read(selectedProductColorProvider.notifier).state = null;
+      }
+      if (widget.sizes.isNotEmpty) {
+        ref.read(selectedProductSizeProvider.notifier).state = widget.sizes.first;
+      } else {
+        ref.read(selectedProductSizeProvider.notifier).state = null;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final selectedColor = ref.watch(selectedProductColorProvider);
+    final selectedSize = ref.watch(selectedProductSizeProvider);
+
+    if (widget.colors.isEmpty && widget.sizes.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '${AppStrings.colorPrefix}${_colorOptions[_selectedColorIndex]['name']}',
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
-          ),
-        ),
-        const SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: List.generate(
-              _colorOptions.length,
-              (index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedColorIndex = index;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  margin: const EdgeInsets.only(right: 12),
-                  width: _selectedColorIndex == index ? 42 : 38,
-                  height: _selectedColorIndex == index ? 42 : 38,
-                  decoration: BoxDecoration(
-                    color: _colorOptions[index]['color'],
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _selectedColorIndex == index
-                          ? AppColors.primary
-                          : (_colorOptions[index]['hasBorder']
-                              ? AppColors.border
-                              : Colors.transparent),
-                      width: _selectedColorIndex == index ? 3.0 : 1,
-                    ),
-                    boxShadow: _selectedColorIndex == index
-                        ? [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: _selectedColorIndex == index
-                        ? Icon(
-                            Icons.check,
-                            key: const ValueKey('checked'),
-                            color: _colorOptions[index]['color'] == Colors.white
-                                ? AppColors.primary
-                                : Colors.white,
-                            size: 20,
-                          )
-                        : const SizedBox.shrink(key: ValueKey('empty')),
-                  ),
-                ),
-              ),
+        if (widget.colors.isNotEmpty) ...[
+          Text(
+            '${AppStrings.colorPrefix}${selectedColor ?? ''}',
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
             ),
           ),
-        ),
-        const SizedBox(height: 24),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: widget.colors.map((color) {
+                final isSelected = selectedColor == color;
+                return GestureDetector(
+                  onTap: () {
+                    ref.read(selectedProductColorProvider.notifier).state = color;
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.accent : Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: isSelected ? AppColors.accent : AppColors.border,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: AppColors.accent.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Text(
+                      color,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.white : AppColors.textDark,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+        if (widget.sizes.isNotEmpty) ...[
         const Text(
           AppStrings.size,
           style: TextStyle(
@@ -113,12 +118,10 @@ class _ProductOptionsSelectorState extends State<ProductOptionsSelector> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: widget.sizes.map((size) {
-              final isSelected = _selectedSize == size;
+              final isSelected = selectedSize == size;
               return GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _selectedSize = size;
-                  });
+                  ref.read(selectedProductSizeProvider.notifier).state = size;
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 250),
@@ -161,6 +164,7 @@ class _ProductOptionsSelectorState extends State<ProductOptionsSelector> {
           ),
         ),
         const SizedBox(height: 32),
+        ]
       ],
     );
   }

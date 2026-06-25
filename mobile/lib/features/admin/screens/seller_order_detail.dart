@@ -17,7 +17,7 @@ class SellerOrderDetail extends ConsumerStatefulWidget {
 }
 
 class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
-  int _activeStatusStep =
+  final int _activeStatusStep =
       0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
 
   final List<String> _statusTexts = [
@@ -64,8 +64,10 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
       body: ref.watch(orderDetailProvider(widget.orderId)).when(
         data: (order) {
           int step = 0;
+          if (order.status == OrderStatus.PENDING) step = -2;
           if (order.status == OrderStatus.CONFIRMED) step = 0;
-          if (order.status == OrderStatus.SHIPPING) step = 2; // Skipped Packed for now
+          if (order.status == OrderStatus.PACKED) step = 1;
+          if (order.status == OrderStatus.SHIPPED) step = 2;
           if (order.status == OrderStatus.DELIVERED) step = 3;
           if (order.status == OrderStatus.CANCELLED) step = -1;
           
@@ -105,7 +107,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: step == 0
+                                    color: (step == 0 || step == -2)
                                         ? const Color(0xFFFFF7ED)
                                         : (step == 3
                                               ? const Color(0xFFEAF5F6)
@@ -113,11 +115,11 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    step == -1 ? AppStrings.cancelled : _statusTexts[step],
+                                    step == -2 ? 'Chờ xác nhận' : (step == -1 ? AppStrings.cancelled : _statusTexts[step]),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: step == 0
+                                      color: (step == 0 || step == -2)
                                           ? const Color(0xFFD97706)
                                           : (step == 3
                                                 ? AppColors.primary
@@ -424,8 +426,14 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                         _buildTimelineItem(
                           title: AppStrings.orderConfirmedMsg,
                           time: step >= 0 ? DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt) : '--:--',
-                          user: step >= 0 ? AppStrings.system : '---',
+                          user: step >= 0 ? AppStrings.you : '---',
                           isDone: step >= 0,
+                        ),
+                        _buildTimelineItem(
+                          title: AppStrings.packedStatus,
+                          time: step >= 1 ? '--:--' : '--:--',
+                          user: step >= 1 ? AppStrings.you : '---',
+                          isDone: step >= 1,
                         ),
                         _buildTimelineItem(
                           title: AppStrings.orderShippingMsg,
@@ -477,29 +485,26 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            try {
-                              await ref.read(orderServiceProvider).markAsDelivered(order.id);
-                              ref.invalidate(orderDetailProvider(order.id));
-                              ref.invalidate(sellerOrdersProvider);
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
-                              }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text(AppStrings.confirmDelivered, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      if (order.status == OrderStatus.PENDING)
+                        _buildActionButton(
+                          context, ref, order.id, AppStrings.confirm,
+                          () => ref.read(orderServiceProvider).confirmOrder(order.id)
                         ),
-                      ),
+                      if (order.status == OrderStatus.CONFIRMED)
+                        _buildActionButton(
+                          context, ref, order.id, AppStrings.packedStatus,
+                          () => ref.read(orderServiceProvider).packOrder(order.id)
+                        ),
+                      if (order.status == OrderStatus.PACKED)
+                        _buildActionButton(
+                          context, ref, order.id, 'Giao vận chuyển',
+                          () => ref.read(orderServiceProvider).shipOrder(order.id)
+                        ),
+                      if (order.status == OrderStatus.SHIPPED)
+                        _buildActionButton(
+                          context, ref, order.id, AppStrings.confirmDelivered,
+                          () => ref.read(orderServiceProvider).markAsDelivered(order.id)
+                        ),
                     ],
                   ),
                 ],
@@ -621,5 +626,29 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
     );
   }
 
-  // _buildActionButton removed
+  Widget _buildActionButton(BuildContext context, WidgetRef ref, String orderId, String label, Future<dynamic> Function() action) {
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () async {
+          try {
+            await action();
+            ref.invalidate(orderDetailProvider(orderId));
+            ref.invalidate(sellerOrdersProvider);
+          } catch (e) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
+            }
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
 }

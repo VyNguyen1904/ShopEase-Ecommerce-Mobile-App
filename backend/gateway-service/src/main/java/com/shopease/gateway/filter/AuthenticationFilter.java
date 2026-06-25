@@ -51,6 +51,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         .build())
                 .retrieve()
                 .bodyToMono(ApiResponse.class)
+                .onErrorResume(e -> Mono.empty())
                 .flatMap(apiResponse -> {
                     if (apiResponse != null && apiResponse.success() && apiResponse.data() != null) {
                         String userId = null;
@@ -93,10 +94,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         return exchange.getResponse().setComplete();
                     }
                 })
-                .onErrorResume(e -> {
+                .switchIfEmpty(Mono.defer(() -> {
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
-                });
+                }));
     }
 
     private boolean hasRequiredRole(String path, String method, String role) {

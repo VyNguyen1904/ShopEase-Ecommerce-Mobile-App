@@ -10,6 +10,8 @@ class Review {
   final String status;
   final int helpfulCount;
   final DateTime createdAt;
+  final String? productName;
+  final String? productImage;
 
   Review({
     required this.id,
@@ -23,6 +25,8 @@ class Review {
     required this.status,
     required this.helpfulCount,
     required this.createdAt,
+    this.productName,
+    this.productImage,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
@@ -40,6 +44,8 @@ class Review {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
+      productName: json['productName'],
+      productImage: json['productImage'] ?? (json['product'] != null ? json['product']['imageUrl'] : null),
     );
   }
 }

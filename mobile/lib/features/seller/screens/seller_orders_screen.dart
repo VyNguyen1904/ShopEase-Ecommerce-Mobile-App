@@ -6,7 +6,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
-import '../../../core/providers/auth_provider.dart';
 import '../../../core/constants/app_strings.dart';
 
 class SellerOrdersScreen extends ConsumerStatefulWidget {
@@ -26,7 +25,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
         return AppStrings.newStatus;
       case OrderStatus.CONFIRMED:
         return AppStrings.processingStatus;
-      case OrderStatus.SHIPPING:
+      case OrderStatus.PACKED:
+        return AppStrings.packedStatus;
+      case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;
@@ -101,7 +102,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border(
-                bottom: BorderSide(color: Colors.grey.withOpacity(0.2)),
+                bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
               ),
             ),
             child: TabBar(
@@ -209,7 +210,7 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,13 +1,118 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/providers/product_provider.dart';
+import '../../../core/models/product.dart';
+import '../../../core/models/category_model.dart';
+import '../widgets/seller_input_field.dart';
+import '../widgets/seller_dropdown_field.dart';
+import '../widgets/multi_select_field.dart';
+import '../widgets/save_product_button.dart';
 
-class SellerAddProductScreen extends StatelessWidget {
+class SellerAddProductScreen extends ConsumerStatefulWidget {
   const SellerAddProductScreen({super.key});
 
   @override
+  ConsumerState<SellerAddProductScreen> createState() => _SellerAddProductScreenState();
+}
+
+class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen> {
+  final _nameController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _stockController = TextEditingController();
+  final _descController = TextEditingController();
+  final _imageController = TextEditingController();
+  String? _selectedCategory;
+  bool _isLoading = false;
+
+  final List<String> _availableSizes = ['S', 'M', 'L', 'XL', 'XXL', 'Freesize'];
+  final List<String> _availableColors = ['Đen', 'Trắng', 'Đỏ', 'Xanh dương', 'Xanh lá', 'Vàng', 'Hồng', 'Xám', 'Nâu'];
+  
+  final List<String> _selectedSizes = [];
+  final List<String> _selectedColors = [];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _priceController.dispose();
+    _stockController.dispose();
+    _descController.dispose();
+    _imageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProduct(List<CategoryModel> categories) async {
+    final name = _nameController.text.trim();
+    final priceStr = _priceController.text.trim();
+    final stockStr = _stockController.text.trim();
+    final desc = _descController.text.trim();
+    final imageUrl = _imageController.text.trim();
+
+    if (name.isEmpty || priceStr.isEmpty || _selectedCategory == null || desc.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin bắt buộc.')),
+      );
+      return;
+    }
+
+    final price = double.tryParse(priceStr) ?? 0.0;
+    final stock = int.tryParse(stockStr) ?? 0;
+    
+    // Find category ID
+    final selectedCatModel = categories.firstWhere(
+      (c) => c.name == _selectedCategory,
+      orElse: () => categories.first,
+    );
+
+    setState(() => _isLoading = true);
+
+    try {
+      final newProduct = Product(
+        id: '',
+        name: name,
+        category: selectedCatModel.id, // Must send categoryId
+        price: price,
+        imageUrl: imageUrl.isNotEmpty ? imageUrl : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+        rating: 0.0,
+        reviewsCount: 0,
+        salesCount: 0,
+        sizes: _selectedSizes,
+        colors: _selectedColors,
+        description: desc,
+        stockQuantity: stock,
+      );
+
+      final service = ref.read(productServiceProvider);
+      await service.createProduct(newProduct);
+      
+      ref.invalidate(sellerProductsProvider);
+      ref.invalidate(productsProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thêm sản phẩm thành công!')),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final categoriesAsync = ref.watch(categoriesProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
@@ -32,7 +137,12 @@ class SellerAddProductScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildImageUpload(),
+            SellerInputField(
+              controller: _imageController,
+              icon: Icons.image_outlined,
+              label: 'URL Ảnh sản phẩm',
+              hintText: 'Nhập đường dẫn ảnh (http://...)',
+            ),
             const SizedBox(height: 32),
             const Text(
               AppStrings.productInfo,
@@ -43,311 +153,96 @@ class SellerAddProductScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildInputField(
+            SellerInputField(
+              controller: _nameController,
               icon: Icons.shopping_bag_outlined,
               label: AppStrings.productName,
               hintText: AppStrings.enterProductName,
             ),
             const SizedBox(height: 16),
-            _buildInputField(
+            SellerInputField(
+              controller: _priceController,
               icon: Icons.local_offer_outlined,
               label: AppStrings.sellingPrice,
               hintText: AppStrings.enterPrice,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
-            _buildDropdownField(
-              icon: Icons.grid_view,
-              label: AppStrings.category,
-              hintText: AppStrings.selectCategory,
+            categoriesAsync.when(
+              data: (categories) => SellerDropdownField(
+                icon: Icons.grid_view,
+                label: AppStrings.category,
+                hintText: AppStrings.selectCategory,
+                items: categories.map((e) => e.name).toList(),
+                value: _selectedCategory,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedCategory = val;
+                  });
+                },
+              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Text('Lỗi tải danh mục: $err', style: const TextStyle(color: Colors.red)),
             ),
             const SizedBox(height: 16),
-            _buildInputField(
+            SellerInputField(
+              controller: _stockController,
               icon: Icons.inventory_2_outlined,
               label: AppStrings.stockQuantity,
               hintText: AppStrings.enterStockQuantity,
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
-            _buildTextAreaField(
+            MultiSelectField(
+              icon: Icons.straighten_outlined,
+              label: 'Kích cỡ (Sizes)',
+              options: _availableSizes,
+              selectedOptions: _selectedSizes,
+              onSelectionChanged: (option, selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedSizes.add(option);
+                  } else {
+                    _selectedSizes.remove(option);
+                  }
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            MultiSelectField(
+              icon: Icons.color_lens_outlined,
+              label: 'Màu sắc (Colors)',
+              options: _availableColors,
+              selectedOptions: _selectedColors,
+              onSelectionChanged: (option, selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedColors.add(option);
+                  } else {
+                    _selectedColors.remove(option);
+                  }
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            SellerInputField(
+              controller: _descController,
               icon: Icons.description_outlined,
               label: AppStrings.productDescTitle,
               hintText: AppStrings.enterProductDesc,
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.save_outlined, color: Colors.white),
-            label: const Text(
-              AppStrings.saveProduct,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent, // Orange color
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImageUpload() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-        // To make a dotted border we would use a package like dotted_border,
-        // but for simplicity we use a solid border here. In a real app we'd add dotted_border.
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.cloud_upload_outlined,
-              color: AppColors.primary,
-              size: 32,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            AppStrings.uploadProductImage,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            AppStrings.imageUploadHint,
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.textGrey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInputField({
-    required IconData icon,
-    required String label,
-    required String hintText,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDropdownField({
-    required IconData icon,
-    required String label,
-    required String hintText,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              hint: Text(
-                hintText,
-                style: const TextStyle(color: AppColors.textGrey, fontSize: 14),
-              ),
-              icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textDark),
-              items: ['Giày Nam', 'Giày Nữ', 'Phụ kiện'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (_) {},
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextAreaField({
-    required IconData icon,
-    required String label,
-    required String hintText,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Stack(
-          children: [
-            TextField(
               maxLines: 5,
-              maxLength: 500,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
-                contentPadding: const EdgeInsets.all(16),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primary),
-                ),
-                counterText: '', // Hide default counter to put custom one inside
-              ),
-            ),
-            const Positioned(
-              bottom: 16,
-              right: 16,
-              child: Text(
-                '0/500',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textGrey,
-                ),
-              ),
             ),
           ],
         ),
-      ],
+      ),
+      bottomNavigationBar: categoriesAsync.maybeWhen(
+        data: (categories) => SaveProductButton(
+          isLoading: _isLoading,
+          onPressed: () => _saveProduct(categories),
+        ),
+        orElse: () => const SizedBox.shrink(),
+      ),
     );
   }
+
 }

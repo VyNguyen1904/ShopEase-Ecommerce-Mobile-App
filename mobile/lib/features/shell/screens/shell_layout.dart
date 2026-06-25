@@ -72,7 +72,7 @@ class ShellLayout extends StatelessWidget {
                     SizedBox(width: 8),
                     Text(
                       AppStrings.devPanelTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textDark,

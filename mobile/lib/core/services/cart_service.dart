@@ -90,13 +90,13 @@ class CartService {
     try {
       final options = await _getAuthOptions();
       await _dio.put(
-        '$_baseUrl/items/${Uri.encodeComponent(itemId)}',
+        '$_baseUrl/items/update?itemId=${Uri.encodeQueryComponent(itemId)}',
         options: options,
         data: {
           'productId': productId,
           'quantity': quantity,
-          if (color != null) 'color': color,
-          if (size != null) 'size': size,
+          'color': ?color,
+          'size': ?size,
         },
       );
     } catch (e) {
@@ -113,8 +113,8 @@ class CartService {
         data: {
           'productId': productId,
           'quantity': quantity,
-          if (color != null) 'color': color,
-          if (size != null) 'size': size,
+          'color': ?color,
+          'size': ?size,
         },
       );
     } catch (e) {
@@ -125,7 +125,7 @@ class CartService {
   Future<void> removeItem(String userId, String itemId) async {
     try {
       final options = await _getAuthOptions();
-      await _dio.delete('$_baseUrl/items/${Uri.encodeComponent(itemId)}', options: options);
+      await _dio.delete('$_baseUrl/items/remove?itemId=${Uri.encodeQueryComponent(itemId)}', options: options);
     } catch (e) {
       throw Exception('Failed to remove item');
     }

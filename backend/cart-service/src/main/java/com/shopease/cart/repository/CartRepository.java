@@ -11,12 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Repository
-@RequiredArgsConstructor
 public class CartRepository {
     private static final String KEY_PREFIX = "cart:";
     private final HashOperations<String, String, CartItem> carts;
 
-
+    public CartRepository(RedisTemplate<String, CartItem> redisTemplate) {
+        this.carts = redisTemplate.opsForHash();
+    }
 
     public Map<String, CartItem> find(String userId) {
         return new LinkedHashMap<>(carts.entries(key(userId)));

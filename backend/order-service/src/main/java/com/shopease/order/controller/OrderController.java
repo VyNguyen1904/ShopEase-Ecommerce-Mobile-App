@@ -60,6 +60,30 @@ public class OrderController {
         return ApiResponse.ok(orders.updatePaymentStatus(id, request.paid()));
     }
 
+    @PostMapping("/{id}/confirm")
+    ApiResponse<OrderResponse> confirmOrder(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String userId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        return ApiResponse.ok(orders.confirmOrder(id, userId, userRole));
+    }
+
+    @PostMapping("/{id}/pack")
+    ApiResponse<OrderResponse> packOrder(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String userId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        return ApiResponse.ok(orders.packOrder(id, userId, userRole));
+    }
+
+    @PostMapping("/{id}/ship")
+    ApiResponse<OrderResponse> shipOrder(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "seller-demo") String userId,
+            @RequestHeader(value = "X-User-Role", defaultValue = "") String userRole) {
+        return ApiResponse.ok(orders.shipOrder(id, userId, userRole));
+    }
+
     @PostMapping("/{id}/deliver")
     ApiResponse<OrderResponse> markAsDelivered(
             @PathVariable UUID id,

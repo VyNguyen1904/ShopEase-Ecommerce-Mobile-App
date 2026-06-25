@@ -8,3 +8,8 @@ final productReviewsProvider = FutureProvider.family<List<Review>, String>((ref,
   final reviewService = ref.watch(reviewServiceProvider);
   return reviewService.getProductReviews(productId);
 });
+
+final myReviewsProvider = FutureProvider.autoDispose<List<Review>>((ref) async {
+  final reviewService = ref.watch(reviewServiceProvider);
+  return reviewService.getMyReviews();
+});
