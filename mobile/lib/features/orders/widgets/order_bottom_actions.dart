@@ -58,6 +58,32 @@ class OrderBottomActions extends ConsumerWidget {
             ),
             const SizedBox(width: 16),
           ],
+          if (order.status == OrderStatus.SHIPPED) ...[
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => _handleConfirmDelivery(context, ref),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Đã nhận được hàng',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
           if (order.status == OrderStatus.DELIVERED) ...[
             Expanded(
               child: OutlinedButton(
@@ -167,6 +193,52 @@ class OrderBottomActions extends ConsumerWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text(AppStrings.returnRefundSuccess)),
               );
+            },
+            child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleConfirmDelivery(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Xác nhận đã nhận hàng', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text('Bạn xác nhận đã nhận được hàng và hàng hóa trong tình trạng tốt?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => const Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                await ref.read(orderServiceProvider).markAsDelivered(order.id);
+                ref.invalidate(orderDetailProvider(order.id));
+                ref.invalidate(userOrdersProvider);
+
+                if (context.mounted) {
+                  Navigator.pop(context); // close loading
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cảm ơn bạn đã mua sắm! Bạn có thể đánh giá sản phẩm ngay bây giờ.')),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context); // close loading
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
+                }
+              }
             },
             child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
           ),

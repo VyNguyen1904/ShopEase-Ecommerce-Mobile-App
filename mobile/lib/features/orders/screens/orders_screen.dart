@@ -31,8 +31,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     switch (status) {
       case OrderStatus.PENDING:
       case OrderStatus.CONFIRMED:
+      case OrderStatus.PACKED:
         return AppStrings.pending;
-      case OrderStatus.SHIPPING:
+      case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;
