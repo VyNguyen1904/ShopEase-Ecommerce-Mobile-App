@@ -20,6 +20,7 @@ import '../../features/orders/screens/order_detail_screen.dart';
 import '../../features/orders/screens/review_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
 import '../../features/chat/screens/chat_list_screen.dart';
+import '../../features/chat/screens/chat_room_screen.dart';
 import '../../features/product/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
 import '../../features/profile/screens/address_screen.dart';
@@ -255,6 +256,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.chats,
       builder: (context, state) => const ChatListScreen(),
+    ),
+    GoRoute(
+      path: '${AppRoutes.chats}/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return ChatRoomScreen(roomId: id);
+      },
     ),
 
     // ── Admin & Seller Screens ─────────────────────────────────────────────

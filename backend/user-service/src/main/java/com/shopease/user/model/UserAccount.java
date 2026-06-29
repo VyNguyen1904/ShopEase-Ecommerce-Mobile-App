@@ -98,6 +98,10 @@ public class UserAccount {
         this.role = role;
     }
 
+    public void updatePassword(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     public void replaceAddresses(List<Address> addresses) {
         this.addresses = new ArrayList<>(addresses);
     }
