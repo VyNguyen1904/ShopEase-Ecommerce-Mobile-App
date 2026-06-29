@@ -69,6 +69,12 @@ class HomeScreen extends ConsumerWidget {
                       showBadge: true,
                     ),
                     const SizedBox(width: 10),
+                    _buildIconButton(
+                      icon: Icons.chat_bubble_outline,
+                      onTap: () => context.push(AppRoutes.chats),
+                      showBadge: false,
+                    ),
+                    const SizedBox(width: 10),
                     _buildIconButton(icon: Icons.qr_code_scanner, onTap: () {}),
                   ],
                 ),

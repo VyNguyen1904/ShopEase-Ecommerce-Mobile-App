@@ -185,4 +185,11 @@ public class Product {
         this.active = false;
         this.status = ProductStatus.INACTIVE;
     }
+    public void increaseSoldCount(int quantity) {
+        this.soldCount += quantity;
+    }
+
+    public void decreaseSoldCount(int quantity) {
+        this.soldCount = Math.max(0, this.soldCount - quantity);
+    }
 }

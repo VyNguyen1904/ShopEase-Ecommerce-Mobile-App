@@ -42,6 +42,14 @@ spring:
           uri: ${PRODUCT_SERVICE_URI:http://localhost:8082}
           predicates:
             - Path=/api/search/**
+        - id: chat-service
+          uri: ${CHAT_SERVICE_URI:http://localhost:8090}
+          predicates:
+            - Path=/api/chats/**
+        - id: chat-service-ws
+          uri: ${CHAT_SERVICE_WS_URI:ws://localhost:8090}
+          predicates:
+            - Path=/ws/**
         - id: openapi-user-service
           uri: ${USER_SERVICE_URI:http://localhost:8081}
           predicates:

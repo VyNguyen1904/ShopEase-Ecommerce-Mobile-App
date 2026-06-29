@@ -27,7 +27,9 @@ class AuthService {
           final isAuthRoute = options.path.contains('/api/auth/login') || 
                               options.path.contains('/api/auth/register') ||
                               options.path.contains('/api/auth/verify-email') ||
-                              options.path.contains('/api/auth/resend-otp');
+                              options.path.contains('/api/auth/resend-otp') ||
+                              options.path.contains('/api/auth/refresh') ||
+                              options.path.endsWith('/api/auth/logout');
           
           if (!isAuthRoute) {
             final token = await getAccessToken();
@@ -166,6 +168,15 @@ class AuthService {
   Future<UserResponse> getProfile() async {
     try {
       final response = await _dio.get('$_userUrl/me');
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
+  Future<UserResponse> getUserById(String id) async {
+    try {
+      final response = await _dio.get('$_userUrl/$id');
       return UserResponse.fromJson(response.data['data']);
     } on DioException catch (e) {
       throw Exception(_handleDioError(e));

@@ -29,10 +29,22 @@ public class UserController {
         return ApiResponse.ok(users.profile(tokens.getUserId(authorization)));
     }
 
+    @GetMapping("/{id}")
+    ApiResponse<UserResponse> getUserById(@PathVariable UUID id) {
+        return ApiResponse.ok(users.profile(id));
+    }
+
     @PutMapping("/me")
     ApiResponse<UserResponse> updateMe(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
                                        @Valid @RequestBody UpdateProfileRequest request) {
         return ApiResponse.ok(users.updateProfile(tokens.getUserId(authorization), request));
+    }
+
+    @PutMapping("/me/password")
+    ApiResponse<Void> changePassword(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                                     @Valid @RequestBody com.shopease.user.dto.ChangePasswordRequest request) {
+        users.changePassword(tokens.getUserId(authorization), request);
+        return ApiResponse.ok(null);
     }
 
     @PostMapping("/me/addresses")
