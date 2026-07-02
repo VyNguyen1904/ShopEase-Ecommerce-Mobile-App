@@ -19,6 +19,7 @@ import '../../features/checkout/screens/checkout_screen.dart';
 import '../../features/orders/screens/order_detail_screen.dart';
 import '../../features/orders/screens/review_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
+import '../../features/profile/screens/notification_settings_screen.dart';
 import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/chat/screens/chat_room_screen.dart';
 import '../../features/product/screens/product_detail_screen.dart';
@@ -243,6 +244,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.notificationSettings,
+      builder: (context, state) => const NotificationSettingsScreen(),
     ),
     GoRoute(
       path: AppRoutes.myReviews,

@@ -106,6 +106,45 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     super.dispose();
   }
 
+  Future<void> _updateFromMapAddress(String fullAddress) async {
+    _streetController.text = fullAddress;
+    
+    // Auto detect province
+    dynamic matchedProvince;
+    for (var p in _provinces) {
+      if (fullAddress.contains(p['name'])) {
+        matchedProvince = p;
+        break;
+      }
+    }
+    
+    if (matchedProvince != null) {
+      setState(() {
+        _selectedProvince = matchedProvince;
+        _selectedDistrict = null;
+        _districts = [];
+      });
+      
+      try {
+        final response = await Dio().get('https://provinces.open-api.vn/api/p/${matchedProvince['code']}?depth=2');
+        if (mounted) {
+          setState(() {
+            _districts = response.data['districts'];
+            // Auto detect district
+            for (var d in _districts) {
+              if (fullAddress.contains(d['name'])) {
+                _selectedDistrict = d;
+                break;
+              }
+            }
+          });
+        }
+      } catch (e) {
+        debugPrint('Error fetching districts for map: $e');
+      }
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -265,10 +304,10 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                       setState(() {
                         _latitude = result['latitude'];
                         _longitude = result['longitude'];
-                        if (result['address'] != null) {
-                           _streetController.text = result['address'];
-                        }
                       });
+                      if (result['address'] != null) {
+                        await _updateFromMapAddress(result['address']);
+                      }
                     }
                   },
                   icon: const Icon(Icons.map, color: AppColors.primary),

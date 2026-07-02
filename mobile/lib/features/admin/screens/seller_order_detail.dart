@@ -6,6 +6,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/providers/notification_provider.dart';
+import '../../notifications/models/notification_model.dart';
 
 class SellerOrderDetail extends ConsumerStatefulWidget {
   final String orderId;
@@ -634,6 +636,23 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
             await action();
             ref.invalidate(orderDetailProvider(orderId));
             ref.invalidate(sellerOrdersProvider);
+            // Instead of invalidating which might just reload empty list from backend, we add locally for immediate UI feedback.
+            ref.read(notificationListProvider.notifier).addLocalNotification(
+              NotificationModel(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: 'Cập nhật đơn hàng',
+                message: 'Trạng thái đơn hàng #${orderId.split('-').last.toUpperCase()} đã được cập nhật thành "$label".',
+                type: 'ORDER_UPDATE',
+                isRead: false,
+                createdAt: DateTime.now(),
+              )
+            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Cập nhật trạng thái thành công'),
+                backgroundColor: AppColors.primary,
+              ));
+            }
           } catch (e) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));

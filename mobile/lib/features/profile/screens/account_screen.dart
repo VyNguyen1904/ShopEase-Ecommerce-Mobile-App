@@ -5,6 +5,10 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../widgets/account_section_title.dart';
+import '../widgets/account_menu_group.dart';
+import '../widgets/account_menu_item.dart';
+import '../widgets/account_user_info_card.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -64,7 +68,7 @@ class AccountScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return _UserInfoCard(user: user);
+                return AccountUserInfoCard(user: user);
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) {
@@ -112,82 +116,92 @@ class AccountScreen extends ConsumerWidget {
             const SizedBox(height: 32),
 
             // Account Section
-            _buildSectionTitle(AppStrings.accountSection),
+            const AccountSectionTitle(title: AppStrings.accountSection),
             const SizedBox(height: 12),
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.person_outline,
-                title: AppStrings.personalInfo,
-                onTap: () => context.push(AppRoutes.profileEdit),
-              ),
-              _buildMenuItem(
-                icon: Icons.location_on_outlined,
-               title: AppStrings.addressBook,
-                onTap: () => context.push(AppRoutes.address),
-              ),
-              _buildMenuItem(
-                icon: Icons.lock_outline,
-                title: AppStrings.passwordSecurity,
-              ),
-              _buildMenuItem(
-                icon: Icons.notifications_none,
-                title: AppStrings.notificationSettings,
-              ),
-              _buildMenuItem(
-                icon: Icons.language,
-                title: AppStrings.language,
-                trailingText: AppStrings.vietnamese,
-              ),
-            ]),
+            AccountMenuGroup(
+              children: [
+                AccountMenuItem(
+                  icon: Icons.person_outline,
+                  title: AppStrings.personalInfo,
+                  onTap: () => context.push(AppRoutes.profileEdit),
+                ),
+                AccountMenuItem(
+                  icon: Icons.location_on_outlined,
+                  title: AppStrings.addressBook,
+                  onTap: () => context.push(AppRoutes.address),
+                ),
+                const AccountMenuItem(
+                  icon: Icons.lock_outline,
+                  title: AppStrings.passwordSecurity,
+                ),
+                AccountMenuItem(
+                  icon: Icons.notifications_none,
+                  title: AppStrings.notificationSettings,
+                  onTap: () => context.push(AppRoutes.notificationSettings),
+                ),
+                const AccountMenuItem(
+                  icon: Icons.language,
+                  title: AppStrings.language,
+                  trailingText: AppStrings.vietnamese,
+                ),
+              ],
+            ),
             const SizedBox(height: 28),
 
             // Preferences Section
-            _buildSectionTitle(AppStrings.preferencesSection),
+            const AccountSectionTitle(title: AppStrings.preferencesSection),
             const SizedBox(height: 12),
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.settings_outlined,
-                title: AppStrings.settings,
-                onTap: () => context.push(AppRoutes.settings),
-              ),
-              _buildMenuItem(icon: Icons.feed_outlined, title: AppStrings.aboutUs),
-              _buildMenuItem(
-                icon: Icons.contrast,
-                title: AppStrings.theme,
-                trailingText: AppStrings.lightTheme,
-              ),
-              _buildMenuItem(
-                icon: Icons.assignment_outlined,
-                title: AppStrings.myOrders,
-                onTap: () => context.go(AppRoutes.orders),
-              ),
-              _buildMenuItem(
-                icon: Icons.rate_review_outlined,
-                title: 'Đánh giá của tôi',
-                onTap: () => context.push(AppRoutes.myReviews),
-              ),
-            ]),
+            AccountMenuGroup(
+              children: [
+                AccountMenuItem(
+                  icon: Icons.settings_outlined,
+                  title: AppStrings.settings,
+                  onTap: () => context.push(AppRoutes.settings),
+                ),
+                const AccountMenuItem(
+                  icon: Icons.feed_outlined,
+                  title: AppStrings.aboutUs,
+                ),
+                const AccountMenuItem(
+                  icon: Icons.contrast,
+                  title: AppStrings.theme,
+                  trailingText: AppStrings.lightTheme,
+                ),
+                AccountMenuItem(
+                  icon: Icons.assignment_outlined,
+                  title: AppStrings.myOrders,
+                  onTap: () => context.go(AppRoutes.orders),
+                ),
+                AccountMenuItem(
+                  icon: Icons.rate_review_outlined,
+                  title: 'Đánh giá của tôi',
+                  onTap: () => context.push(AppRoutes.myReviews),
+                ),
+              ],
+            ),
             const SizedBox(height: 28),
 
             // Support Section
-            _buildSectionTitle(AppStrings.supportSection),
+            const AccountSectionTitle(title: AppStrings.supportSection),
             const SizedBox(height: 12),
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.help_outline,
-                title: AppStrings.helpCenter,
-              ),
-              _buildMenuItem(
-                icon: Icons.logout_outlined,
-                title: AppStrings.logout,
-                isDestructive: true,
-                onTap: () async {
-                  await ref.read(authServiceProvider).logout();
-                  ref.invalidate(userProfileProvider);
-                  if (context.mounted) context.go(AppRoutes.splash);
-                },
-              ),
-            ]),
+            AccountMenuGroup(
+              children: [
+                const AccountMenuItem(
+                  icon: Icons.help_outline,
+                  title: AppStrings.helpCenter,
+                ),
+                AccountMenuItem(
+                  icon: Icons.logout_outlined,
+                  title: AppStrings.logout,
+                  isDestructive: true,
+                  onTap: () async {
+                    await ref.read(authServiceProvider).logout();
+                    ref.invalidate(userProfileProvider);
+                    if (context.mounted) context.go(AppRoutes.splash);
+                  },
+                ),
+              ],
+            ),
 
             // Padding to account for the floating bottom nav bar
             const SizedBox(height: 120),
@@ -197,153 +211,4 @@ class AccountScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textGrey,
-      ),
-    );
-  }
-
-  Widget _buildMenuGroup(List<Widget> children) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: Column(
-          children: children.asMap().entries.map((entry) {
-            final int index = entry.key;
-            final Widget item = entry.value;
-            if (index != children.length - 1) {
-              return Column(
-                children: [
-                  item,
-                  const Divider(
-                    height: 1,
-                    indent: 56,
-                    endIndent: 20,
-                    color: AppColors.border,
-                  ),
-                ],
-              );
-            }
-            return item;
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String title,
-    String? trailingText,
-    bool isDestructive = false,
-    VoidCallback? onTap,
-  }) {
-    return ListTile(
-      onTap: onTap ?? () {},
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: Icon(
-        icon,
-        color: isDestructive ? AppColors.accent : AppColors.textDark,
-        size: 24,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: isDestructive ? AppColors.accent : AppColors.textDark,
-        ),
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (trailingText != null) ...[
-            Text(
-              trailingText,
-              style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
-            ),
-            const SizedBox(width: 8),
-          ],
-          const Icon(Icons.chevron_right, color: AppColors.textLight, size: 20),
-        ],
-      ),
-    );
-  }
-}
-
-class _UserInfoCard extends StatelessWidget {
-  final dynamic user;
-
-  const _UserInfoCard({required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 32,
-            backgroundImage: user.avatar != null && user.avatar!.isNotEmpty
-                ? NetworkImage(user.avatar!)
-                : const NetworkImage(
-                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
-                  ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.fullName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  user.email,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textGrey.withValues(alpha: 0.8),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

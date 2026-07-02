@@ -8,6 +8,7 @@ import com.shopease.common.domain.PaymentStatus;
 import com.shopease.common.event.DomainEvents.*;
 import com.shopease.order.client.ProductCatalogClient;
 import com.shopease.order.dto.CreateOrderRequest;
+import com.shopease.order.dto.NotificationEvent;
 import com.shopease.order.dto.OrderResponse;
 import com.shopease.order.dto.ReviewEligibilityResponse;
 import com.shopease.order.model.Order;
@@ -130,6 +131,10 @@ public class OrderService {
             }
         }
         order.markDelivered();
+
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Giao hàng thành công", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đã được giao thành công.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+
         return OrderResponse.from(orders.save(order));
     }
 
@@ -138,6 +143,10 @@ public class OrderService {
         Order order = requireOrder(id);
         requireSellerOrAdmin(order, userId, userRole, "confirm");
         order.markConfirmed();
+        
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đã được xác nhận", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đã được người bán xác nhận.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+        
         return OrderResponse.from(orders.save(order));
     }
 
@@ -146,6 +155,10 @@ public class OrderService {
         Order order = requireOrder(id);
         requireSellerOrAdmin(order, userId, userRole, "pack");
         order.markPacked();
+
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đang được chuẩn bị", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đang được đóng gói.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+
         return OrderResponse.from(orders.save(order));
     }
 
@@ -154,6 +167,10 @@ public class OrderService {
         Order order = requireOrder(id);
         requireSellerOrAdmin(order, userId, userRole, "ship");
         order.markShipped();
+
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đang giao", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đã được giao cho đơn vị vận chuyển.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+
         return OrderResponse.from(orders.save(order));
     }
 

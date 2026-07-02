@@ -49,7 +49,15 @@ spring:
         - id: chat-service-ws
           uri: ${CHAT_SERVICE_WS_URI:ws://localhost:8090}
           predicates:
-            - Path=/ws/**
+            - Path=/ws/chats/**
+        - id: notification-service
+          uri: ${NOTIFICATION_SERVICE_URI:http://localhost:8091}
+          predicates:
+            - Path=/api/notifications/**
+        - id: notification-service-ws
+          uri: ${NOTIFICATION_SERVICE_WS_URI:ws://localhost:8091}
+          predicates:
+            - Path=/ws/notifications/**
         - id: openapi-user-service
           uri: ${USER_SERVICE_URI:http://localhost:8081}
           predicates:

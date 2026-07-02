@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../models/notification_item.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/notification_provider.dart';
+import '../models/notification_model.dart';
+import 'package:intl/intl.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   String _activeTab = AppStrings.all;
 
   final List<String> _tabs = [
@@ -24,43 +27,50 @@ class _NotificationScreenState extends State<NotificationScreen> {
     AppStrings.system,
   ];
 
-  NotificationType? _getTypeFromTab(String tab) {
+  String? _getTypeFromTab(String tab) {
     switch (tab) {
       case AppStrings.orders:
-        return NotificationType.order;
+        return 'ORDER_UPDATE';
       case AppStrings.promotions:
-        return NotificationType.promotion;
+        return 'PROMOTION';
       case AppStrings.vouchers:
-        return NotificationType.voucher;
+        return 'VOUCHER';
       case AppStrings.messages:
-        return NotificationType.message;
+        return 'MESSAGE';
       case AppStrings.system:
-        return NotificationType.system;
+        return 'SYSTEM';
       default:
         return null;
     }
   }
 
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+    if (difference.inDays == 0) {
+      return DateFormat('HH:mm').format(time);
+    } else if (difference.inDays == 1) {
+      return 'Hôm qua';
+    } else {
+      return DateFormat('dd/MM/yyyy').format(time);
+    }
+  }
+
+  String _getGroup(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+    if (difference.inDays == 0 && now.day == time.day) {
+      return AppStrings.today;
+    } else if (difference.inDays <= 1 && (now.day - time.day).abs() == 1) {
+      return AppStrings.yesterday;
+    } else {
+      return AppStrings.earlier;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filterType = _getTypeFromTab(_activeTab);
-    final filteredNotifications = filterType == null
-        ? mockNotifications
-        : mockNotifications.where((n) => n.type == filterType).toList();
-
-    final Map<String, List<NotificationItem>> groupedNotifications = {};
-    for (var n in filteredNotifications) {
-      if (!groupedNotifications.containsKey(n.group)) {
-        groupedNotifications[n.group] = [];
-      }
-      groupedNotifications[n.group]!.add(n);
-    }
-
-    final sortedGroups = [
-      AppStrings.today,
-      AppStrings.yesterday,
-      AppStrings.earlier,
-    ].where((g) => groupedNotifications.containsKey(g)).toList();
+    final notificationsAsync = ref.watch(notificationListProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -78,8 +88,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppColors.textDark, size: 24),
-            onPressed: () {},
+            icon: const Icon(Icons.done_all, color: AppColors.textDark, size: 24),
+            onPressed: () {
+              ref.read(notificationListProvider.notifier).markAllAsRead();
+            },
+            tooltip: 'Đánh dấu đã đọc tất cả',
           ),
           const SizedBox(width: 8),
         ],
@@ -87,191 +100,169 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Horizontal tabs
+          // Horizontal tabs
           Container(
             height: 48,
-            padding: const EdgeInsets.only(left: 16),
-            child: ListView.builder(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AppColors.border)),
+            ),
+            child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              itemCount: _tabs.length,
-              itemBuilder: (context, index) {
-                final tab = _tabs[index];
-                final isSelected = _activeTab == tab;
-                int? badgeCount;
-                if (tab == AppStrings.all) {
-                  badgeCount = mockNotifications
-                      .where((n) => n.isUnread)
-                      .length;
-                }
-
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _activeTab = tab;
-                    });
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: isSelected
-                              ? AppColors.primary
-                              : Colors.transparent,
-                          width: 2.5,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: MediaQuery.of(context).size.width,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: _tabs.map((tab) {
+                    final isSelected = _activeTab == tab;
+                    return GestureDetector(
+                      onTap: () => setState(() => _activeTab = tab),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: isSelected ? AppColors.primary : Colors.transparent,
+                              width: 2.5,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
+                        child: Text(
                           tab,
                           style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.w500,
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textGrey,
+                            fontSize: 14,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            color: isSelected ? AppColors.primary : AppColors.textGrey,
                           ),
                         ),
-                        if (badgeCount != null && badgeCount > 0) ...[
-                          const SizedBox(width: 4),
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: AppColors.alertRed,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '$badgeCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                );
-              },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ),
-          const Divider(height: 1, color: AppColors.border),
 
-          // 2. Notifications list
+          // Notifications list
           Expanded(
-            child: filteredNotifications.isEmpty
-                ? const Center(
+            child: notificationsAsync.when(
+              data: (notifications) {
+                final filterType = _getTypeFromTab(_activeTab);
+                final filteredNotifications = filterType == null
+                    ? notifications
+                    : notifications.where((n) => n.type == filterType).toList();
+
+                if (filteredNotifications.isEmpty) {
+                  return const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.notifications_none,
-                          size: 64,
-                          color: AppColors.textLight,
-                        ),
+                        Icon(Icons.notifications_none, size: 64, color: AppColors.textLight),
                         SizedBox(height: 12),
                         Text(
                           AppStrings.noNotifications,
-                          style: TextStyle(
-                            color: AppColors.textGrey,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: AppColors.textGrey, fontSize: 16),
                         ),
                       ],
                     ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    itemCount: sortedGroups.length,
-                    itemBuilder: (context, groupIndex) {
-                      final groupName = sortedGroups[groupIndex];
-                      final items = groupedNotifications[groupName]!;
+                  );
+                }
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 12.0,
-                              horizontal: 4.0,
-                            ),
-                            child: Text(
-                              groupName,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.textDark,
-                              ),
+                final Map<String, List<NotificationModel>> groupedNotifications = {};
+                for (var n in filteredNotifications) {
+                  final group = _getGroup(n.createdAt);
+                  if (!groupedNotifications.containsKey(group)) {
+                    groupedNotifications[group] = [];
+                  }
+                  groupedNotifications[group]!.add(n);
+                }
+
+                final sortedGroups = [AppStrings.today, AppStrings.yesterday, AppStrings.earlier]
+                    .where((g) => groupedNotifications.containsKey(g))
+                    .toList();
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  itemCount: sortedGroups.length,
+                  itemBuilder: (context, groupIndex) {
+                    final groupName = sortedGroups[groupIndex];
+                    final items = groupedNotifications[groupName]!;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+                          child: Text(
+                            groupName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
                             ),
                           ),
-                          ...items.map(
-                            (item) => _buildNotificationTile(context, item),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                        ),
+                        ...items.map((item) => _buildNotificationTile(context, item)),
+                      ],
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Lỗi: $err')),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNotificationTile(BuildContext context, NotificationItem item) {
+  Widget _buildNotificationTile(BuildContext context, NotificationModel item) {
     Color iconBgColor;
     Color iconColor;
     IconData icon;
 
     switch (item.type) {
-      case NotificationType.order:
+      case 'ORDER_UPDATE':
         iconBgColor = const Color(0xFFE6F5F6);
         iconColor = AppColors.primary;
-        icon = item.title.contains('vận chuyển')
+        icon = item.title.toLowerCase().contains('giao')
             ? Icons.local_shipping_outlined
             : Icons.inventory_2_outlined;
         break;
-      case NotificationType.promotion:
+      case 'PROMOTION':
         iconBgColor = const Color(0xFFFFECE5);
         iconColor = AppColors.accent;
         icon = Icons.local_offer_outlined;
         break;
-      case NotificationType.voucher:
+      case 'VOUCHER':
         iconBgColor = const Color(0xFFFFF7ED);
         iconColor = const Color(0xFFD97706);
         icon = Icons.confirmation_number_outlined;
         break;
-      case NotificationType.message:
+      case 'MESSAGE':
         iconBgColor = const Color(0xFFF5F3FF);
         iconColor = const Color(0xFF7C3AED);
         icon = Icons.chat_bubble_outline;
         break;
-      case NotificationType.system:
+      default:
         iconBgColor = const Color(0xFFECFEFF);
         iconColor = const Color(0xFF0891B2);
-        icon = item.title.contains('mừng')
-            ? Icons.celebration_outlined
-            : Icons.notifications_active_outlined;
+        icon = Icons.notifications_active_outlined;
         break;
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: item.isRead ? Colors.white : const Color(0xFFF0FDF4),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.01),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -281,7 +272,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            if (item.type == NotificationType.message) {
+            if (!item.isRead) {
+              ref.read(notificationListProvider.notifier).markAsRead(item.id);
+            }
+            if (item.type == 'MESSAGE') {
               context.push(AppRoutes.chats);
             }
           },
@@ -313,15 +307,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               item.title,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: item.isUnread
-                                    ? FontWeight.bold
-                                    : FontWeight.w600,
+                                fontWeight: item.isRead ? FontWeight.w600 : FontWeight.bold,
                                 color: AppColors.textDark,
                               ),
                             ),
                           ),
                           Text(
-                            item.time,
+                            _formatTime(item.createdAt),
                             style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textLight,
@@ -331,12 +323,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        item.content,
+                        item.message,
                         style: TextStyle(
                           fontSize: 13,
-                          color: item.isUnread
-                              ? AppColors.textDark
-                              : AppColors.textGrey,
+                          color: item.isRead ? AppColors.textGrey : AppColors.textDark,
                           height: 1.3,
                         ),
                       ),
@@ -347,19 +337,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 Container(
                   height: 48,
                   alignment: Alignment.center,
-                  child: item.isUnread
-                      ? Container(
+                  child: item.isRead
+                      ? const Icon(Icons.chevron_right, color: AppColors.textLight, size: 18)
+                      : Container(
                           width: 8,
                           height: 8,
                           decoration: const BoxDecoration(
                             color: AppColors.alertRed,
                             shape: BoxShape.circle,
                           ),
-                        )
-                      : const Icon(
-                          Icons.chevron_right,
-                          color: AppColors.textLight,
-                          size: 18,
                         ),
                 ),
               ],

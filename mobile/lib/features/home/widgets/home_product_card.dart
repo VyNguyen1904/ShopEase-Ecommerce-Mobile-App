@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/models/product.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/review_provider.dart';
 
 import '../../product/widgets/product_variant_sheet.dart';
 
@@ -26,6 +27,18 @@ class HomeProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final heroTag = 'hero_${heroPrefix}_${product.id}';
+    final reviewsAsync = ref.watch(productReviewsProvider(product.id));
+    
+    double displayRating = product.rating;
+    int displayReviewCount = product.reviewsCount;
+    
+    reviewsAsync.whenData((reviews) {
+      if (reviews.isNotEmpty) {
+        displayReviewCount = reviews.length;
+        displayRating = reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+      }
+    });
+
     return GestureDetector(
       onTap: () {
         ref.read(selectedProductProvider.notifier).state = product;
@@ -144,7 +157,7 @@ class HomeProductCard extends StatelessWidget {
                             const Icon(Icons.star, color: Colors.amber, size: 14),
                             const SizedBox(width: 4),
                             Text(
-                              '${product.rating}',
+                              displayRating.toStringAsFixed(1),
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -153,7 +166,7 @@ class HomeProductCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '(${product.reviewsCount})',
+                              '($displayReviewCount)',
                               style: const TextStyle(
                                 fontSize: 11,
                                 color: AppColors.textGrey,

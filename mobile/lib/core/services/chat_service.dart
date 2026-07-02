@@ -74,11 +74,11 @@ class ApiChatService {
   Function(dynamic)? onMessageReceived;
 
   String get _wsUrl {
-    if (kIsWeb) return 'ws://127.0.0.1:8090/ws';
+    if (kIsWeb) return 'ws://127.0.0.1:8090/ws/chats';
     try {
-      if (Platform.isAndroid) return 'ws://10.0.2.2:8090/ws';
+      if (Platform.isAndroid) return 'ws://10.0.2.2:8090/ws/chats';
     } catch (_) {}
-    return 'ws://127.0.0.1:8090/ws';
+    return 'ws://127.0.0.1:8090/ws/chats';
   }
 
   Function(String)? onTypingIndicatorReceived;

@@ -22,6 +22,7 @@ abstract class AppRoutes {
   static const String address = '/address';
   static const String myReviews = '/my-reviews';
   static const String settings = '/settings';
+  static const String notificationSettings = '/notification-settings';
   static const String account = '/account';
   static const String profileEdit = '/profile-edit';
   static const String chats = '/chats';

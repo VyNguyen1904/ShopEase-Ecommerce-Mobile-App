@@ -1,4 +1,4 @@
-package com.shopease.chat.config;
+package com.shopease.notification.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -9,7 +9,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -18,13 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Raw websocket for Flutter
-        registry.addEndpoint("/ws/chats")
-                .setAllowedOriginPatterns("*");
-        
-        // SockJS fallback for web browsers if needed
-        registry.addEndpoint("/ws-sockjs/chats")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+        registry.addEndpoint("/ws/notifications").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws/notifications").setAllowedOriginPatterns("*"); // For raw websocket clients
     }
 }
