@@ -193,6 +193,8 @@ class AppStrings {
   static const String provinceHint = "Chọn Tỉnh/Thành phố";
   static const String district = "Quận/Huyện";
   static const String districtHint = "Chọn Quận/Huyện";
+  static const String ward = "Phường/Xã";
+  static const String wardHint = "Chọn Phường/Xã";
   static const String streetAddress = "Tên đường, Tòa nhà, Số nhà";
   static const String streetAddressHint = "Nhập địa chỉ chi tiết";
   static const String setAsDefault = "Đặt làm địa chỉ mặc định";

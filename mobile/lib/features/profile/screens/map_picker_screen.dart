@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -8,8 +9,9 @@ import '../../../../core/constants/app_strings.dart';
 
 class MapPickerScreen extends StatefulWidget {
   final LatLng? initialLocation;
+  final String? searchQuery;
 
-  const MapPickerScreen({super.key, this.initialLocation});
+  const MapPickerScreen({super.key, this.initialLocation, this.searchQuery});
 
   @override
   State<MapPickerScreen> createState() => _MapPickerScreenState();
@@ -19,9 +21,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   late final MapController _mapController;
   LatLng _currentCenter = const LatLng(10.762622, 106.660172); // Default to HCM City
   String _currentAddress = "Đang tải vị trí...";
+  dynamic _rawAddress; // Store the raw address data
   bool _isLoadingAddress = false;
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> _searchResults = [];
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -30,9 +34,19 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     if (widget.initialLocation != null) {
       _currentCenter = widget.initialLocation!;
       _getAddressFromLatLng(_currentCenter);
+    } else if (widget.searchQuery != null && widget.searchQuery!.trim().isNotEmpty) {
+      _searchController.text = widget.searchQuery!;
+      _searchAddress(widget.searchQuery!);
     } else {
       _getCurrentLocation();
     }
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -72,6 +86,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       // Use Nominatim API for reverse geocoding
       final response = await Dio().get(
         'https://nominatim.openstreetmap.org/reverse',
+        options: Options(headers: {'User-Agent': 'ShopEaseApp/1.0'}),
         queryParameters: {
           'format': 'json',
           'lat': position.latitude,
@@ -81,13 +96,19 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         },
       );
       if (response.data != null && response.data['display_name'] != null) {
+        String dn = response.data['display_name'];
+        dn = dn.replaceAll('Thành phố Thủ Đức, Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh');
+        response.data['display_name'] = dn;
+        
         setState(() {
-          _currentAddress = response.data['display_name'];
+          _currentAddress = dn;
+          _rawAddress = response.data;
         });
       }
     } catch (e) {
       setState(() {
         _currentAddress = "Không thể lấy địa chỉ";
+        _rawAddress = null;
       });
     } finally {
       setState(() {
@@ -101,12 +122,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     try {
       final response = await Dio().get(
         'https://nominatim.openstreetmap.org/search',
+        options: Options(headers: {'User-Agent': 'ShopEaseApp/1.0'}),
         queryParameters: {
           'format': 'json',
           'q': query,
           'limit': 5,
           'accept-language': 'vi',
           'countrycodes': 'vn',
+          'addressdetails': 1,
         },
       );
       if (response.data != null) {
@@ -125,11 +148,16 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     final lon = double.parse(result['lon']);
     final newLocation = LatLng(lat, lon);
     
+    String dn = result['display_name'];
+    dn = dn.replaceAll('Thành phố Thủ Đức, Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh');
+    result['display_name'] = dn;
+    
     setState(() {
       _searchResults = [];
-      _searchController.text = result['display_name'];
+      _searchController.text = dn;
       _currentCenter = newLocation;
-      _currentAddress = result['display_name'];
+      _currentAddress = dn;
+      _rawAddress = result;
     });
     
     _mapController.move(newLocation, 16.0);
@@ -213,11 +241,17 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 15),
                     ),
                     onChanged: (val) {
-                      if (val.length > 3) {
-                        _searchAddress(val);
-                      }
+                      if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+                      _debounceTimer = Timer(const Duration(milliseconds: 800), () {
+                        if (val.length > 3) {
+                          _searchAddress(val);
+                        }
+                      });
                     },
-                    onSubmitted: _searchAddress,
+                    onSubmitted: (val) {
+                      _debounceTimer?.cancel();
+                      _searchAddress(val);
+                    },
                   ),
                 ),
                 if (_searchResults.isNotEmpty)
@@ -306,6 +340,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           'latitude': _currentCenter.latitude,
                           'longitude': _currentCenter.longitude,
                           'address': _currentAddress,
+                          'raw': _rawAddress,
                         });
                       },
                       child: const Text('Xác nhận vị trí', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),

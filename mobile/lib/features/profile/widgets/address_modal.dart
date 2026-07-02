@@ -6,6 +6,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/address_model.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
 import '../screens/map_picker_screen.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
@@ -29,9 +30,9 @@ class _AddressModalState extends ConsumerState<AddressModal> {
   double? _longitude;
 
   List<dynamic> _provinces = [];
-  List<dynamic> _districts = [];
+  List<dynamic> _wards = [];
   dynamic _selectedProvince;
-  dynamic _selectedDistrict;
+  dynamic _selectedWard;
 
   @override
   void initState() {
@@ -61,7 +62,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 (p) => addrCity.contains(p['name']),
               );
               if (_selectedProvince != null) {
-                _fetchDistricts(_selectedProvince['code']);
+                _fetchWardsByProvince(_selectedProvince['code']);
               }
             } catch (e) {
               // Not found
@@ -74,18 +75,26 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     }
   }
 
-  Future<void> _fetchDistricts(int provinceCode) async {
+  Future<void> _fetchWardsByProvince(int provinceCode) async {
     try {
-      final response = await Dio().get('https://provinces.open-api.vn/api/p/$provinceCode?depth=2');
+      final response = await Dio().get('https://provinces.open-api.vn/api/p/$provinceCode?depth=3');
       if (mounted) {
+        List<dynamic> allWards = [];
+        for (var d in response.data['districts']) {
+          for (var w in d['wards']) {
+            w['displayName'] = '${w['name']} (${d['name']})';
+            w['district_name'] = d['name'];
+            allWards.add(w);
+          }
+        }
         setState(() {
-          _districts = response.data['districts'];
-          // Try to select initial district if editing
-          final addrDistrict = widget.address?.address2;
-          if (addrDistrict != null && addrDistrict.isNotEmpty) {
+          _wards = allWards;
+          // Try to select initial ward if editing
+          final addrStreet = widget.address?.address1;
+          if (addrStreet != null && addrStreet.isNotEmpty) {
             try {
-              _selectedDistrict = _districts.firstWhere(
-                (d) => addrDistrict.contains(d['name']),
+              _selectedWard = _wards.firstWhere(
+                (w) => addrStreet.contains(w['name']),
               );
             } catch (e) {
               // Not found
@@ -94,7 +103,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         });
       }
     } catch (e) {
-      debugPrint('Error fetching districts: $e');
+      debugPrint('Error fetching wards: $e');
     }
   }
 
@@ -115,8 +124,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
       id: widget.address?.id,
       name: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
-      address1: _streetController.text.trim(),
-      address2: '${_selectedDistrict?['name'] ?? ''}, ${_selectedProvince?['name'] ?? ''}',
+      address1: '${_streetController.text.trim()}${_selectedWard != null ? ', ${_selectedWard['name']}' : ''}',
+      address2: '${_selectedWard != null ? _selectedWard['district_name'] : ''}, ${_selectedProvince?['name'] ?? ''}',
       isDefault: _isDefault,
       latitude: _latitude,
       longitude: _longitude,
@@ -216,27 +225,27 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 onChanged: (val) {
                   setState(() {
                     _selectedProvince = val;
-                    _selectedDistrict = null;
-                    _districts = [];
+                    _selectedWard = null;
+                    _wards = [];
                   });
                   if (val != null) {
-                    _fetchDistricts(val['code']);
+                    _fetchWardsByProvince(val['code']);
                   }
                 },
                 validator: (v) => v == null ? 'Vui lòng chọn Tỉnh/Thành' : null,
               ),
               const SizedBox(height: 16),
               _buildDropdown(
-                label: AppStrings.district,
-                hint: AppStrings.districtHint,
-                value: _selectedDistrict,
-                items: _districts,
+                label: AppStrings.ward,
+                hint: AppStrings.wardHint,
+                value: _selectedWard,
+                items: _wards,
                 onChanged: (val) {
                   setState(() {
-                    _selectedDistrict = val;
+                    _selectedWard = val;
                   });
                 },
-                validator: (v) => v == null ? 'Vui lòng chọn Quận/Huyện' : null,
+                validator: (v) => v == null ? 'Vui lòng chọn Phường/Xã' : null,
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -246,37 +255,197 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
-              // Map Picker Button
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    // Navigate to Map Picker
-                    final result = await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MapPickerScreen(
-                          initialLocation: _latitude != null && _longitude != null 
-                            ? LatLng(_latitude!, _longitude!) 
-                            : null,
+              // Embedded Map Thumbnail
+              GestureDetector(
+                onTap: () async {
+                  // Navigate to Map Picker
+                  String? query;
+                  if (_selectedProvince != null && _streetController.text.isNotEmpty) {
+                    final districtPart = _selectedWard != null ? '${_selectedWard['district_name']}, ' : '';
+                    final wardPart = _selectedWard != null ? '${_selectedWard['name']}, ' : '';
+                    query = '${_streetController.text}, $wardPart$districtPart${_selectedProvince['name']}';
+                  }
+                  
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => MapPickerScreen(
+                        initialLocation: _latitude != null && _longitude != null 
+                          ? LatLng(_latitude!, _longitude!) 
+                          : null,
+                        searchQuery: query,
+                      ),
+                    )
+                  );
+                  if (result != null) {
+                    setState(() {
+                      _latitude = result['latitude'];
+                      _longitude = result['longitude'];
+                      if (result['raw'] != null && result['raw']['address'] != null) {
+                         final addr = result['raw']['address'] ?? {};
+                         final displayName = (result['raw']['display_name']?.toString() ?? '').toLowerCase();
+                         
+                         // Fix Province Mapping (Robust display_name scanner)
+                         dynamic matchedProvince;
+                         final displayNameParts = displayName.split(',').map((e) => e.trim()).toList();
+                         
+                         // First try exact match on parts
+                         for (var p in _provinces) {
+                            final pName = p['name'].toString().toLowerCase();
+                            final pShort = pName.replaceFirst(RegExp(r'^(thành phố|tỉnh)\s+'), '').trim();
+                            if (displayNameParts.contains(pName) || displayNameParts.contains(pShort)) {
+                               matchedProvince = p;
+                               break;
+                            }
+                         }
+                         
+                         // Fallback to contains on the tail of display_name
+                         if (matchedProvince == null) {
+                             final tail = displayNameParts.reversed.take(4).join(', ');
+                             for (var p in _provinces) {
+                                final pName = p['name'].toString().toLowerCase();
+                                final pShort = pName.replaceFirst(RegExp(r'^(thành phố|tỉnh)\s+'), '').trim();
+                                if (tail.contains(pName) || tail.contains(pShort)) {
+                                   matchedProvince = p;
+                                   break;
+                                }
+                             }
+                         }
+
+                         if (matchedProvince != null) {
+                            if (_selectedProvince != matchedProvince) {
+                                _selectedWard = null;
+                                _wards = [];
+                            }
+                            _selectedProvince = matchedProvince;
+                            
+                            _fetchWardsByProvince(_selectedProvince['code']).then((_) {
+                                if (mounted) {
+                                    dynamic matchedWard;
+                                    String districtRaw = (addr['city_district'] ?? addr['county'] ?? addr['town'] ?? '').toString().toLowerCase();
+                                    
+                                    for (var w in _wards) {
+                                        final wName = w['name'].toString().toLowerCase();
+                                        final wDistrict = w['district_name'].toString().toLowerCase();
+                                        
+                                        if (displayName.contains(wName)) {
+                                            if (districtRaw.isNotEmpty && (districtRaw.contains(wDistrict) || wDistrict.contains(districtRaw))) {
+                                                matchedWard = w;
+                                                break;
+                                            } else if (displayName.contains(wDistrict)) {
+                                                matchedWard = w;
+                                                break;
+                                            } else if (matchedWard == null) {
+                                                matchedWard = w; // Store first match as fallback
+                                            }
+                                        }
+                                    }
+                                    // Fallback to addr fields
+                                    if (matchedWard == null) {
+                                        final fallbackW = (addr['suburb'] ?? addr['village'] ?? addr['quarter'] ?? '').toString().toLowerCase();
+                                        if (fallbackW.isNotEmpty) {
+                                            try {
+                                                matchedWard = _wards.firstWhere((w) => fallbackW.contains(w['name'].toString().toLowerCase()) || w['name'].toString().toLowerCase().contains(fallbackW));
+                                            } catch (e) {}
+                                        }
+                                    }
+                                    // If STILL not found, use Map's ward name directly (Create custom Ward)
+                                    if (matchedWard == null) {
+                                        String customWard = (addr['suburb'] ?? addr['village'] ?? addr['quarter'] ?? '').toString();
+                                        if (customWard.isEmpty) {
+                                            final RegExp wardRegExp = RegExp(r'(Phường|Xã|Thị trấn)\s+[^,]+', caseSensitive: false);
+                                            final match = wardRegExp.firstMatch(result['raw']['display_name'] ?? '');
+                                            if (match != null) { customWard = match.group(0)!; }
+                                        }
+                                        if (customWard.isNotEmpty) {
+                                            customWard = customWard.split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '').join(' ');
+                                            matchedWard = {
+                                                'name': customWard,
+                                                'displayName': customWard,
+                                                'district_name': '',
+                                                'code': -1
+                                            };
+                                            _wards.insert(0, matchedWard); // Add to top of list
+                                        }
+                                    }
+
+                                    setState(() {
+                                        _selectedWard = matchedWard;
+                                    });
+                                }
+                            });
+                         }
+                         
+                         String street = addr['road'] ?? '';
+                         if (addr['house_number'] != null) street = '${addr['house_number']} $street';
+                         _streetController.text = street;
+                      } else if (result['address'] != null) {
+                         _streetController.text = result['address'];
+                      }
+                    });
+                  }
+                },
+                child: Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: Stack(
+                    children: [
+                      AbsorbPointer( // Prevent scrolling map inside scrollview
+                        child: FlutterMap(
+                          options: MapOptions(
+                            initialCenter: _latitude != null && _longitude != null 
+                              ? LatLng(_latitude!, _longitude!) 
+                              : const LatLng(10.762622, 106.660172), // Default HCM
+                            initialZoom: 15.0,
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.shopease.app',
+                            ),
+                            if (_latitude != null && _longitude != null)
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    point: LatLng(_latitude!, _longitude!),
+                                    width: 40,
+                                    height: 40,
+                                    child: const Icon(Icons.location_on, color: AppColors.primary, size: 40),
+                                  )
+                                ],
+                              )
+                          ],
+                        ),
+                      ),
+                      // Overlay hint
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.touch_app, size: 16, color: AppColors.primary),
+                              const SizedBox(width: 4),
+                              Text(
+                                _latitude != null ? 'Chạm để sửa vị trí' : 'Chạm để ghim vị trí',
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary),
+                              ),
+                            ],
+                          ),
                         ),
                       )
-                    );
-                    if (result != null) {
-                      setState(() {
-                        _latitude = result['latitude'];
-                        _longitude = result['longitude'];
-                        if (result['address'] != null) {
-                           _streetController.text = result['address'];
-                        }
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.map, color: AppColors.primary),
-                  label: Text(_latitude != null ? 'Đã chọn vị trí trên bản đồ' : 'Ghim vị trí trên Bản đồ (Tùy chọn)', style: const TextStyle(color: AppColors.primary)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primary),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ],
                   ),
                 ),
               ),
@@ -355,6 +524,74 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     );
   }
 
+  Future<void> _showSearchablePicker({
+    required String title,
+    required List<dynamic> items,
+    required void Function(dynamic) onSelected,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        String query = "";
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final filteredItems = items.where((element) {
+              final name = (element['name'] as String).toLowerCase();
+              return name.contains(query.toLowerCase());
+            }).toList();
+
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Container(
+                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    TextField(
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: "Tìm kiếm...",
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                      onChanged: (val) {
+                        setDialogState(() {
+                          query = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: filteredItems.isEmpty
+                          ? const Center(child: Text("Không tìm thấy kết quả"))
+                          : ListView.builder(
+                              itemCount: filteredItems.length,
+                              itemBuilder: (context, index) {
+                                final item = filteredItems[index];
+                                return ListTile(
+                                  title: Text(item['displayName'] ?? item['name']),
+                                  onTap: () {
+                                    onSelected(item);
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildDropdown({
     required String label,
     required String hint,
@@ -372,24 +609,25 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 fontWeight: FontWeight.w600,
                 color: AppColors.textGrey)),
         const SizedBox(height: 4),
-        DropdownButtonFormField<dynamic>(
-          initialValue: value,
-          isExpanded: true,
+        TextFormField(
+          readOnly: true,
+          controller: TextEditingController(text: value != null ? (value['displayName'] ?? value['name']) : ''),
           decoration: InputDecoration(
+            hintText: hint,
             isDense: true,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            suffixIcon: const Icon(Icons.arrow_drop_down),
           ),
-          hint: Text(hint),
-          items: items.map((item) {
-            return DropdownMenuItem<dynamic>(
-              value: item,
-              child: Text(item['name'], style: const TextStyle(fontSize: 14)),
+          onTap: () {
+            if (items.isEmpty) return;
+            _showSearchablePicker(
+              title: label,
+              items: items,
+              onSelected: onChanged,
             );
-          }).toList(),
-          onChanged: onChanged,
-          validator: validator,
+          },
+          validator: (val) => validator?.call(value),
         ),
       ],
     );
