@@ -14,6 +14,7 @@ import '../../../core/providers/payment_provider.dart';
 import '../../../core/models/payment_model.dart';
 import '../../../core/models/address_model.dart';
 import '../widgets/checkout_section_title.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/checkout_address_card.dart';
 import '../widgets/checkout_selected_items.dart';
@@ -193,16 +194,32 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
                 if (mounted) {
                   if (paymentResp.qrPayload != null && paymentResp.qrPayload!.isNotEmpty) {
-                    context.go('/payment', extra: {
-                      'orderId': newOrder.id,
-                      'qrPayload': paymentResp.qrPayload,
-                    });
+                    final payload = paymentResp.qrPayload!;
                     
                     final cartNotifier = ref.read(cartProvider.notifier);
                     for (var item in items) {
                       cartNotifier.removeItem(item.itemId);
                     }
-                    return;
+                    
+                    if (payload.startsWith('http')) {
+                       final uri = Uri.parse(payload);
+                       try {
+                         await launchUrl(uri, mode: LaunchMode.externalApplication);
+                       } catch (e) {
+                         await launchUrl(uri); // Fallback for Web and others
+                       }
+                       if (mounted) {
+                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chuyển hướng đến cổng thanh toán...')));
+                         context.go(AppRoutes.orderDetailPath(newOrder.id));
+                       }
+                       return;
+                    } else {
+                       context.go('/payment', extra: {
+                         'orderId': newOrder.id,
+                         'qrPayload': payload,
+                       });
+                       return;
+                    }
                   }
                 }
               }

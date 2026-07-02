@@ -200,6 +200,11 @@ public class PaymentService {
     private CheckoutPaymentResponse processCheckoutInternal(CheckoutPaymentRequest request) {
         simulateGatewayLatency();
         String method = request.paymentMethod().trim().toUpperCase();
+        
+        if ("VNPAY".equals(method)) {
+            return pendingVnPayResponse(request);
+        }
+        
         if (isQrMethod(method)) {
             return pendingQrResponse(request.orderId().trim());
         }
@@ -224,6 +229,76 @@ public class PaymentService {
     private CheckoutPaymentResponse pendingQrResponse(String orderId) {
         return new CheckoutPaymentResponse(nextTransactionId(), orderId, "PENDING",
                 "QR payment initiated. Waiting for webhook confirmation.", Instant.now(), qrPath(orderId));
+    }
+
+    private CheckoutPaymentResponse pendingVnPayResponse(CheckoutPaymentRequest request) {
+        String vnp_Version = com.shopease.payment.config.VnPayConfig.vnp_Version;
+        String vnp_Command = com.shopease.payment.config.VnPayConfig.vnp_Command;
+        String vnp_OrderInfo = "Thanh toan don hang " + request.orderId();
+        String orderType = "other";
+        String vnp_TxnRef = com.shopease.payment.config.VnPayConfig.vnp_TmnCode + String.valueOf(System.currentTimeMillis());
+        String vnp_IpAddr = "127.0.0.1";
+        String vnp_TmnCode = com.shopease.payment.config.VnPayConfig.vnp_TmnCode;
+
+        long amount = request.amount().longValue() * 100;
+        java.util.Map<String, String> vnp_Params = new java.util.HashMap<>();
+        vnp_Params.put("vnp_Version", vnp_Version);
+        vnp_Params.put("vnp_Command", vnp_Command);
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(amount));
+        vnp_Params.put("vnp_CurrCode", "VND");
+        
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
+        vnp_Params.put("vnp_OrderType", orderType);
+        
+        vnp_Params.put("vnp_Locale", "vn");
+        vnp_Params.put("vnp_ReturnUrl", com.shopease.payment.config.VnPayConfig.vnp_ReturnUrl + "?orderId=" + request.orderId());
+        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+
+        java.util.Calendar cld = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Etc/GMT-7"));
+        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
+        formatter.setTimeZone(java.util.TimeZone.getTimeZone("Etc/GMT-7"));
+        String vnp_CreateDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+        
+        cld.add(java.util.Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        java.util.List<String> fieldNames = new java.util.ArrayList<>(vnp_Params.keySet());
+        java.util.Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        java.util.Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = (String) itr.next();
+            String fieldValue = (String) vnp_Params.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                String encodedFieldName = URLEncoder.encode(fieldName, StandardCharsets.UTF_8).replace("+", "%20");
+                String encodedFieldValue = URLEncoder.encode(fieldValue, StandardCharsets.UTF_8).replace("+", "%20");
+                
+                hashData.append(encodedFieldName);
+                hashData.append('=');
+                hashData.append(encodedFieldValue);
+                
+                query.append(encodedFieldName);
+                query.append('=');
+                query.append(encodedFieldValue);
+                
+                if (itr.hasNext()) {
+                    query.append('&');
+                    hashData.append('&');
+                }
+            }
+        }
+        String queryUrl = query.toString();
+        String vnp_SecureHash = com.shopease.payment.config.VnPayConfig.hmacSHA512(com.shopease.payment.config.VnPayConfig.secretKey, hashData.toString());
+        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        String paymentUrl = com.shopease.payment.config.VnPayConfig.vnp_PayUrl + "?" + queryUrl;
+
+        return new CheckoutPaymentResponse(nextTransactionId(), request.orderId().trim(), "PENDING",
+                "VNPAY payment initiated.", Instant.now(), paymentUrl);
     }
 
     private CheckoutPaymentResponse fromTransaction(PaymentTransaction payment) {
