@@ -6,6 +6,8 @@ class AddressModel {
   final String address2;
   final String label;
   final bool isDefault;
+  final double? latitude;
+  final double? longitude;
 
   AddressModel({
     this.id,
@@ -15,6 +17,8 @@ class AddressModel {
     this.address2 = '',
     this.label = '',
     this.isDefault = false,
+    this.latitude,
+    this.longitude,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,8 @@ class AddressModel {
               : (json['city'] ?? json['district'] ?? '')),
       label: json['label'] ?? '',
       isDefault: json['isDefault'] ?? json['defaultAddress'] ?? json['default'] ?? false,
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
   }
 
@@ -55,6 +61,8 @@ class AddressModel {
       'label': label,
       'isDefault': isDefault,
       'defaultAddress': isDefault,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
     };
   }
 }

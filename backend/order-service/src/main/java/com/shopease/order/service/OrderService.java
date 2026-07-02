@@ -48,7 +48,7 @@ public class OrderService {
 
         Order order = new Order(UUID.randomUUID(), buyerId, OrderStatus.PENDING, PaymentStatus.UNPAID, items, subtotal, shipping,
                 BigDecimal.ZERO, subtotal.add(shipping), paymentMethod, request.shipRecipient(), request.shipPhone(),
-                request.shipStreet(), request.shipDistrict(), request.shipCity(), request.note(), Instant.now());
+                request.shipStreet(), request.shipDistrict(), request.shipCity(), request.shipLatitude(), request.shipLongitude(), request.note(), Instant.now());
         
         Order saved = orders.saveAndFlush(order);
 

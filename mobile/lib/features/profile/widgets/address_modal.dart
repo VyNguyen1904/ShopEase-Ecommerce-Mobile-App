@@ -23,6 +23,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
   
   bool _isDefault = false;
   bool _isLoading = false;
+  double? _latitude;
+  double? _longitude;
 
   List<dynamic> _provinces = [];
   List<dynamic> _districts = [];
@@ -37,6 +39,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     _phoneController = TextEditingController(text: addr?.phone ?? '');
     _streetController = TextEditingController(text: addr?.address1 ?? '');
     _isDefault = addr?.isDefault ?? false;
+    _latitude = addr?.latitude;
+    _longitude = addr?.longitude;
 
     _fetchProvinces();
   }
@@ -112,6 +116,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
       address1: _streetController.text.trim(),
       address2: '${_selectedDistrict?['name'] ?? ''}, ${_selectedProvince?['name'] ?? ''}',
       isDefault: _isDefault,
+      latitude: _latitude,
+      longitude: _longitude,
     );
 
     try {
@@ -236,6 +242,43 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 label: AppStrings.streetAddress,
                 hint: AppStrings.streetAddressHint,
                 validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
+              ),
+              const SizedBox(height: 16),
+              // Map Picker Button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    // Navigate to Map Picker
+                    import 'package:latlong2/latlong.dart';
+                    import './map_picker_screen.dart'; // We'll add imports at the top
+                    final result = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MapPickerScreen(
+                          initialLocation: _latitude != null && _longitude != null 
+                            ? LatLng(_latitude!, _longitude!) 
+                            : null,
+                        ),
+                      )
+                    );
+                    if (result != null) {
+                      setState(() {
+                        _latitude = result['latitude'];
+                        _longitude = result['longitude'];
+                        if (result['address'] != null) {
+                           _streetController.text = result['address'];
+                        }
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.map, color: AppColors.primary),
+                  label: Text(_latitude != null ? 'Đã chọn vị trí trên bản đồ' : 'Ghim vị trí trên Bản đồ (Tùy chọn)', style: const TextStyle(color: AppColors.primary)),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: AppColors.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               SwitchListTile(

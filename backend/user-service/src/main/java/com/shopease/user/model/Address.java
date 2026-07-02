@@ -29,11 +29,17 @@ public class Address {
     @Column(name = "default_address", nullable = false)
     private boolean defaultAddress;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     protected Address() {
     }
 
     public Address(UUID id, String recipientName, String phone, String street, String district, String city,
-                   boolean defaultAddress) {
+                   boolean defaultAddress, Double latitude, Double longitude) {
         this.id = id;
         this.recipientName = recipientName;
         this.phone = phone;
@@ -41,6 +47,8 @@ public class Address {
         this.district = district;
         this.city = city;
         this.defaultAddress = defaultAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public UUID getId() { return id; }
@@ -50,8 +58,10 @@ public class Address {
     public String getDistrict() { return district; }
     public String getCity() { return city; }
     public boolean isDefaultAddress() { return defaultAddress; }
+    public Double getLatitude() { return latitude; }
+    public Double getLongitude() { return longitude; }
 
     public Address withDefault(boolean value) {
-        return new Address(id, recipientName, phone, street, district, city, value);
+        return new Address(id, recipientName, phone, street, district, city, value, latitude, longitude);
     }
 }

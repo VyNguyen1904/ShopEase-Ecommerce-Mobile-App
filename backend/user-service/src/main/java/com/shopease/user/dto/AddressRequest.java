@@ -8,5 +8,7 @@ public record AddressRequest(@NotBlank @Size(max = 160) String recipientName,
                              @NotBlank @Size(max = 255) String street,
                              @NotBlank @Size(max = 120) String district,
                              @NotBlank @Size(max = 120) String city,
-                             boolean defaultAddress) {
+                             boolean defaultAddress,
+                             Double latitude,
+                             Double longitude) {
 }

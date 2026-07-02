@@ -48,6 +48,10 @@ dependencies:
   cached_network_image: ^3.4.1
   carousel_slider: ^5.1.2
   stomp_dart_client: ^3.0.1
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+  geolocator: ^11.0.0
+  geocoding: ^2.1.1
 
 dev_dependencies:
   flutter_test:
