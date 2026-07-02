@@ -5,6 +5,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/address_model.dart';
+import 'package:latlong2/latlong.dart';
+import '../screens/map_picker_screen.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
   final dynamic address; // Pass an address to edit, or null to create
@@ -250,8 +252,6 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 child: OutlinedButton.icon(
                   onPressed: () async {
                     // Navigate to Map Picker
-                    import 'package:latlong2/latlong.dart';
-                    import './map_picker_screen.dart'; // We'll add imports at the top
                     final result = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => MapPickerScreen(
