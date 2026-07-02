@@ -44,9 +44,13 @@ class AddressModel {
     
     if (address2.contains(', ')) {
       final parts = address2.split(', ');
-      districtStr = parts[0];
-      cityStr = parts.length > 1 ? parts.sublist(1).join(', ') : parts[0];
+      districtStr = parts[0].trim();
+      cityStr = parts.length > 1 ? parts.sublist(1).join(', ').trim() : parts[0].trim();
     }
+    
+    // Fallback if backend strictly requires them
+    if (districtStr.isEmpty) districtStr = 'N/A';
+    if (cityStr.isEmpty) cityStr = 'N/A';
 
     return {
       if (id != null) 'id': id,
