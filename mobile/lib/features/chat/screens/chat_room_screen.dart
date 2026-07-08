@@ -263,7 +263,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             onPressed: () => context.pop(),
           ),
         ),
-        body: const Center(child: Text('Room not found')),
+        body: const Center(child: Text(AppStrings.roomNotFound)),
       );
     }
 
@@ -299,7 +299,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Đang nhập...',
+                        AppStrings.typing,
                         style: TextStyle(
                           color: AppColors.textGrey,
                           fontSize: 14,

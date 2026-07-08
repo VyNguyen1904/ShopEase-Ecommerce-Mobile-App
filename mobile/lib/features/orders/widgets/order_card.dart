@@ -337,7 +337,7 @@ class OrderCardActions extends ConsumerWidget {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
         );
       }
     }

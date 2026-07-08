@@ -7,6 +7,7 @@ import '../../../core/models/product.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/review_provider.dart';
+import '../../../core/providers/favorite_provider.dart';
 
 import '../../product/widgets/product_variant_sheet.dart';
 
@@ -82,16 +83,27 @@ class HomeProductCard extends StatelessWidget {
                       ),
                     ),
                     // Favorite button
-                    const Positioned(
+                    Positioned(
                       top: 8,
                       right: 8,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 14,
-                        child: Icon(
-                          Icons.favorite_border,
-                          size: 16,
-                          color: AppColors.textLight,
+                      child: GestureDetector(
+                        onTap: () {
+                          ref.read(favoriteProductsProvider.notifier).toggleFavorite(product);
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 14,
+                          child: Consumer(
+                            builder: (context, ref, child) {
+                              final favoriteIds = ref.watch(favoriteIdsProvider);
+                              final isFavorite = favoriteIds.contains(product.id);
+                              return Icon(
+                                isFavorite ? Icons.favorite : Icons.favorite_border,
+                                size: 16,
+                                color: isFavorite ? Colors.red : AppColors.textLight,
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),

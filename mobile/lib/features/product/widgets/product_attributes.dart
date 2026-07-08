@@ -13,7 +13,7 @@ class ProductAttributes extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Chi tiết sản phẩm',
+          AppStrings.productDetailsTitle,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -22,11 +22,11 @@ class ProductAttributes extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         if (product.material != null && product.material!.isNotEmpty)
-          _buildDetailRow('Chất liệu', product.material!),
+          _buildDetailRow(AppStrings.materialLabel, product.material!),
         if (product.fit != null && product.fit!.isNotEmpty)
-          _buildDetailRow('Kiểu dáng', product.fit!),
+          _buildDetailRow(AppStrings.fitLabel, product.fit!),
         if (product.careInstructions != null && product.careInstructions!.isNotEmpty)
-          _buildDetailRow('Bảo quản', product.careInstructions!),
+          _buildDetailRow(AppStrings.careLabel, product.careInstructions!),
         if (product.features.isNotEmpty)
           ...product.features.map((f) => Padding(
                 padding: const EdgeInsets.only(bottom: 6.0),

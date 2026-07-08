@@ -38,7 +38,7 @@ class OrderDetailScreen extends ConsumerWidget {
           },
         ),
         title: const Text(
-          'Chi tiết đơn hàng',
+          AppStrings.orderDetailsTitle,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,

@@ -160,7 +160,7 @@ class SellerDashboardScreen extends ConsumerWidget {
               label: AppStrings.promotions,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Tính năng Khuyến mãi đang phát triển')),
+                  const SnackBar(content: Text(AppStrings.promotionFeatureDev)),
                 );
               },
             ),
@@ -169,7 +169,7 @@ class SellerDashboardScreen extends ConsumerWidget {
               label: AppStrings.reports,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Tính năng Báo cáo đang phát triển')),
+                  const SnackBar(content: Text(AppStrings.reportFeatureDev)),
                 );
               },
             ),

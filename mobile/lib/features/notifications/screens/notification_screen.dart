@@ -50,7 +50,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     if (difference.inDays == 0) {
       return DateFormat('HH:mm').format(time);
     } else if (difference.inDays == 1) {
-      return 'Hôm qua';
+      return AppStrings.yesterday;
     } else {
       return DateFormat('dd/MM/yyyy').format(time);
     }
@@ -92,7 +92,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             onPressed: () {
               ref.read(notificationListProvider.notifier).markAllAsRead();
             },
-            tooltip: 'Đánh dấu đã đọc tất cả',
+            tooltip: AppStrings.markAllAsRead,
           ),
           const SizedBox(width: 8),
         ],
@@ -212,7 +212,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Lỗi: $err')),
+              error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
             ),
           ),
         ],

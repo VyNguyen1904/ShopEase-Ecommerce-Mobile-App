@@ -20,7 +20,7 @@ class MapPickerScreen extends StatefulWidget {
 class _MapPickerScreenState extends State<MapPickerScreen> {
   late final MapController _mapController;
   LatLng _currentCenter = const LatLng(10.762622, 106.660172); // Default to HCM City
-  String _currentAddress = "Đang tải vị trí...";
+  String _currentAddress = AppStrings.loadingLocation;
   dynamic _rawAddress; // Store the raw address data
   bool _isLoadingAddress = false;
   final TextEditingController _searchController = TextEditingController();
@@ -107,7 +107,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       }
     } catch (e) {
       setState(() {
-        _currentAddress = "Không thể lấy địa chỉ";
+        _currentAddress = AppStrings.cannotGetAddress;
         _rawAddress = null;
       });
     } finally {
@@ -167,7 +167,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chọn vị trí', style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: const Text(AppStrings.selectLocationTitle, style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textDark),
@@ -226,7 +226,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Tìm kiếm địa chỉ...',
+                      hintText: AppStrings.searchAddressHint,
                       border: InputBorder.none,
                       prefixIcon: const Icon(Icons.search, color: AppColors.textGrey),
                       suffixIcon: IconButton(
@@ -312,7 +312,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Vị trí đã chọn', style: TextStyle(color: AppColors.textGrey, fontSize: 12)),
+                  const Text(AppStrings.selectedLocation, style: TextStyle(color: AppColors.textGrey, fontSize: 12)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -320,7 +320,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _isLoadingAddress 
-                          ? const Text("Đang tải...", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
+                          ? const Text(AppStrings.loading, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
                           : Text(_currentAddress, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
                       ),
                     ],
@@ -343,7 +343,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           'raw': _rawAddress,
                         });
                       },
-                      child: const Text('Xác nhận vị trí', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      child: const Text(AppStrings.confirmLocation, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
                   )
                 ],

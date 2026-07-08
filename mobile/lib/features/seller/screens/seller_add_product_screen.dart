@@ -52,7 +52,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
 
     if (name.isEmpty || priceStr.isEmpty || _selectedCategory == null || desc.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin bắt buộc.')),
+        const SnackBar(content: Text(AppStrings.fillRequiredFields)),
       );
       return;
     }
@@ -92,7 +92,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thêm sản phẩm thành công!')),
+          const SnackBar(content: Text(AppStrings.addProductSuccess)),
         );
         context.pop();
       }
@@ -140,8 +140,8 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
             SellerInputField(
               controller: _imageController,
               icon: Icons.image_outlined,
-              label: 'URL Ảnh sản phẩm',
-              hintText: 'Nhập đường dẫn ảnh (http://...)',
+              label: AppStrings.productImageUrl,
+              hintText: AppStrings.productImageHint,
             ),
             const SizedBox(height: 32),
             const Text(
@@ -182,7 +182,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
                 },
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Text('Lỗi tải danh mục: $err', style: const TextStyle(color: Colors.red)),
+              error: (err, _) => Text('${AppStrings.loadCategoryError}$err', style: const TextStyle(color: Colors.red)),
             ),
             const SizedBox(height: 16),
             SellerInputField(
@@ -195,7 +195,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
             const SizedBox(height: 16),
             MultiSelectField(
               icon: Icons.straighten_outlined,
-              label: 'Kích cỡ (Sizes)',
+              label: AppStrings.sizesLabel,
               options: _availableSizes,
               selectedOptions: _selectedSizes,
               onSelectionChanged: (option, selected) {
@@ -211,7 +211,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
             const SizedBox(height: 16),
             MultiSelectField(
               icon: Icons.color_lens_outlined,
-              label: 'Màu sắc (Colors)',
+              label: AppStrings.colorsLabel,
               options: _availableColors,
               selectedOptions: _selectedColors,
               onSelectionChanged: (option, selected) {

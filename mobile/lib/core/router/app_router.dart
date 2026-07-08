@@ -25,6 +25,7 @@ import '../../features/chat/screens/chat_room_screen.dart';
 import '../../features/product/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
 import '../../features/profile/screens/address_screen.dart';
+import '../../features/profile/screens/wishlist_screen.dart';
 import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/my_reviews_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
@@ -69,6 +70,7 @@ final appRouter = GoRouter(
         location == AppRoutes.review ||
         location.startsWith('/order-detail') ||
         location == AppRoutes.address ||
+        location == AppRoutes.wishlist ||
         location == AppRoutes.settings ||
         location == AppRoutes.notifications ||
         location == AppRoutes.chats;
@@ -240,6 +242,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.profileEdit,
       builder: (context, state) => const ProfileEditScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.wishlist,
+      builder: (context, state) => const WishlistScreen(),
     ),
     GoRoute(
       path: AppRoutes.settings,

@@ -168,6 +168,11 @@ class AccountScreen extends ConsumerWidget {
                   trailingText: AppStrings.lightTheme,
                 ),
                 AccountMenuItem(
+                  icon: Icons.favorite_border,
+                  title: 'Danh sách yêu thích',
+                  onTap: () => context.push(AppRoutes.wishlist),
+                ),
+                AccountMenuItem(
                   icon: Icons.assignment_outlined,
                   title: AppStrings.myOrders,
                   onTap: () => context.go(AppRoutes.orders),

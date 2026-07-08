@@ -168,7 +168,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     height: 250,
                     child: Center(
                       child: Text(
-                        'Lỗi tải mã QR: $e',
+                        '${AppStrings.loadQRError}$e',
                         style: const TextStyle(color: AppColors.alertRed),
                         textAlign: TextAlign.center,
                       ),

@@ -161,6 +161,16 @@ class AppStrings {
   static const String vietnamese = "Tiếng Việt";
   static const String preferencesSection = "Tùy chọn";
   static const String settings = "Cài đặt";
+  static const String wishlist = "Danh sách yêu thích";
+  static const String loadListError = "Lỗi tải danh sách: ";
+  static const String changePassword = "Đổi mật khẩu";
+  static const String changePasswordSuccess = "Đổi mật khẩu thành công";
+  static const String noFavoriteProducts = "Bạn chưa yêu thích sản phẩm nào";
+  static const String myReviews = "Đánh giá của tôi";
+  static const String noReviewsWritten = "Bạn chưa viết đánh giá nào";
+  static const String pendingApproval = "Đang duyệt";
+  static const String createChatError = "Lỗi tạo phòng chat: ";
+  static const String sellerNotFound = "Không tìm thấy thông tin người bán";
   static const String aboutUs = "Về chúng tôi";
   static const String theme = "Giao diện";
   static const String lightTheme = "Sáng";
@@ -237,6 +247,22 @@ class AppStrings {
   static const String returnRefundAction = "Đổi trả/Hoàn tiền";
   static const String returnRefundPrompt = "Bạn muốn yêu cầu đổi trả/hoàn tiền cho đơn hàng này?";
   static const String returnRefundSuccess = "Yêu cầu của bạn đã được gửi. CSKH sẽ liên hệ trong 24h.";
+  static const String confirmReceivedTitle = "Xác nhận đã nhận hàng";
+  static const String confirmReceivedPrompt = "Bạn xác nhận đã nhận được hàng và hàng hóa trong tình trạng tốt?";
+  static const String thanksForShopping = "Cảm ơn bạn đã mua sắm! Bạn có thể đánh giá sản phẩm ngay bây giờ.";
+
+  static const String pleaseSelectProvince = "Vui lòng chọn Tỉnh/Thành";
+  static const String pleaseSelectWard = "Vui lòng chọn Phường/Xã";
+  static const String searchHint = "Tìm kiếm...";
+  static const String noResultFound = "Không tìm thấy kết quả";
+  static const String tapToEditLocation = "Chạm để sửa vị trí";
+  static const String tapToPinLocation = "Chạm để ghim vị trí";
+  static const String loadingLocation = "Đang tải vị trí...";
+  static const String cannotGetAddress = "Không thể lấy địa chỉ";
+  static const String selectLocationTitle = "Chọn vị trí";
+  static const String searchAddressHint = "Tìm kiếm địa chỉ...";
+  static const String selectedLocation = "Vị trí đã chọn";
+  static const String confirmLocation = "Xác nhận vị trí";
 
   // Seller Dashboard
   static const String helloPrefix = "Xin chào, ";
@@ -364,6 +390,10 @@ class AppStrings {
   static const String online = "Đang hoạt động";
   static const String offline = "Ngoại tuyến";
   static const String typeMessage = "Nhập tin nhắn...";
+  static const String noChatsYet = "Chưa có đoạn chat nào";
+  static const String guest = "Khách";
+  static const String noMessagesYet = "Chưa có tin nhắn nào";
+  static const String loadChatsFailed = "Không thể tải danh sách chat: ";
   
   static const String general = "Chung";
   static const String currency = "Đơn vị tiền tệ";
@@ -402,4 +432,24 @@ class AppStrings {
   static const String errConnectionError = "Không thể kết nối đến máy chủ. Vui lòng thử lại.";
   static const String errServerStatus = "Lỗi máy chủ";
   static const String errOccurred = "Đã có lỗi xảy ra: ";
+  static const String promotionFeatureDev = "Tính năng Khuyến mãi đang phát triển";
+  static const String reportFeatureDev = "Tính năng Báo cáo đang phát triển";
+  static const String productImageUrl = "URL Ảnh sản phẩm";
+  static const String productImageHint = "Nhập đường dẫn ảnh (http://...)";
+  static const String fillRequiredFields = "Vui lòng điền đầy đủ thông tin bắt buộc.";
+  static const String addProductSuccess = "Thêm sản phẩm thành công!";
+  static const String loadCategoryError = "Lỗi tải danh mục: ";
+  static const String sizesLabel = "Kích cỡ (Sizes)";
+  static const String colorsLabel = "Màu sắc (Colors)";
+  static const String productDetailsTitle = "Chi tiết sản phẩm";
+  static const String materialLabel = "Chất liệu";
+  static const String fitLabel = "Kiểu dáng";
+  static const String careLabel = "Bảo quản";
+  static const String orderDetailsTitle = "Chi tiết đơn hàng";
+  static const String markAllAsRead = "Đánh dấu đã đọc tất cả";
+  static const String loadQRError = "Lỗi tải mã QR: ";
+  static const String loading = "Đang tải...";
+  static const String saving = "Đang lưu...";
+  static const String typing = "Đang nhập...";
+  static const String roomNotFound = "Không tìm thấy phòng chat";
 }

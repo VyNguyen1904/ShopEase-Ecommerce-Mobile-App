@@ -74,7 +74,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Thanh toán',
+          AppStrings.proceedToCheckout,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,

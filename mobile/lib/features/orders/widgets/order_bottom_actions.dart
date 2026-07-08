@@ -71,7 +71,7 @@ class OrderBottomActions extends ConsumerWidget {
                   ),
                 ),
                 child: const Text(
-                  'Đã nhận được hàng',
+                  AppStrings.received,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -205,8 +205,8 @@ class OrderBottomActions extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Xác nhận đã nhận hàng', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: const Text('Bạn xác nhận đã nhận được hàng và hàng hóa trong tình trạng tốt?'),
+        title: const Text(AppStrings.confirmReceivedTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text(AppStrings.confirmReceivedPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -230,7 +230,7 @@ class OrderBottomActions extends ConsumerWidget {
                 if (context.mounted) {
                   Navigator.pop(context); // close loading
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cảm ơn bạn đã mua sắm! Bạn có thể đánh giá sản phẩm ngay bây giờ.')),
+                    const SnackBar(content: Text(AppStrings.thanksForShopping)),
                   );
                 }
               } catch (e) {

@@ -232,7 +232,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     _fetchWardsByProvince(val['code']);
                   }
                 },
-                validator: (v) => v == null ? 'Vui lòng chọn Tỉnh/Thành' : null,
+                validator: (v) => v == null ? AppStrings.pleaseSelectProvince : null,
               ),
               const SizedBox(height: 16),
               _buildDropdown(
@@ -245,7 +245,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     _selectedWard = val;
                   });
                 },
-                validator: (v) => v == null ? 'Vui lòng chọn Phường/Xã' : null,
+                validator: (v) => v == null ? AppStrings.pleaseSelectWard : null,
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -438,7 +438,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                               const Icon(Icons.touch_app, size: 16, color: AppColors.primary),
                               const SizedBox(width: 4),
                               Text(
-                                _latitude != null ? 'Chạm để sửa vị trí' : 'Chạm để ghim vị trí',
+                                _latitude != null ? AppStrings.tapToEditLocation : AppStrings.tapToPinLocation,
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary),
                               ),
                             ],
@@ -552,7 +552,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     TextField(
                       autofocus: true,
                       decoration: InputDecoration(
-                        hintText: "Tìm kiếm...",
+                        hintText: AppStrings.searchHint,
                         prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                         isDense: true,
@@ -567,7 +567,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     const SizedBox(height: 12),
                     Expanded(
                       child: filteredItems.isEmpty
-                          ? const Center(child: Text("Không tìm thấy kết quả"))
+                          ? const Center(child: Text(AppStrings.noResultFound))
                           : ListView.builder(
                               itemCount: filteredItems.length,
                               itemBuilder: (context, index) {

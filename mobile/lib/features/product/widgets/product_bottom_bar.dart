@@ -59,14 +59,14 @@ class ProductBottomBar extends ConsumerWidget {
                     if (context.mounted) {
                       Navigator.pop(context); // Close loading
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Lỗi tạo phòng chat: $e')),
+                        SnackBar(content: Text('${AppStrings.createChatError}$e')),
                       );
                     }
                     debugPrint('Error creating chat: $e');
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Không tìm thấy thông tin người bán')),
+                    const SnackBar(content: Text(AppStrings.sellerNotFound)),
                   );
                 }
               },
@@ -98,7 +98,7 @@ class ProductBottomBar extends ConsumerWidget {
                 ),
                 icon: const Icon(Icons.shopping_cart_outlined, size: 20),
                 label: const Text(
-                  'Thêm vào giỏ',
+                  AppStrings.addToCart,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -133,7 +133,7 @@ class ProductBottomBar extends ConsumerWidget {
                   ),
                 ),
                 child: const Text(
-                  'Mua ngay',
+                  AppStrings.buyNow,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,

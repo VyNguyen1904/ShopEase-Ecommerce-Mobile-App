@@ -200,6 +200,22 @@ class AuthService {
   }
 
 
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      final token = await getAccessToken();
+      await _dio.post(
+        '$_authUrl/change-password',
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
   Future<void> addAddress(AddressModel address) async {
     try {
       final token = await getAccessToken();

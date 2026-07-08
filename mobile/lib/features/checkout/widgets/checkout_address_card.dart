@@ -26,7 +26,7 @@ class CheckoutAddressCard extends StatelessWidget {
             children: [
               Icon(Icons.add_location_alt_outlined, color: AppColors.primary),
               SizedBox(width: 8),
-              Text('Thêm địa chỉ nhận hàng', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+              Text(AppStrings.addNewAddress, style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -63,7 +63,7 @@ class CheckoutAddressCard extends StatelessWidget {
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text('Mặc định', style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
+                  child: const Text(AppStrings.defaultBadge, style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
                 ),
             ],
           ),
