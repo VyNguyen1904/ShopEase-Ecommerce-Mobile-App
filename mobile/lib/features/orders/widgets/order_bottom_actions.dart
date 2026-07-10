@@ -56,7 +56,30 @@ class OrderBottomActions extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            if (order.paymentMethod.toUpperCase() == 'VNPAY') ...[
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id, 'qrPayload': ''}),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[800],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    "Thanh toán VNPay",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
           ],
           if (order.status == OrderStatus.SHIPPED) ...[
             Expanded(

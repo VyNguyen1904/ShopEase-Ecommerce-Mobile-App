@@ -39,28 +39,6 @@ class CheckoutPaymentOptions extends StatelessWidget {
             AppStrings.vnpayPayment,
             isSelected: selectedPayment == 'vnpay',
           ),
-          const Divider(
-            height: 1,
-            indent: 50,
-            endIndent: 16,
-            color: AppColors.border,
-          ),
-          _buildPaymentRadio(
-            'momo',
-            AppStrings.momoPayment,
-            isSelected: selectedPayment == 'momo',
-          ),
-          const Divider(
-            height: 1,
-            indent: 50,
-            endIndent: 16,
-            color: AppColors.border,
-          ),
-          _buildPaymentRadio(
-            'card',
-            AppStrings.cardPayment,
-            isSelected: selectedPayment == 'card',
-          ),
         ],
       ),
     );

@@ -159,13 +159,38 @@ class OrderCardActions extends ConsumerWidget {
         runSpacing: 8,
         alignment: WrapAlignment.end,
         children: [
-          if (statusStr == AppStrings.pending) _buildCancelButton(context, ref),
+          // Show pay button for PENDING/FAILED VNPay orders
+          if ((order.status == OrderStatus.PENDING || order.status == OrderStatus.FAILED)
+              && order.paymentMethod.toUpperCase() == 'VNPAY')
+            _buildPayVNPayButton(context),
+          // Show cancel for pending (waiting confirmation or waiting payment)
+          if (statusStr == AppStrings.pending || statusStr == 'Chờ thanh toán')
+            _buildCancelButton(context, ref),
           if (statusStr == AppStrings.delivered || statusStr == AppStrings.completedStatus) ...[
             _buildReturnRefundButton(context),
             _buildReviewButton(context),
           ],
-          _buildPrimaryButton(context, ref),
+          // Hide Theo dõi for failed or waiting-payment VNPay orders
+          if (order.status != OrderStatus.FAILED && statusStr != 'Chờ thanh toán')
+            _buildPrimaryButton(context, ref),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPayVNPayButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id, 'qrPayload': ''}),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue[800],
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      ),
+      child: const Text(
+        'Thanh toán VNPay',
+        style: TextStyle(fontWeight: FontWeight.w600),
       ),
     );
   }

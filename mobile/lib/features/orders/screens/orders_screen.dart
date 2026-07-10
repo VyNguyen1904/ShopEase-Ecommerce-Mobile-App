@@ -21,35 +21,51 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
 
   final List<String> _tabs = [
     AppStrings.all,
+    'Chờ thanh toán',
     AppStrings.pending,
     AppStrings.shipping,
     AppStrings.delivered,
     AppStrings.cancelled,
   ];
 
-  String _mapStatus(OrderStatus status) {
-    switch (status) {
+  String _mapStatus(OrderResponse order) {
+    // VNPay orders awaiting payment
+    if (order.status == OrderStatus.PENDING &&
+        order.paymentMethod.toUpperCase() == 'VNPAY' &&
+        order.paymentStatus == PaymentStatus.PENDING) {
+      return 'Chờ thanh toán';
+    }
+    switch (order.status) {
       case OrderStatus.PENDING:
+        return AppStrings.pending;
       case OrderStatus.CONFIRMED:
       case OrderStatus.PACKED:
-        return AppStrings.pending;
+        return 'Đang xử lý';
       case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;
       case OrderStatus.CANCELLED:
         return AppStrings.cancelled;
+      case OrderStatus.FAILED:
+        return 'Thanh toán thất bại';
     }
   }
 
   Color _getStatusColor(String status) {
     switch (status) {
+      case 'Chờ thanh toán':
+        return Colors.orange[700]!;
       case AppStrings.delivered:
         return Colors.green;
       case AppStrings.shipping:
-        return Colors.orange;
+        return Colors.blue;
       case AppStrings.cancelled:
         return AppColors.alertRed;
+      case 'Thanh toán thất bại':
+        return Colors.red;
+      case 'Đang xử lý':
+        return Colors.blue;
       default:
         return AppColors.primary;
     }
@@ -155,7 +171,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
       children: _tabs.map((tab) {
         final filtered = tab == AppStrings.all
             ? orders
-            : orders.where((o) => _mapStatus(o.status) == tab).toList();
+            : orders.where((o) => _mapStatus(o) == tab).toList();
 
         if (filtered.isEmpty) return const OrdersEmptyState();
 
@@ -170,7 +186,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
           separatorBuilder: (_, _) => const SizedBox(height: 16),
           itemBuilder: (context, index) {
             final order = filtered[index];
-            final statusStr = _mapStatus(order.status);
+            final statusStr = _mapStatus(order);
             final statusColor = _getStatusColor(statusStr);
 
             return Column(

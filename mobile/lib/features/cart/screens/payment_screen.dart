@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/payment_provider.dart';
-import '../../../core/constants/app_strings.dart';
+import '../../../core/models/order_model.dart';
+import '../../../core/services/order_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -22,202 +24,234 @@ class PaymentScreen extends ConsumerStatefulWidget {
 }
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
-  bool _isChecking = false;
+  bool _hasOpenedVNPay = false;
+  bool _isPolling = false;
+  Timer? _pollTimer;
+  String _statusText = 'Đang tạo liên kết thanh toán...';
 
-  Future<void> _checkPaymentStatus() async {
-    setState(() => _isChecking = true);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openVNPay();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _openVNPay() async {
+    setState(() => _statusText = 'Đang tạo liên kết thanh toán...');
     try {
+      final orderService = OrderService();
+      final order = await orderService.getOrderDetail(widget.orderId);
       final paymentService = ref.read(paymentServiceProvider);
-      final statusResp = await paymentService.getPaymentStatus(widget.orderId);
-      
-      if (mounted) {
-        if (statusResp.status == 'COMPLETED') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(AppStrings.paymentSuccess),
-              backgroundColor: AppColors.primary,
-            ),
-          );
-          context.go(AppRoutes.orders);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${AppStrings.paymentFailedPrefix}${statusResp.status}'),
-              backgroundColor: AppColors.alertRed,
-            ),
-          );
-        }
+      final paymentUrl = await paymentService.createVNPayUrl(widget.orderId, order.totalAmount.toInt());
+      final uri = Uri.parse(paymentUrl);
+
+      if (await canLaunchUrl(uri)) {
+        setState(() {
+          _hasOpenedVNPay = true;
+          _statusText = 'Đã mở trang VNPay. Vui lòng hoàn tất thanh toán.';
+        });
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        // After returning from VNPay, start polling
+        _startPolling();
+      } else {
+        setState(() => _statusText = 'Không thể mở trang VNPay. Vui lòng thử lại.');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppStrings.errorPrefix}$e'),
-            backgroundColor: AppColors.alertRed,
-          ),
-        );
+        setState(() => _statusText = 'Lỗi: $e');
       }
-    } finally {
-      if (mounted) setState(() => _isChecking = false);
     }
   }
 
-  Future<void> _simulateWebhook() async {
-    setState(() => _isChecking = true);
+  void _startPolling() {
+    if (_isPolling) return;
+    setState(() {
+      _isPolling = true;
+      _statusText = 'Đang kiểm tra kết quả thanh toán...';
+    });
+    // Check immediately
+    _checkOrderStatus();
+    _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) async {
+      await _checkOrderStatus();
+    });
+  }
+
+  Future<void> _checkOrderStatus() async {
     try {
-      final paymentService = ref.read(paymentServiceProvider);
-      await paymentService.simulateWebhook(widget.orderId, success: true);
-      
-      if (mounted) {
+      final orderService = OrderService();
+      final order = await orderService.getOrderDetail(widget.orderId);
+      if (!mounted) return;
+
+      if (order.paymentStatus == PaymentStatus.PAID ||
+          order.status == OrderStatus.CONFIRMED ||
+          order.status == OrderStatus.PACKED ||
+          order.status == OrderStatus.SHIPPED ||
+          order.status == OrderStatus.DELIVERED) {
+        _pollTimer?.cancel();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(AppStrings.paymentSimulatedSuccess),
-            backgroundColor: AppColors.primary,
+            content: Text('Thanh toán thành công! Đơn hàng đã được xác nhận.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        context.go(AppRoutes.orderDetailPath(widget.orderId));
+      } else if (order.paymentStatus == PaymentStatus.FAILED ||
+          order.status == OrderStatus.FAILED ||
+          order.status == OrderStatus.CANCELLED) {
+        _pollTimer?.cancel();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Thanh toán thất bại. Bạn có thể thử lại từ trang đơn hàng.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
           ),
         );
         context.go(AppRoutes.orders);
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppStrings.errorPrefix}$e'),
-            backgroundColor: AppColors.alertRed,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isChecking = false);
+    } catch (_) {
+      // Silently ignore poll errors
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: const Color(0xFFF0F4FF),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(AppStrings.paymentScreenTitle, style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold)),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'Thanh toán đơn hàng',
+          style: TextStyle(
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
-          onPressed: () => context.go(AppRoutes.orders), // Cancel payment goes to orders
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1E293B), size: 20),
+          onPressed: () => context.go(AppRoutes.orders),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                AppStrings.scanQrToPay,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                AppStrings.scanQrInstruction,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textGrey, fontSize: 14),
-              ),
-              const SizedBox(height: 32),
+              // VNPay logo block
               Container(
-                padding: const EdgeInsets.all(16),
+                width: 96,
+                height: 96,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  color: const Color(0xFF1D4ED8),
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      color: const Color(0xFF1D4ED8).withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
                     ),
                   ],
                 ),
-                child: ref.watch(paymentQrProvider(widget.orderId)).when(
-                  data: (svgString) {
-                    if (svgString.contains('<svg')) {
-                      return SvgPicture.string(
-                        svgString,
-                        width: 250,
-                        height: 250,
-                      );
-                    }
-                    return SizedBox(
-                      width: 250,
-                      height: 250,
-                      child: Center(
-                        child: Text(
-                          '${AppStrings.invalidQrPrefix}$svgString',
-                          style: const TextStyle(color: AppColors.alertRed),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                  },
-                  loading: () => const SizedBox(
-                    width: 250,
-                    height: 250,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                  error: (e, _) => SizedBox(
-                    width: 250,
-                    height: 250,
-                    child: Center(
-                      child: Text(
-                        '${AppStrings.loadQRError}$e',
-                        style: const TextStyle(color: AppColors.alertRed),
-                        textAlign: TextAlign.center,
-                      ),
+                child: const Center(
+                  child: Text(
+                    'VNPay',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      letterSpacing: 0.5,
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                _hasOpenedVNPay ? 'Đang chờ kết quả thanh toán' : 'Đang kết nối VNPay',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E293B),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _statusText,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 15,
+                  height: 1.5,
                 ),
               ),
               const SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isChecking ? null : _checkPaymentStatus,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+              const CircularProgressIndicator(
+                color: Color(0xFF1D4ED8),
+                strokeWidth: 3,
+              ),
+              if (_hasOpenedVNPay) ...[
+                const SizedBox(height: 48),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey.shade200),
                   ),
-                  child: _isChecking
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
-                      : const Text(
-                          AppStrings.iHavePaid,
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Đã hoàn tất thanh toán trên VNPay?',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: _isChecking ? null : _simulateWebhook,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: const BorderSide(color: AppColors.primary),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _startPolling,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1D4ED8),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Kiểm tra kết quả',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () => context.go(AppRoutes.orders),
+                        child: Text(
+                          'Quay lại đơn hàng',
+                          style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const Text(
-                    AppStrings.simulatePayment,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
-                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

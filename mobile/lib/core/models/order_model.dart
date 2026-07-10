@@ -4,7 +4,8 @@ enum OrderStatus {
   PACKED,
   SHIPPED,
   DELIVERED,
-  CANCELLED
+  CANCELLED,
+  FAILED
 }
 
 enum PaymentStatus {

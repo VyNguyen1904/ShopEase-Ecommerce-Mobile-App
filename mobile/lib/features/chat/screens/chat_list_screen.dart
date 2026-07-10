@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/services/chat_service.dart';
 import '../../../core/services/auth_service.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -20,13 +21,28 @@ class _ChatListScreenState extends State<ChatListScreen> {
   Map<String, String> _userNames = {};
   bool _isLoading = true;
 
+  Timer? _pollingTimer;
+
   @override
   void initState() {
     super.initState();
     _loadChats();
+    _startPolling();
   }
 
-  Future<void> _loadChats() async {
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      _loadChats(isPolling: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadChats({bool isPolling = false}) async {
     try {
       final rooms = await _chatService.getMyChats();
       final Map<String, String> names = {};
@@ -37,11 +53,16 @@ class _ChatListScreenState extends State<ChatListScreen> {
         final otherUserId = (p1 != null && p1 != 'SYSTEM') ? p1 : p2;
         
         if (otherUserId != null && !names.containsKey(otherUserId)) {
-          try {
-            final user = await _authService.getUserById(otherUserId.toString());
-            names[otherUserId.toString()] = user.fullName;
-          } catch (_) {
-            names[otherUserId.toString()] = 'User ${otherUserId.toString().substring(0, 5)}';
+          // If we already have the name cached, use it to avoid redundant API calls
+          if (_userNames.containsKey(otherUserId.toString())) {
+            names[otherUserId.toString()] = _userNames[otherUserId.toString()]!;
+          } else {
+            try {
+              final user = await _authService.getUserById(otherUserId.toString());
+              names[otherUserId.toString()] = user.fullName;
+            } catch (_) {
+              names[otherUserId.toString()] = 'User ${otherUserId.toString().substring(0, 5)}';
+            }
           }
         }
       }
@@ -49,12 +70,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
       if (mounted) {
         setState(() {
           _chatRooms = rooms;
-          _userNames = names;
+          _userNames.addAll(names);
           _isLoading = false;
         });
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && !isPolling) {
         setState(() {
           _isLoading = false;
         });
@@ -143,7 +164,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             roomName: roomName,
                             lastMessage: lastMessage,
                             timeDisplay: timeDisplay,
-                            onTap: () => context.push('/chats/${room['id']}'),
+                            onTap: () {
+                              context.push('/chats/${room['id']}').then((_) => _loadChats());
+                            },
                           );
                         },
                       ),

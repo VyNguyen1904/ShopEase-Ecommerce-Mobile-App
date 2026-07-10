@@ -178,6 +178,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     );
 
     private boolean isPublicEndpoint(String path, String method) {
+        // Always allow CORS preflight requests
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            return true;
+        }
+
         // Swagger and OpenAPI paths
         if (path.startsWith("/v3/api-docs") ||
             path.startsWith("/swagger-ui") ||
@@ -197,7 +202,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     path.equals("/api/categories") ||
                     path.startsWith("/api/categories/") ||
                     path.startsWith("/api/search/") ||
-                    path.startsWith("/api/reviews/products/");
+                    path.startsWith("/api/reviews/products/") ||
+                    path.startsWith("/api/payments/vnpay/");
         }
 
         return false;

@@ -280,6 +280,8 @@ class SellerDashboardScreen extends ConsumerWidget {
         return AppStrings.delivered;
       case OrderStatus.CANCELLED:
         return AppStrings.cancelled;
+      case OrderStatus.FAILED:
+        return 'Thất bại';
     }
   }
 
@@ -297,6 +299,8 @@ class SellerDashboardScreen extends ConsumerWidget {
         return Colors.green;
       case OrderStatus.CANCELLED:
         return Colors.red;
+      case OrderStatus.FAILED:
+        return Colors.red[700]!;
     }
   }
 

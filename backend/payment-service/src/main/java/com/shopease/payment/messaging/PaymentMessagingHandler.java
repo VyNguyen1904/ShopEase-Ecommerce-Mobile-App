@@ -40,26 +40,15 @@ public class PaymentMessagingHandler {
                     command.paymentMethod()));
 
             // In a real system, we'd wait for a webhook or external gateway.
-            // For this implementation, if it's "COD", we approve immediately.
-            // Otherwise, we'd keep it PENDING. But for the Saga flow demo,
-            // let's approve everything that isn't explicitly failed.
-
-            boolean success = !command.paymentMethod().equalsIgnoreCase("FAIL");
-
-            if (success) {
+            // For COD, we approve immediately. For FAIL, we fail immediately.
+            // For VNPAY and others, we leave it in PENDING state.
+            String method = command.paymentMethod();
+            if ("COD".equalsIgnoreCase(method)) {
                 paymentService.simulate(command.orderId(), true);
-                PaymentProcessedEvent event = new PaymentProcessedEvent(
-                        command.orderId(),
-                        response.id(),
-                        Instant.now());
-                kafkaTemplate.send("payment-events", event.orderId().toString(), event);
-            } else {
+            } else if ("FAIL".equalsIgnoreCase(method)) {
                 paymentService.simulate(command.orderId(), false);
-                PaymentFailedEvent event = new PaymentFailedEvent(
-                        command.orderId(),
-                        "Payment declined by gateway",
-                        Instant.now());
-                kafkaTemplate.send("payment-events", event.orderId().toString(), event);
+            } else {
+                log.info("Payment method {} requires external confirmation. Left in PENDING state.", method);
             }
         } catch (Exception ex) {
             log.error("Payment processing failed for order {}: {}", command.orderId(), ex.getMessage());

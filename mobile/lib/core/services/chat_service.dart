@@ -35,7 +35,10 @@ class ApiChatService {
 
   Future<List<dynamic>> getMyChats() async {
     try {
-      final response = await _dio.get(_chatUrl);
+      final response = await _dio.get(
+        _chatUrl,
+        queryParameters: {'_t': DateTime.now().millisecondsSinceEpoch},
+      );
       return response.data['data'] as List<dynamic>;
     } catch (e) {
       throw Exception('Failed to load chats: $e');
@@ -44,7 +47,10 @@ class ApiChatService {
 
   Future<List<dynamic>> getMessages(String roomId) async {
     try {
-      final response = await _dio.get('$_chatUrl/$roomId/messages');
+      final response = await _dio.get(
+        '$_chatUrl/$roomId/messages',
+        queryParameters: {'_t': DateTime.now().millisecondsSinceEpoch},
+      );
       return response.data['data'] as List<dynamic>;
     } catch (e) {
       throw Exception('Failed to load messages: $e');

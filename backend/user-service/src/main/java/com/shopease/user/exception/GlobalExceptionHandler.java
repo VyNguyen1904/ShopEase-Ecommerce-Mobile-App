@@ -9,27 +9,26 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 
+import com.shopease.common.dto.ApiResponse;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    public record ErrorResponse(int status, String message, Instant timestamp) {
-    }
-
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException e) {
+    public ResponseEntity<ApiResponse<Void>> handleResponseStatusException(ResponseStatusException e) {
         log.error("Runtime error: {} - {}", e.getStatusCode(), e.getReason());
         return ResponseEntity.status(e.getStatusCode())
-                .body(new ErrorResponse(e.getStatusCode().value(), e.getReason(), Instant.now()));
+                .body(ApiResponse.error(e.getReason()));
     }
 
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(org.springframework.web.bind.MethodArgumentNotValidException e) {
+    public ResponseEntity<ApiResponse<Void>> handleValidationException(org.springframework.web.bind.MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .findFirst().orElse("Validation failed");
         log.error("Validation error: {}", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message, Instant.now()));
+                .body(ApiResponse.error(message));
     }
 }
