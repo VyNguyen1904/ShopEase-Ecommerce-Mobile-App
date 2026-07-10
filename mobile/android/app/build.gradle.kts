@@ -43,3 +43,17 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    constraints {
+        implementation("androidx.browser:browser:1.8.0") {
+            because("AGP 8.7.0 compatibility")
+        }
+        implementation("androidx.core:core-ktx:1.15.0") {
+            because("AGP 8.7.0 compatibility")
+        }
+        implementation("androidx.core:core:1.15.0") {
+            because("AGP 8.7.0 compatibility")
+        }
+    }
+}
