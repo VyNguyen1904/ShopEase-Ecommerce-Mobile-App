@@ -33,6 +33,8 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
         return AppStrings.delivered;
       case OrderStatus.CANCELLED:
         return AppStrings.cancelled;
+      case OrderStatus.FAILED:
+        return 'Thất bại';
     }
   }
 

@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
+import '../../../core/router/app_routes.dart';
 import '../widgets/order_bottom_actions.dart';
 import '../widgets/order_detail_cards.dart';
 
@@ -33,12 +34,12 @@ class OrderDetailScreen extends ConsumerWidget {
             if (context.canPop()) {
               context.pop();
             } else {
-              context.go('/');
+              context.go(AppRoutes.orders);
             }
           },
         ),
         title: const Text(
-          'Chi tiết đơn hàng',
+          AppStrings.orderDetailsTitle,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 18,

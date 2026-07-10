@@ -6,8 +6,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../cart/providers/cart_provider.dart';
-import '../../orders/providers/order_provider.dart';
+import '../../../core/providers/cart_provider.dart';
+import '../../../core/providers/order_provider.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/payment_provider.dart';
@@ -74,7 +74,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Thanh toán',
+          AppStrings.proceedToCheckout,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,

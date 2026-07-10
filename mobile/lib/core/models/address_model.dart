@@ -6,6 +6,8 @@ class AddressModel {
   final String address2;
   final String label;
   final bool isDefault;
+  final double? latitude;
+  final double? longitude;
 
   AddressModel({
     this.id,
@@ -15,6 +17,8 @@ class AddressModel {
     this.address2 = '',
     this.label = '',
     this.isDefault = false,
+    this.latitude,
+    this.longitude,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,8 @@ class AddressModel {
               : (json['city'] ?? json['district'] ?? '')),
       label: json['label'] ?? '',
       isDefault: json['isDefault'] ?? json['defaultAddress'] ?? json['default'] ?? false,
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
   }
 
@@ -38,9 +44,13 @@ class AddressModel {
     
     if (address2.contains(', ')) {
       final parts = address2.split(', ');
-      districtStr = parts[0];
-      cityStr = parts.length > 1 ? parts.sublist(1).join(', ') : parts[0];
+      districtStr = parts[0].trim();
+      cityStr = parts.length > 1 ? parts.sublist(1).join(', ').trim() : parts[0].trim();
     }
+    
+    // Fallback if backend strictly requires them
+    if (districtStr.isEmpty) districtStr = 'N/A';
+    if (cityStr.isEmpty) cityStr = 'N/A';
 
     return {
       if (id != null) 'id': id,
@@ -55,6 +65,8 @@ class AddressModel {
       'label': label,
       'isDefault': isDefault,
       'defaultAddress': isDefault,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
     };
   }
 }

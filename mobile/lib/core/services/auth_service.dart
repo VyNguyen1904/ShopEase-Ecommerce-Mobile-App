@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dio/dio.dart';
 import '../models/auth_model.dart';
@@ -27,7 +28,9 @@ class AuthService {
           final isAuthRoute = options.path.contains('/api/auth/login') || 
                               options.path.contains('/api/auth/register') ||
                               options.path.contains('/api/auth/verify-email') ||
-                              options.path.contains('/api/auth/resend-otp');
+                              options.path.contains('/api/auth/resend-otp') ||
+                              options.path.contains('/api/auth/refresh') ||
+                              options.path.endsWith('/api/auth/logout');
           
           if (!isAuthRoute) {
             final token = await getAccessToken();
@@ -172,6 +175,15 @@ class AuthService {
     }
   }
 
+  Future<UserResponse> getUserById(String id) async {
+    try {
+      final response = await _dio.get('$_userUrl/$id');
+      return UserResponse.fromJson(response.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
   Future<UserResponse> updateProfile(String fullName, String? phone, String? avatarUrl) async {
     try {
       final data = {
@@ -187,6 +199,22 @@ class AuthService {
     }
   }
 
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      final token = await getAccessToken();
+      await _dio.post(
+        '$_authUrl/change-password',
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
 
   Future<void> addAddress(AddressModel address) async {
     try {
@@ -298,5 +326,19 @@ class AuthService {
   Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token');
+  }
+
+  Future<String?> getUserId() async {
+    try {
+      final token = await getAccessToken();
+      if (token == null) return null;
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+      final Map<String, dynamic> data = jsonDecode(payload);
+      return data['userId']?.toString() ?? data['sub']?.toString();
+    } catch (_) {
+      return null;
+    }
   }
 }

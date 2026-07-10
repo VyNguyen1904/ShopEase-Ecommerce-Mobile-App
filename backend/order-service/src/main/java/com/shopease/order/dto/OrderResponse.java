@@ -24,6 +24,8 @@ public record OrderResponse(
     String shipStreet,
     String shipDistrict,
     String shipCity,
+    Double shipLatitude,
+    Double shipLongitude,
     String note,
     Instant createdAt
 ) {
@@ -44,6 +46,8 @@ public record OrderResponse(
             order.getShipStreet(),
             order.getShipDistrict(),
             order.getShipCity(),
+            order.getShipLatitude(),
+            order.getShipLongitude(),
             order.getNote(),
             order.getCreatedAt()
         );

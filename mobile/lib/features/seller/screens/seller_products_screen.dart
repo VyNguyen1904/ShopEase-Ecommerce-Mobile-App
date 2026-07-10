@@ -7,6 +7,7 @@ import '../../../core/providers/product_provider.dart';
 import '../../../core/models/product.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/constants/app_strings.dart';
+import '../widgets/seller_product_card.dart';
 
 class SellerProductsScreen extends ConsumerStatefulWidget {
   const SellerProductsScreen({super.key});
@@ -155,19 +156,35 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
             }).toList();
 
             if (products.isEmpty) {
-              return const Center(child: Text(AppStrings.noProductsList));
+              return RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(sellerProductsProvider(user.id));
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                    const Center(child: Text(AppStrings.noProductsList)),
+                  ],
+                ),
+              );
             }
-            return ListView.separated(
-              padding: const EdgeInsets.all(20),
-              itemCount: products.length,
-              separatorBuilder: (context, index) => Divider(
-                color: Colors.grey.withValues(alpha: 0.1),
-                height: 32,
-              ),
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return _buildProductItem(product);
+            return RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(sellerProductsProvider(user.id));
               },
+              child: ListView.separated(
+                padding: const EdgeInsets.all(20),
+                itemCount: products.length,
+                separatorBuilder: (context, index) => Divider(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  height: 32,
+                ),
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return SellerProductCard(product: product);
+                },
+              ),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -179,86 +196,4 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
     );
   }
 
-  Widget _buildProductItem(Product product) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FA),
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: NetworkImage(product.imageUrl),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                product.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${product.price.toInt().toString().replaceAllMapped(RegExp(r"(\d)(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")} đ',
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDark,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text(
-                    product.category,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 4,
-                    height: 4,
-                    decoration: const BoxDecoration(
-                      color: AppColors.textGrey,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Còn lại: ${product.stockQuantity}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textGrey,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.delete_outline,
-            color: AppColors.textGrey,
-          ),
-        ),
-      ],
-    );
-  }
 }

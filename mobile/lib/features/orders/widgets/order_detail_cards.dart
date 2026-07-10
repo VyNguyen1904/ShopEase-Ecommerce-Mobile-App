@@ -8,19 +8,43 @@ class OrderInfoCard extends StatelessWidget {
   final OrderResponse order;
   const OrderInfoCard({super.key, required this.order});
 
-  String _mapStatus(OrderStatus status) {
-    switch (status) {
+  String _mapStatus(OrderResponse order) {
+    if (order.status == OrderStatus.PENDING &&
+        order.paymentMethod.toUpperCase() == 'VNPAY' &&
+        order.paymentStatus == PaymentStatus.PENDING) {
+      return 'Chờ thanh toán';
+    }
+    switch (order.status) {
       case OrderStatus.PENDING:
-        return AppStrings.pending;
+        return 'Chờ xác nhận';
       case OrderStatus.CONFIRMED:
       case OrderStatus.PACKED:
-        return AppStrings.pending;
+        return 'Đang xử lý';
       case OrderStatus.SHIPPED:
         return AppStrings.shipping;
       case OrderStatus.DELIVERED:
         return AppStrings.delivered;
       case OrderStatus.CANCELLED:
         return AppStrings.cancelled;
+      case OrderStatus.FAILED:
+        return 'Thanh toán thất bại';
+    }
+  }
+
+  Color _getStatusColor(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.FAILED:
+        return Colors.red;
+      case OrderStatus.CANCELLED:
+        return Colors.red[300]!;
+      case OrderStatus.DELIVERED:
+        return Colors.green;
+      case OrderStatus.SHIPPED:
+        return Colors.orange;
+      case OrderStatus.PENDING:
+        return Colors.amber[700]!;
+      default:
+        return AppColors.primaryDark;
     }
   }
 
@@ -88,13 +112,13 @@ class OrderInfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.5),
+              color: _getStatusColor(order.status).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              _mapStatus(order.status),
-              style: const TextStyle(
-                color: AppColors.primaryDark,
+              _mapStatus(order),
+              style: TextStyle(
+                color: _getStatusColor(order.status),
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
@@ -430,57 +454,102 @@ class OrderPaymentCard extends StatelessWidget {
     );
   }
 
+  Widget _buildSummaryRow(String label, String value, {bool isTotal = false, bool isDiscount = false, bool isShipping = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: isTotal ? 14 : 13,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+              color: isTotal ? AppColors.textDark : AppColors.textGrey,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: isTotal ? 18 : 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
+              color: isTotal 
+                  ? AppColors.accentDark 
+                  : (isDiscount ? Colors.red : (isShipping ? Colors.orange[700] : AppColors.textDark)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return _BaseCard(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const Text(
+            AppStrings.payment,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: AppColors.textDark,
+            ),
+          ),
+          const SizedBox(height: 12),
+          
+          // Payment Method & Status
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                AppStrings.payment,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: AppColors.textDark,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: order.paymentMethod.toUpperCase() == 'VNPAY' ? Colors.blue[50] : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: order.paymentMethod.toUpperCase() == 'VNPAY' ? Colors.blue[200]! : Colors.grey[300]!),
+                ),
+                child: Text(
+                  order.paymentMethod.toUpperCase() == 'VNPAY' ? 'VNPay' : (order.paymentMethod.toUpperCase() == 'COD' ? 'Thanh toán khi nhận hàng' : order.paymentMethod),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: order.paymentMethod.toUpperCase() == 'VNPAY' ? Colors.blue[800] : AppColors.textDark,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
               Row(
                 children: [
                   const Text(
-                    AppStrings.paymentMethodPrefix,
+                    "Trạng thái: ",
                     style: TextStyle(fontSize: 12, color: AppColors.textGrey),
                   ),
                   Text(
-                    order.paymentMethod,
-                    style: const TextStyle(fontSize: 12, color: AppColors.textDark),
+                    order.paymentStatus == PaymentStatus.PAID ? "Đã thanh toán" : (order.paymentStatus == PaymentStatus.FAILED ? "Thất bại" : "Chưa thanh toán"),
+                    style: TextStyle(
+                      fontSize: 12, 
+                      fontWeight: FontWeight.bold,
+                      color: order.paymentStatus == PaymentStatus.PAID ? Colors.green : (order.paymentStatus == PaymentStatus.FAILED ? Colors.red : Colors.orange),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const Text(
-                AppStrings.totalPayment,
-                style: TextStyle(fontSize: 12, color: AppColors.textDark),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${_formatCurrency(order.totalAmount)}đ',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: AppColors.accentDark,
-                ),
-              ),
-            ],
-          ),
+          
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const SizedBox(height: 16),
+
+          // Pricing details
+          _buildSummaryRow('Tổng tiền hàng', '${_formatCurrency(order.subtotal)}đ'),
+          _buildSummaryRow('Phí vận chuyển', '+ ${_formatCurrency(order.shippingFee)}đ', isShipping: true),
+          if (order.discountAmount > 0)
+            _buildSummaryRow('Khuyến mãi', '- ${_formatCurrency(order.discountAmount)}đ', isDiscount: true),
+          
+          const SizedBox(height: 4),
+          _buildSummaryRow('Tổng thanh toán', '${_formatCurrency(order.totalAmount)}đ', isTotal: true),
         ],
       ),
     );

@@ -16,6 +16,7 @@ class Product {
   final String? careInstructions;
   final List<String> features;
   final int stockQuantity;
+  final String sellerId;
 
   const Product({
     required this.id,
@@ -35,6 +36,7 @@ class Product {
     this.careInstructions,
     this.features = const [],
     this.stockQuantity = 0,
+    this.sellerId = '',
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -72,6 +74,7 @@ class Product {
       careInstructions: json['careInstructions']?.toString(),
       features: (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
       stockQuantity: (json['stockQuantity'] as num?)?.toInt() ?? 0,
+      sellerId: json['sellerId']?.toString() ?? '',
     );
   }
 
@@ -95,6 +98,7 @@ class Product {
       'careInstructions': careInstructions,
       'features': features,
       'stockQuantity': stockQuantity,
+      'sellerId': sellerId,
     };
   }
 

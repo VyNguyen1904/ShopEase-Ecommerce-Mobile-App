@@ -5,6 +5,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/address_model.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
+import '../screens/map_picker_screen.dart';
+import 'address_map_preview.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
   final dynamic address; // Pass an address to edit, or null to create
@@ -23,11 +27,13 @@ class _AddressModalState extends ConsumerState<AddressModal> {
   
   bool _isDefault = false;
   bool _isLoading = false;
+  double? _latitude;
+  double? _longitude;
 
   List<dynamic> _provinces = [];
-  List<dynamic> _districts = [];
+  List<dynamic> _wards = [];
   dynamic _selectedProvince;
-  dynamic _selectedDistrict;
+  dynamic _selectedWard;
 
   @override
   void initState() {
@@ -37,6 +43,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     _phoneController = TextEditingController(text: addr?.phone ?? '');
     _streetController = TextEditingController(text: addr?.address1 ?? '');
     _isDefault = addr?.isDefault ?? false;
+    _latitude = addr?.latitude;
+    _longitude = addr?.longitude;
 
     _fetchProvinces();
   }
@@ -55,7 +63,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 (p) => addrCity.contains(p['name']),
               );
               if (_selectedProvince != null) {
-                _fetchDistricts(_selectedProvince['code']);
+                _fetchWardsByProvince(_selectedProvince['code']);
               }
             } catch (e) {
               // Not found
@@ -68,18 +76,26 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     }
   }
 
-  Future<void> _fetchDistricts(int provinceCode) async {
+  Future<void> _fetchWardsByProvince(int provinceCode) async {
     try {
-      final response = await Dio().get('https://provinces.open-api.vn/api/p/$provinceCode?depth=2');
+      final response = await Dio().get('https://provinces.open-api.vn/api/p/$provinceCode?depth=3');
       if (mounted) {
+        List<dynamic> allWards = [];
+        for (var d in response.data['districts']) {
+          for (var w in d['wards']) {
+            w['displayName'] = '${w['name']} (${d['name']})';
+            w['district_name'] = d['name'];
+            allWards.add(w);
+          }
+        }
         setState(() {
-          _districts = response.data['districts'];
-          // Try to select initial district if editing
-          final addrDistrict = widget.address?.address2;
-          if (addrDistrict != null && addrDistrict.isNotEmpty) {
+          _wards = allWards;
+          // Try to select initial ward if editing
+          final addrStreet = widget.address?.address1;
+          if (addrStreet != null && addrStreet.isNotEmpty) {
             try {
-              _selectedDistrict = _districts.firstWhere(
-                (d) => addrDistrict.contains(d['name']),
+              _selectedWard = _wards.firstWhere(
+                (w) => addrStreet.contains(w['name']),
               );
             } catch (e) {
               // Not found
@@ -88,7 +104,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         });
       }
     } catch (e) {
-      debugPrint('Error fetching districts: $e');
+      debugPrint('Error fetching wards: $e');
     }
   }
 
@@ -109,9 +125,11 @@ class _AddressModalState extends ConsumerState<AddressModal> {
       id: widget.address?.id,
       name: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
-      address1: _streetController.text.trim(),
-      address2: '${_selectedDistrict?['name'] ?? ''}, ${_selectedProvince?['name'] ?? ''}',
+      address1: '${_streetController.text.trim()}${_selectedWard != null ? ', ${_selectedWard['name']}' : ''}',
+      address2: '${_selectedWard != null ? _selectedWard['district_name'] : ''}, ${_selectedProvince?['name'] ?? ''}',
       isDefault: _isDefault,
+      latitude: _latitude,
+      longitude: _longitude,
     );
 
     try {
@@ -208,27 +226,27 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 onChanged: (val) {
                   setState(() {
                     _selectedProvince = val;
-                    _selectedDistrict = null;
-                    _districts = [];
+                    _selectedWard = null;
+                    _wards = [];
                   });
                   if (val != null) {
-                    _fetchDistricts(val['code']);
+                    _fetchWardsByProvince(val['code']);
                   }
                 },
-                validator: (v) => v == null ? 'Vui lòng chọn Tỉnh/Thành' : null,
+                validator: (v) => v == null ? AppStrings.pleaseSelectProvince : null,
               ),
               const SizedBox(height: 16),
               _buildDropdown(
-                label: AppStrings.district,
-                hint: AppStrings.districtHint,
-                value: _selectedDistrict,
-                items: _districts,
+                label: AppStrings.ward,
+                hint: AppStrings.wardHint,
+                value: _selectedWard,
+                items: _wards,
                 onChanged: (val) {
                   setState(() {
-                    _selectedDistrict = val;
+                    _selectedWard = val;
                   });
                 },
-                validator: (v) => v == null ? 'Vui lòng chọn Quận/Huyện' : null,
+                validator: (v) => v == null ? AppStrings.pleaseSelectWard : null,
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -236,6 +254,34 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 label: AppStrings.streetAddress,
                 hint: AppStrings.streetAddressHint,
                 validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
+              ),
+              const SizedBox(height: 16),
+              // Embedded Map Thumbnail
+              AddressMapPreview(
+                latitude: _latitude,
+                longitude: _longitude,
+                selectedProvince: _selectedProvince,
+                selectedWard: _selectedWard,
+                streetAddress: _streetController.text,
+                provinces: _provinces,
+                wards: _wards,
+                onLocationUpdated: (lat, lng, matchedProvince, matchedWard, updatedWards, street) {
+                  setState(() {
+                    _latitude = lat;
+                    _longitude = lng;
+                    _streetController.text = street;
+                    
+                    if (matchedProvince != null && _selectedProvince != matchedProvince) {
+                      _selectedProvince = matchedProvince;
+                      _selectedWard = null;
+                      _wards = [];
+                      _fetchWardsByProvince(matchedProvince['code']);
+                    } else {
+                      _selectedWard = matchedWard;
+                      _wards = updatedWards;
+                    }
+                  });
+                },
               ),
               const SizedBox(height: 16),
               SwitchListTile(
@@ -312,6 +358,74 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     );
   }
 
+  Future<void> _showSearchablePicker({
+    required String title,
+    required List<dynamic> items,
+    required void Function(dynamic) onSelected,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        String query = "";
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final filteredItems = items.where((element) {
+              final name = (element['name'] as String).toLowerCase();
+              return name.contains(query.toLowerCase());
+            }).toList();
+
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Container(
+                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    TextField(
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: AppStrings.searchHint,
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                      onChanged: (val) {
+                        setDialogState(() {
+                          query = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: filteredItems.isEmpty
+                          ? const Center(child: Text(AppStrings.noResultFound))
+                          : ListView.builder(
+                              itemCount: filteredItems.length,
+                              itemBuilder: (context, index) {
+                                final item = filteredItems[index];
+                                return ListTile(
+                                  title: Text(item['displayName'] ?? item['name']),
+                                  onTap: () {
+                                    onSelected(item);
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildDropdown({
     required String label,
     required String hint,
@@ -329,24 +443,25 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 fontWeight: FontWeight.w600,
                 color: AppColors.textGrey)),
         const SizedBox(height: 4),
-        DropdownButtonFormField<dynamic>(
-          initialValue: value,
-          isExpanded: true,
+        TextFormField(
+          readOnly: true,
+          controller: TextEditingController(text: value != null ? (value['displayName'] ?? value['name']) : ''),
           decoration: InputDecoration(
+            hintText: hint,
             isDense: true,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            suffixIcon: const Icon(Icons.arrow_drop_down),
           ),
-          hint: Text(hint),
-          items: items.map((item) {
-            return DropdownMenuItem<dynamic>(
-              value: item,
-              child: Text(item['name'], style: const TextStyle(fontSize: 14)),
+          onTap: () {
+            if (items.isEmpty) return;
+            _showSearchablePicker(
+              title: label,
+              items: items,
+              onSelected: onChanged,
             );
-          }).toList(),
-          onChanged: onChanged,
-          validator: validator,
+          },
+          validator: (val) => validator?.call(value),
         ),
       ],
     );

@@ -1,0 +1,14 @@
+package com.shopease.notification.repository;
+
+import com.shopease.notification.model.Notification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface NotificationRepository extends JpaRepository<Notification, UUID> {
+    List<Notification> findByUserIdOrderByCreatedAtDesc(String userId);
+    long countByUserIdAndIsReadFalse(String userId);
+}

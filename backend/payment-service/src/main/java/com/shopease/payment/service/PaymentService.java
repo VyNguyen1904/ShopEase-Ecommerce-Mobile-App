@@ -239,19 +239,21 @@ public class PaymentService {
 
     private void syncPersistentPayment(CheckoutPaymentResponse response, UUID orderId) {
         if (orderId == null) return;
-        payments.findByOrderId(orderId).ifPresent(payment -> {
-            if ("SUCCESS".equals(response.status())) {
-                payment.markCompleted();
-                payments.save(payment);
-                kafkaTemplate.send("payment-events", orderId.toString(),
-                        new PaymentProcessedEvent(orderId, payment.getId(), Instant.now()));
-            } else if (response.status().startsWith("FAILED")) {
-                payment.markFailed();
-                payments.save(payment);
-                kafkaTemplate.send("payment-events", orderId.toString(),
-                        new PaymentFailedEvent(orderId, response.message(), Instant.now()));
-            }
-        });
+        PaymentTransaction payment = payments.findByOrderId(orderId).orElseGet(() -> payments.save(
+                new PaymentTransaction(UUID.randomUUID(), orderId, "demo-buyer", BigDecimal.ZERO, "VND", "VNPAY",
+                        PaymentStatus.PENDING, null, null, Instant.now())));
+
+        if ("SUCCESS".equals(response.status())) {
+            payment.markCompleted();
+            payments.save(payment);
+            kafkaTemplate.send("payment-events", orderId.toString(),
+                    new PaymentProcessedEvent(orderId, payment.getId(), Instant.now()));
+        } else if (response.status().startsWith("FAILED")) {
+            payment.markFailed();
+            payments.save(payment);
+            kafkaTemplate.send("payment-events", orderId.toString(),
+                    new PaymentFailedEvent(orderId, response.message(), Instant.now()));
+        }
     }
 
     private UUID parseOrderId(String orderId) {

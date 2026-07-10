@@ -1,4 +1,4 @@
-﻿spring:
+spring:
   application:
     name: product-service
   datasource:
@@ -14,6 +14,15 @@
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
+    consumer:
+      group-id: product-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 server:
   port: 8082
 clients:

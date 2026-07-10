@@ -69,6 +69,16 @@ public class UserService {
     }
 
     @Transactional
+    public void changePassword(UUID userId, ChangePasswordRequest request) {
+        UserAccount user = getUserById(userId);
+        if (!encoder.matches(request.currentPassword(), user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Current password is incorrect");
+        }
+        user.updatePassword(encoder.encode(request.newPassword()));
+        users.save(user);
+    }
+
+    @Transactional
     public UserResponse addAddress(UUID userId, AddressRequest request) {
         UserAccount user = getUserById(userId);
         List<Address> addresses = new ArrayList<>(user.getAddresses());

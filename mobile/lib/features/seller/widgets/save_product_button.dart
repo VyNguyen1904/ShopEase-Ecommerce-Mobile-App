@@ -23,7 +23,7 @@ class SaveProductButton extends StatelessWidget {
               ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
               : const Icon(Icons.save_outlined, color: Colors.white),
           label: Text(
-            isLoading ? 'Đang lưu...' : AppStrings.saveProduct,
+            isLoading ? AppStrings.saving : AppStrings.saveProduct,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

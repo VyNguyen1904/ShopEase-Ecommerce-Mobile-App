@@ -6,21 +6,26 @@ import '../../../core/providers/auth_provider.dart';
 final cartServiceProvider = Provider((ref) => CartService());
 
 final cartProvider =
-    StateNotifierProvider<CartNotifier, AsyncValue<CartResponse>>((ref) {
-      final userAsync = ref.watch(userProfileProvider);
-      final userId = userAsync.value?.id ?? 'guest';
-      return CartNotifier(ref.watch(cartServiceProvider), userId);
+    NotifierProvider<CartNotifier, AsyncValue<CartResponse>>(() {
+      return CartNotifier();
     });
 
-class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
-  final CartService _cartService;
-  final String _userId;
+class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
+  late CartService _cartService;
+  late String _userId;
 
-  CartNotifier(this._cartService, this._userId) : super(const AsyncValue.loading()) {
+  @override
+  AsyncValue<CartResponse> build() {
+    _cartService = ref.watch(cartServiceProvider);
+    final userAsync = ref.watch(userProfileProvider);
+    _userId = userAsync.value?.id ?? 'guest';
+    
     if (_userId != 'guest') {
-      fetchCart();
+      // Fetch in background, return loading initially
+      Future.microtask(() => fetchCart());
+      return const AsyncValue.loading();
     } else {
-      state = AsyncValue.data(CartResponse(userId: 'guest', items: [], subtotal: 0, totalItems: 0));
+      return AsyncValue.data(CartResponse(userId: 'guest', items: [], subtotal: 0, totalItems: 0));
     }
   }
 
@@ -30,7 +35,6 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
         state = const AsyncValue.loading();
       }
       final cart = await _cartService.getCart(_userId);
-      if (!mounted) return;
 
       // Preserve selection state from current cart
       if (state.hasValue) {
@@ -61,7 +65,6 @@ class CartNotifier extends StateNotifier<AsyncValue<CartResponse>> {
 
       state = AsyncValue.data(cart);
     } catch (e, st) {
-      if (!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }

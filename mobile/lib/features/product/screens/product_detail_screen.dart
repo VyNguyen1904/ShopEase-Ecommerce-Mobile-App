@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
+import '../../../core/providers/favorite_provider.dart';
 
 
 import '../widgets/product_options_selector.dart';
@@ -25,8 +26,6 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
-  bool _isFavorite = false;
-
   @override
   Widget build(BuildContext context) {
     final product = ref.watch(selectedProductProvider);
@@ -68,11 +67,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         child: Column(
           children: [
             ProductHeader(
-              isFavorite: _isFavorite,
+              isFavorite: ref.watch(favoriteIdsProvider).contains(product.id),
               onFavoriteToggle: () {
-                setState(() {
-                  _isFavorite = !_isFavorite;
-                });
+                ref.read(favoriteProductsProvider.notifier).toggleFavorite(product);
               },
             ),
             Expanded(

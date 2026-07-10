@@ -75,6 +75,12 @@ public class Order {
     @Column(nullable = false)
     private String shipCity;
 
+    @Column(name = "ship_latitude")
+    private Double shipLatitude;
+
+    @Column(name = "ship_longitude")
+    private Double shipLongitude;
+
     @Column(length = 1000)
     private String note;
 
@@ -87,7 +93,7 @@ public class Order {
     public Order(UUID id, String buyerId, OrderStatus status, PaymentStatus paymentStatus, List<OrderItem> items,
                  BigDecimal subtotal, BigDecimal shippingFee, BigDecimal discountAmount, BigDecimal totalAmount,
                  String paymentMethod, String shipRecipient, String shipPhone, String shipStreet,
-                 String shipDistrict, String shipCity, String note, Instant createdAt) {
+                 String shipDistrict, String shipCity, Double shipLatitude, Double shipLongitude, String note, Instant createdAt) {
         this.id = id;
         this.buyerId = buyerId;
         this.status = status;
@@ -109,6 +115,8 @@ public class Order {
         this.shipStreet = shipStreet;
         this.shipDistrict = shipDistrict;
         this.shipCity = shipCity;
+        this.shipLatitude = shipLatitude;
+        this.shipLongitude = shipLongitude;
         this.note = note;
         this.createdAt = createdAt;
     }

@@ -28,7 +28,7 @@ class MyReviewsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('Đánh giá của tôi'),
+        title: const Text(AppStrings.myReviews),
         backgroundColor: Colors.white,
         foregroundColor: AppColors.textDark,
         elevation: 0,
@@ -43,7 +43,7 @@ class MyReviewsScreen extends ConsumerWidget {
                   Icon(Icons.rate_review_outlined, size: 64, color: Colors.grey.shade400),
                   const SizedBox(height: 16),
                   const Text(
-                    'Bạn chưa viết đánh giá nào',
+                    AppStrings.noReviewsWritten,
                     style: TextStyle(fontSize: 16, color: AppColors.textGrey),
                   ),
                 ],
@@ -97,7 +97,7 @@ class MyReviewsScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                review.productName ?? 'Sản phẩm',
+                                review.productName ?? AppStrings.product,
                                 style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -126,7 +126,7 @@ class MyReviewsScreen extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
-                              'Đang duyệt',
+                              AppStrings.pendingApproval,
                               style: TextStyle(fontSize: 10, color: AppColors.textGrey),
                             ),
                           ),
