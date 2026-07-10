@@ -58,7 +58,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
         setState(() {
           _isLoading = false;
         });
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${AppStrings.loadChatsFailed}$e')),
         );

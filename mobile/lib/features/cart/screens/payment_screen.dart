@@ -97,7 +97,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Thanh toán đơn hàng', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold)),
+        title: const Text(AppStrings.paymentScreenTitle, style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark),
           onPressed: () => context.go(AppRoutes.orders), // Cancel payment goes to orders
@@ -110,7 +110,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                'Quét mã QR để thanh toán',
+                AppStrings.scanQrToPay,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -119,7 +119,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã.',
+                AppStrings.scanQrInstruction,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppColors.textGrey, fontSize: 14),
               ),
@@ -151,7 +151,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                       height: 250,
                       child: Center(
                         child: Text(
-                          'Mã QR không hợp lệ:\n$svgString',
+                          '${AppStrings.invalidQrPrefix}$svgString',
                           style: const TextStyle(color: AppColors.alertRed),
                           textAlign: TextAlign.center,
                         ),
@@ -195,7 +195,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : const Text(
-                          'Tôi đã thanh toán',
+                          AppStrings.iHavePaid,
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                 ),
@@ -213,7 +213,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     side: const BorderSide(color: AppColors.primary),
                   ),
                   child: const Text(
-                    'Giả lập thanh toán (Dev)',
+                    AppStrings.simulatePayment,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
                   ),
                 ),

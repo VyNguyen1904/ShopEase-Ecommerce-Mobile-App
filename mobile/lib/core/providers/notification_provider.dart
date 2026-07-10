@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../features/notifications/models/notification_model.dart';
+import '../models/notification_model.dart';
 import '../services/notification_service.dart';
 
 final notificationServiceProvider = Provider((ref) => ApiNotificationService());

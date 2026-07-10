@@ -7,7 +7,7 @@ import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/notification_provider.dart';
-import '../../notifications/models/notification_model.dart';
+import '../../../core/models/notification_model.dart';
 
 class SellerOrderDetail extends ConsumerStatefulWidget {
   final String orderId;
@@ -117,7 +117,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    step == -2 ? 'Chờ xác nhận' : (step == -1 ? AppStrings.cancelled : _statusTexts[step]),
+                                    step == -2 ? 'ChềExác nhận' : (step == -1 ? AppStrings.cancelled : _statusTexts[step]),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -200,7 +200,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 3. Delivery address "Địa chỉ giao hàng" (with map)
+                  // 3. Delivery address "Địa chềEgiao hàng" (with map)
                   _buildSectionContainer(
                     title: AppStrings.shippingAddress,
                     icon: Icons.location_on_outlined,
@@ -311,7 +311,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${_formatCurrency(item.unitPrice)}đ  •  x${item.quantity}',
+                                      '${_formatCurrency(item.unitPrice)}āE •  x${item.quantity}',
                                       style: const TextStyle(
                                         fontSize: 13,
                                         color: AppColors.textGrey,
@@ -321,7 +321,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                 ),
                               ),
                               Text(
-                                '${_formatCurrency(item.subtotal)}đ',
+                                '${_formatCurrency(item.subtotal)} đ',
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -345,7 +345,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                               ),
                             ),
                             Text(
-                              '30.000đ',
+                              '30.000 đ',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textDark,
@@ -367,7 +367,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                               ),
                             ),
                             Text(
-                              '${_formatCurrency(order.totalAmount)}đ',
+                              '${_formatCurrency(order.totalAmount)} đ',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

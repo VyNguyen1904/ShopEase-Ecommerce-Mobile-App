@@ -8,6 +8,7 @@ import '../../../core/models/address_model.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import '../screens/map_picker_screen.dart';
+import 'address_map_preview.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
   final dynamic address; // Pass an address to edit, or null to create
@@ -256,198 +257,31 @@ class _AddressModalState extends ConsumerState<AddressModal> {
               ),
               const SizedBox(height: 16),
               // Embedded Map Thumbnail
-              GestureDetector(
-                onTap: () async {
-                  // Navigate to Map Picker
-                  String? query;
-                  if (_selectedProvince != null && _streetController.text.isNotEmpty) {
-                    final districtPart = _selectedWard != null ? '${_selectedWard['district_name']}, ' : '';
-                    final wardPart = _selectedWard != null ? '${_selectedWard['name']}, ' : '';
-                    query = '${_streetController.text}, $wardPart$districtPart${_selectedProvince['name']}';
-                  }
-                  
-                  final result = await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => MapPickerScreen(
-                        initialLocation: _latitude != null && _longitude != null 
-                          ? LatLng(_latitude!, _longitude!) 
-                          : null,
-                        searchQuery: query,
-                      ),
-                    )
-                  );
-                  if (result != null) {
-                    setState(() {
-                      _latitude = result['latitude'];
-                      _longitude = result['longitude'];
-                      if (result['raw'] != null && result['raw']['address'] != null) {
-                         final addr = result['raw']['address'] ?? {};
-                         final displayName = (result['raw']['display_name']?.toString() ?? '').toLowerCase();
-                         
-                         // Fix Province Mapping (Robust display_name scanner)
-                         dynamic matchedProvince;
-                         final displayNameParts = displayName.split(',').map((e) => e.trim()).toList();
-                         
-                         // First try exact match on parts
-                         for (var p in _provinces) {
-                            final pName = p['name'].toString().toLowerCase();
-                            final pShort = pName.replaceFirst(RegExp(r'^(thành phố|tỉnh)\s+'), '').trim();
-                            if (displayNameParts.contains(pName) || displayNameParts.contains(pShort)) {
-                               matchedProvince = p;
-                               break;
-                            }
-                         }
-                         
-                         // Fallback to contains on the tail of display_name
-                         if (matchedProvince == null) {
-                             final tail = displayNameParts.reversed.take(4).join(', ');
-                             for (var p in _provinces) {
-                                final pName = p['name'].toString().toLowerCase();
-                                final pShort = pName.replaceFirst(RegExp(r'^(thành phố|tỉnh)\s+'), '').trim();
-                                if (tail.contains(pName) || tail.contains(pShort)) {
-                                   matchedProvince = p;
-                                   break;
-                                }
-                             }
-                         }
-
-                         if (matchedProvince != null) {
-                            if (_selectedProvince != matchedProvince) {
-                                _selectedWard = null;
-                                _wards = [];
-                            }
-                            _selectedProvince = matchedProvince;
-                            
-                            _fetchWardsByProvince(_selectedProvince['code']).then((_) {
-                                if (mounted) {
-                                    dynamic matchedWard;
-                                    String districtRaw = (addr['city_district'] ?? addr['county'] ?? addr['town'] ?? '').toString().toLowerCase();
-                                    
-                                    for (var w in _wards) {
-                                        final wName = w['name'].toString().toLowerCase();
-                                        final wDistrict = w['district_name'].toString().toLowerCase();
-                                        
-                                        if (displayName.contains(wName)) {
-                                            if (districtRaw.isNotEmpty && (districtRaw.contains(wDistrict) || wDistrict.contains(districtRaw))) {
-                                                matchedWard = w;
-                                                break;
-                                            } else if (displayName.contains(wDistrict)) {
-                                                matchedWard = w;
-                                                break;
-                                            } else if (matchedWard == null) {
-                                                matchedWard = w; // Store first match as fallback
-                                            }
-                                        }
-                                    }
-                                    // Fallback to addr fields
-                                    if (matchedWard == null) {
-                                        final fallbackW = (addr['suburb'] ?? addr['village'] ?? addr['quarter'] ?? '').toString().toLowerCase();
-                                        if (fallbackW.isNotEmpty) {
-                                            try {
-                                                matchedWard = _wards.firstWhere((w) => fallbackW.contains(w['name'].toString().toLowerCase()) || w['name'].toString().toLowerCase().contains(fallbackW));
-                                            } catch (e) {}
-                                        }
-                                    }
-                                    // If STILL not found, use Map's ward name directly (Create custom Ward)
-                                    if (matchedWard == null) {
-                                        String customWard = (addr['suburb'] ?? addr['village'] ?? addr['quarter'] ?? '').toString();
-                                        if (customWard.isEmpty) {
-                                            final RegExp wardRegExp = RegExp(r'(Phường|Xã|Thị trấn)\s+[^,]+', caseSensitive: false);
-                                            final match = wardRegExp.firstMatch(result['raw']['display_name'] ?? '');
-                                            if (match != null) { customWard = match.group(0)!; }
-                                        }
-                                        if (customWard.isNotEmpty) {
-                                            customWard = customWard.split(' ').map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}' : '').join(' ');
-                                            matchedWard = {
-                                                'name': customWard,
-                                                'displayName': customWard,
-                                                'district_name': '',
-                                                'code': -1
-                                            };
-                                            _wards.insert(0, matchedWard); // Add to top of list
-                                        }
-                                    }
-
-                                    setState(() {
-                                        _selectedWard = matchedWard;
-                                    });
-                                }
-                            });
-                         }
-                         
-                         String street = addr['road'] ?? '';
-                         if (addr['house_number'] != null) street = '${addr['house_number']} $street';
-                         _streetController.text = street;
-                      } else if (result['address'] != null) {
-                         _streetController.text = result['address'];
-                      }
-                    });
-                  }
+              AddressMapPreview(
+                latitude: _latitude,
+                longitude: _longitude,
+                selectedProvince: _selectedProvince,
+                selectedWard: _selectedWard,
+                streetAddress: _streetController.text,
+                provinces: _provinces,
+                wards: _wards,
+                onLocationUpdated: (lat, lng, matchedProvince, matchedWard, updatedWards, street) {
+                  setState(() {
+                    _latitude = lat;
+                    _longitude = lng;
+                    _streetController.text = street;
+                    
+                    if (matchedProvince != null && _selectedProvince != matchedProvince) {
+                      _selectedProvince = matchedProvince;
+                      _selectedWard = null;
+                      _wards = [];
+                      _fetchWardsByProvince(matchedProvince['code']);
+                    } else {
+                      _selectedWard = matchedWard;
+                      _wards = updatedWards;
+                    }
+                  });
                 },
-                child: Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.primary),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  clipBehavior: Clip.hardEdge,
-                  child: Stack(
-                    children: [
-                      AbsorbPointer( // Prevent scrolling map inside scrollview
-                        child: FlutterMap(
-                          options: MapOptions(
-                            initialCenter: _latitude != null && _longitude != null 
-                              ? LatLng(_latitude!, _longitude!) 
-                              : const LatLng(10.762622, 106.660172), // Default HCM
-                            initialZoom: 15.0,
-                          ),
-                          children: [
-                            TileLayer(
-                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.shopease.app',
-                            ),
-                            if (_latitude != null && _longitude != null)
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    point: LatLng(_latitude!, _longitude!),
-                                    width: 40,
-                                    height: 40,
-                                    child: const Icon(Icons.location_on, color: AppColors.primary, size: 40),
-                                  )
-                                ],
-                              )
-                          ],
-                        ),
-                      ),
-                      // Overlay hint
-                      Positioned(
-                        bottom: 8,
-                        left: 8,
-                        right: 8,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.touch_app, size: 16, color: AppColors.primary),
-                              const SizedBox(width: 4),
-                              Text(
-                                _latitude != null ? AppStrings.tapToEditLocation : AppStrings.tapToPinLocation,
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
               ),
               const SizedBox(height: 16),
               SwitchListTile(

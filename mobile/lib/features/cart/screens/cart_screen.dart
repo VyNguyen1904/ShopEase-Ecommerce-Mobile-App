@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
-import '../providers/cart_provider.dart';
+import '../../../core/providers/cart_provider.dart';
 import '../widgets/cart_empty_state.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/cart_bottom_checkout.dart';
@@ -69,7 +69,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             const Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textLight),
             const SizedBox(height: 16),
             const Text(
-              'Vui lòng đăng nhập để xem giỏ hàng',
+              AppStrings.pleaseLogin,
               style: TextStyle(color: AppColors.textGrey, fontSize: 16),
             ),
             const SizedBox(height: 24),
@@ -83,7 +83,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Đăng nhập ngay', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(AppStrings.loginNow, style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -101,7 +101,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  isAuthError ? 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.' : AppStrings.unknownError,
+                  isAuthError ? AppStrings.sessionExpired : AppStrings.unknownError,
                   style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
@@ -114,7 +114,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       ref.read(cartProvider.notifier).fetchCart();
                     }
                   },
-                  child: Text(isAuthError ? 'Đăng nhập lại' : AppStrings.retry),
+                  child: Text(isAuthError ? AppStrings.loginAgain : AppStrings.retry),
                 ),
               ],
             ),

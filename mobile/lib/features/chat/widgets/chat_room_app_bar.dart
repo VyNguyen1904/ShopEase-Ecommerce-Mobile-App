@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../models/chat_message.dart';
+import '../../../core/models/chat_message.dart';
 
 class ChatRoomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ChatRoom room;

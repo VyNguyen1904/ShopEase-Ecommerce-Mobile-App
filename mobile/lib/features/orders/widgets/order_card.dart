@@ -7,7 +7,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/router/app_routes.dart';
-import '../../cart/providers/cart_provider.dart';
+import '../../../core/providers/cart_provider.dart';
 import 'order_item_row.dart';
 
 class OrderCard extends ConsumerWidget {
@@ -139,7 +139,7 @@ class OrderCard extends ConsumerWidget {
   }
 }
 
-// Extracted action buttons row – kept separate for readability
+// Extracted action buttons row  Ekept separate for readability
 class OrderCardActions extends ConsumerWidget {
   final OrderResponse order;
   final String statusStr;

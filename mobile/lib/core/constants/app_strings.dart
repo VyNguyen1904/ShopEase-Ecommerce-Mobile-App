@@ -88,6 +88,19 @@ class AppStrings {
   static const String clearFilter = "Xóa lọc";
   static const String noProductsFound = "Không tìm thấy sản phẩm nào.";
   static const String clearAllFilters = "Xóa bộ lọc";
+  static const String filterAndSort = "Lọc & Sắp xếp";
+  static const String sortByOptions = "Sắp xếp theo";
+  static const String nameAsc = "Tên: A → Z";
+  static const String nameDesc = "Tên: Z → A";
+  static const String priceAsc = "Giá: Thấp → Cao";
+  static const String priceDesc = "Giá: Cao → Thấp";
+  static const String highestRating = "Đánh giá cao nhất";
+  static const String bestSelling = "Bán chạy nhất";
+  static const String priceRange = "Khoảng giá";
+  static const String minRating = "Đánh giá tối thiểu";
+  static const String minRatingPrefix = "Từ ";
+  static const String minRatingSuffix = " sao trở lên";
+  static const String resetFilter = "Thiết lập lại";
 
   // Product Details
   static const String productNotFound = "Không tìm thấy sản phẩm";
@@ -409,6 +422,12 @@ class AppStrings {
   static const String paymentSuccess = "Thanh toán thành công!";
   static const String paymentFailedPrefix = "Thanh toán chưa hoàn tất. Trạng thái: ";
   static const String paymentSimulatedSuccess = "Mô phỏng thanh toán thành công!";
+  static const String paymentScreenTitle = "Thanh toán đơn hàng";
+  static const String scanQrToPay = "Quét mã QR để thanh toán";
+  static const String scanQrInstruction = "Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã.";
+  static const String invalidQrPrefix = "Mã QR không hợp lệ:\n";
+  static const String iHavePaid = "Tôi đã thanh toán";
+  static const String simulatePayment = "Giả lập thanh toán (Dev)";
   static const String updateUserStatusFailed = "Failed to update status: ";
   static const String userDeletedSuccess = "User deleted successfully";
   static const String deleteUserFailed = "Failed to delete user: ";

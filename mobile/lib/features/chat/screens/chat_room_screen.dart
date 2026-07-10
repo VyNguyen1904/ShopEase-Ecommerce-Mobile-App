@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
-import '../models/chat_message.dart';
+import '../../../core/models/chat_message.dart';
 import '../../../core/services/chat_service.dart';
 import '../../../core/services/auth_service.dart';
 import '../widgets/chat_message_bubble.dart';
@@ -75,7 +75,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         final isMe = m['senderId'] == _myUserId;
         return ChatMessage(
           id: m['id'],
-          senderName: isMe ? 'Me' : (targetUser?.fullName ?? 'Hệ thống'),
+          senderName: isMe ? AppStrings.you : (targetUser?.fullName ?? AppStrings.system),
           senderImageUrl: isMe ? '' : (targetUser?.avatar ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'),
           messageText: m['messageText'],
           time: _formatTime(m['sentAt']),
@@ -87,7 +87,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         setState(() {
           _room = ChatRoom(
             id: roomData['id'],
-            name: targetUser?.fullName ?? 'Hệ thống',
+            name: targetUser?.fullName ?? AppStrings.system,
             imageUrl: targetUser?.avatar ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
             lastMessage: roomData['lastMessage'] ?? '',
             time: _formatTime(roomData['lastMessageAt']),
@@ -210,7 +210,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       
       final newMessage = ChatMessage(
         id: sentMsg['id'],
-        senderName: 'Me',
+        senderName: AppStrings.you,
         senderImageUrl: '',
         messageText: sentMsg['messageText'],
         time: _formatTime(sentMsg['sentAt']),

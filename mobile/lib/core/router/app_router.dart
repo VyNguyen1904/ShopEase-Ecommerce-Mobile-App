@@ -37,7 +37,7 @@ import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
-import '../../features/seller/screens/shell/seller_shell_layout.dart';
+import '../../features/seller/screens/seller_shell_layout.dart';
 import '../../features/cart/screens/payment_screen.dart';
 
 Map<String, dynamic> _decodeJwt(String token) {

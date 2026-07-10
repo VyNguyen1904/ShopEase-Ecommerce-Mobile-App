@@ -10,6 +10,7 @@ import '../widgets/promo_card.dart';
 import '../widgets/category_pill.dart';
 import '../widgets/home_icon_button.dart';
 import '../../../core/providers/notification_provider.dart';
+import '../widgets/section_header.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -29,8 +30,6 @@ class HomeScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      /// GestureDetector — raw gestures, no visual feedback
-                      /// Use when you need pan, scale, swipe, or in non-Material UIs
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => context.push(AppRoutes.search),
@@ -128,40 +127,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 30),
 
               // 3. Categories
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        AppStrings.navCategory,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => context.push(AppRoutes.search),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        AppStrings.viewAll,
-                        style: TextStyle(
-                          color: AppColors.textGrey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SectionHeader(title: AppStrings.navCategory),
               const SizedBox(height: 12),
               SizedBox(
                 height: 40,
@@ -197,40 +163,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 30),
 
               // 4. New arrivals
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        AppStrings.newArrivals,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => context.push(AppRoutes.search),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        AppStrings.viewAll,
-                        style: TextStyle(
-                          color: AppColors.textGrey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SectionHeader(title: AppStrings.newArrivals),
               const SizedBox(height: 12),
               SizedBox(
                 height: 280,
@@ -258,40 +191,7 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 30),
 
               // 5. Gợi ý cho bạn
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        AppStrings.recommendations,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textDark,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => context.push(AppRoutes.search),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        AppStrings.viewAll,
-                        style: TextStyle(
-                          color: AppColors.textGrey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SectionHeader(title: AppStrings.recommendations),
               const SizedBox(height: 12),
               SizedBox(
                 height: 280,

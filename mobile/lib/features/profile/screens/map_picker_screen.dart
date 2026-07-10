@@ -6,6 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../widgets/map_search_bar.dart';
+import '../widgets/map_info_card.dart';
 
 class MapPickerScreen extends StatefulWidget {
   final LatLng? initialLocation;
@@ -209,77 +211,28 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           ),
           
           // Search Bar
-          Positioned(
-            top: 10,
-            left: 16,
-            right: 16,
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))
-                    ]
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: AppStrings.searchAddressHint,
-                      border: InputBorder.none,
-                      prefixIcon: const Icon(Icons.search, color: AppColors.textGrey),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear, color: AppColors.textGrey),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() {
-                            _searchResults = [];
-                          });
-                        },
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 15),
-                    ),
-                    onChanged: (val) {
-                      if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-                      _debounceTimer = Timer(const Duration(milliseconds: 800), () {
-                        if (val.length > 3) {
-                          _searchAddress(val);
-                        }
-                      });
-                    },
-                    onSubmitted: (val) {
-                      _debounceTimer?.cancel();
-                      _searchAddress(val);
-                    },
-                  ),
-                ),
-                if (_searchResults.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 10)
-                      ]
-                    ),
-                    constraints: const BoxConstraints(maxHeight: 200),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _searchResults.length,
-                      itemBuilder: (context, index) {
-                        final result = _searchResults[index];
-                        return ListTile(
-                          leading: const Icon(Icons.location_city, color: AppColors.textGrey),
-                          title: Text(result['display_name'], maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
-                          onTap: () => _onSearchResultSelected(result),
-                        );
-                      },
-                    ),
-                  )
-              ],
-            ),
+          MapSearchBar(
+            searchController: _searchController,
+            searchResults: _searchResults,
+            onChanged: (val) {
+              if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+              _debounceTimer = Timer(const Duration(milliseconds: 800), () {
+                if (val.length > 3) {
+                  _searchAddress(val);
+                }
+              });
+            },
+            onSubmitted: (val) {
+              _debounceTimer?.cancel();
+              _searchAddress(val);
+            },
+            onClear: () {
+              _searchController.clear();
+              setState(() {
+                _searchResults = [];
+              });
+            },
+            onResultSelected: _onSearchResultSelected,
           ),
           
           // My Location Button
@@ -295,60 +248,18 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           ),
           
           // Bottom Info Card
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -5))
-                ]
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(AppStrings.selectedLocation, style: TextStyle(color: AppColors.textGrey, fontSize: 12)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, color: AppColors.primary, size: 24),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _isLoadingAddress 
-                          ? const Text(AppStrings.loading, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
-                          : Text(_currentAddress, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () {
-                        // Return the selected location
-                        Navigator.of(context).pop({
-                          'latitude': _currentCenter.latitude,
-                          'longitude': _currentCenter.longitude,
-                          'address': _currentAddress,
-                          'raw': _rawAddress,
-                        });
-                      },
-                      child: const Text(AppStrings.confirmLocation, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                    ),
-                  )
-                ],
-              ),
-            ),
+          MapInfoCard(
+            isLoadingAddress: _isLoadingAddress,
+            currentAddress: _currentAddress,
+            onConfirm: () {
+              // Return the selected location
+              Navigator.of(context).pop({
+                'latitude': _currentCenter.latitude,
+                'longitude': _currentCenter.longitude,
+                'address': _currentAddress,
+                'raw': _rawAddress,
+              });
+            },
           )
         ],
       ),

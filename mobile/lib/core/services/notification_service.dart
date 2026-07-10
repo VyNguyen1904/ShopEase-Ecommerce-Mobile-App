@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
-import '../../features/notifications/models/notification_model.dart';
+import '../models/notification_model.dart';
 import 'auth_service.dart';
 
 class ApiNotificationService {
