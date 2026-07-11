@@ -16,6 +16,7 @@ public record CreateOrderRequest(
     @NotBlank String shipCity,
     Double shipLatitude,
     Double shipLongitude,
+    Double shippingFee,
     @Pattern(regexp = "COD|CARD|MOMO|VNPAY", flags = Pattern.Flag.CASE_INSENSITIVE) String paymentMethod,
     @Size(max = 1000) String note
 ) {}

@@ -79,17 +79,17 @@ class ProductInfo extends ConsumerWidget {
         Row(
           children: [
             Text(
-              '${_formatCurrency(product.price)}đ',
+              '${_formatCurrency(product.price)}${AppStrings.currencySymbol}',
               style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: AppColors.accent,
               ),
             ),
-            if (product.originalPrice != null) ...[
+            if (product.originalPrice != null && product.discountPercentage > 0) ...[
               const SizedBox(width: 12),
               Text(
-                '${_formatCurrency(product.originalPrice!)}đ',
+                '${_formatCurrency(product.originalPrice!)}${AppStrings.currencySymbol}',
                 style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.textLight,

@@ -118,6 +118,7 @@ class AppStrings {
   static const String productDescTitle = "Mô tả sản phẩm";
   static const String reviewsCountSuffix = " đánh giá)";
   static const String soldSuffix = " đã bán";
+  static const String soldPrefix = "Đã bán ";
 
   // Cart & Checkout
   static const String retry = "Thử lại";
@@ -146,6 +147,7 @@ class AppStrings {
   static const String product = "Sản phẩm";
   static const String codPayment = "Thanh toán khi nhận hàng (COD)";
   static const String vnpayPayment = "VNPay";
+  static const String payWithVNPay = "Thanh toán VNPay";
   static const String momoPayment = "Ví MoMo";
   static const String cardPayment = "Thẻ tín dụng / ATM";
   static const String subtotal = "Tạm tính";
@@ -411,6 +413,7 @@ class AppStrings {
   static const String general = "Chung";
   static const String currency = "Đơn vị tiền tệ";
   static const String vnd = "VND (đ)";
+  static const String currencySymbol = "đ";
   static const String termsAndConditions = "Điều khoản & điều kiện";
   static const String aboutApp = "Giới thiệu ứng dụng";
   static const String version = "Phiên bản 1.0.0";
