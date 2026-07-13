@@ -55,7 +55,7 @@ class WishlistScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               return HomeProductCard(
                 product: products[index],
-                ref: ref,
+
                 heroPrefix: 'wishlist',
               );
             },

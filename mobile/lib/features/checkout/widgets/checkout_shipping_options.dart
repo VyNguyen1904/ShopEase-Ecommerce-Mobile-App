@@ -37,7 +37,7 @@ class CheckoutShippingOptions extends StatelessWidget {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             secondary: const Text(
-              '32.000đ',
+              '35.000đ',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),

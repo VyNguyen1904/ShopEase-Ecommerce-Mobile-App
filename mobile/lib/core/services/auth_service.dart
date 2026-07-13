@@ -108,6 +108,10 @@ class AuthService {
       _ => null,
     };
 
+    if (e.response?.statusCode == 401 && e.requestOptions.path.contains('/login')) {
+      return AppStrings.errBadCredentials;
+    }
+
     return serverMessage != null 
         ? translateError(serverMessage) 
         : e.response != null 

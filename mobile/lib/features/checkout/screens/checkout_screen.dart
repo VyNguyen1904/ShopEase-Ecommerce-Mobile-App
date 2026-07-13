@@ -49,7 +49,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ? selectedItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity))
         : (cartState.value?.subtotal ?? 0);
 
-    final double baseShippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    final double baseShippingFee = _selectedShipping == 'nhanh' ? 35000 : 15000;
     final double shippingFee = subtotal >= 500000 ? 0 : baseShippingFee;
     final double discount = _useCoins ? 2000 : 0;
     final double totalAmount = subtotal + shippingFee - discount;
@@ -133,11 +133,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount),
+      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount, shippingFee),
     );
   }
 
-  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount) {
+  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount, double shippingFee) {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -176,6 +176,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 shipDistrict: district,
                 shipCity: city,
                 paymentMethod: _selectedPayment.toUpperCase(),
+                shippingFee: shippingFee,
                 note: '',
               );
 

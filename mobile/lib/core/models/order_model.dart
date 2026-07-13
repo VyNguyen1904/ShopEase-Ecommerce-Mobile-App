@@ -39,6 +39,7 @@ class CreateOrderRequest {
   final String shipDistrict;
   final String shipCity;
   final String paymentMethod;
+  final double? shippingFee;
   final String note;
 
   CreateOrderRequest({
@@ -49,6 +50,7 @@ class CreateOrderRequest {
     required this.shipDistrict,
     required this.shipCity,
     required this.paymentMethod,
+    this.shippingFee,
     this.note = '',
   });
 
@@ -60,6 +62,7 @@ class CreateOrderRequest {
     'shipDistrict': shipDistrict,
     'shipCity': shipCity,
     'paymentMethod': paymentMethod,
+    if (shippingFee != null) 'shippingFee': shippingFee,
     'note': note,
   };
 }

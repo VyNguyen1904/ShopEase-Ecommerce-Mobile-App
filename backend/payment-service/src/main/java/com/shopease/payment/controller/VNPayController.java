@@ -120,8 +120,8 @@ public class VNPayController {
         response.setContentType("text/html; charset=UTF-8");
         String htmlResponse;
         
-        // Auto-close script: closes tab after 2s. App detects status change via polling.
-        String autoCloseScript = "<script>setTimeout(function(){try{window.close();}catch(e){}},2000);</script>";
+        // Auto-close script: tries to deep link back to app after 2s
+        String autoCloseScript = "<script>setTimeout(function(){window.location.href = 'shopease://';}, 2000);</script>";
         
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
@@ -129,20 +129,22 @@ public class VNPayController {
                 if (orderId != null) {
                     paymentService.handleSimulatedWebhook(orderId, true);
                 }
-                htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Thanh toan thanh cong</title>"
+                htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Thanh toan thanh cong</title>"
                     + "<style>*{box-sizing:border-box;margin:0;padding:0}"
                     + "body{font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);}"
-                    + ".box{background:white;padding:40px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center;max-width:400px;width:90%;}"
-                    + ".icon{width:72px;height:72px;background:#10b981;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:40px;color:white;}"
+                    + ".box{background:white;padding:30px 20px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center;max-width:400px;width:90%;}"
+                    + ".icon{width:64px;height:64px;background:#10b981;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:32px;color:white;}"
                     + "h1{color:#10b981;font-size:22px;margin-bottom:10px;}"
-                    + "p{color:#6b7280;font-size:14px;line-height:1.6;}"
-                    + ".note{margin-top:16px;font-size:12px;color:#9ca3af;}"
+                    + "p{color:#6b7280;font-size:15px;line-height:1.6;}"
+                    + ".note{margin-top:20px;font-size:13px;color:#6b7280;font-weight:bold;}"
+                    + ".btn{display:inline-block;margin-top:20px;padding:12px 24px;background:#10b981;color:white;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px;}"
                     + "</style></head><body>"
                     + "<div class='box'>"
                     + "<div class='icon'>&#10003;</div>"
                     + "<h1>Thanh toan thanh cong!</h1>"
                     + "<p>Don hang cua ban da duoc xac nhan.</p>"
-                    + "<p class='note'>Cua so nay se tu dong dong sau 2 giay...</p>"
+                    + "<p class='note'>Dang tu dong quay lai ung dung...</p>"
+                    + "<a href='shopease://' class='btn'>Quay lai Ung dung</a>"
                     + "</div>"
                     + autoCloseScript
                     + "</body></html>";
@@ -151,34 +153,38 @@ public class VNPayController {
                 if (orderId != null) {
                     paymentService.handleSimulatedWebhook(orderId, false);
                 }
-                htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Thanh toan that bai</title>"
+                htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Thanh toan that bai</title>"
                     + "<style>*{box-sizing:border-box;margin:0;padding:0}"
                     + "body{font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#fff5f5,#fee2e2);}"
-                    + ".box{background:white;padding:40px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center;max-width:400px;width:90%;}"
-                    + ".icon{width:72px;height:72px;background:#ef4444;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:40px;color:white;}"
+                    + ".box{background:white;padding:30px 20px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center;max-width:400px;width:90%;}"
+                    + ".icon{width:64px;height:64px;background:#ef4444;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:32px;color:white;}"
                     + "h1{color:#ef4444;font-size:22px;margin-bottom:10px;}"
-                    + "p{color:#6b7280;font-size:14px;line-height:1.6;}"
-                    + ".note{margin-top:16px;font-size:12px;color:#9ca3af;}"
+                    + "p{color:#6b7280;font-size:15px;line-height:1.6;}"
+                    + ".note{margin-top:20px;font-size:13px;color:#6b7280;font-weight:bold;}"
+                    + ".btn{display:inline-block;margin-top:20px;padding:12px 24px;background:#ef4444;color:white;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px;}"
                     + "</style></head><body>"
                     + "<div class='box'>"
                     + "<div class='icon'>&#10007;</div>"
                     + "<h1>Thanh toan that bai!</h1>"
-                    + "<p>Giao dich khong thanh cong hoac da huy.</p>"
-                    + "<p class='note'>Cua so nay se tu dong dong sau 2 giay...</p>"
+                    + "<p>Giao dich khong thanh cong hoac da bi huy.</p>"
+                    + "<p class='note'>Dang tu dong quay lai ung dung...</p>"
+                    + "<a href='shopease://' class='btn'>Quay lai Ung dung</a>"
                     + "</div>"
                     + autoCloseScript
                     + "</body></html>";
             }
         } else {
-            htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Loi xac thuc</title>"
+            htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Loi xac thuc</title>"
                 + "<style>*{box-sizing:border-box;margin:0;padding:0}"
                 + "body{font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fffbeb;}"
-                + ".box{background:white;padding:40px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center;max-width:400px;width:90%;}"
-                + ".icon{width:72px;height:72px;background:#f59e0b;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:40px;color:white;}"
+                + ".box{background:white;padding:30px 20px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);text-align:center;max-width:400px;width:90%;}"
+                + ".icon{width:64px;height:64px;background:#f59e0b;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:32px;color:white;}"
                 + "h1{color:#f59e0b;font-size:22px;margin-bottom:10px;}"
-                + "p{color:#6b7280;font-size:14px;}"
+                + "p{color:#6b7280;font-size:15px;}"
+                + ".btn{display:inline-block;margin-top:20px;padding:12px 24px;background:#f59e0b;color:white;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px;}"
                 + "</style></head><body>"
-                + "<div class='box'><div class='icon'>!</div><h1>Loi xac thuc!</h1><p>Chu ky khong hop le.</p></div>"
+                + "<div class='box'><div class='icon'>!</div><h1>Loi xac thuc!</h1><p>Chu ky khong hop le.</p>"
+                + "<a href='shopease://' class='btn'>Quay lai Ung dung</a></div>"
                 + "</body></html>";
         }
         
