@@ -19,11 +19,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Raw websocket for Flutter
-        registry.addEndpoint("/ws")
+        registry.addEndpoint("/ws/chats")
                 .setAllowedOriginPatterns("*");
         
         // SockJS fallback for web browsers if needed
-        registry.addEndpoint("/ws-sockjs")
+        registry.addEndpoint("/ws-sockjs/chats")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }

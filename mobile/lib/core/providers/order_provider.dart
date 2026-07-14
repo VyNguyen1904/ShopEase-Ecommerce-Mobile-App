@@ -33,3 +33,24 @@ final orderDetailProvider = FutureProvider.family.autoDispose<OrderResponse, Str
   
   return order;
 });
+
+class OrderActionController {
+  final Ref ref;
+  OrderActionController(this.ref);
+
+  Future<void> cancelOrder(String orderId) async {
+    final service = ref.read(orderServiceProvider);
+    await service.cancelOrder(orderId);
+    ref.invalidate(orderDetailProvider(orderId));
+    ref.invalidate(userOrdersProvider);
+  }
+
+  Future<void> markAsDelivered(String orderId) async {
+    final service = ref.read(orderServiceProvider);
+    await service.markAsDelivered(orderId);
+    ref.invalidate(orderDetailProvider(orderId));
+    ref.invalidate(userOrdersProvider);
+  }
+}
+
+final orderActionControllerProvider = Provider((ref) => OrderActionController(ref));

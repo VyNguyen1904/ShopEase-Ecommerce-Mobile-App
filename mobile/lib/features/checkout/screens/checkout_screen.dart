@@ -6,8 +6,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../cart/providers/cart_provider.dart';
-import '../../orders/providers/order_provider.dart';
+import '../../../core/providers/cart_provider.dart';
+import '../../../core/providers/order_provider.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/payment_provider.dart';
@@ -50,7 +50,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ? selectedItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity))
         : (cartState.value?.subtotal ?? 0);
 
-    final double baseShippingFee = _selectedShipping == 'nhanh' ? 32000 : 15000;
+    final double baseShippingFee = _selectedShipping == 'nhanh' ? 35000 : 15000;
     final double shippingFee = subtotal >= 500000 ? 0 : baseShippingFee;
     final double discount = _useCoins ? 2000 : 0;
     final double totalAmount = subtotal + shippingFee - discount;
@@ -75,7 +75,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          'Thanh toán',
+          AppStrings.proceedToCheckout,
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
@@ -134,11 +134,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount),
+      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount, shippingFee),
     );
   }
 
-  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount) {
+  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount, double shippingFee) {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -177,6 +177,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 shipDistrict: district,
                 shipCity: city,
                 paymentMethod: _selectedPayment.toUpperCase(),
+                shippingFee: shippingFee,
                 note: '',
               );
 

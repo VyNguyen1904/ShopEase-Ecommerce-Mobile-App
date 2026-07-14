@@ -201,6 +201,24 @@ services:
       DB_USER: postgres
       DB_PASS: postgres
 
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: notification-service/Dockerfile
+    container_name: shopease-notification-service
+    ports:
+      - "8091:8091"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shopease
+      DB_USER: postgres
+      DB_PASS: postgres
+      KAFKA_SERVERS: kafka:9092
+
   gateway-service:
     build:
       context: ./backend
@@ -218,6 +236,7 @@ services:
       - payment-service
       - review-service
       - chat-service
+      - notification-service
     environment:
       USER_SERVICE_URI: http://user-service:8081
       PRODUCT_SERVICE_URI: http://product-service:8082
@@ -229,6 +248,8 @@ services:
       AUTH_SERVICE_URI: http://authentication-service:8088
       CHAT_SERVICE_URI: http://chat-service:8090
       CHAT_SERVICE_WS_URI: ws://chat-service:8090
+      NOTIFICATION_SERVICE_URI: http://notification-service:8091
+      NOTIFICATION_SERVICE_WS_URI: ws://notification-service:8091
 
 volumes:
   postgres-data:

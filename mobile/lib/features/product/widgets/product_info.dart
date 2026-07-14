@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
+import '../../../core/providers/review_provider.dart';
 
-class ProductInfo extends StatelessWidget {
+class ProductInfo extends ConsumerWidget {
   final Product product;
 
   const ProductInfo({
@@ -18,7 +20,20 @@ class ProductInfo extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reviewsAsync = ref.watch(productReviewsProvider(product.id));
+    
+    // Calculate actual rating and review count from fetched reviews
+    double displayRating = product.rating;
+    int displayReviewCount = product.reviewsCount;
+    
+    reviewsAsync.whenData((reviews) {
+      if (reviews.isNotEmpty) {
+        displayReviewCount = reviews.length;
+        displayRating = reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+      }
+    });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -42,7 +57,7 @@ class ProductInfo extends StatelessWidget {
               children: List.generate(
                 5,
                 (index) => Icon(
-                  index < product.rating.floor() ? Icons.star : Icons.star_border,
+                  index < displayRating.floor() ? Icons.star : Icons.star_border,
                   color: Colors.amber,
                   size: 18,
                 ),
@@ -50,7 +65,7 @@ class ProductInfo extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              '(${product.reviewsCount}${AppStrings.reviewsCountSuffix}',
+              '($displayReviewCount ${AppStrings.reviewsCountSuffix}',
               style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
             ),
             const Spacer(),
@@ -64,17 +79,17 @@ class ProductInfo extends StatelessWidget {
         Row(
           children: [
             Text(
-              '${_formatCurrency(product.price)}đ',
+              '${_formatCurrency(product.price)}${AppStrings.currencySymbol}',
               style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: AppColors.accent,
               ),
             ),
-            if (product.originalPrice != null) ...[
+            if (product.originalPrice != null && product.discountPercentage > 0) ...[
               const SizedBox(width: 12),
               Text(
-                '${_formatCurrency(product.originalPrice!)}đ',
+                '${_formatCurrency(product.originalPrice!)}${AppStrings.currencySymbol}',
                 style: const TextStyle(
                   fontSize: 16,
                   color: AppColors.textLight,

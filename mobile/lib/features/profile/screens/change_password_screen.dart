@@ -43,7 +43,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đổi mật khẩu thành công')),
+          const SnackBar(content: Text(AppStrings.changePasswordSuccess)),
         );
         context.pop();
       }
@@ -68,7 +68,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: const Text('Đổi mật khẩu'),
+        title: const Text(AppStrings.changePassword),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,

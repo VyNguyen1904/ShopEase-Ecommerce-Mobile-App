@@ -66,7 +66,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đánh giá của bạn đã được gửi thành công!')),
+          const SnackBar(content: Text(AppStrings.thanksForShopping)),
         );
         context.pop();
       }

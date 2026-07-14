@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/product_provider.dart';
 import '../../../core/constants/app_strings.dart';
+import 'price_range_filter.dart';
+import 'minimum_rating_filter.dart';
 
 class SearchFilterDrawer extends ConsumerStatefulWidget {
   const SearchFilterDrawer({super.key});
@@ -62,7 +64,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      'Lọc & Sắp xếp',
+                      AppStrings.filterAndSort,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -84,20 +86,18 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  // 1. Sắp xếp
-                  _buildSectionHeader(Icons.swap_vert, 'Sắp xếp theo'),
-                  _sortOption('Mặc định', 'none_desc', currentKey),
-                  _sortOption('Tên: A → Z', 'name_asc', currentKey),
-                  _sortOption('Tên: Z → A', 'name_desc', currentKey),
-                  _sortOption('Giá: Thấp → Cao', 'price_asc', currentKey),
-                  _sortOption('Giá: Cao → Thấp', 'price_desc', currentKey),
-                  _sortOption('Đánh giá cao nhất', 'rating_desc', currentKey),
-                  _sortOption('Bán chạy nhất', 'salesCount_desc', currentKey),
+                  _buildSectionHeader(Icons.swap_vert, AppStrings.sortByOptions),
+                  _sortOption(AppStrings.defaultVariant, 'none_desc', currentKey),
+                  _sortOption(AppStrings.nameAsc, 'name_asc', currentKey),
+                  _sortOption(AppStrings.nameDesc, 'name_desc', currentKey),
+                  _sortOption(AppStrings.priceAsc, 'price_asc', currentKey),
+                  _sortOption(AppStrings.priceDesc, 'price_desc', currentKey),
+                  _sortOption(AppStrings.highestRating, 'rating_desc', currentKey),
+                  _sortOption(AppStrings.bestSelling, 'salesCount_desc', currentKey),
                   
                   const Divider(height: 32),
 
-                  // 2. Danh mục
-                  _buildSectionHeader(Icons.grid_view, 'Danh mục'),
+                  _buildSectionHeader(Icons.grid_view, AppStrings.navCategory),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Consumer(
@@ -109,7 +109,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                               spacing: 8,
                               runSpacing: 8,
                               children: [
-                                _categoryChip('Tất cả', currentCategory == null, () {
+                                _categoryChip(AppStrings.all, currentCategory == null, () {
                                   ref.read(selectedCategorySearchProvider.notifier).state = null;
                                 }),
                                 ...categories.map((cat) {
@@ -129,83 +129,29 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
 
                   const Divider(height: 32),
 
-                  // 3. Khoảng giá
-                  _buildSectionHeader(Icons.local_offer_outlined, 'Khoảng giá'),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _formatCurrency(_tempMinPrice),
-                              style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary),
-                            ),
-                            Text(
-                              _formatCurrency(_tempMaxPrice),
-                              style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary),
-                            ),
-                          ],
-                        ),
-                        RangeSlider(
-                          values: RangeValues(_tempMinPrice, _tempMaxPrice),
-                          min: 0,
-                          max: 10000000,
-                          divisions: 100,
-                          activeColor: AppColors.primary,
-                          inactiveColor: AppColors.border,
-                          labels: RangeLabels(
-                            _formatCurrency(_tempMinPrice),
-                            _formatCurrency(_tempMaxPrice),
-                          ),
-                          onChanged: (values) {
-                            setState(() {
-                              _tempMinPrice = values.start;
-                              _tempMaxPrice = values.end;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+                  _buildSectionHeader(Icons.local_offer_outlined, AppStrings.priceRange),
+                  PriceRangeFilter(
+                    minPrice: _tempMinPrice,
+                    maxPrice: _tempMaxPrice,
+                    formatCurrency: _formatCurrency,
+                    onChanged: (values) {
+                      setState(() {
+                        _tempMinPrice = values.start;
+                        _tempMaxPrice = values.end;
+                      });
+                    },
                   ),
 
                   const Divider(height: 32),
 
-                  // 4. Đánh giá tối thiểu
-                  _buildSectionHeader(Icons.star_outline, 'Đánh giá tối thiểu'),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(5, (index) {
-                            final starValue = index + 1.0;
-                            final isActive = starValue <= _tempMinRating;
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _tempMinRating = _tempMinRating == starValue ? 0 : starValue;
-                                });
-                              },
-                              child: Icon(
-                                isActive ? Icons.star : Icons.star_border,
-                                size: 36,
-                                color: isActive ? AppColors.accent : AppColors.textLight,
-                              ),
-                            );
-                          }),
-                        ),
-                        if (_tempMinRating > 0) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            'Từ ${_tempMinRating.toInt()} sao trở lên',
-                            style: const TextStyle(fontSize: 13, color: AppColors.textGrey),
-                          ),
-                        ],
-                      ],
-                    ),
+                  _buildSectionHeader(Icons.star_outline, AppStrings.minRating),
+                  MinimumRatingFilter(
+                    currentRating: _tempMinRating,
+                    onChanged: (rating) {
+                      setState(() {
+                        _tempMinRating = rating;
+                      });
+                    },
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -247,7 +193,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                         side: const BorderSide(color: AppColors.border),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Thiết lập lại', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600)),
+                      child: const Text(AppStrings.resetFilter, style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -267,7 +213,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         elevation: 0,
                       ),
-                      child: const Text('Áp dụng', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(AppStrings.apply, style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

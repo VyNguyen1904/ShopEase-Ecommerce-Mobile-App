@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
-import '../../features/chat/models/chat_message.dart';
+import '../models/chat_message.dart';
 import 'auth_service.dart';
 
 class ApiChatService {
@@ -35,7 +35,10 @@ class ApiChatService {
 
   Future<List<dynamic>> getMyChats() async {
     try {
-      final response = await _dio.get(_chatUrl);
+      final response = await _dio.get(
+        _chatUrl,
+        queryParameters: {'_t': DateTime.now().millisecondsSinceEpoch},
+      );
       return response.data['data'] as List<dynamic>;
     } catch (e) {
       throw Exception('Failed to load chats: $e');
@@ -44,7 +47,10 @@ class ApiChatService {
 
   Future<List<dynamic>> getMessages(String roomId) async {
     try {
-      final response = await _dio.get('$_chatUrl/$roomId/messages');
+      final response = await _dio.get(
+        '$_chatUrl/$roomId/messages',
+        queryParameters: {'_t': DateTime.now().millisecondsSinceEpoch},
+      );
       return response.data['data'] as List<dynamic>;
     } catch (e) {
       throw Exception('Failed to load messages: $e');
@@ -74,11 +80,11 @@ class ApiChatService {
   Function(dynamic)? onMessageReceived;
 
   String get _wsUrl {
-    if (kIsWeb) return 'ws://127.0.0.1:8090/ws';
+    if (kIsWeb) return 'ws://127.0.0.1:8090/ws/chats';
     try {
-      if (Platform.isAndroid) return 'ws://10.0.2.2:8090/ws';
+      if (Platform.isAndroid) return 'ws://10.0.2.2:8090/ws/chats';
     } catch (_) {}
-    return 'ws://127.0.0.1:8090/ws';
+    return 'ws://127.0.0.1:8090/ws/chats';
   }
 
   Function(String)? onTypingIndicatorReceived;

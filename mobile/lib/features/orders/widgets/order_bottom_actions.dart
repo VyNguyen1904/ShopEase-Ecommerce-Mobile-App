@@ -16,8 +16,8 @@ class OrderBottomActions extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
+        left: 12,
+        right: 12,
         top: 16,
         bottom: MediaQuery.of(context).padding.bottom > 0
             ? MediaQuery.of(context).padding.bottom
@@ -33,145 +33,197 @@ class OrderBottomActions extends ConsumerWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          if (order.status == OrderStatus.PENDING) ...[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () => _handleCancelOrder(context, ref),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: AppColors.alertRed),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  AppStrings.cancelOrder,
-                  style: TextStyle(
-                    color: AppColors.alertRed,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (order.status == OrderStatus.PENDING) ..._buildPendingActions(context, ref),
+            if (order.status == OrderStatus.SHIPPED) ..._buildShippedActions(context, ref),
+            if (order.status == OrderStatus.DELIVERED) ..._buildDeliveredActions(context, ref),
+            _buildShopMoreAction(context),
           ],
-          if (order.status == OrderStatus.SHIPPED) ...[
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => _handleConfirmDelivery(context, ref),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Đã nhận được hàng',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-          ],
-          if (order.status == OrderStatus.DELIVERED) ...[
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () => _handleReturnRefund(context),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: AppColors.textGrey),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  AppStrings.returnRefundAction,
-                  style: TextStyle(
-                    color: AppColors.textGrey,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  context.push(AppRoutes.review, extra: {'order': order});
-                },
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: AppColors.primary),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  AppStrings.reviewAction,
-                  style: TextStyle(
-                    color: AppColors.primaryDark,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () => context.go(AppRoutes.home),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryDark,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      AppStrings.shopMore,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildPendingActions(BuildContext context, WidgetRef ref) {
+    return [
+      Expanded(
+        child: OutlinedButton(
+          onPressed: () => _handleCancelOrder(context, ref),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            side: const BorderSide(color: AppColors.alertRed),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
-        ],
+          child: const Text(
+            AppStrings.cancelOrder,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.alertRed,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+      if (order.paymentMethod.toUpperCase() == 'VNPAY') ...[
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id, 'qrPayload': ''}),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue[800],
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              AppStrings.payWithVNPay,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+      ],
+    ];
+  }
+
+  List<Widget> _buildShippedActions(BuildContext context, WidgetRef ref) {
+    return [
+      Expanded(
+        child: ElevatedButton(
+          onPressed: () => _handleConfirmDelivery(context, ref),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            AppStrings.received,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+    ];
+  }
+
+  List<Widget> _buildDeliveredActions(BuildContext context, WidgetRef ref) {
+    return [
+      Expanded(
+        child: OutlinedButton(
+          onPressed: () => _handleReturnRefund(context),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            side: const BorderSide(color: AppColors.textGrey),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            AppStrings.returnRefundAction,
+            style: TextStyle(
+              color: AppColors.textGrey,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: OutlinedButton(
+          onPressed: () {
+            context.push(AppRoutes.review, extra: {'order': order});
+          },
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            side: const BorderSide(color: AppColors.primary),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: const Text(
+            AppStrings.reviewAction,
+            style: TextStyle(
+              color: AppColors.primaryDark,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+    ];
+  }
+
+  Widget _buildShopMoreAction(BuildContext context) {
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () => context.go(AppRoutes.home),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryDark,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.shopping_bag_outlined,
+              color: Colors.white,
+              size: 16,
+            ),
+            SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                AppStrings.shopMore,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -205,8 +257,8 @@ class OrderBottomActions extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Xác nhận đã nhận hàng', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: const Text('Bạn xác nhận đã nhận được hàng và hàng hóa trong tình trạng tốt?'),
+        title: const Text(AppStrings.confirmReceivedTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text(AppStrings.confirmReceivedPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -223,14 +275,12 @@ class OrderBottomActions extends ConsumerWidget {
               );
 
               try {
-                await ref.read(orderServiceProvider).markAsDelivered(order.id);
-                ref.invalidate(orderDetailProvider(order.id));
-                ref.invalidate(userOrdersProvider);
+                await ref.read(orderActionControllerProvider).markAsDelivered(order.id);
 
                 if (context.mounted) {
                   Navigator.pop(context); // close loading
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cảm ơn bạn đã mua sắm! Bạn có thể đánh giá sản phẩm ngay bây giờ.')),
+                    const SnackBar(content: Text(AppStrings.thanksForShopping)),
                   );
                 }
               } catch (e) {
@@ -283,9 +333,7 @@ class OrderBottomActions extends ConsumerWidget {
               );
 
               try {
-                await ref.read(orderServiceProvider).cancelOrder(order.id);
-                ref.invalidate(orderDetailProvider(order.id));
-                ref.invalidate(userOrdersProvider);
+                await ref.read(orderActionControllerProvider).cancelOrder(order.id);
 
                 if (context.mounted) {
                   Navigator.pop(context); // close loading

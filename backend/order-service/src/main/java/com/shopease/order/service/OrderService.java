@@ -8,6 +8,7 @@ import com.shopease.common.domain.PaymentStatus;
 import com.shopease.common.event.DomainEvents.*;
 import com.shopease.order.client.ProductCatalogClient;
 import com.shopease.order.dto.CreateOrderRequest;
+import com.shopease.order.dto.NotificationEvent;
 import com.shopease.order.dto.OrderResponse;
 import com.shopease.order.dto.ReviewEligibilityResponse;
 import com.shopease.order.model.Order;
@@ -43,7 +44,7 @@ public class OrderService {
         }).toList();
 
         BigDecimal subtotal = items.stream().map(OrderItem::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal shipping = subtotal.compareTo(new BigDecimal("500000")) >= 0 ? BigDecimal.ZERO : new BigDecimal("25000");
+        BigDecimal shipping = request.shippingFee() != null ? BigDecimal.valueOf(request.shippingFee()) : (subtotal.compareTo(new BigDecimal("500000")) >= 0 ? BigDecimal.ZERO : new BigDecimal("25000"));
         String paymentMethod = request.paymentMethod() == null ? "COD" : request.paymentMethod().trim().toUpperCase(Locale.ROOT);
 
         Order order = new Order(UUID.randomUUID(), buyerId, OrderStatus.PENDING, PaymentStatus.UNPAID, items, subtotal, shipping,
@@ -130,6 +131,10 @@ public class OrderService {
             }
         }
         order.markDelivered();
+
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Giao hàng thành công", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đã được giao thành công.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+
         return OrderResponse.from(orders.save(order));
     }
 
@@ -138,6 +143,10 @@ public class OrderService {
         Order order = requireOrder(id);
         requireSellerOrAdmin(order, userId, userRole, "confirm");
         order.markConfirmed();
+        
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đã được xác nhận", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đã được người bán xác nhận.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+        
         return OrderResponse.from(orders.save(order));
     }
 
@@ -146,6 +155,10 @@ public class OrderService {
         Order order = requireOrder(id);
         requireSellerOrAdmin(order, userId, userRole, "pack");
         order.markPacked();
+
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đang được chuẩn bị", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đang được đóng gói.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+
         return OrderResponse.from(orders.save(order));
     }
 
@@ -154,6 +167,10 @@ public class OrderService {
         Order order = requireOrder(id);
         requireSellerOrAdmin(order, userId, userRole, "ship");
         order.markShipped();
+
+        NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đang giao", "Đơn hàng " + id.toString().substring(0, 8) + " của bạn đã được giao cho đơn vị vận chuyển.", "ORDER_UPDATE");
+        kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+
         return OrderResponse.from(orders.save(order));
     }
 
@@ -192,5 +209,30 @@ public class OrderService {
 
     private OrderItemEvent toEventItem(OrderItem item) {
         return new OrderItemEvent(item.getProductId(), item.getQuantity());
+    }
+
+    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 600000) // Run every 10 minutes
+    @Transactional
+    public void cancelUnpaidOrders() {
+        Instant cutoffTime = Instant.now().minus(5, java.time.temporal.ChronoUnit.HOURS);
+        List<Order> unpaidOrders = orders.findByStatusAndPaymentStatusAndCreatedAtBefore(OrderStatus.PENDING, PaymentStatus.UNPAID, cutoffTime);
+        
+        for (Order order : unpaidOrders) {
+            log.info("Auto-cancelling order {} due to unpaid status after 5 hours", order.getId());
+            order.cancel();
+            Order saved = orders.save(order);
+            
+            // Compensate inventory
+            CompensateInventoryCommand command = new CompensateInventoryCommand(
+                    saved.getId(),
+                    saved.getItems().stream().map(this::toEventItem).toList(),
+                    Instant.now()
+            );
+            kafkaTemplate.send("inventory-commands", command.orderId().toString(), command);
+
+            // Send notification
+            NotificationEvent event = new NotificationEvent(order.getBuyerId(), "Đơn hàng đã tự động hủy", "Đơn hàng " + order.getId().toString().substring(0, 8) + " đã bị hủy do chưa được thanh toán trong vòng 5 giờ.", "ORDER_UPDATE");
+            kafkaTemplate.send("notification-events", order.getBuyerId(), event);
+        }
     }
 }

@@ -19,11 +19,13 @@ import '../../features/checkout/screens/checkout_screen.dart';
 import '../../features/orders/screens/order_detail_screen.dart';
 import '../../features/orders/screens/review_screen.dart';
 import '../../features/profile/screens/settings_screen.dart';
+import '../../features/profile/screens/notification_settings_screen.dart';
 import '../../features/chat/screens/chat_list_screen.dart';
 import '../../features/chat/screens/chat_room_screen.dart';
 import '../../features/product/screens/product_detail_screen.dart';
 import '../../features/home/screens/search_results_screen.dart';
 import '../../features/profile/screens/address_screen.dart';
+import '../../features/profile/screens/wishlist_screen.dart';
 import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/my_reviews_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
@@ -35,7 +37,7 @@ import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
-import '../../features/seller/screens/shell/seller_shell_layout.dart';
+import '../../features/seller/screens/seller_shell_layout.dart';
 import '../../features/cart/screens/payment_screen.dart';
 
 Map<String, dynamic> _decodeJwt(String token) {
@@ -68,6 +70,7 @@ final appRouter = GoRouter(
         location == AppRoutes.review ||
         location.startsWith('/order-detail') ||
         location == AppRoutes.address ||
+        location == AppRoutes.wishlist ||
         location == AppRoutes.settings ||
         location == AppRoutes.notifications ||
         location == AppRoutes.chats;
@@ -241,8 +244,16 @@ final appRouter = GoRouter(
       builder: (context, state) => const ProfileEditScreen(),
     ),
     GoRoute(
+      path: AppRoutes.wishlist,
+      builder: (context, state) => const WishlistScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.notificationSettings,
+      builder: (context, state) => const NotificationSettingsScreen(),
     ),
     GoRoute(
       path: AppRoutes.myReviews,

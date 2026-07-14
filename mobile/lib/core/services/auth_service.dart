@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:dio/dio.dart';
 import '../models/auth_model.dart';
@@ -107,6 +108,10 @@ class AuthService {
       _ => null,
     };
 
+    if (e.response?.statusCode == 401 && e.requestOptions.path.contains('/login')) {
+      return AppStrings.errBadCredentials;
+    }
+
     return serverMessage != null 
         ? translateError(serverMessage) 
         : e.response != null 
@@ -198,6 +203,22 @@ class AuthService {
     }
   }
 
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    try {
+      final token = await getAccessToken();
+      await _dio.post(
+        '$_authUrl/change-password',
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
 
   Future<void> addAddress(AddressModel address) async {
     try {
@@ -309,5 +330,19 @@ class AuthService {
   Future<String?> getAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('access_token');
+  }
+
+  Future<String?> getUserId() async {
+    try {
+      final token = await getAccessToken();
+      if (token == null) return null;
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+      final Map<String, dynamic> data = jsonDecode(payload);
+      return data['userId']?.toString() ?? data['sub']?.toString();
+    } catch (_) {
+      return null;
+    }
   }
 }

@@ -24,7 +24,8 @@ public class OrderSagaOrchestrator {
 
     @Transactional
     @KafkaListener(topics = "inventory-events", groupId = "order-group")
-    public void handleInventoryEvents(Object event) {
+    public void handleInventoryEvents(org.apache.kafka.clients.consumer.ConsumerRecord<String, Object> record) {
+        Object event = record.value();
         log.info("Received inventory event: {}", event);
         if (event instanceof StockReservedEvent e) {
             handleStockReserved(e);
@@ -35,7 +36,8 @@ public class OrderSagaOrchestrator {
 
     @Transactional
     @KafkaListener(topics = "payment-events", groupId = "order-group")
-    public void handlePaymentEvents(Object event) {
+    public void handlePaymentEvents(org.apache.kafka.clients.consumer.ConsumerRecord<String, Object> record) {
+        Object event = record.value();
         log.info("Received payment event: {}", event);
         if (event instanceof PaymentProcessedEvent e) {
             handlePaymentProcessed(e);

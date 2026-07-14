@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'seller_app_bottom_nav.dart';
+import '../widgets/seller_app_bottom_nav.dart';
 
 class SellerShellLayout extends StatelessWidget {
   final StatefulNavigationShell navigationShell;

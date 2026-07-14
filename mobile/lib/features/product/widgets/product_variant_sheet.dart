@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
 import '../../../core/router/app_routes.dart';
-import '../../cart/providers/cart_provider.dart';
+import '../../../core/providers/cart_provider.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import 'variant_selection_group.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/cart_model.dart';
-import '../providers/cart_provider.dart';
+import '../../../core/providers/cart_provider.dart';
 
 class CartItemWidget extends ConsumerWidget {
   final CartItem item;
