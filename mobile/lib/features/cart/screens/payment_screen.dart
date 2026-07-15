@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
@@ -12,12 +11,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
-  final String qrPayload;
 
   const PaymentScreen({
     super.key,
     required this.orderId,
-    required this.qrPayload,
   });
 
   @override
@@ -50,7 +47,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       final orderService = OrderService();
       final order = await orderService.getOrderDetail(widget.orderId);
       final paymentService = ref.read(paymentServiceProvider);
-      final paymentUrl = await paymentService.createVNPayUrl(widget.orderId, order.totalAmount.toInt());
+      final paymentUrl = await paymentService.createVNPayUrl(
+        widget.orderId,
+        order.totalAmount.toInt(),
+      );
       final uri = Uri.parse(paymentUrl);
 
       if (await canLaunchUrl(uri)) {
@@ -241,41 +241,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           ),
                         ),
                       ),
-                      if (kIsWeb) ...[
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                final paymentService = ref.read(paymentServiceProvider);
-                                await paymentService.simulateWebhook(widget.orderId, success: true);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Đã gọi giả lập IPN thành công!')),
-                                );
-                                _startPolling();
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Lỗi: $e')),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: const Text(
-                              'Giả lập thanh toán (Web/LAN)',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                      ],
+
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () => context.go(AppRoutes.orders),

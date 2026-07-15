@@ -64,46 +64,19 @@ class PaymentService {
     }
   }
 
-  Future<String> getPaymentQr(String orderId) async {
-    try {
-      final options = await _getAuthOptions();
-      // Expecting SVG payload (string)
-      final response = await _dio.get(
-        '$_baseUrl/qr/$orderId',
-        options: options,
-      );
-      return response.data.toString();
-    } catch (e) {
-      throw Exception('Failed to get payment QR: $e');
-    }
-  }
 
-  Future<void> simulateWebhook(String orderId, {bool success = true}) async {
-    try {
-      final options = await _getAuthOptions();
-      await _dio.post(
-        '$_baseUrl/simulate-webhook',
-        options: options,
-        queryParameters: {
-          'orderId': orderId,
-          'success': success,
-        },
-      );
-    } catch (e) {
-      throw Exception('Failed to simulate webhook: $e');
-    }
-  }
 
   Future<String> createVNPayUrl(String orderId, int amount) async {
     try {
       final options = await _getAuthOptions();
+      final queryParameters = <String, dynamic>{
+        'orderId': orderId,
+        'amount': amount,
+      };
       final response = await _dio.get(
         '$_baseUrl/vnpay/create',
         options: options,
-        queryParameters: {
-          'orderId': orderId,
-          'amount': amount,
-        },
+        queryParameters: queryParameters,
       );
       return response.data['url'];
     } catch (e) {

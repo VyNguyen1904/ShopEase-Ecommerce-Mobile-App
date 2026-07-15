@@ -23,6 +23,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     AppStrings.all,
     'Chờ thanh toán',
     AppStrings.pending,
+    AppStrings.processing,
     AppStrings.shipping,
     AppStrings.delivered,
     AppStrings.cancelled,

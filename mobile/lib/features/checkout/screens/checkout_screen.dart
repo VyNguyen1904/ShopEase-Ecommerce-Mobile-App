@@ -194,10 +194,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 final paymentResp = await paymentService.processCheckout(paymentReq);
 
                 if (mounted) {
-                  if (paymentResp.qrPayload != null && paymentResp.qrPayload!.isNotEmpty) {
                     context.go('/payment', extra: {
                       'orderId': newOrder.id,
-                      'qrPayload': paymentResp.qrPayload,
                     });
                     
                     final cartNotifier = ref.read(cartProvider.notifier);
@@ -205,7 +203,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       cartNotifier.removeItem(item.itemId);
                     }
                     return;
-                  }
                 }
               }
 

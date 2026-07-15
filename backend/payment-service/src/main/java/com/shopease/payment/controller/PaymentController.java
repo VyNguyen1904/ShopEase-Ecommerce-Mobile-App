@@ -35,17 +35,6 @@ public class PaymentController {
         return payments.getPaymentStatus(orderId);
     }
 
-    @PostMapping("/simulate-webhook")
-    CheckoutPaymentResponse handleSimulatedWebhook(@RequestParam String orderId,
-                                                   @RequestParam(defaultValue = "true") boolean success) {
-        return payments.handleSimulatedWebhook(orderId, success);
-    }
-
-    @GetMapping(value = "/qr/{orderId}", produces = "image/svg+xml")
-    String getPaymentQr(@PathVariable String orderId) {
-        return payments.qrSvg(orderId);
-    }
-
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,11 +52,6 @@ public class PaymentController {
         return ApiResponse.ok(payments.getPaymentByOrder(orderId));
     }
 
-    @PostMapping("/orders/{orderId}/simulate")
-    ApiResponse<PaymentResponse> simulatePaymentResult(@PathVariable UUID orderId,
-                                                       @RequestParam(defaultValue = "true") boolean success) {
-        return ApiResponse.ok(payments.simulatePaymentResult(orderId, success));
-    }
 
     @PostMapping("/{id}/refund")
     ApiResponse<RefundResponse> processRefund(@PathVariable UUID id, @Valid @RequestBody RefundRequest request) {

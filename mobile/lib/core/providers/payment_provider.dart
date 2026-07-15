@@ -15,7 +15,4 @@ final paymentStatusProvider =
       return service.getPaymentStatus(orderId);
     });
 
-final paymentQrProvider = FutureProvider.family<String, String>((ref, orderId) async {
-  final service = ref.watch(paymentServiceProvider);
-  return service.getPaymentQr(orderId);
-});
+

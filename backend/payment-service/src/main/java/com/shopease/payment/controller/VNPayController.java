@@ -5,6 +5,7 @@ import com.shopease.payment.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -37,10 +38,7 @@ public class VNPayController {
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: " + orderId);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
-        String host = request.getHeader("Host");
-        String scheme = request.getHeader("X-Forwarded-Proto") != null ? request.getHeader("X-Forwarded-Proto") : request.getScheme();
-        String dynamicReturnUrl = scheme + "://" + host + "/api/payments/vnpay/callback";
-        vnp_Params.put("vnp_ReturnUrl", dynamicReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", "127.0.0.1");
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
@@ -64,10 +62,10 @@ public class VNPayController {
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 hashData.append(fieldName);
                 hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII).replace("+", "%20"));
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII).replace("+", "%20"));
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                 query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII).replace("+", "%20"));
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
@@ -86,42 +84,33 @@ public class VNPayController {
 
     @GetMapping("/callback")
     public void paymentCallback(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String queryString = request.getQueryString();
-        Map<String, String> rawFields = new HashMap<>();
-        if (queryString != null) {
-            String[] pairs = queryString.split("&");
-            for (String pair : pairs) {
-                int idx = pair.indexOf("=");
-                if (idx > 0) {
-                    String key = pair.substring(0, idx);
-                    String value = pair.substring(idx + 1);
-                    rawFields.put(key, value);
-                }
+        Map<String, String> fields = new HashMap<>();
+        for (Enumeration<String> params = request.getParameterNames(); params.hasMoreElements();) {
+            String fieldName = params.nextElement();
+            String fieldValue = request.getParameter(fieldName);
+            if (fieldValue != null && fieldValue.length() > 0) {
+                fields.put(fieldName, fieldValue);
             }
         }
 
-        String vnp_SecureHash = rawFields.get("vnp_SecureHash");
-        rawFields.remove("vnp_SecureHashType");
-        rawFields.remove("vnp_SecureHash");
+        String vnp_SecureHash = fields.remove("vnp_SecureHash");
+        fields.remove("vnp_SecureHashType");
 
-        String rawTxnRef = rawFields.get("vnp_TxnRef");
-        String vnp_TxnRef = rawTxnRef != null ? java.net.URLDecoder.decode(rawTxnRef, StandardCharsets.UTF_8) : null;
+        String vnp_TxnRef = fields.get("vnp_TxnRef");
         String orderId = vnp_TxnRef != null ? vnp_TxnRef.split("_")[0] : null;
+        String vnp_ResponseCode = fields.get("vnp_ResponseCode");
 
-        String rawResponseCode = rawFields.get("vnp_ResponseCode");
-        String vnp_ResponseCode = rawResponseCode != null ? java.net.URLDecoder.decode(rawResponseCode, StandardCharsets.UTF_8) : null;
-
-        List<String> fieldNames = new ArrayList<>(rawFields.keySet());
+        List<String> fieldNames = new ArrayList<>(fields.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         Iterator<String> itr = fieldNames.iterator();
         while (itr.hasNext()) {
             String fieldName = itr.next();
-            String fieldValue = rawFields.get(fieldName);
+            String fieldValue = fields.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 hashData.append(fieldName);
                 hashData.append('=');
-                hashData.append(fieldValue);
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (itr.hasNext()) {
                     hashData.append('&');
                 }
@@ -153,7 +142,9 @@ public class VNPayController {
         if (alreadyPaid || (isValidSignature && "00".equals(vnp_ResponseCode))) {
             // Payment success - update order if not already paid
             if (!alreadyPaid && orderId != null && isValidSignature) {
-                paymentService.handleSimulatedWebhook(orderId, true);
+                try {
+                    paymentService.simulate(java.util.UUID.fromString(orderId), true);
+                } catch (Exception e) {}
             }
             htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Thanh toán thành công</title>"
                 + "<style>*{box-sizing:border-box;margin:0;padding:0}"
@@ -177,7 +168,9 @@ public class VNPayController {
         } else if (isValidSignature && !"00".equals(vnp_ResponseCode)) {
             // Payment failed
             if (orderId != null) {
-                paymentService.handleSimulatedWebhook(orderId, false);
+                try {
+                    paymentService.simulate(java.util.UUID.fromString(orderId), false);
+                } catch (Exception e) {}
             }
             htmlResponse = "<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Thanh toán thất bại</title>"
                 + "<style>*{box-sizing:border-box;margin:0;padding:0}"

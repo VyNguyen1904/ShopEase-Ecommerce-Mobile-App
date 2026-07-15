@@ -222,8 +222,7 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
         final orderId = extra?['orderId'] as String? ?? '';
-        final qrPayload = extra?['qrPayload'] as String? ?? '';
-        return PaymentScreen(orderId: orderId, qrPayload: qrPayload);
+        return PaymentScreen(orderId: orderId);
       },
     ),
     GoRoute(

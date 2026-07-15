@@ -54,7 +54,15 @@ class AuthService {
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
-          if (e.response?.statusCode == 401 && !e.requestOptions.path.contains('/api/auth/refresh')) {
+          final path = e.requestOptions.path;
+          // Auth endpoints must NEVER trigger a refresh attempt
+          final isAuthEndpoint = path.contains('/api/auth/login') ||
+              path.contains('/api/auth/register') ||
+              path.contains('/api/auth/refresh') ||
+              path.contains('/api/auth/verify-email') ||
+              path.contains('/api/auth/resend-otp');
+
+          if (e.response?.statusCode == 401 && !isAuthEndpoint) {
             try {
               // Deduplicate refresh token requests
               _refreshTokenFuture ??= refreshToken().whenComplete(() {
@@ -80,7 +88,7 @@ class AuthService {
               ));
             }
           }
-          if (e.response?.statusCode == 401) {
+          if (e.response?.statusCode == 401 && !isAuthEndpoint) {
             await _clearTokens();
           }
           return handler.next(e);
@@ -91,6 +99,11 @@ class AuthService {
 
   String _handleDioError(DioException e) {
     if (e.error == 'Vui lòng đăng nhập lại') return e.error.toString();
+
+    // Fast-path: sai mật khẩu khi đăng nhập
+    if (e.response?.statusCode == 401 && e.requestOptions.path.contains('/login')) {
+      return AppStrings.errBadCredentials;
+    }
 
     String translateError(String message) {
       final lowerMsg = message.toLowerCase();
@@ -113,23 +126,25 @@ class AuthService {
     final data = e.response?.data;
     final serverMessage = switch (data) {
       Map() when data['message'] != null => data['message'].toString(),
-      Map() when data['error'] != null => data['error'].toString(),
-      Map() when data['errors'] is List && (data['errors'] as List).isNotEmpty => (data['errors'] as List).first.toString(),
+      Map() when data['error'] != null   => data['error'].toString(),
+      Map() when data['errors'] is List && (data['errors'] as List).isNotEmpty
+          => (data['errors'] as List).first.toString(),
       _ => null,
     };
 
-    if (e.response?.statusCode == 401 && e.requestOptions.path.contains('/login')) {
-      return AppStrings.errBadCredentials;
-    }
-
-    return serverMessage != null 
-        ? translateError(serverMessage) 
-        : e.response != null 
-            ? (e.response!.statusMessage ?? '${AppStrings.errServerStatus} (${e.response!.statusCode})')
+    return serverMessage != null
+        ? translateError(serverMessage)
+        : e.response != null
+            ? (e.response!.statusMessage?.isNotEmpty == true
+                ? e.response!.statusMessage!
+                : '${AppStrings.errServerStatus} (${e.response!.statusCode})')
             : switch (e.type) {
-                DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => AppStrings.errConnectionTimeout,
+                DioExceptionType.connectionTimeout ||
+                DioExceptionType.receiveTimeout => AppStrings.errConnectionTimeout,
                 DioExceptionType.connectionError => AppStrings.errConnectionError,
-                _ => '${AppStrings.errOccurred}${e.message}',
+                _ => e.message?.isNotEmpty == true
+                    ? '${AppStrings.errOccurred}${e.message}'
+                    : AppStrings.unknownError,
               };
   }
 
