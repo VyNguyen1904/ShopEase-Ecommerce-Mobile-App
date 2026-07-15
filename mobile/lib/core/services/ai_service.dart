@@ -19,7 +19,7 @@ class AiService {
     }
 
     final model = GenerativeModel(
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       apiKey: apiKey,
     );
 
@@ -39,7 +39,7 @@ Dưới đây là thông tin sản phẩm:
 
 Yêu cầu:
 - Đoạn văn ngắn gọn, dễ đọc, khoảng 3-4 đoạn.
-- Có sử dụng emoji phù hợp (nhưng không lạm dụng).
+- Hạn chế tối đa sử dụng emoji (chỉ dùng tối đa 1-2 emoji cho toàn bộ bài viết để giữ độ chuyên nghiệp).
 - Nêu bật các ưu điểm (ngay cả khi thông tin không có nhiều, hãy sáng tạo một cách logic).
 - Không nhắc đến các thông tin mà người dùng không yêu cầu.
 - Chỉ trả về nội dung mô tả, không cần thêm lời dạo đầu.

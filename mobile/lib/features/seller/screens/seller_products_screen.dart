@@ -8,6 +8,7 @@ import '../../../core/models/product.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../widgets/seller_product_card.dart';
+import '../../../core/providers/notification_provider.dart';
 
 class SellerProductsScreen extends ConsumerStatefulWidget {
   const SellerProductsScreen({super.key});
@@ -36,6 +37,9 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Ensure WebSocket is active for real-time updates
+    ref.watch(notificationListProvider);
+    
     final userAsync = ref.watch(userProfileProvider);
     
     int totalCount = 0;

@@ -38,7 +38,8 @@ public class VNPayController {
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: " + orderId);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
+        String returnUrl = getDynamicReturnUrl(request, "/api/payments/vnpay/callback");
+        vnp_Params.put("vnp_ReturnUrl", returnUrl);
         vnp_Params.put("vnp_IpAddr", "127.0.0.1");
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
@@ -210,5 +211,19 @@ public class VNPayController {
         }
         
         response.getWriter().write(htmlResponse);
+    }
+    private String getDynamicReturnUrl(HttpServletRequest request, String path) {
+        try {
+            String scheme = request.getHeader("X-Forwarded-Proto");
+            if (scheme == null) scheme = request.getScheme();
+            
+            String host = request.getHeader("X-Forwarded-Host");
+            if (host == null) {
+                host = request.getServerName() + ":" + request.getServerPort();
+            }
+            return scheme + "://" + host + path;
+        } catch (Exception e) {
+            return VNPayConfig.vnp_ReturnUrl;
+        }
     }
 }

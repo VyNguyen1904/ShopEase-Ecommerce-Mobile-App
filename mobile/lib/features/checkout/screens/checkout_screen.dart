@@ -8,6 +8,7 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/providers/order_provider.dart';
+import '../../../core/providers/product_provider.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/payment_provider.dart';
@@ -184,6 +185,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
               final orderService = ref.read(orderServiceProvider);
               final newOrder = await orderService.createOrder(req);
+
+              // Invalidate product providers to fetch fresh stock
+              ref.invalidate(productsProvider);
+              for (var item in items) {
+                ref.invalidate(productDetailProvider(item.productId.toString()));
+              }
 
               if (_selectedPayment != 'cod') {
                 final paymentReq = CheckoutPaymentRequest(

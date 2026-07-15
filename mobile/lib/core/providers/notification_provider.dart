@@ -3,6 +3,8 @@ import '../models/notification_model.dart';
 import '../services/notification_service.dart';
 
 import 'auth_provider.dart';
+import 'order_provider.dart';
+import 'product_provider.dart';
 
 final notificationServiceProvider = Provider((ref) {
   final authService = ref.watch(authServiceProvider);
@@ -16,8 +18,9 @@ final unreadNotificationCountProvider = Provider.autoDispose<AsyncValue<int>>((r
 
 class NotificationListNotifier extends StateNotifier<AsyncValue<List<NotificationModel>>> {
   final ApiNotificationService _service;
+  final Ref _ref;
 
-  NotificationListNotifier(this._service) : super(const AsyncValue.loading()) {
+  NotificationListNotifier(this._service, this._ref) : super(const AsyncValue.loading()) {
     fetchNotifications();
     _connectWebSocket();
   }
@@ -34,6 +37,22 @@ class NotificationListNotifier extends StateNotifier<AsyncValue<List<Notificatio
   void _connectWebSocket() {
     _service.connectWebSocket((newNotification) {
       addLocalNotification(newNotification);
+      
+      // Invalidate providers to achieve real-time updates across the app
+      // Invalidate orders immediately
+      _ref.invalidate(sellerOrdersProvider);
+      _ref.invalidate(userOrdersProvider);
+      
+      // Delay product invalidation slightly to allow Kafka events to process the stock update
+      Future.delayed(const Duration(seconds: 2), () {
+        _ref.invalidate(productsProvider);
+        final user = _ref.read(userProfileProvider).valueOrNull;
+        if (user != null) {
+          _ref.invalidate(sellerProductsProvider(user.id));
+        } else {
+          _ref.invalidate(sellerProductsProvider);
+        }
+      });
     });
   }
 
@@ -89,5 +108,5 @@ class NotificationListNotifier extends StateNotifier<AsyncValue<List<Notificatio
 
 final notificationListProvider = StateNotifierProvider<NotificationListNotifier, AsyncValue<List<NotificationModel>>>((ref) {
   final service = ref.read(notificationServiceProvider);
-  return NotificationListNotifier(service);
+  return NotificationListNotifier(service, ref);
 });

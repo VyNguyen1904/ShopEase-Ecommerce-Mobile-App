@@ -283,7 +283,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
                       onPressed: _generateAiDescription,
                       icon: const Icon(Icons.auto_awesome, color: Colors.purple, size: 20),
                       label: const Text(
-                        'AI Viết hộ',
+                        'AI',
                         style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
                       ),
                       style: TextButton.styleFrom(

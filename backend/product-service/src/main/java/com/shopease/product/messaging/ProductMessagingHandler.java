@@ -46,16 +46,8 @@ public class ProductMessagingHandler {
         log.info("Reserve stock command received, updating product stock for order {}", c.orderId());
         for (OrderItemEvent item : c.items()) {
             productRepository.findById(item.productId()).ifPresent(product -> {
-                // Update stock and sold count
-                int newStock = Math.max(0, product.getStockQuantity() - item.quantity());
+                product.decreaseStockQuantity(item.quantity());
                 product.increaseSoldCount(item.quantity());
-                product.update(
-                    product.getName(), product.getSlug(), product.getDescription(), product.getCategory(),
-                    product.getBasePrice(), product.getSalePrice(), newStock, product.getWeightKg(),
-                    product.getSellerId(), product.getThumbnailUrl(), product.getImageUrls(), product.getColors(),
-                    product.getSizes(), product.getMaterial(), product.getFit(), product.getCareInstructions(),
-                    product.getFeatures(), product.getStatus(), product.isFeatured()
-                );
                 productRepository.save(product);
             });
         }
@@ -65,15 +57,8 @@ public class ProductMessagingHandler {
         log.info("Compensate inventory command received, restoring product stock for order {}", c.orderId());
         for (OrderItemEvent item : c.items()) {
             productRepository.findById(item.productId()).ifPresent(product -> {
-                int newStock = product.getStockQuantity() + item.quantity();
+                product.increaseStockQuantity(item.quantity());
                 product.decreaseSoldCount(item.quantity());
-                product.update(
-                    product.getName(), product.getSlug(), product.getDescription(), product.getCategory(),
-                    product.getBasePrice(), product.getSalePrice(), newStock, product.getWeightKg(),
-                    product.getSellerId(), product.getThumbnailUrl(), product.getImageUrls(), product.getColors(),
-                    product.getSizes(), product.getMaterial(), product.getFit(), product.getCareInstructions(),
-                    product.getFeatures(), product.getStatus(), product.isFeatured()
-                );
                 productRepository.save(product);
             });
         }

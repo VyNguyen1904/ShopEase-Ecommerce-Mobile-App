@@ -6,8 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/constants/app_strings.dart';
-import '../../../core/providers/notification_provider.dart';
-import '../../../core/models/notification_model.dart';
+import '../widgets/seller_order_detail_widgets.dart';
 
 class SellerOrderDetail extends ConsumerStatefulWidget {
   final String orderId;
@@ -117,7 +116,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    step == -2 ? 'ChềExác nhận' : (step == -1 ? AppStrings.cancelled : _statusTexts[step]),
+                                    step == -2 ? 'Chờ xác nhận' : (step == -1 ? AppStrings.cancelled : _statusTexts[step]),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -145,7 +144,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                       const SizedBox(height: 16),
 
                   // 2. Customer info "Thông tin khách hàng"
-                  _buildSectionContainer(
+                  SellerSectionContainer(
                     title: AppStrings.customerInfo,
                     icon: Icons.person_outline,
                     child: Row(
@@ -201,7 +200,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   const SizedBox(height: 16),
 
                   // 3. Delivery address "Địa chềEgiao hàng" (with map)
-                  _buildSectionContainer(
+                  SellerSectionContainer(
                     title: AppStrings.shippingAddress,
                     icon: Icons.location_on_outlined,
                     child: Row(
@@ -274,7 +273,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   const SizedBox(height: 16),
 
                   // 4. Products section
-                  _buildSectionContainer(
+                  SellerSectionContainer(
                     title: AppStrings.products,
                     icon: Icons.inventory_2_outlined,
                     child: Column(
@@ -311,7 +310,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${_formatCurrency(item.unitPrice)}āE •  x${item.quantity}',
+                                      '${_formatCurrency(item.unitPrice)} đ •  x${item.quantity}',
                                       style: const TextStyle(
                                         fontSize: 13,
                                         color: AppColors.textGrey,
@@ -382,7 +381,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   const SizedBox(height: 16),
 
                   // 5. Payment Details
-                  _buildSectionContainer(
+                  SellerSectionContainer(
                     title: AppStrings.paymentMethod,
                     icon: Icons.credit_card_outlined,
                     child: Column(
@@ -414,36 +413,36 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   const SizedBox(height: 16),
 
                   // 6. Timeline history "Lịch sử đơn hàng"
-                  _buildSectionContainer(
+                  SellerSectionContainer(
                     title: AppStrings.orderHistory,
                     icon: Icons.history,
                     child: Column(
                       children: [
-                        _buildTimelineItem(
+                        SellerTimelineItem(
                           title: AppStrings.orderPlacedHistory,
                           time: DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt),
                           user: AppStrings.system,
                           isDone: true,
                         ),
-                        _buildTimelineItem(
+                        SellerTimelineItem(
                           title: AppStrings.orderConfirmedMsg,
                           time: step >= 0 ? DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt) : '--:--',
                           user: step >= 0 ? AppStrings.you : '---',
                           isDone: step >= 0,
                         ),
-                        _buildTimelineItem(
+                        SellerTimelineItem(
                           title: AppStrings.packedStatus,
                           time: step >= 1 ? '--:--' : '--:--',
                           user: step >= 1 ? AppStrings.you : '---',
                           isDone: step >= 1,
                         ),
-                        _buildTimelineItem(
+                        SellerTimelineItem(
                           title: AppStrings.orderShippingMsg,
                           time: step >= 2 ? '--:--' : '--:--/--/----  •  --:--',
                           user: step >= 2 ? AppStrings.you : '---',
                           isDone: step >= 2,
                         ),
-                        _buildTimelineItem(
+                        SellerTimelineItem(
                           title: AppStrings.orderDeliveredMsg,
                           time: step >= 3 ? '--:--' : '--:--/--/----  •  --:--',
                           user: step >= 3 ? AppStrings.system : '---',
@@ -488,24 +487,28 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   Row(
                     children: [
                       if (order.status == OrderStatus.PENDING)
-                        _buildActionButton(
-                          context, ref, order.id, AppStrings.confirm,
-                          () => ref.read(orderServiceProvider).confirmOrder(order.id)
+                        SellerActionButton(
+                          orderId: order.id,
+                          label: AppStrings.confirm,
+                          action: () => ref.read(orderServiceProvider).confirmOrder(order.id)
                         ),
                       if (order.status == OrderStatus.CONFIRMED)
-                        _buildActionButton(
-                          context, ref, order.id, AppStrings.packedStatus,
-                          () => ref.read(orderServiceProvider).packOrder(order.id)
+                        SellerActionButton(
+                          orderId: order.id,
+                          label: AppStrings.packedStatus,
+                          action: () => ref.read(orderServiceProvider).packOrder(order.id)
                         ),
                       if (order.status == OrderStatus.PACKED)
-                        _buildActionButton(
-                          context, ref, order.id, 'Giao vận chuyển',
-                          () => ref.read(orderServiceProvider).shipOrder(order.id)
+                        SellerActionButton(
+                          orderId: order.id,
+                          label: 'Giao vận chuyển',
+                          action: () => ref.read(orderServiceProvider).shipOrder(order.id)
                         ),
                       if (order.status == OrderStatus.SHIPPED)
-                        _buildActionButton(
-                          context, ref, order.id, AppStrings.confirmDelivered,
-                          () => ref.read(orderServiceProvider).markAsDelivered(order.id)
+                        SellerActionButton(
+                          orderId: order.id,
+                          label: AppStrings.confirmDelivered,
+                          action: () => ref.read(orderServiceProvider).markAsDelivered(order.id)
                         ),
                     ],
                   ),
@@ -518,156 +521,5 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
     loading: () => const Center(child: CircularProgressIndicator()),
     error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
     ));
-  }
-
-  Widget _buildSectionContainer({
-    required String title,
-    required IconData icon,
-    required Widget child,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.primary, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textGrey,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Divider(height: 1, color: AppColors.border),
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimelineItem({
-    required String title,
-    required String time,
-    required String user,
-    required bool isDone,
-    bool isLast = false,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Dots and lines
-        Column(
-          children: [
-            Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                color: isDone ? AppColors.primary : Colors.transparent,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isDone ? AppColors.primary : AppColors.textLight,
-                  width: 2.5,
-                ),
-              ),
-            ),
-            if (!isLast)
-              Container(
-                width: 2.5,
-                height: 38,
-                color: isDone ? AppColors.primary : AppColors.border,
-              ),
-          ],
-        ),
-        const SizedBox(width: 16),
-        // Timeline content
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: isDone ? AppColors.textDark : AppColors.textLight,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                time,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textLight,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Text(
-          user,
-          style: TextStyle(
-            fontSize: 12,
-            color: isDone ? AppColors.textGrey : AppColors.textLight,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(BuildContext context, WidgetRef ref, String orderId, String label, Future<dynamic> Function() action) {
-    return Expanded(
-      child: ElevatedButton(
-        onPressed: () async {
-          try {
-            await action();
-            ref.invalidate(orderDetailProvider(orderId));
-            ref.invalidate(sellerOrdersProvider);
-            // Instead of invalidating which might just reload empty list from backend, we add locally for immediate UI feedback.
-            ref.read(notificationListProvider.notifier).addLocalNotification(
-              NotificationModel(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                title: 'Cập nhật đơn hàng',
-                message: 'Trạng thái đơn hàng #${orderId.split('-').last.toUpperCase()} đã được cập nhật thành "$label".',
-                type: 'ORDER_UPDATE',
-                isRead: false,
-                createdAt: DateTime.now(),
-              )
-            );
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Cập nhật trạng thái thành công'),
-                backgroundColor: AppColors.primary,
-              ));
-            }
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
-            }
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
-    );
   }
 }
