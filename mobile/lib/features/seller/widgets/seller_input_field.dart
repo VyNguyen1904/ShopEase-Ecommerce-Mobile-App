@@ -8,6 +8,7 @@ class SellerInputField extends StatelessWidget {
   final String hintText;
   final TextInputType keyboardType;
   final int maxLines;
+  final Widget? trailingLabelWidget;
 
   const SellerInputField({
     super.key,
@@ -17,6 +18,7 @@ class SellerInputField extends StatelessWidget {
     required this.hintText,
     this.keyboardType = TextInputType.text,
     this.maxLines = 1,
+    this.trailingLabelWidget,
   });
 
   @override
@@ -25,24 +27,30 @@ class SellerInputField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textDark,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textDark,
-              ),
-            ),
+            if (trailingLabelWidget != null) trailingLabelWidget!,
           ],
         ),
         const SizedBox(height: 8),
