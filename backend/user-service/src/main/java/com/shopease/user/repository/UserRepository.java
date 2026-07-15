@@ -11,5 +11,7 @@ public interface UserRepository extends JpaRepository<UserAccount, UUID> {
 
     boolean existsByEmailIgnoreCase(String email);
 
+    Optional<UserAccount> findFirstByRole(com.shopease.user.model.Role role);
+
     long countByEnabled(boolean enabled);
 }

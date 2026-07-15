@@ -4,6 +4,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
 import '../../../core/providers/review_provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/router/app_routes.dart';
 
 class ProductInfo extends ConsumerWidget {
   final Product product;
@@ -131,6 +133,60 @@ class ProductInfo extends ConsumerWidget {
             fontSize: 14,
             color: AppColors.textGrey,
             height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blue.withOpacity(0.2)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.storefront, color: Colors.blue, size: 24),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Xem trực tiếp tại cửa hàng',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Bấm để xem bản đồ và chỉ đường',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  context.push(AppRoutes.storeMap);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text('Bản đồ', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 24),
