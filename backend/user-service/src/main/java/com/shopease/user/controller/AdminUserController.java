@@ -73,6 +73,7 @@ public class AdminUserController {
                 new ArrayList<>(),
                 Instant.now()
         );
+        newUser.verifyAccount(); // Admin created accounts are pre-verified
 
         userRepository.save(newUser);
 

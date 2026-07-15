@@ -179,6 +179,15 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> getStoreInfo() async {
+    try {
+      final response = await _dio.get('$_userUrl/store-info');
+      return response.data['data'];
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    }
+  }
+
   Future<UserResponse> getUserById(String id) async {
     try {
       final response = await _dio.get('$_userUrl/$id');
