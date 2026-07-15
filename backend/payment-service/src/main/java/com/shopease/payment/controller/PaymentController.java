@@ -70,7 +70,7 @@ public class PaymentController {
             hashData.deleteCharAt(hashData.length() - 1);
         }
 
-        String signValue = com.shopease.payment.config.VnPayConfig.hmacSHA512(com.shopease.payment.config.VnPayConfig.secretKey, hashData.toString());
+        String signValue = com.shopease.payment.config.VNPayConfig.hmacSHA512(com.shopease.payment.config.VNPayConfig.secretKey, hashData.toString());
         
         boolean success = "00".equals(vnp_ResponseCode) && signValue.equals(vnp_SecureHash);
         

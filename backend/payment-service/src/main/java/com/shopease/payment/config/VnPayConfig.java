@@ -1,17 +1,16 @@
 package com.shopease.payment.config;
 
-import org.springframework.context.annotation.Configuration;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
-@Configuration
-public class VnPayConfig {
+public class VNPayConfig {
     public static final String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static final String vnp_ReturnUrl = "http://localhost:8000/api/payments/vnpay-return"; // Gateway URL
-    public static final String vnp_TmnCode = "FALBDFSZ"; // User's TmnCode
-    public static final String secretKey = "LDCX2JAG4IJFCQ1S3YYESPWEB9HKZ43A"; // User's HashSecret
+    public static final String vnp_ReturnUrl = "http://10.0.2.2:8086/api/payments/vnpay/callback";
+    public static final String vnp_TmnCode = "RIQUTV9F";
+    public static final String secretKey = "ISSOCEDZRBG9X0KTUWI42S8TGUFWNPV7";
+    public static final String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     public static final String vnp_Version = "2.1.0";
     public static final String vnp_Command = "pay";
 
@@ -31,9 +30,18 @@ public class VnPayConfig {
                 sb.append(String.format("%02x", b & 0xff));
             }
             return sb.toString();
-
         } catch (Exception ex) {
             return "";
         }
+    }
+
+    public static String getRandomNumber(int len) {
+        Random rnd = new Random();
+        String chars = "0123456789";
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 }
