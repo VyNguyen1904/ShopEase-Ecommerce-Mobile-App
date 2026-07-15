@@ -7,12 +7,10 @@ import java.util.Random;
 
 public class VNPayConfig {
     public static final String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static final String vnp_ReturnUrl = "http://10.0.2.2:8086/api/payments/vnpay/callback";
+    public static final String vnp_ReturnUrl = "http://192.168.3.6:8086 /api/payments/vnpay/callback";
     public static final String vnp_TmnCode = "RIQUTV9F";
     public static final String secretKey = "ISSOCEDZRBG9X0KTUWI42S8TGUFWNPV7";
     public static final String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-    public static final String vnp_Version = "2.1.0";
-    public static final String vnp_Command = "pay";
 
     public static String hmacSHA512(final String key, final String data) {
         try {

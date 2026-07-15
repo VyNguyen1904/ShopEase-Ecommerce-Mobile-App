@@ -15,7 +15,7 @@ class ApiChatService {
       return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
     }
     try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:8000';
+      if (Platform.isAndroid) return 'http://192.168.3.6:8000';
     } catch (_) {}
     return 'http://127.0.0.1:8000';
   }
@@ -76,7 +76,7 @@ class ApiChatService {
       return "ws://${host.isNotEmpty ? host : '127.0.0.1'}:8090/ws/chats";
     }
     try {
-      if (Platform.isAndroid) return 'ws://10.0.2.2:8090/ws/chats';
+      if (Platform.isAndroid) return 'ws://192.168.3.6:8090/ws/chats';
     } catch (_) {}
     return 'ws://127.0.0.1:8090/ws/chats';
   }
