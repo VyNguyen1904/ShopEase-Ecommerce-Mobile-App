@@ -3,7 +3,10 @@ import '../../../core/models/cart_model.dart';
 import '../../../core/services/cart_service.dart';
 import '../../../core/providers/auth_provider.dart';
 
-final cartServiceProvider = Provider((ref) => CartService());
+final cartServiceProvider = Provider((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return CartService(dio: authService.dio);
+});
 
 final cartProvider =
     NotifierProvider<CartNotifier, AsyncValue<CartResponse>>(() {

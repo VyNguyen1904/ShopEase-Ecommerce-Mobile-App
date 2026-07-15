@@ -3,8 +3,11 @@ import '../models/user_model.dart';
 import '../models/admin_stats_model.dart';
 import '../services/admin_user_service.dart';
 
+import 'auth_provider.dart';
+
 final adminUserServiceProvider = Provider<AdminUserService>((ref) {
-  return AdminUserService();
+  final authService = ref.watch(authServiceProvider);
+  return AdminUserService(dio: authService.dio);
 });
 
 final adminUsersProvider = FutureProvider<List<UserModel>>((ref) async {

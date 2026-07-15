@@ -3,7 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/order_model.dart';
 import '../services/order_service.dart';
 
-final orderServiceProvider = Provider((ref) => OrderService());
+import 'auth_provider.dart';
+
+final orderServiceProvider = Provider((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return OrderService(dio: authService.dio);
+});
 
 final userOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref) async {
   final timer = Timer(const Duration(seconds: 10), () => ref.invalidateSelf());

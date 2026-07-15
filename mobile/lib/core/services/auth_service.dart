@@ -9,9 +9,15 @@ import '../constants/app_strings.dart';
 
 class AuthService {
   final Dio _dio;
+  Future<TokenResponse>? _refreshTokenFuture;
+  
+  Dio get dio => _dio;
 
   String get _host {
-    if (kIsWeb) return 'http://127.0.0.1:8000';
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
+    }
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
@@ -50,8 +56,12 @@ class AuthService {
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401 && !e.requestOptions.path.contains('/api/auth/refresh')) {
             try {
-              // Automatically refresh the token
-              final tokenResponse = await refreshToken();
+              // Deduplicate refresh token requests
+              _refreshTokenFuture ??= refreshToken().whenComplete(() {
+                _refreshTokenFuture = null;
+              });
+              
+              final tokenResponse = await _refreshTokenFuture!;
               
               // Update the original request with the new token
               e.requestOptions.headers['Authorization'] = 'Bearer ${tokenResponse.accessToken}';

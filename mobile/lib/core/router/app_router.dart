@@ -113,6 +113,26 @@ final appRouter = GoRouter(
     ),
   ),
   routes: [
+    // ── Deep Link Handlers ──────────────────────────────────────────────────
+    GoRoute(
+      path: '/',
+      redirect: (context, state) => AppRoutes.home,
+    ),
+    GoRoute(
+      path: '/payment-return/:id',
+      redirect: (context, state) {
+        final id = state.pathParameters['id'];
+        if (id != null && id.isNotEmpty) {
+          return AppRoutes.orderDetailPath(id);
+        }
+        return AppRoutes.orders;
+      },
+    ),
+    GoRoute(
+      path: '/payment-return',
+      redirect: (context, state) => AppRoutes.orders,
+    ),
+
     // ── Onboarding & Auth ──────────────────────────────────────────────────
     GoRoute(
       path: AppRoutes.splash,

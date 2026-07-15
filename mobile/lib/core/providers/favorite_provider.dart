@@ -2,7 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
 import '../services/favorite_service.dart';
 
-final favoriteServiceProvider = Provider((ref) => FavoriteService());
+import 'auth_provider.dart';
+
+final favoriteServiceProvider = Provider((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return FavoriteService(dio: authService.dio);
+});
 
 final favoriteProductsProvider = StateNotifierProvider<FavoriteProductsNotifier, AsyncValue<List<Product>>>((ref) {
   return FavoriteProductsNotifier(ref.watch(favoriteServiceProvider));

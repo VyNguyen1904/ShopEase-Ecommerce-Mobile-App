@@ -108,6 +108,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             const CheckoutSectionTitle(title: AppStrings.shippingUnit),
             CheckoutShippingOptions(
               selectedShipping: _selectedShipping,
+              isFreeShipping: subtotal >= 500000,
               onChanged: (val) => setState(() => _selectedShipping = val),
             ),
             const SizedBox(height: 24),

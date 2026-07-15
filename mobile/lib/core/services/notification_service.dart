@@ -11,7 +11,10 @@ class ApiNotificationService {
   final AuthService _authService = AuthService();
 
   String get _host {
-    if (kIsWeb) return 'http://127.0.0.1:8000';
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
+    }
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
@@ -20,23 +23,7 @@ class ApiNotificationService {
 
   String get _apiUrl => '$_host/api/notifications';
 
-  ApiNotificationService({Dio? dio}) : _dio = dio ?? Dio() {
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          final token = await _authService.getAccessToken();
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-            final userId = await _authService.getUserId();
-            if (userId != null) {
-              options.headers['X-User-Id'] = userId;
-            }
-          }
-          return handler.next(options);
-        },
-      ),
-    );
-  }
+  ApiNotificationService({Dio? dio}) : _dio = dio ?? Dio();
 
   Future<List<NotificationModel>> getNotifications() async {
     try {
@@ -78,7 +65,10 @@ class ApiNotificationService {
   Function(NotificationModel)? onNotificationReceived;
 
   String get _wsUrl {
-    if (kIsWeb) return 'ws://127.0.0.1:8091/ws/notifications';
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      return "ws://${host.isNotEmpty ? host : '127.0.0.1'}:8091/ws/notifications";
+    }
     try {
       if (Platform.isAndroid) return 'ws://10.0.2.2:8091/ws/notifications';
     } catch (_) {}
