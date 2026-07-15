@@ -39,7 +39,6 @@ class CheckoutPaymentResponse {
   final String status;
   final String? message;
   final String? timestamp;
-  final String? qrPayload;
 
   CheckoutPaymentResponse({
     this.transactionId,
@@ -47,7 +46,6 @@ class CheckoutPaymentResponse {
     required this.status,
     this.message,
     this.timestamp,
-    this.qrPayload,
   });
 
   factory CheckoutPaymentResponse.fromJson(Map<String, dynamic> json) {
@@ -57,7 +55,6 @@ class CheckoutPaymentResponse {
       status: json['status'] ?? 'UNKNOWN',
       message: json['message'],
       timestamp: json['timestamp'],
-      qrPayload: json['qrPayload'],
     );
   }
 }

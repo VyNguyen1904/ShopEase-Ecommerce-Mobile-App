@@ -29,7 +29,7 @@ class CheckoutOrderSummary extends StatelessWidget {
       children: [
         _buildSummaryRow(AppStrings.subtotal, '${_formatPrice(subtotal)}đ'),
         const SizedBox(height: 8),
-        _buildSummaryRow(AppStrings.shippingFee, '${_formatPrice(shippingFee)}đ'),
+        _buildSummaryRow(AppStrings.shippingFee, shippingFee == 0 ? AppStrings.freeShipping : '${_formatPrice(shippingFee)}đ'),
         const SizedBox(height: 8),
         _buildSummaryRow(AppStrings.discount, '-${_formatPrice(discount)}đ'),
         const SizedBox(height: 12),

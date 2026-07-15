@@ -8,7 +8,10 @@ class OrderService {
   final Dio _dio;
 
   String get _host {
-    if (kIsWeb) return 'http://127.0.0.1:8000';
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
+    }
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}

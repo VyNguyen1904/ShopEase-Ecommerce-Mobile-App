@@ -11,12 +11,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
-  final String qrPayload;
 
   const PaymentScreen({
     super.key,
     required this.orderId,
-    required this.qrPayload,
   });
 
   @override
@@ -49,7 +47,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       final orderService = OrderService();
       final order = await orderService.getOrderDetail(widget.orderId);
       final paymentService = ref.read(paymentServiceProvider);
-      final paymentUrl = await paymentService.createVNPayUrl(widget.orderId, order.totalAmount.toInt());
+      final paymentUrl = await paymentService.createVNPayUrl(
+        widget.orderId,
+        order.totalAmount.toInt(),
+      );
       final uri = Uri.parse(paymentUrl);
 
       if (await canLaunchUrl(uri)) {
@@ -240,6 +241,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () => context.go(AppRoutes.orders),

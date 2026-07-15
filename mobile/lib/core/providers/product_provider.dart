@@ -3,8 +3,11 @@ import '../models/product.dart';
 import '../models/category_model.dart';
 import '../services/product_service.dart';
 
+import '../providers/auth_provider.dart';
+
 final productServiceProvider = Provider<ProductService>((ref) {
-  return ProductService();
+  final authService = ref.watch(authServiceProvider);
+  return ProductService(dio: authService.dio);
 });
 
 /// Provider for fetching all products.

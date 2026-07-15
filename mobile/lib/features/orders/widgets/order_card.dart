@@ -180,7 +180,7 @@ class OrderCardActions extends ConsumerWidget {
 
   Widget _buildPayVNPayButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id, 'qrPayload': ''}),
+      onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id}),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[800],
         foregroundColor: Colors.white,

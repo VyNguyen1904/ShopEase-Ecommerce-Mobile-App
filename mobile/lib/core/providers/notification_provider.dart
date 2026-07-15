@@ -2,7 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/notification_model.dart';
 import '../services/notification_service.dart';
 
-final notificationServiceProvider = Provider((ref) => ApiNotificationService());
+import 'auth_provider.dart';
+
+final notificationServiceProvider = Provider((ref) {
+  final authService = ref.watch(authServiceProvider);
+  return ApiNotificationService(dio: authService.dio);
+});
 
 final unreadNotificationCountProvider = Provider.autoDispose<AsyncValue<int>>((ref) {
   final listAsync = ref.watch(notificationListProvider);

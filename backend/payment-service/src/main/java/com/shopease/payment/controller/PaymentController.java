@@ -35,60 +35,6 @@ public class PaymentController {
         return payments.getPaymentStatus(orderId);
     }
 
-    @PostMapping("/simulate-webhook")
-    CheckoutPaymentResponse handleSimulatedWebhook(@RequestParam String orderId,
-                                                   @RequestParam(defaultValue = "true") boolean success) {
-        return payments.handleSimulatedWebhook(orderId, success);
-    }
-
-    @GetMapping("/vnpay-return")
-    public String handleVnPayReturn(@RequestParam java.util.Map<String, String> params) {
-        String orderId = params.get("orderId");
-        String vnp_ResponseCode = params.get("vnp_ResponseCode");
-        String vnp_SecureHash = params.remove("vnp_SecureHash");
-        params.remove("vnp_SecureHashType");
-
-        java.util.List<String> fieldNames = new java.util.ArrayList<>(params.keySet());
-        java.util.Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        java.util.Iterator<String> itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0) && !fieldName.equals("orderId")) {
-                hashData.append(fieldName);
-                hashData.append('=');
-                hashData.append(java.net.URLEncoder.encode(fieldValue, java.nio.charset.StandardCharsets.US_ASCII));
-                if (itr.hasNext()) {
-                    hashData.append('&');
-                }
-            }
-        }
-        
-        // Remove trailing & if exists
-        if (hashData.length() > 0 && hashData.charAt(hashData.length() - 1) == '&') {
-            hashData.deleteCharAt(hashData.length() - 1);
-        }
-
-        String signValue = com.shopease.payment.config.VNPayConfig.hmacSHA512(com.shopease.payment.config.VNPayConfig.secretKey, hashData.toString());
-        
-        boolean success = "00".equals(vnp_ResponseCode) && signValue.equals(vnp_SecureHash);
-        
-        // Let's just process it anyway for sandbox test
-        if ("00".equals(vnp_ResponseCode)) {
-             payments.handleSimulatedWebhook(orderId, true);
-             return "Payment Successful! You can close this window.";
-        } else {
-             payments.handleSimulatedWebhook(orderId, false);
-             return "Payment Failed or Canceled! You can close this window.";
-        }
-    }
-
-    @GetMapping(value = "/qr/{orderId}", produces = "image/svg+xml")
-    String getPaymentQr(@PathVariable String orderId) {
-        return payments.qrSvg(orderId);
-    }
-
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -106,11 +52,6 @@ public class PaymentController {
         return ApiResponse.ok(payments.getPaymentByOrder(orderId));
     }
 
-    @PostMapping("/orders/{orderId}/simulate")
-    ApiResponse<PaymentResponse> simulatePaymentResult(@PathVariable UUID orderId,
-                                                       @RequestParam(defaultValue = "true") boolean success) {
-        return ApiResponse.ok(payments.simulatePaymentResult(orderId, success));
-    }
 
     @PostMapping("/{id}/refund")
     ApiResponse<RefundResponse> processRefund(@PathVariable UUID id, @Valid @RequestBody RefundRequest request) {

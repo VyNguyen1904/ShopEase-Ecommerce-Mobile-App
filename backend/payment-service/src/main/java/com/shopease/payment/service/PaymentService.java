@@ -57,10 +57,7 @@ public class PaymentService {
         return createPaymentTransaction(request);
     }
 
-    @Transactional
-    public PaymentResponse simulate(UUID orderId, boolean success) {
-        return simulatePaymentResult(orderId, success);
-    }
+
 
     public List<PaymentResponse> listPaymentTransactions() {
         return payments.findAll().stream().map(PaymentResponse::from).toList();
@@ -121,51 +118,8 @@ public class PaymentService {
     }
 
     @Transactional
-    public CheckoutPaymentResponse handleSimulatedWebhook(String orderId, boolean success) {
-        String normalizedOrderId = normalizeOrderId(orderId);
-        CheckoutPaymentResponse response = demoLedger.compute(normalizedOrderId, (key, current) -> {
-            CheckoutPaymentResponse base = current == null ? pendingQrResponse(orderId.trim()) : current;
-            String status = success ? "SUCCESS" : "FAILED";
-            String message = success ? "QR payment confirmed by simulated webhook."
-                    : "QR payment failed by simulated webhook.";
-            return base.withStatus(status, message);
-        });
-        syncPersistentPayment(response, parseOrderId(response.orderId()));
-        return response;
-    }
-
-    public String qrSvg(String orderId) {
-        String label = escapeXml(orderId);
-        int cells = 15;
-        int cell = 12;
-        int quiet = 20;
-        int size = quiet * 2 + cells * cell;
-        int hash = orderId.hashCode();
-        StringBuilder svg = new StringBuilder();
-        svg.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"").append(size).append("\" height=\"")
-                .append(size + 32).append("\" viewBox=\"0 0 ").append(size).append(' ').append(size + 32)
-                .append("\">");
-        svg.append("<rect width=\"100%\" height=\"100%\" fill=\"#ffffff\"/>");
-        appendFinder(svg, quiet, quiet, cell);
-        appendFinder(svg, quiet + (cells - 4) * cell, quiet, cell);
-        appendFinder(svg, quiet, quiet + (cells - 4) * cell, cell);
-        for (int y = 0; y < cells; y++) {
-            for (int x = 0; x < cells; x++) {
-                if (insideFinder(x, y, cells)) {
-                    continue;
-                }
-                int bit = Math.floorMod(hash + x * 31 + y * 17 + x * y, 7);
-                if (bit == 0 || bit == 3 || bit == 5) {
-                    svg.append("<rect x=\"").append(quiet + x * cell).append("\" y=\"").append(quiet + y * cell)
-                            .append("\" width=\"").append(cell).append("\" height=\"").append(cell)
-                            .append("\" fill=\"#111827\"/>");
-                }
-            }
-        }
-        svg.append("<text x=\"").append(size / 2).append("\" y=\"").append(size + 20)
-                .append("\" text-anchor=\"middle\" font-family=\"Arial, sans-serif\" font-size=\"13\" fill=\"#111827\">")
-                .append(label).append("</text></svg>");
-        return svg.toString();
+    public PaymentResponse simulate(UUID orderId, boolean success) {
+        return simulatePaymentResult(orderId, success);
     }
 
     @Transactional
@@ -190,7 +144,6 @@ public class PaymentService {
         
         return PaymentResponse.from(saved);
     }
-
     @Transactional
     public RefundResponse processRefund(UUID transactionId, RefundRequest request) {
         payments.findById(transactionId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
@@ -206,30 +159,28 @@ public class PaymentService {
         }
         
         if (isQrMethod(method)) {
-            return pendingQrResponse(request.orderId().trim());
+            return new CheckoutPaymentResponse(nextTransactionId(), request.orderId().trim(), "PENDING",
+                    "QR payment initiated.", Instant.now());
         }
 
         String cardDigits = digitsOnly(request.cardNumber());
         if (cardDigits.isBlank()) {
             return new CheckoutPaymentResponse(nextTransactionId(), request.orderId().trim(), "FAILED_INVALID_CARD",
-                    "Card number is required.", Instant.now(), null);
+                    "Card number is required.", Instant.now());
         }
         if (cardDigits.endsWith("1111")) {
             return new CheckoutPaymentResponse(nextTransactionId(), request.orderId().trim(),
-                    "FAILED_INSUFFICIENT_FUNDS", "Declined: Insufficient funds.", Instant.now(), null);
+                    "FAILED_INSUFFICIENT_FUNDS", "Declined: Insufficient funds.", Instant.now());
         }
         if (cardDigits.endsWith("2222")) {
             return new CheckoutPaymentResponse(nextTransactionId(), request.orderId().trim(), "FAILED_EXPIRED_CARD",
-                    "This card is expired.", Instant.now(), null);
+                    "This card is expired.", Instant.now());
         }
         return new CheckoutPaymentResponse(nextTransactionId(), request.orderId().trim(), "SUCCESS",
-                "Payment approved successfully.", Instant.now(), null);
+                "Payment approved successfully.", Instant.now());
     }
 
-    private CheckoutPaymentResponse pendingQrResponse(String orderId) {
-        return new CheckoutPaymentResponse(nextTransactionId(), orderId, "PENDING",
-                "QR payment initiated. Waiting for webhook confirmation.", Instant.now(), qrPath(orderId));
-    }
+
 
     private CheckoutPaymentResponse pendingVnPayResponse(CheckoutPaymentRequest request) {
         String vnp_Version = com.shopease.payment.config.VNPayConfig.vnp_Version;
@@ -309,7 +260,7 @@ public class PaymentService {
         };
         String transactionId = payment.getGatewayTxnId() == null ? payment.getId().toString() : payment.getGatewayTxnId();
         return new CheckoutPaymentResponse(transactionId, payment.getOrderId().toString(), status,
-                "Payment status loaded from transaction ledger.", Instant.now(), null);
+                "Payment status loaded from transaction ledger.", Instant.now());
     }
 
     private void syncPersistentPayment(CheckoutPaymentResponse response, UUID orderId) {
@@ -362,9 +313,7 @@ public class PaymentService {
         return orderId.trim();
     }
 
-    private String qrPath(String orderId) {
-        return "/api/payments/qr/" + URLEncoder.encode(orderId, StandardCharsets.UTF_8);
-    }
+
 
     private String replayMessage(String message) {
         return message.endsWith(IDEMPOTENCY_REPLAY_SUFFIX) ? message : message + IDEMPOTENCY_REPLAY_SUFFIX;
@@ -383,24 +332,7 @@ public class PaymentService {
         return "TXN-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
     }
 
-    private void appendFinder(StringBuilder svg, int x, int y, int cell) {
-        int size = cell * 4;
-        svg.append("<rect x=\"").append(x).append("\" y=\"").append(y).append("\" width=\"").append(size)
-                .append("\" height=\"").append(size).append("\" fill=\"#111827\"/>");
-        svg.append("<rect x=\"").append(x + cell).append("\" y=\"").append(y + cell).append("\" width=\"")
-                .append(cell * 2).append("\" height=\"").append(cell * 2).append("\" fill=\"#ffffff\"/>");
-        svg.append("<rect x=\"").append(x + cell * 3 / 2).append("\" y=\"").append(y + cell * 3 / 2)
-                .append("\" width=\"").append(cell).append("\" height=\"").append(cell)
-                .append("\" fill=\"#111827\"/>");
-    }
 
-    private boolean insideFinder(int x, int y, int cells) {
-        return x < 4 && y < 4 || x >= cells - 4 && y < 4 || x < 4 && y >= cells - 4;
-    }
-
-    private String escapeXml(String value) {
-        return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-    }
 
     private enum IdempotencyState {
         PROCESSING, COMPLETED

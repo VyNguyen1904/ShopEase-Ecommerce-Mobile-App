@@ -109,6 +109,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             const CheckoutSectionTitle(title: AppStrings.shippingUnit),
             CheckoutShippingOptions(
               selectedShipping: _selectedShipping,
+              isFreeShipping: subtotal >= 500000,
               onChanged: (val) => setState(() => _selectedShipping = val),
             ),
             const SizedBox(height: 24),
@@ -194,34 +195,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 final paymentResp = await paymentService.processCheckout(paymentReq);
 
                 if (mounted) {
-                  if (paymentResp.qrPayload != null && paymentResp.qrPayload!.isNotEmpty) {
-                    final payload = paymentResp.qrPayload!;
+                    context.go('/payment', extra: {
+                      'orderId': newOrder.id,
+                    });
                     
                     final cartNotifier = ref.read(cartProvider.notifier);
                     for (var item in items) {
                       cartNotifier.removeItem(item.itemId);
                     }
-                    
-                    if (payload.startsWith('http')) {
-                       final uri = Uri.parse(payload);
-                       try {
-                         await launchUrl(uri, mode: LaunchMode.externalApplication);
-                       } catch (e) {
-                         await launchUrl(uri); // Fallback for Web and others
-                       }
-                       if (mounted) {
-                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chuyển hướng đến cổng thanh toán...')));
-                         context.go(AppRoutes.orderDetailPath(newOrder.id));
-                       }
-                       return;
-                    } else {
-                       context.go('/payment', extra: {
-                         'orderId': newOrder.id,
-                         'qrPayload': payload,
-                       });
-                       return;
-                    }
-                  }
+                    return;
                 }
               }
 

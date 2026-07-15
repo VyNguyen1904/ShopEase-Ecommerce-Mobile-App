@@ -76,7 +76,7 @@ class OrderBottomActions extends ConsumerWidget {
       if (order.paymentMethod.toUpperCase() == 'VNPAY') ...[
         Expanded(
           child: ElevatedButton(
-            onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id, 'qrPayload': ''}),
+            onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id}),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[800],
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),

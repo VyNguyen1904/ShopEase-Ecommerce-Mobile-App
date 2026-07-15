@@ -10,7 +10,10 @@ class ApiChatService {
   final AuthService _authService = AuthService();
 
   String get _host {
-    if (kIsWeb) return 'http://127.0.0.1:8000';
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
+    }
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
@@ -19,19 +22,7 @@ class ApiChatService {
 
   String get _chatUrl => '$_host/api/chats';
 
-  ApiChatService({Dio? dio}) : _dio = dio ?? Dio() {
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          final token = await _authService.getAccessToken();
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-          return handler.next(options);
-        },
-      ),
-    );
-  }
+  ApiChatService({Dio? dio}) : _dio = dio ?? Dio();
 
   Future<List<dynamic>> getMyChats() async {
     try {
@@ -80,7 +71,10 @@ class ApiChatService {
   Function(dynamic)? onMessageReceived;
 
   String get _wsUrl {
-    if (kIsWeb) return 'ws://127.0.0.1:8090/ws/chats';
+    if (kIsWeb) {
+      final host = Uri.base.host;
+      return "ws://${host.isNotEmpty ? host : '127.0.0.1'}:8090/ws/chats";
+    }
     try {
       if (Platform.isAndroid) return 'ws://10.0.2.2:8090/ws/chats';
     } catch (_) {}

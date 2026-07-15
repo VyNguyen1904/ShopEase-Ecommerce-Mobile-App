@@ -4,11 +4,13 @@ import '../../../../core/constants/app_strings.dart';
 
 class CheckoutShippingOptions extends StatelessWidget {
   final String selectedShipping;
+  final bool isFreeShipping;
   final ValueChanged<String> onChanged;
 
   const CheckoutShippingOptions({
     super.key,
     required this.selectedShipping,
+    this.isFreeShipping = false,
     required this.onChanged,
   });
 
@@ -36,10 +38,19 @@ class CheckoutShippingOptions extends StatelessWidget {
               AppStrings.fastShipping,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
-            secondary: const Text(
-              '35.000đ',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
+            secondary: isFreeShipping
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text('35.000đ', style: TextStyle(fontSize: 12, decoration: TextDecoration.lineThrough, color: AppColors.textGrey)),
+                    SizedBox(width: 4),
+                    Text('0đ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  ],
+                )
+              : const Text(
+                  '35.000đ',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
           ),
           const Divider(
             height: 1,
@@ -60,10 +71,19 @@ class CheckoutShippingOptions extends StatelessWidget {
               AppStrings.ecoShipping,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
-            secondary: const Text(
-              '15.000đ',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
+            secondary: isFreeShipping
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text('15.000đ', style: TextStyle(fontSize: 12, decoration: TextDecoration.lineThrough, color: AppColors.textGrey)),
+                    SizedBox(width: 4),
+                    Text('0đ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  ],
+                )
+              : const Text(
+                  '15.000đ',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
           ),
         ],
       ),
