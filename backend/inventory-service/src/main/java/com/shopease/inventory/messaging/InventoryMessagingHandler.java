@@ -19,12 +19,28 @@ public class InventoryMessagingHandler {
     private final InventoryService inventoryService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+
     @KafkaListener(topics = "inventory-commands", groupId = "inventory-group")
-    public void handleCommands(Object command) {
-        if (command instanceof ReserveStockCommand c) {
-            handleReserveStock(c);
-        } else if (command instanceof CompensateInventoryCommand c) {
-            handleCompensateInventory(c);
+    public void handleCommands(String payload, @org.springframework.messaging.handler.annotation.Headers java.util.Map<String, Object> headers) {
+        String typeId = "";
+        Object typeIdObj = headers.get("__TypeId__");
+        if (typeIdObj instanceof byte[]) {
+            typeId = new String((byte[]) typeIdObj);
+        } else if (typeIdObj != null) {
+            typeId = typeIdObj.toString();
+        }
+        log.info("Received inventory command. TypeId: {}, Payload: {}", typeId, payload);
+        try {
+            if (typeId.contains("ReserveStockCommand")) {
+                ReserveStockCommand command = objectMapper.readValue(payload, ReserveStockCommand.class);
+                handleReserveStock(command);
+            } else if (typeId.contains("CompensateInventoryCommand")) {
+                CompensateInventoryCommand command = objectMapper.readValue(payload, CompensateInventoryCommand.class);
+                handleCompensateInventory(command);
+            }
+        } catch (Exception e) {
+            log.error("Failed to process inventory command: {}", e.getMessage(), e);
         }
     }
 
