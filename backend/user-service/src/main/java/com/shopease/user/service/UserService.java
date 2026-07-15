@@ -146,6 +146,27 @@ public class UserService {
         return new UserStatsResponse(totalUsers, usersByRole, newUsersToday);
     }
 
+    public StoreInfoResponse getStoreInfo() {
+        UserAccount admin = users.findFirstByRole(Role.ADMIN)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Store admin not found"));
+
+        Address defaultAddress = admin.getAddresses().stream()
+                .filter(Address::isDefaultAddress)
+                .findFirst()
+                .orElseGet(() -> admin.getAddresses().stream().findFirst()
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Store address not found")));
+
+        return StoreInfoResponse.builder()
+                .storeName(admin.getFullName())
+                .phone(defaultAddress.getPhone())
+                .street(defaultAddress.getStreet())
+                .district(defaultAddress.getDistrict())
+                .city(defaultAddress.getCity())
+                .latitude(defaultAddress.getLatitude())
+                .longitude(defaultAddress.getLongitude())
+                .build();
+    }
+
     public void verifyUser(UUID userId) {
         UserAccount user = getUserById(userId);
         user.verifyAccount();

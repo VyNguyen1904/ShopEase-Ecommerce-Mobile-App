@@ -65,4 +65,9 @@ public class UserController {
                                             @PathVariable UUID id) {
         return ApiResponse.ok(users.deleteAddress(tokens.getUserId(authorization), id));
     }
+
+    @GetMapping("/store-info")
+    ApiResponse<com.shopease.user.dto.StoreInfoResponse> getStoreInfo() {
+        return ApiResponse.ok(users.getStoreInfo());
+    }
 }
