@@ -191,6 +191,11 @@ class AccountScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             AccountMenuGroup(
               children: [
+                AccountMenuItem(
+                  icon: Icons.map_outlined,
+                  title: 'Bản đồ cửa hàng',
+                  onTap: () => context.push(AppRoutes.storeMap),
+                ),
                 const AccountMenuItem(
                   icon: Icons.help_outline,
                   title: AppStrings.helpCenter,

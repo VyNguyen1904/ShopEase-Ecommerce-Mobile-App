@@ -14,6 +14,7 @@ import '../../../core/providers/payment_provider.dart';
 import '../../../core/models/payment_model.dart';
 import '../../../core/models/address_model.dart';
 import '../widgets/checkout_section_title.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/checkout_address_card.dart';
 import '../widgets/checkout_selected_items.dart';
