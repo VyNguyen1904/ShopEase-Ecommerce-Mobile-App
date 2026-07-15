@@ -43,6 +43,12 @@ class NotificationListNotifier extends StateNotifier<AsyncValue<List<Notificatio
       _ref.invalidate(sellerOrdersProvider);
       _ref.invalidate(userOrdersProvider);
       
+      // Invalidate all orderDetailProvider instances when order status changes
+      // This covers the case where a buyer has an order detail screen open
+      if (newNotification.type.contains('ORDER') || newNotification.type.contains('STATUS')) {
+        _ref.invalidate(orderDetailProvider);
+      }
+      
       // Delay product invalidation slightly to allow Kafka events to process the stock update
       Future.delayed(const Duration(seconds: 2), () {
         _ref.invalidate(productsProvider);

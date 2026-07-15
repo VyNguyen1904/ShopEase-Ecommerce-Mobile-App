@@ -10,6 +10,7 @@ class HoverMenuCard extends StatefulWidget {
   final VoidCallback onTap;
 
   const HoverMenuCard({
+    super.key,
     required this.icon,
     required this.color,
     required this.title,
@@ -109,7 +110,7 @@ class HoverMenuCardState extends State<HoverMenuCard> {
 }
 
 class SystemSettingsDialog extends StatefulWidget {
-  const SystemSettingsDialog();
+  const SystemSettingsDialog({super.key});
 
   @override
   State<SystemSettingsDialog> createState() => SystemSettingsDialogState();
@@ -253,7 +254,7 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
 }
 
 class SystemLogsDialog extends StatelessWidget {
-  const SystemLogsDialog();
+  const SystemLogsDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -304,9 +305,9 @@ class SystemLogsDialog extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           AppStrings.gatewayLogs,
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),

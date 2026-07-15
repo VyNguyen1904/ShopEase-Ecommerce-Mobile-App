@@ -33,7 +33,7 @@ class FavoriteProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> 
     try {
       final products = await _service.getFavorites();
       state = AsyncValue.data(products);
-    } catch (e, st) {
+    } catch (e) {
       // If unauthorized or fail to load, just start with empty
       state = const AsyncValue.data([]);
     }

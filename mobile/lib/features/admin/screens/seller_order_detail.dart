@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/providers/notification_provider.dart';
 import '../widgets/seller_order_detail_widgets.dart';
 
 class SellerOrderDetail extends ConsumerStatefulWidget {
@@ -18,9 +19,6 @@ class SellerOrderDetail extends ConsumerStatefulWidget {
 }
 
 class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
-  final int _activeStatusStep =
-      0; // 0 = Confirmed, 1 = Packed, 2 = Shipped, 3 = Completed
-
   final List<String> _statusTexts = [
     AppStrings.processingStatus,
     AppStrings.packedStatus,
@@ -57,13 +55,16 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_horiz, color: AppColors.textDark),
-            onPressed: () {},
+            icon: const Icon(Icons.refresh, color: AppColors.textDark),
+            tooltip: 'Làm mới',
+            onPressed: () => ref.invalidate(orderDetailProvider(widget.orderId)),
           ),
         ],
       ),
       body: ref.watch(orderDetailProvider(widget.orderId)).when(
         data: (order) {
+          // Watch notifications so this screen auto-rebuilds on order status changes
+          ref.watch(notificationListProvider);
           int step = 0;
           if (order.status == OrderStatus.PENDING) step = -2;
           if (order.status == OrderStatus.CONFIRMED) step = 0;
@@ -143,7 +144,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                       ),
                       const SizedBox(height: 16),
 
-                  // 2. Customer info "Thông tin khách hàng"
+                  // 2. Customer info
                   SellerSectionContainer(
                     title: AppStrings.customerInfo,
                     icon: Icons.person_outline,
@@ -199,7 +200,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 3. Delivery address "Địa chềEgiao hàng" (with map)
+                  // 3. Delivery address
                   SellerSectionContainer(
                     title: AppStrings.shippingAddress,
                     icon: Icons.location_on_outlined,
@@ -252,7 +253,6 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        // Mock map placeholder
                         Container(
                           width: 80,
                           height: 80,
@@ -412,7 +412,7 @@ class _SellerOrderDetailState extends ConsumerState<SellerOrderDetail> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 6. Timeline history "Lịch sử đơn hàng"
+                  // 6. Timeline history
                   SellerSectionContainer(
                     title: AppStrings.orderHistory,
                     icon: Icons.history,

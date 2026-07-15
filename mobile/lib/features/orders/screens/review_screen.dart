@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/review_provider.dart';
+import '../../../core/providers/product_provider.dart';
 
 class ReviewScreen extends ConsumerStatefulWidget {
   final OrderResponse order;
@@ -63,7 +64,14 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
           body: body.isEmpty ? 'Sản phẩm tốt' : body,
         );
       }
-      
+
+      // Invalidate caches so product detail page reflects new reviews & rating
+      for (var item in widget.order.items) {
+        ref.invalidate(productReviewsProvider(item.productId.toString()));
+        ref.invalidate(productDetailProvider(item.productId.toString()));
+      }
+      ref.invalidate(productsProvider);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text(AppStrings.thanksForShopping)),

@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/order_provider.dart';
+import '../../../core/providers/notification_provider.dart';
 import '../widgets/order_card.dart';
 import '../widgets/orders_empty_state.dart';
 
@@ -157,6 +158,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     if (userAsync.value == null) {
       return const OrdersLoginPrompt();
     }
+
+    // Watch notifications for real-time order status updates via WebSocket
+    ref.watch(notificationListProvider);
 
     // Logged in — load orders
     return ref.watch(userOrdersProvider).when(

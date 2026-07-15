@@ -5,35 +5,40 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/models/chat_message.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/chat_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/chat_service.dart';
 import '../../../core/services/auth_service.dart';
 import '../widgets/chat_message_bubble.dart';
 import '../widgets/chat_room_app_bar.dart';
 import '../widgets/chat_input_bar.dart';
 
-class ChatRoomScreen extends StatefulWidget {
+class ChatRoomScreen extends ConsumerStatefulWidget {
   final String roomId;
   final ChatRoom? initialRoom; // Optional: can be passed to avoid refetching basic info
 
   const ChatRoomScreen({super.key, required this.roomId, this.initialRoom});
 
   @override
-  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+  ConsumerState<ChatRoomScreen> createState() => _ChatRoomScreenState();
 }
 
-class _ChatRoomScreenState extends State<ChatRoomScreen> {
+class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
   
   ChatRoom? _room;
   bool _isLoading = true;
   String? _myUserId;
-  final ApiChatService _apiChatService = ApiChatService();
-  final AuthService _authService = AuthService();
+  late final ApiChatService _apiChatService;
+  late final AuthService _authService;
 
   @override
   void initState() {
     super.initState();
+    _apiChatService = ref.read(chatServiceProvider);
+    _authService = ref.read(authServiceProvider);
     _room = widget.initialRoom;
     _loadRoomData();
   }

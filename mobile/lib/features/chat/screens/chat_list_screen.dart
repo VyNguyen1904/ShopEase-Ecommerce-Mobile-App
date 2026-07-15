@@ -7,16 +7,21 @@ import '../../../core/services/auth_service.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 
-class ChatListScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/chat_provider.dart';
+import '../../../core/providers/auth_provider.dart';
+
+class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  ConsumerState<ChatListScreen> createState() => _ChatListScreenState();
 }
 
-class _ChatListScreenState extends State<ChatListScreen> {
-  final ApiChatService _chatService = ApiChatService();
-  final AuthService _authService = AuthService();
+class _ChatListScreenState extends ConsumerState<ChatListScreen> {
+  late final ApiChatService _chatService;
+  late final AuthService _authService;
+
   List<dynamic> _chatRooms = [];
   Map<String, String> _userNames = {};
   bool _isLoading = true;
@@ -26,6 +31,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   void initState() {
     super.initState();
+    _chatService = ref.read(chatServiceProvider);
+    _authService = ref.read(authServiceProvider);
     _loadChats();
     _startPolling();
   }

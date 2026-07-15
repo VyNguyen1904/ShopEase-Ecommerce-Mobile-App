@@ -11,7 +11,7 @@ final orderServiceProvider = Provider((ref) {
 });
 
 final userOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref) async {
-  final timer = Timer(const Duration(seconds: 10), () => ref.invalidateSelf());
+  final timer = Timer(const Duration(seconds: 5), () => ref.invalidateSelf());
   ref.onDispose(() => timer.cancel());
   
   final service = ref.watch(orderServiceProvider);
@@ -19,7 +19,7 @@ final userOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref)
 });
 
 final sellerOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref) async {
-  final timer = Timer(const Duration(seconds: 10), () => ref.invalidateSelf());
+  final timer = Timer(const Duration(seconds: 5), () => ref.invalidateSelf());
   ref.onDispose(() => timer.cancel());
   
   final service = ref.watch(orderServiceProvider);
@@ -32,7 +32,7 @@ final orderDetailProvider = FutureProvider.family.autoDispose<OrderResponse, Str
   
   // Tối ưu: Chỉ poll nếu đơn hàng chưa hoàn thành hoặc chưa bị huỷ
   if (order.status != OrderStatus.DELIVERED && order.status != OrderStatus.CANCELLED) {
-    final timer = Timer(const Duration(seconds: 10), () => ref.invalidateSelf());
+    final timer = Timer(const Duration(seconds: 5), () => ref.invalidateSelf());
     ref.onDispose(() => timer.cancel());
   }
   

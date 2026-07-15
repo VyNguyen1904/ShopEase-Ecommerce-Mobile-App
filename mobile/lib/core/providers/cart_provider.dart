@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/services/cart_service.dart';
@@ -148,7 +149,7 @@ class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
       await _cartService.removeItem(_userId, itemId);
       fetchCart(silently: true);
     } catch (e) {
-      print('CartProvider removeItem Error: $e');
+      debugPrint('CartProvider removeItem Error: $e');
       fetchCart(silently: true);
     }
   }

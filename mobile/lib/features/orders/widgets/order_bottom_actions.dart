@@ -242,9 +242,11 @@ class OrderBottomActions extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text(AppStrings.returnRefundSuccess)),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text(AppStrings.returnRefundSuccess)),
+                );
+              }
             },
             child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
           ),
@@ -326,6 +328,7 @@ class OrderBottomActions extends ConsumerWidget {
 
               if (ctx.mounted) Navigator.pop(ctx);
 
+              if (!context.mounted) return;
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -348,10 +351,12 @@ class OrderBottomActions extends ConsumerWidget {
                         TextButton(
                           onPressed: () {
                             Navigator.pop(successCtx);
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.go(AppRoutes.home);
+                            if (context.mounted) {
+                              if (context.canPop()) {
+                                context.pop();
+                              } else {
+                                context.go(AppRoutes.home);
+                              }
                             }
                           },
                           child: const Text(AppStrings.close),

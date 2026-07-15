@@ -25,17 +25,20 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
   }
 
   Future<void> _loadUsers() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
       final users = await _adminUserService.getUsers();
+      if (!mounted) return;
       setState(() {
         _users = users;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString().replaceAll('Exception: ', '');
         _isLoading = false;
@@ -48,6 +51,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
       await _adminUserService.updateUserStatus(user.id, enabled);
       _loadUsers();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${AppStrings.updateUserStatusFailed}$e'),

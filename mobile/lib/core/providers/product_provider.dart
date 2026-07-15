@@ -13,7 +13,8 @@ final productServiceProvider = Provider<ProductService>((ref) {
 /// Provider for fetching all products.
 final productsProvider = FutureProvider<List<Product>>((ref) async {
   final service = ref.watch(productServiceProvider);
-  return service.getProducts();
+  final allProducts = await service.getProducts();
+  return allProducts.where((p) => p.stockQuantity > 0).toList();
 });
 
 final selectedCategoryHomeProvider = StateProvider<String?>((ref) => null);
@@ -53,10 +54,13 @@ final categoriesProvider = FutureProvider<List<CategoryModel>>((ref) async {
 
 final searchProductsProvider = FutureProvider.family<List<Product>, String>((ref, query) async {
   final service = ref.watch(productServiceProvider);
+  List<Product> results;
   if (query.isEmpty) {
-    return service.getProducts();
+    results = await service.getProducts();
+  } else {
+    results = await service.searchProducts(query);
   }
-  return service.searchProducts(query);
+  return results.where((p) => p.stockQuantity > 0).toList();
 });
 
 // ---------- Search Filter Providers ----------

@@ -23,7 +23,6 @@ class HomeRecommendations extends ConsumerWidget {
               itemCount: products.length,
               itemBuilder: (context, index) {
                 return HomeProductCard(
-                  ref: ref,
                   product: products[index],
                   heroPrefix: 'rec',
                 );

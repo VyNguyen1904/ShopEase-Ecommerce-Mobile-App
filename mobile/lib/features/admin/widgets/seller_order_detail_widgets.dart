@@ -157,6 +157,7 @@ class SellerActionButton extends ConsumerWidget {
             await action();
             ref.invalidate(orderDetailProvider(orderId));
             ref.invalidate(sellerOrdersProvider);
+            ref.invalidate(userOrdersProvider);
             // Instead of invalidating which might just reload empty list from backend, we add locally for immediate UI feedback.
             ref.read(notificationListProvider.notifier).addLocalNotification(
               NotificationModel(
