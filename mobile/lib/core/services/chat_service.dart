@@ -2,7 +2,6 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
-import '../models/chat_message.dart';
 import 'auth_service.dart';
 
 class ApiChatService {

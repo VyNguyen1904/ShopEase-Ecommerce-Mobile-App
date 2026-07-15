@@ -38,6 +38,9 @@ public class OrderService {
     public OrderResponse createOrder(String buyerId, CreateOrderRequest request) {
         List<OrderItem> items = request.items().stream().map(item -> {
             ProductCatalogClient.ProductResponse product = productCatalog.getProduct(item.productId());
+            if (product.stockQuantity() < item.quantity()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sản phẩm " + product.name() + " đã hết hàng hoặc không đủ số lượng.");
+            }
             BigDecimal price = product.salePrice() != null ? product.salePrice() : product.basePrice();
             return new OrderItem(item.productId(), product.name(), product.thumbnailUrl(), price, item.quantity(),
                     price.multiply(BigDecimal.valueOf(item.quantity())), product.sellerId(), item.color(), item.size());

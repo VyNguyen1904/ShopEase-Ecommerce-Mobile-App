@@ -7,6 +7,7 @@ import '../../../../core/models/product.dart';
 import 'product_variant_sheet.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/services/chat_service.dart';
+import '../../../../core/providers/chat_provider.dart';
 
 class ProductBottomBar extends ConsumerWidget {
   final Product product;
@@ -49,7 +50,7 @@ class ProductBottomBar extends ConsumerWidget {
                       builder: (_) => const Center(child: CircularProgressIndicator()),
                     );
                     
-                    final chatService = ApiChatService();
+                    final chatService = ref.read(chatServiceProvider);
                     final room = await chatService.getOrCreateRoom(product.sellerId);
                     
                     if (context.mounted) {

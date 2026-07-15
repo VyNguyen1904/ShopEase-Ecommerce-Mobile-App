@@ -7,6 +7,7 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/providers/notification_provider.dart';
 
 class SellerOrdersScreen extends ConsumerStatefulWidget {
   const SellerOrdersScreen({super.key});
@@ -79,6 +80,9 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Ensure WebSocket is active to receive real-time updates
+    ref.watch(notificationListProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(

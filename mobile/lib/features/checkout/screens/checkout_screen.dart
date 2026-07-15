@@ -8,6 +8,7 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/cart_provider.dart';
 import '../../../core/providers/order_provider.dart';
+import '../../../core/providers/product_provider.dart';
 import '../../../core/models/cart_model.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/providers/payment_provider.dart';
@@ -184,6 +185,22 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
               final orderService = ref.read(orderServiceProvider);
               final newOrder = await orderService.createOrder(req);
+
+              // Stock is decremented asynchronously via Kafka (ReserveStockCommand).
+              // We delay invalidation by 2s to let the Kafka pipeline finish before
+              // re-fetching, preventing the UI from showing stale/old stock numbers.
+              Future.delayed(const Duration(seconds: 2), () {
+                ref.invalidate(productsProvider);
+                final sellerId = ref.read(userProfileProvider).valueOrNull?.id;
+                for (var item in items) {
+                  ref.invalidate(productDetailProvider(item.productId.toString()));
+                }
+                if (sellerId != null) {
+                  ref.invalidate(sellerProductsProvider(sellerId));
+                } else {
+                  ref.invalidate(sellerProductsProvider);
+                }
+              });
 
               if (_selectedPayment != 'cod') {
                 final paymentReq = CheckoutPaymentRequest(

@@ -204,7 +204,8 @@ public class PaymentService {
         vnp_Params.put("vnp_OrderType", orderType);
         
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", com.shopease.payment.config.VNPayConfig.vnp_ReturnUrl + "?orderId=" + request.orderId());
+        String returnUrl = getDynamicReturnUrl("/api/payments/vnpay/callback");
+        vnp_Params.put("vnp_ReturnUrl", returnUrl + "?orderId=" + request.orderId());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         java.util.Calendar cld = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Etc/GMT-7"));
@@ -332,7 +333,26 @@ public class PaymentService {
         return "TXN-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
     }
 
-
+    private String getDynamicReturnUrl(String path) {
+        try {
+            org.springframework.web.context.request.ServletRequestAttributes attrs = 
+                (org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                jakarta.servlet.http.HttpServletRequest req = attrs.getRequest();
+                String scheme = req.getHeader("X-Forwarded-Proto");
+                if (scheme == null) scheme = req.getScheme();
+                
+                String host = req.getHeader("X-Forwarded-Host");
+                if (host == null) {
+                    host = req.getServerName() + ":" + req.getServerPort();
+                }
+                return scheme + "://" + host + path;
+            }
+        } catch (Exception e) {
+            log.warn("Could not determine dynamic return URL, using default.");
+        }
+        return com.shopease.payment.config.VNPayConfig.vnp_ReturnUrl;
+    }
 
     private enum IdempotencyState {
         PROCESSING, COMPLETED

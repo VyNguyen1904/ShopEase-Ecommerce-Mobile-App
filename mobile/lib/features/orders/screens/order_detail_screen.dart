@@ -6,17 +6,28 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/providers/notification_provider.dart';
 import '../widgets/order_bottom_actions.dart';
 import '../widgets/order_detail_cards.dart';
 
-class OrderDetailScreen extends ConsumerWidget {
+class OrderDetailScreen extends ConsumerStatefulWidget {
   final String orderId;
 
   const OrderDetailScreen({super.key, required this.orderId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final orderAsync = ref.watch(orderDetailProvider(orderId));
+  ConsumerState<OrderDetailScreen> createState() => _OrderDetailScreenState();
+}
+
+class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
+
+    // Watch notifications so that when a new ORDER_UPDATE notification arrives
+    // (and orderDetailProvider gets invalidated by notification_provider),
+    // this widget automatically rebuilds with fresh data.
+    ref.watch(notificationListProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -47,6 +58,13 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: AppColors.textDark, size: 20),
+            tooltip: 'Làm mới',
+            onPressed: () => ref.invalidate(orderDetailProvider(widget.orderId)),
+          ),
+        ],
       ),
       body: orderAsync.when(
         data: (order) {

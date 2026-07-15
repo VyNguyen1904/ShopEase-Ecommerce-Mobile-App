@@ -185,6 +185,15 @@ public class Product {
         this.active = false;
         this.status = ProductStatus.INACTIVE;
     }
+
+    public void decreaseStockQuantity(int quantity) {
+        this.stockQuantity = Math.max(0, this.stockQuantity - quantity);
+    }
+
+    public void increaseStockQuantity(int quantity) {
+        this.stockQuantity += quantity;
+    }
+
     public void increaseSoldCount(int quantity) {
         this.soldCount += quantity;
     }

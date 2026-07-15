@@ -6,6 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/providers/product_provider.dart';
 import '../../../core/models/product.dart';
 import '../../../core/models/category_model.dart';
+import '../../../core/services/ai_service.dart';
 import '../widgets/seller_input_field.dart';
 import '../widgets/seller_dropdown_field.dart';
 import '../widgets/multi_select_field.dart';
@@ -26,6 +27,8 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
   final _imageController = TextEditingController();
   String? _selectedCategory;
   bool _isLoading = false;
+  bool _isGeneratingAi = false;
+  final AiService _aiService = AiService();
 
   final List<String> _availableSizes = ['S', 'M', 'L', 'XL', 'XXL', 'Freesize'];
   final List<String> _availableColors = ['Đen', 'Trắng', 'Đỏ', 'Xanh dương', 'Xanh lá', 'Vàng', 'Hồng', 'Xám', 'Nâu'];
@@ -41,6 +44,45 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
     _descController.dispose();
     _imageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _generateAiDescription() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng nhập tên sản phẩm trước!')),
+      );
+      return;
+    }
+
+    setState(() => _isGeneratingAi = true);
+    
+    try {
+      final priceStr = _priceController.text.trim();
+      final price = double.tryParse(priceStr) ?? 0.0;
+      
+      final description = await _aiService.generateProductDescription(
+        name: name,
+        category: _selectedCategory ?? '',
+        price: price,
+        sizes: _selectedSizes,
+        colors: _selectedColors,
+      );
+      
+      if (mounted) {
+        _descController.text = description;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingAi = false);
+      }
+    }
   }
 
   Future<void> _saveProduct(List<CategoryModel> categories) async {
@@ -231,6 +273,29 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
               label: AppStrings.productDescTitle,
               hintText: AppStrings.enterProductDesc,
               maxLines: 5,
+              trailingLabelWidget: _isGeneratingAi
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : TextButton.icon(
+                      onPressed: _generateAiDescription,
+                      icon: const Icon(Icons.auto_awesome, color: Colors.purple, size: 20),
+                      label: const Text(
+                        'AI',
+                        style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                      ),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: Colors.purple.withValues(alpha: 0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),
