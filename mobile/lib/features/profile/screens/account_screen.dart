@@ -206,8 +206,9 @@ class AccountScreen extends ConsumerWidget {
                   isDestructive: true,
                   onTap: () async {
                     await ref.read(authServiceProvider).logout();
+                    if (!context.mounted) return;
                     ref.invalidate(userProfileProvider);
-                    if (context.mounted) context.go(AppRoutes.splash);
+                    context.go(AppRoutes.splash);
                   },
                 ),
               ],

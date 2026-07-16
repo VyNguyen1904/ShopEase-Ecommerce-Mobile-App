@@ -10,6 +10,7 @@ import '../../features/auth/screens/register_screen.dart';
 import '../../features/auth/screens/verification_screen.dart';
 import '../../features/shell/screens/shell_layout.dart';
 import '../../features/home/screens/home_screen.dart';
+import '../models/product.dart';
 import '../../features/category/screens/category_screen.dart';
 import '../../features/cart/screens/cart_screen.dart';
 import '../../features/notifications/screens/notification_screen.dart';
@@ -36,6 +37,7 @@ import '../../features/seller/screens/seller_shop_profile.dart';
 import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
 import '../../features/seller/screens/seller_add_product_screen.dart';
+import '../../features/seller/screens/seller_edit_product_screen.dart';
 import '../../features/seller/screens/seller_orders_screen.dart';
 import '../../features/seller/screens/seller_shell_layout.dart';
 import '../../features/cart/screens/payment_screen.dart';
@@ -334,6 +336,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.sellerAddProduct,
       builder: (context, state) => const SellerAddProductScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.sellerEditProduct,
+      builder: (context, state) {
+        final product = state.extra as Product;
+        return SellerEditProductScreen(product: product);
+      },
     ),
 
     // ── Seller Shell with Bottom Navigation ────────────────────────────────

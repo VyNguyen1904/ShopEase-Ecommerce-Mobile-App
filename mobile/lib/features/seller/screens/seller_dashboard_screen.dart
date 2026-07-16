@@ -242,7 +242,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                     price: formatCurrency.format(order.totalAmount),
                     status: _mapStatus(order.status),
                     statusColor: _getStatusColor(order.status),
-                    avatarUrl: 'https://i.pravatar.cc/150?img=${10 + index}',
+                    avatarUrl: 'https://ui-avatars.com/api/?name=User+${index + 1}&background=random',
                     showDivider: index < recentOrders.length - 1,
                     onTap: () {
                       context.push(AppRoutes.sellerOrderDetailPath(order.id));

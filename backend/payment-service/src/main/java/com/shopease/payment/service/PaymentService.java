@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class PaymentService {
     private static final long CHECKOUT_LATENCY_MILLIS = 1500;
     private static final String IDEMPOTENCY_REPLAY_SUFFIX = " [REPLAYED FROM IDEMPOTENCY CACHE]";

@@ -16,7 +16,7 @@ class ApiNotificationService {
       return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
     }
     try {
-      if (Platform.isAndroid) return 'http://192.168.3.6:8000';
+      if (Platform.isAndroid) return 'http://172.20.10.5:8000';
     } catch (_) {}
     return 'http://127.0.0.1:8000';
   }
@@ -70,7 +70,7 @@ class ApiNotificationService {
       return "ws://${host.isNotEmpty ? host : '127.0.0.1'}:8091/ws/notifications";
     }
     try {
-      if (Platform.isAndroid) return 'ws://192.168.3.6:8091/ws/notifications';
+      if (Platform.isAndroid) return 'ws://172.20.10.5:8091/ws/notifications';
     } catch (_) {}
     return 'ws://127.0.0.1:8091/ws/notifications';
   }

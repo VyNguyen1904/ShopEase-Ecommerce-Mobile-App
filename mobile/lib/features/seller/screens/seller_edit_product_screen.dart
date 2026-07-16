@@ -14,14 +14,15 @@ import '../widgets/seller_dropdown_field.dart';
 import '../widgets/multi_select_field.dart';
 import '../widgets/save_product_button.dart';
 
-class SellerAddProductScreen extends ConsumerStatefulWidget {
-  const SellerAddProductScreen({super.key});
+class SellerEditProductScreen extends ConsumerStatefulWidget {
+  final Product product;
+  const SellerEditProductScreen({super.key, required this.product});
 
   @override
-  ConsumerState<SellerAddProductScreen> createState() => _SellerAddProductScreenState();
+  ConsumerState<SellerEditProductScreen> createState() => _SellerEditProductScreenState();
 }
 
-class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen> {
+class _SellerEditProductScreenState extends ConsumerState<SellerEditProductScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _originalPriceController = TextEditingController();
@@ -39,6 +40,22 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
   
   final List<String> _selectedSizes = [];
   final List<String> _selectedColors = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.product.name;
+    _priceController.text = widget.product.price.toInt().toString();
+    _originalPriceController.text = widget.product.originalPrice?.toInt().toString() ?? '';
+    _stockController.text = widget.product.stockQuantity.toString();
+    _weightController.text = widget.product.weightKg.toString();
+    _descController.text = widget.product.description;
+    _imageUrlController.text = widget.product.imageUrl;
+    _selectedSizes.addAll(widget.product.sizes);
+    _selectedColors.addAll(widget.product.colors);
+    // We will set _selectedCategory in build once categories are loaded
+  }
 
   @override
   void dispose() {
@@ -128,16 +145,16 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
     setState(() => _isLoading = true);
 
     try {
-      final newProduct = Product(
-        id: '',
+      final updatedProduct = Product(
+        id: widget.product.id,
         name: name,
-        category: selectedCatModel.id, // Must send categoryId
+        category: selectedCatModel.id,
         price: price,
         originalPrice: originalPrice,
         imageUrl: imageUrl,
-        rating: 0.0,
-        reviewsCount: 0,
-        salesCount: 0,
+        rating: widget.product.rating,
+        reviewsCount: widget.product.reviewsCount,
+        salesCount: widget.product.salesCount,
         sizes: _selectedSizes,
         colors: _selectedColors,
         description: desc,
@@ -146,14 +163,14 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
       );
 
       final service = ref.read(productServiceProvider);
-      await service.createProduct(newProduct);
+      await service.updateProduct(widget.product.id, updatedProduct);
       
       ref.invalidate(sellerProductsProvider);
       ref.invalidate(productsProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppStrings.addProductSuccess)),
+          const SnackBar(content: Text('Cập nhật sản phẩm thành công!')),
         );
         context.pop();
       }
@@ -173,6 +190,15 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
+    
+    // Set initial category
+    if (_selectedCategory == null && categoriesAsync.hasValue && categoriesAsync.value != null) {
+      final cats = categoriesAsync.value!;
+      final match = cats.where((c) => c.id == widget.product.category).toList();
+      if (match.isNotEmpty) {
+        _selectedCategory = match.first.name;
+      }
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
@@ -184,7 +210,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
           onPressed: () => context.pop(),
         ),
         title: const Text(
-          AppStrings.addNewProduct,
+          'Cập nhật sản phẩm',
           style: TextStyle(
             color: AppColors.textDark,
             fontSize: 20,
