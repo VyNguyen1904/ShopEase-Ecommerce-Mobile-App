@@ -3,3 +3,4 @@ WORKDIR /app
 COPY cart-service/target/cart-service-0.1.0.jar app.jar
 EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "app.jar"]
+ENV JAVA_TOOL_OPTIONS="-Xms128m -Xmx256m -XX:+UseSerialGC"
