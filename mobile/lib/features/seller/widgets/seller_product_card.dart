@@ -4,12 +4,12 @@ import '../../../core/models/product.dart';
 
 class SellerProductCard extends StatelessWidget {
   final Product product;
-  final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
 
   const SellerProductCard({
     super.key,
     required this.product,
-    this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -86,9 +86,9 @@ class SellerProductCard extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: onDelete ?? () {},
+          onPressed: onEdit ?? () {},
           icon: const Icon(
-            Icons.delete_outline,
+            Icons.edit_outlined,
             color: AppColors.textGrey,
           ),
         ),

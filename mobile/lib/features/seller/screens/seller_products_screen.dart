@@ -186,7 +186,12 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
                 ),
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  return SellerProductCard(product: product);
+                  return SellerProductCard(
+                    product: product,
+                    onEdit: () {
+                      context.push(AppRoutes.sellerEditProduct, extra: product);
+                    },
+                  );
                 },
               ),
             );

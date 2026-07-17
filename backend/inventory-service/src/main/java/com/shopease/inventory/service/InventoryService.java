@@ -31,7 +31,10 @@ public class InventoryService {
 
     @Transactional
     public InventoryResponse updateStock(Long productId, StockRequest request) {
-        return InventoryResponse.from(inventory.save(new InventoryItem(productId, request.availableQty(), request.reservedQty(), Instant.now())));
+        InventoryItem item = inventory.findById(productId).orElseGet(() -> 
+                new InventoryItem(productId, 0, 0, Instant.now()));
+        item.updateAvailableQty(request.availableQty());
+        return InventoryResponse.from(inventory.save(item));
     }
 
     @Transactional

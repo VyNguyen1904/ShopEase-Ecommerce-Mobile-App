@@ -16,6 +16,7 @@ class Product {
   final String? careInstructions;
   final List<String> features;
   final int stockQuantity;
+  final double weightKg;
   final String sellerId;
 
   const Product({
@@ -36,6 +37,7 @@ class Product {
     this.careInstructions,
     this.features = const [],
     this.stockQuantity = 0,
+    this.weightKg = 0.0,
     this.sellerId = '',
   });
 
@@ -74,6 +76,7 @@ class Product {
       careInstructions: json['careInstructions']?.toString(),
       features: (json['features'] as List?)?.map((e) => e.toString()).toList() ?? [],
       stockQuantity: (json['stockQuantity'] as num?)?.toInt() ?? 0,
+      weightKg: (json['weightKg'] as num?)?.toDouble() ?? 0.0,
       sellerId: json['sellerId']?.toString() ?? '',
     );
   }
@@ -84,7 +87,8 @@ class Product {
       'name': name,
       'categoryId': category,
       'basePrice': price,
-      'salePrice': originalPrice ?? price,
+      if (originalPrice != null) 'salePrice': price,
+      if (originalPrice != null) 'basePrice': originalPrice,
       'thumbnailUrl': imageUrl,
       'imageUrls': [imageUrl],
       'rating': rating,
@@ -98,6 +102,7 @@ class Product {
       'careInstructions': careInstructions,
       'features': features,
       'stockQuantity': stockQuantity,
+      'weightKg': weightKg,
       'sellerId': sellerId,
     };
   }

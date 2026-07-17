@@ -53,4 +53,8 @@ public class InventoryItem {
         this.updatedAt = Instant.now();
     }
 
+    public void updateAvailableQty(int quantity) {
+        this.availableQty = quantity;
+        this.updatedAt = Instant.now();
+    }
 }
