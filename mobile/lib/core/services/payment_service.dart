@@ -14,7 +14,7 @@ class PaymentService {
       return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
     }
     try {
-      if (Platform.isAndroid) return 'http://172.20.10.5:8000';
+      if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
     return 'http://127.0.0.1:8000';
   }

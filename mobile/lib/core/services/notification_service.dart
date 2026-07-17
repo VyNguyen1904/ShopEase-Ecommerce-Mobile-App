@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import '../models/notification_model.dart';
 import 'auth_service.dart';
@@ -16,7 +17,7 @@ class ApiNotificationService {
       return "http://${host.isNotEmpty ? host : '127.0.0.1'}:8000";
     }
     try {
-      if (Platform.isAndroid) return 'http://172.20.10.5:8000';
+      if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
     return 'http://127.0.0.1:8000';
   }
@@ -60,6 +61,45 @@ class ApiNotificationService {
     }
   }
 
+  Future<void> initializePushNotifications() async {
+    if (kIsWeb) return;
+    try {
+      final messaging = FirebaseMessaging.instance;
+      // Request permissions
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        // Get token
+        String? token = await messaging.getToken();
+        if (token != null) {
+          debugPrint('FCM Token: $token');
+          await _dio.post('$_apiUrl/token', data: {'token': token});
+        }
+        
+        // Listen to token refresh
+        messaging.onTokenRefresh.listen((newToken) {
+          _dio.post('$_apiUrl/token', data: {'token': newToken});
+        });
+
+        // Handle foreground messages
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+          debugPrint('Received foreground message: ${message.notification?.title}');
+          if (message.notification != null) {
+            // Since we already have a WebSocket for in-app notifications, we don't necessarily 
+            // need to do anything here unless we want to show a local snackbar. The WebSocket 
+            // will automatically update the UI.
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to initialize push notifications: $e');
+    }
+  }
+
   // WebSocket support for real-time notifications
   StompClient? _stompClient;
   Function(NotificationModel)? onNotificationReceived;
@@ -70,7 +110,7 @@ class ApiNotificationService {
       return "ws://${host.isNotEmpty ? host : '127.0.0.1'}:8091/ws/notifications";
     }
     try {
-      if (Platform.isAndroid) return 'ws://172.20.10.5:8091/ws/notifications';
+      if (Platform.isAndroid) return 'ws://10.0.2.2:8091/ws/notifications';
     } catch (_) {}
     return 'ws://127.0.0.1:8091/ws/notifications';
   }

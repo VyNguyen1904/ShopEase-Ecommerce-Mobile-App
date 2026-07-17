@@ -19,6 +19,16 @@ import java.util.UUID;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final com.shopease.notification.repository.DeviceTokenRepository deviceTokenRepository;
+
+    @Transactional
+    public void registerDeviceToken(String userId, String token) {
+        deviceTokenRepository.deleteByToken(token);
+        com.shopease.notification.model.DeviceToken deviceToken = new com.shopease.notification.model.DeviceToken();
+        deviceToken.setUserId(userId);
+        deviceToken.setToken(token);
+        deviceTokenRepository.save(deviceToken);
+    }
 
     @Transactional
     public void processNotification(NotificationEvent event) {
@@ -37,6 +47,25 @@ public class NotificationService {
         
         // Push to user via WebSocket
         messagingTemplate.convertAndSend("/topic/notifications/" + event.userId(), saved);
+
+        // Push via Firebase Cloud Messaging
+        List<com.shopease.notification.model.DeviceToken> tokens = deviceTokenRepository.findByUserId(event.userId());
+        for (com.shopease.notification.model.DeviceToken dt : tokens) {
+            try {
+                com.google.firebase.messaging.Message fcmMessage = com.google.firebase.messaging.Message.builder()
+                        .setToken(dt.getToken())
+                        .setNotification(com.google.firebase.messaging.Notification.builder()
+                                .setTitle(event.title())
+                                .setBody(event.message())
+                                .build())
+                        .putData("type", event.type())
+                        .build();
+                com.google.firebase.messaging.FirebaseMessaging.getInstance().send(fcmMessage);
+                log.info("Sent FCM push notification to token {}", dt.getToken());
+            } catch (Exception e) {
+                log.error("Failed to send FCM message to token " + dt.getToken(), e);
+            }
+        }
     }
 
     public List<Notification> getUserNotifications(String userId) {

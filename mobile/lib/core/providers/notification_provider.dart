@@ -23,6 +23,7 @@ class NotificationListNotifier extends StateNotifier<AsyncValue<List<Notificatio
   NotificationListNotifier(this._service, this._ref) : super(const AsyncValue.loading()) {
     fetchNotifications();
     _connectWebSocket();
+    _service.initializePushNotifications();
   }
 
   Future<void> fetchNotifications() async {

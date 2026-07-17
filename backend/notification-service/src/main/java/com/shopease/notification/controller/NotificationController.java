@@ -39,4 +39,15 @@ public class NotificationController {
         notificationService.markAllAsRead(userId);
         return ApiResponse.ok(null);
     }
+
+    @PostMapping("/token")
+    public ApiResponse<Void> registerDeviceToken(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        if (token != null && !token.isBlank()) {
+            notificationService.registerDeviceToken(userId, token.trim());
+        }
+        return ApiResponse.ok(null);
+    }
 }
