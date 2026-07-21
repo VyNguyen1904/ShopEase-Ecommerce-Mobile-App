@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/models/product.dart';
 import '../../../core/widgets/product_card.dart';
 import '../widgets/seller_stats_card.dart';
@@ -26,13 +27,13 @@ class _SellerShopProfileState extends State<SellerShopProfile>
       originalPrice: 200.00,
       imageUrl:
           'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
-      category: 'Giày Nam',
+      category: AppStrings.categoryMensShoes,
       rating: 4.8,
       reviewsCount: 172,
       salesCount: 256,
-      colors: ['Đen', 'Trắng', 'Đỏ'],
+      colors: [AppStrings.colorBlack, AppStrings.colorWhite, AppStrings.colorRed],
       sizes: ['7', '8', '9', '10', '11'],
-      description: 'Giày Nike Air Max 270 chính hãng',
+      description: AppStrings.descNike,
     ),
     Product(
       id: '2',
@@ -41,13 +42,13 @@ class _SellerShopProfileState extends State<SellerShopProfile>
       originalPrice: 180.00,
       imageUrl:
           'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&auto=format&fit=crop&q=80',
-      category: 'Giày Nam',
+      category: AppStrings.categoryMensShoes,
       rating: 4.9,
       reviewsCount: 210,
       salesCount: 340,
-      colors: ['Đen', 'Trắng'],
+      colors: [AppStrings.colorBlack, AppStrings.colorWhite],
       sizes: ['8', '9', '10'],
-      description: 'Giày Adidas Ultraboost chính hãng',
+      description: AppStrings.descAdidas,
     ),
     Product(
       id: '3',
@@ -56,13 +57,13 @@ class _SellerShopProfileState extends State<SellerShopProfile>
       originalPrice: 200.00,
       imageUrl:
           'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&auto=format&fit=crop&q=80',
-      category: 'Giày Nam',
+      category: AppStrings.categoryMensShoes,
       rating: 4.7,
       reviewsCount: 150,
       salesCount: 200,
-      colors: ['Đen', 'Trắng'],
+      colors: [AppStrings.colorBlack, AppStrings.colorWhite],
       sizes: ['7', '8', '9'],
-      description: 'Giày Puma RS-X chính hãng',
+      description: AppStrings.descPuma,
     ),
   ];
 
@@ -181,7 +182,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Chuyên nhập và kinh doanh giày chính hãng',
+                  AppStrings.shopBio,
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.textGrey,
@@ -200,7 +201,7 @@ class _SellerShopProfileState extends State<SellerShopProfile>
               ),
               SizedBox(width: 8),
               Text(
-                'Tham gia từ 09/2022',
+                AppStrings.joinedDate,
                 style: TextStyle(fontSize: 14, color: AppColors.textGrey),
               ),
             ],

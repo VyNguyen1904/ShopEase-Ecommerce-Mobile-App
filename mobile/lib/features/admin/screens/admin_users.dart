@@ -150,121 +150,6 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
     );
   }
 
-  Widget _buildStatsSection() {
-    int total = _users.length;
-    int active = _users.where((u) => u.isEnabled).length;
-    int admins = _users.where((u) => u.role == 'ADMIN').length;
-    int sellers = _users.where((u) => u.role == 'SELLER').length;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth > 750;
-          return GridView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isWide ? 4 : 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              mainAxisExtent: 88,
-            ),
-            children: [
-              _buildStatCard(
-                AppStrings.totalUsers,
-                total.toString(),
-                Icons.people_outline,
-                Colors.indigo,
-              ),
-              _buildStatCard(
-                AppStrings.activeAccounts,
-                active.toString(),
-                Icons.check_circle_outline,
-                Colors.teal,
-              ),
-              _buildStatCard(
-                AppStrings.totalSellers,
-                sellers.toString(),
-                Icons.storefront_outlined,
-                Colors.blue,
-              ),
-              _buildStatCard(
-                AppStrings.administrators,
-                admins.toString(),
-                Icons.admin_panel_settings_outlined,
-                Colors.red,
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.015),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textGrey,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -327,7 +212,7 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Top Statistics Cards
-                      _buildStatsSection(),
+                      AdminStatsSection(users: _users),
 
                       // Horizontal Scroll Wrapper for Table to prevent narrow viewport overflows
                       SingleChildScrollView(
@@ -508,4 +393,3 @@ class _UserDirectoryScreenState extends State<UserDirectoryScreen> {
     );
   }
 }
-

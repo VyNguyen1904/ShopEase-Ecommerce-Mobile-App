@@ -90,7 +90,7 @@ class ShellLayout extends StatelessWidget {
                   child: ListView(
                     controller: controller,
                     children: [
-                      _buildPanelSection('1. Luồng Chào Mừng & Đăng ký', [
+                      _buildPanelSection(AppStrings.welcomeFlow, [
                         _buildPanelItem(
                           ctx,
                           'Splash Screen (Customer/1.png)',
@@ -107,7 +107,7 @@ class ShellLayout extends StatelessWidget {
                           () => context.go(AppRoutes.register),
                         ),
                       ]),
-                      _buildPanelSection('2. Trang mua sắm chính', [
+                      _buildPanelSection(AppStrings.mainShopping, [
                         _buildPanelItem(
                           ctx,
                           'Home Screen (Customer/5.png)',
@@ -153,7 +153,7 @@ class ShellLayout extends StatelessWidget {
                           () => context.push(AppRoutes.address),
                         ),
                       ]),
-                      _buildPanelSection('3. Màn hình chung (Common Screens)', [
+                      _buildPanelSection(AppStrings.commonScreens, [
                         _buildPanelItem(
                           ctx,
                           'Categories (Common_Sceen/2.png)',
@@ -180,7 +180,7 @@ class ShellLayout extends StatelessWidget {
                           () => context.push(AppRoutes.chats),
                         ),
                       ]),
-                      _buildPanelSection('4. Quản trị(Admin)', [
+                      _buildPanelSection(AppStrings.adminSection, [
                         _buildPanelItem(
                           ctx,
                           'Admin Dashboard (Admin/1.png)',
@@ -192,7 +192,7 @@ class ShellLayout extends StatelessWidget {
                           () => context.push(AppRoutes.adminUsers),
                         ),
                       ]),
-                      _buildPanelSection('5. Người bán (Seller)', [
+                      _buildPanelSection(AppStrings.sellerSection, [
                         _buildPanelItem(
                           ctx,
                           'Seller Order Detail (Seller/1.png)',

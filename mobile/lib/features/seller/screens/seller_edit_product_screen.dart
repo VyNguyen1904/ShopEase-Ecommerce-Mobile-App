@@ -39,15 +39,15 @@ class _SellerEditProductScreenState
 
   final List<String> _availableSizes = ['S', 'M', 'L', 'XL', 'XXL', 'Freesize'];
   final List<String> _availableColors = [
-    'Đen',
-    'Trắng',
-    'Đỏ',
-    'Xanh dương',
-    'Xanh lá',
-    'Vàng',
-    'Hồng',
-    'Xám',
-    'Nâu',
+    AppStrings.colorBlack,
+    AppStrings.colorWhite,
+    AppStrings.colorRed,
+    AppStrings.colorBlue,
+    AppStrings.colorGreen,
+    AppStrings.colorYellow,
+    AppStrings.colorPink,
+    AppStrings.colorGray,
+    AppStrings.colorBrown,
   ];
 
   final List<String> _selectedSizes = [];

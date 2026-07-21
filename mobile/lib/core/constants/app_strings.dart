@@ -1,4 +1,4 @@
-class AppStrings {
+﻿class AppStrings {
   // App
   static const String appName = "ShopEase";
 
@@ -501,4 +501,62 @@ class AppStrings {
   static const String saving = "Đang lưu...";
   static const String typing = "Đang nhập...";
   static const String roomNotFound = "Không tìm thấy phòng chat";
+  // Store Map Screen
+  static const String store = 'Cửa hàng';
+  static const String cannotGetLocation = 'Không thể lấy được vị trí hiện tại. Vui lòng cấp quyền vị trí.';
+  static const String cannotOpenMap = 'Không thể mở bản đồ.';
+  static const String mapOf = 'Bản đồ';
+  static const String directions = 'Chỉ đường';
+
+  // Shell Layout
+  static const String welcomeFlow = '1. Luồng Chào Mừng & Đăng ký';
+  static const String mainShopping = '2. Trang mua sắm chính';
+  static const String commonScreens = '3. Màn hình chung (Common Screens)';
+  static const String adminSection = '4. Quản trị(Admin)';
+  static const String sellerSection = '5. Người bán (Seller)';
+
+  // Seller Profile
+  static const String categoryMensShoes = 'Giày Nam';
+  static const String colorBlack = 'Đen';
+  static const String colorWhite = 'Trắng';
+  static const String colorRed = 'Đỏ';
+  static const String colorBlue = 'Xanh dương';
+  static const String colorYellow = 'Vàng';
+  static const String descNike = 'Giày Nike Air Max 270 chính hãng';
+  static const String descAdidas = 'Giày Adidas Ultraboost chính hãng';
+  static const String descPuma = 'Giày Puma RS-X chính hãng';
+  static const String shopBio = 'Chuyên nhập và kinh doanh giày chính hãng';
+  static const String joinedDate = 'Tham gia từ 09/2022';
+  
+  // Seller Notifications
+  static const String newOrderTitle = 'Đơn hàng mới';
+  static const String tagNew = 'MỚI';
+  static const String newOrderContent = 'Bạn vừa có đơn hàng mới #DH2405190001\nTổng tiền 1.280.000đ';
+  static const String time2Mins = '2 phút trước';
+  static const String returnRequestTitle = 'Yêu cầu hoàn hàng';
+  static const String returnRequestContent = 'Đơn hàng #DH2405180002 đang được yêu cầu hoàn hàng bởi khách.';
+  static const String time15Mins = '15 phút trước';
+  static const String newReviewTitle = 'Đánh giá mới';
+  static const String newReviewContent = 'Nguyễn Văn An vừa đánh giá 5 sao cho sản phẩm Nike Air Max 270.';
+  static const String time1Hour = '1 giờ trước';
+  static const String lowStockTitle = 'Sản phẩm sắp hết hàng';
+  static const String lowStockContent = 'Sản phẩm Adidas Ultraboost chỉ còn 5 sản phẩm trong kho.';
+  static const String time2Hours = '2 giờ trước';
+  static const String orderDeliveredTitle = 'Đơn hàng đã giao';
+  static const String orderDeliveredContent = 'Đơn hàng #DH2405170003 đã được giao thành công cho khách hàng.';
+  static const String time3Hours = '3 giờ trước';
+  static const String paymentSuccessTitle = 'Thanh toán thành công';
+  static const String paymentSuccessContent = 'Bạn đã nhận được thanh toán cho đơn hàng #DH2405160004 qua Ví ShopeePay.';
+  static const String time5Hours = '5 giờ trước';
+  static const String newCustomerTitle = 'Khách hàng mới';
+  static const String newCustomerContent = 'Bạn vừa có một khách hàng mới: Trần Thị Mai đã theo dõi cửa hàng của bạn.';
+  static const String timeYesterday = 'Hôm qua';
+  static const String systemUpdateTitle = 'Cập nhật từ hệ thống';
+  static const String systemUpdateContent = 'Phí vận chuyển sẽ được cập nhật từ ngày 01/06/2024. Vui lòng kiểm tra chi tiết.';
+  static const String time2Days = '2 ngày trước';
+  static const String colorGreen = 'Xanh lá';
+  static const String colorPink = 'Hồng';
+  static const String colorGray = 'Xám';
+  static const String colorBrown = 'Nâu';
 }
+

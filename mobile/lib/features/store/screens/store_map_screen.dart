@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/constants/app_strings.dart';
 
 class StoreMapScreen extends ConsumerStatefulWidget {
   const StoreMapScreen({super.key});
@@ -17,7 +18,7 @@ class StoreMapScreen extends ConsumerStatefulWidget {
 class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
   LatLng? _userLocation;
   LatLng _storeLocation = const LatLng(10.7769, 106.7009); // Default fallback
-  String _storeName = 'Cửa hàng';
+  String _storeName = AppStrings.store;
   bool _isLoading = true;
 
   @override
@@ -64,7 +65,7 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Không thể lấy được vị trí hiện tại. Vui lòng cấp quyền vị trí.',
+              AppStrings.cannotGetLocation,
             ),
           ),
         );
@@ -88,7 +89,7 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Không thể mở bản đồ.')));
+        ).showSnackBar(const SnackBar(content: Text(AppStrings.cannotOpenMap)));
       }
     }
   }
@@ -96,7 +97,7 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Bản đồ $_storeName')),
+      appBar: AppBar(title: Text('${AppStrings.mapOf} $_storeName')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
@@ -146,7 +147,7 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openGoogleMaps,
         icon: const Icon(Icons.directions),
-        label: const Text('Chỉ đường'),
+        label: const Text(AppStrings.directions),
       ),
     );
   }

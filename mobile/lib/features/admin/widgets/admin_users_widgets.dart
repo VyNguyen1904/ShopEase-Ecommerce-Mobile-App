@@ -1006,3 +1006,136 @@ class _EditUserDialogState extends State<EditUserDialog> {
     );
   }
 }
+
+class AdminStatsSection extends StatelessWidget {
+  final List<UserModel> users;
+
+  const AdminStatsSection({super.key, required this.users});
+
+  @override
+  Widget build(BuildContext context) {
+    int total = users.length;
+    int active = users.where((u) => u.isEnabled).length;
+    int admins = users.where((u) => u.role == 'ADMIN').length;
+    int sellers = users.where((u) => u.role == 'SELLER').length;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth > 750;
+          return GridView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isWide ? 4 : 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              mainAxisExtent: 88,
+            ),
+            children: [
+              AdminStatCard(
+                title: AppStrings.totalUsers,
+                value: total.toString(),
+                icon: Icons.people_outline,
+                color: Colors.indigo,
+              ),
+              AdminStatCard(
+                title: AppStrings.activeAccounts,
+                value: active.toString(),
+                icon: Icons.check_circle_outline,
+                color: Colors.teal,
+              ),
+              AdminStatCard(
+                title: AppStrings.totalSellers,
+                value: sellers.toString(),
+                icon: Icons.storefront_outlined,
+                color: Colors.blue,
+              ),
+              AdminStatCard(
+                title: AppStrings.administrators,
+                value: admins.toString(),
+                icon: Icons.admin_panel_settings_outlined,
+                color: Colors.red,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class AdminStatCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  const AdminStatCard({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.015),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textGrey,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

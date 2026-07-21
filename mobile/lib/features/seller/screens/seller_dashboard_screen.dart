@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/providers/order_provider.dart';
 import '../../../core/models/order_model.dart';
-import '../../../core/providers/auth_provider.dart';
 import '../../../core/constants/app_strings.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/app_routes.dart';
