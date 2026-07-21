@@ -74,19 +74,12 @@ class _SplashScreenState extends State<SplashScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF045A60),
-                Color(0xFF0A757D),
-                Color(0xFF169E96),
-              ],
+              colors: [Color(0xFF045A60), Color(0xFF0A757D), Color(0xFF169E96)],
             ),
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -167,9 +160,7 @@ class _SplashScreenState extends State<SplashScreen> {
                             cursor: SystemMouseCursors.click,
                             child: Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 18,
-                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 18),
                               alignment: Alignment.center,
                               child: RichText(
                                 text: const TextSpan(

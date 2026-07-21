@@ -66,7 +66,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textLight),
+            const Icon(
+              Icons.shopping_cart_outlined,
+              size: 64,
+              color: AppColors.textLight,
+            ),
             const SizedBox(height: 16),
             const Text(
               AppStrings.pleaseLogin,
@@ -78,12 +82,18 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(AppStrings.loginNow, style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                AppStrings.loginNow,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -91,97 +101,102 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     }
 
     return cartState.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.textDark),
-        ),
-        error: (err, stack) {
-          final isAuthError = err.toString().toLowerCase().contains('đăng nhập');
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  isAuthError ? AppStrings.sessionExpired : AppStrings.unknownError,
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    if (isAuthError) {
-                      context.push(AppRoutes.login);
-                    } else {
-                      ref.read(cartProvider.notifier).fetchCart();
-                    }
-                  },
-                  child: Text(isAuthError ? AppStrings.loginAgain : AppStrings.retry),
-                ),
-              ],
-            ),
-          );
-        },
-        data: (cart) {
-          final cartItems = cart.items;
-          final bool isAllSelected =
-              cartItems.isNotEmpty && cartItems.every((item) => item.selected);
-
-          return Column(
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: AppColors.textDark),
+      ),
+      error: (err, stack) {
+        final isAuthError = err.toString().toLowerCase().contains('đăng nhập');
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Select All Checkbox
-              if (cartItems.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: isAllSelected,
-                        onChanged: (bool? value) {
-                          ref
-                              .read(cartProvider.notifier)
-                              .toggleAll(value ?? false);
-                        },
-                        activeColor: AppColors.textDark,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const Text(
-                        AppStrings.selectAll,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textDark,
-                        ),
-                      ),
-                    ],
-                  ),
+              Text(
+                isAuthError
+                    ? AppStrings.sessionExpired
+                    : AppStrings.unknownError,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  if (isAuthError) {
+                    context.push(AppRoutes.login);
+                  } else {
+                    ref.read(cartProvider.notifier).fetchCart();
+                  }
+                },
+                child: Text(
+                  isAuthError ? AppStrings.loginAgain : AppStrings.retry,
                 ),
+              ),
+            ],
+          ),
+        );
+      },
+      data: (cart) {
+        final cartItems = cart.items;
+        final bool isAllSelected =
+            cartItems.isNotEmpty && cartItems.every((item) => item.selected);
 
-              // Cart Items
-              Expanded(
-                child: cartItems.isEmpty
-                    ? const CartEmptyState()
-                    : ListView.separated(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        itemCount: cartItems.length,
-                        separatorBuilder: (context, index) => _buildDottedDivider(),
-                        itemBuilder: (context, index) {
-                          final item = cartItems[index];
-                          return CartItemWidget(item: item);
-                        },
+        return Column(
+          children: [
+            // Select All Checkbox
+            if (cartItems.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: isAllSelected,
+                      onChanged: (bool? value) {
+                        ref
+                            .read(cartProvider.notifier)
+                            .toggleAll(value ?? false);
+                      },
+                      activeColor: AppColors.textDark,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
                       ),
+                    ),
+                    const Text(
+                      AppStrings.selectAll,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
-              // Bottom Checkout Section
-              if (cartItems.isNotEmpty)
-                CartBottomCheckout(subtotal: cart.subtotal),
-            ],
-          );
-        },
-      );
+            // Cart Items
+            Expanded(
+              child: cartItems.isEmpty
+                  ? const CartEmptyState()
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemCount: cartItems.length,
+                      separatorBuilder: (context, index) =>
+                          _buildDottedDivider(),
+                      itemBuilder: (context, index) {
+                        final item = cartItems[index];
+                        return CartItemWidget(item: item);
+                      },
+                    ),
+            ),
+
+            // Bottom Checkout Section
+            if (cartItems.isNotEmpty)
+              CartBottomCheckout(subtotal: cart.subtotal),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildDottedDivider() {

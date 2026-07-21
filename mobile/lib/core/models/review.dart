@@ -45,7 +45,9 @@ class Review {
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
       productName: json['productName'],
-      productImage: json['productImage'] ?? (json['product'] != null ? json['product']['imageUrl'] : null),
+      productImage:
+          json['productImage'] ??
+          (json['product'] != null ? json['product']['imageUrl'] : null),
     );
   }
 }

@@ -21,7 +21,9 @@ class CartItemWidget extends ConsumerWidget {
           Checkbox(
             value: item.selected,
             onChanged: (bool? value) {
-              ref.read(cartProvider.notifier).toggleItemSelection(item.itemId, value ?? false);
+              ref
+                  .read(cartProvider.notifier)
+                  .toggleItemSelection(item.itemId, value ?? false);
             },
             activeColor: AppColors.textDark,
             shape: RoundedRectangleBorder(
@@ -64,7 +66,8 @@ class CartItemWidget extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.productName ?? '${AppStrings.productPrefix}${item.productId}',
+                        item.productName ??
+                            '${AppStrings.productPrefix}${item.productId}',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -77,7 +80,11 @@ class CartItemWidget extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
-                      icon: const Icon(Icons.close, color: AppColors.textLight, size: 18),
+                      icon: const Icon(
+                        Icons.close,
+                        color: AppColors.textLight,
+                        size: 18,
+                      ),
                       onPressed: () {
                         ref.read(cartProvider.notifier).removeItem(item.itemId);
                       },
@@ -127,7 +134,9 @@ class CartItemWidget extends ConsumerWidget {
                             icon: const Icon(Icons.remove, size: 16),
                             onPressed: () {
                               if (item.quantity > 1) {
-                                ref.read(cartProvider.notifier).updateQuantity(
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .updateQuantity(
                                       item.itemId,
                                       item.quantity - 1,
                                     );
@@ -149,7 +158,9 @@ class CartItemWidget extends ConsumerWidget {
                           IconButton(
                             icon: const Icon(Icons.add, size: 16),
                             onPressed: () {
-                              ref.read(cartProvider.notifier).updateQuantity(
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .updateQuantity(
                                     item.itemId,
                                     item.quantity + 1,
                                   );

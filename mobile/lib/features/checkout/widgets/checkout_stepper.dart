@@ -15,7 +15,11 @@ class CheckoutStepper extends StatelessWidget {
         _buildStepLine(),
         _buildStepIndicator('3', isActive: false),
         const SizedBox(width: 8),
-        const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textGrey),
+        const Icon(
+          Icons.arrow_forward_ios,
+          size: 14,
+          color: AppColors.textGrey,
+        ),
       ],
     );
   }

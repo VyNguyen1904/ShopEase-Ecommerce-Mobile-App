@@ -34,8 +34,14 @@ class CheckoutSelectedItems extends StatelessWidget {
                     height: 50,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => Container(
-                      width: 50, height: 50, color: Colors.grey[200],
-                      child: const Icon(Icons.image_not_supported, size: 20, color: Colors.grey),
+                      width: 50,
+                      height: 50,
+                      color: Colors.grey[200],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
@@ -44,22 +50,45 @@ class CheckoutSelectedItems extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.productName ?? AppStrings.product, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
-                      const SizedBox(height: 4),
                       Text(
-                        [item.color, item.size].where((e) => e != null && e.isNotEmpty).join(', ').isNotEmpty 
-                            ? [item.color, item.size].where((e) => e != null && e.isNotEmpty).join(', ') 
-                            : (item.productVariant ?? AppStrings.defaultVariant),
-                        style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
+                        item.productName ?? AppStrings.product,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 4),
-                      Text('x${item.quantity}', style: const TextStyle(fontSize: 12, color: AppColors.textGrey)),
+                      Text(
+                        [item.color, item.size]
+                                .where((e) => e != null && e.isNotEmpty)
+                                .join(', ')
+                                .isNotEmpty
+                            ? [item.color, item.size]
+                                  .where((e) => e != null && e.isNotEmpty)
+                                  .join(', ')
+                            : (item.productVariant ??
+                                  AppStrings.defaultVariant),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'x${item.quantity}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 Text(
                   '${item.subtotal.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}đ',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),

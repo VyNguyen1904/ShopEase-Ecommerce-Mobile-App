@@ -11,7 +11,11 @@ class CartEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textLight),
+          Icon(
+            Icons.shopping_cart_outlined,
+            size: 64,
+            color: AppColors.textLight,
+          ),
           SizedBox(height: 16),
           Text(
             AppStrings.cartEmpty,

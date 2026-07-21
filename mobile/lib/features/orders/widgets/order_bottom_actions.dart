@@ -37,9 +37,12 @@ class OrderBottomActions extends ConsumerWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (order.status == OrderStatus.PENDING) ..._buildPendingActions(context, ref),
-            if (order.status == OrderStatus.SHIPPED) ..._buildShippedActions(context, ref),
-            if (order.status == OrderStatus.DELIVERED) ..._buildDeliveredActions(context, ref),
+            if (order.status == OrderStatus.PENDING)
+              ..._buildPendingActions(context, ref),
+            if (order.status == OrderStatus.SHIPPED)
+              ..._buildShippedActions(context, ref),
+            if (order.status == OrderStatus.DELIVERED)
+              ..._buildDeliveredActions(context, ref),
             _buildShopMoreAction(context),
           ],
         ),
@@ -76,7 +79,8 @@ class OrderBottomActions extends ConsumerWidget {
       if (order.paymentMethod.toUpperCase() == 'VNPAY') ...[
         Expanded(
           child: ElevatedButton(
-            onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id}),
+            onPressed: () =>
+                context.push(AppRoutes.payment, extra: {'orderId': order.id}),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[800],
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
@@ -196,18 +200,12 @@ class OrderBottomActions extends ConsumerWidget {
           backgroundColor: AppColors.primaryDark,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.shopping_bag_outlined,
-              color: Colors.white,
-              size: 16,
-            ),
+            Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 16),
             SizedBox(width: 4),
             Flexible(
               child: Text(
@@ -232,12 +230,18 @@ class OrderBottomActions extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text(AppStrings.returnRefundAction, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          AppStrings.returnRefundAction,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: const Text(AppStrings.returnRefundPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
+            child: const Text(
+              AppStrings.no,
+              style: TextStyle(color: AppColors.textGrey),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -248,7 +252,10 @@ class OrderBottomActions extends ConsumerWidget {
                 );
               }
             },
-            child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
+            child: const Text(
+              AppStrings.yes,
+              style: TextStyle(color: AppColors.primaryDark),
+            ),
           ),
         ],
       ),
@@ -259,25 +266,34 @@ class OrderBottomActions extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text(AppStrings.confirmReceivedTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          AppStrings.confirmReceivedTitle,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: const Text(AppStrings.confirmReceivedPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
+            child: const Text(
+              AppStrings.no,
+              style: TextStyle(color: AppColors.textGrey),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              
+
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (_) => const Center(child: CircularProgressIndicator()),
+                builder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
               );
 
               try {
-                await ref.read(orderActionControllerProvider).markAsDelivered(order.id);
+                await ref
+                    .read(orderActionControllerProvider)
+                    .markAsDelivered(order.id);
 
                 if (context.mounted) {
                   Navigator.pop(context); // close loading
@@ -288,11 +304,16 @@ class OrderBottomActions extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context); // close loading
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
+                  );
                 }
               }
             },
-            child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
+            child: const Text(
+              AppStrings.yes,
+              style: TextStyle(color: AppColors.primaryDark),
+            ),
           ),
         ],
       ),
@@ -308,21 +329,35 @@ class OrderBottomActions extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
+            child: const Text(
+              AppStrings.no,
+              style: TextStyle(color: AppColors.textGrey),
+            ),
           ),
           TextButton(
             onPressed: () async {
-              final shouldCancel = await showDialog<bool>(
-                context: context,
-                builder: (dCtx) => AlertDialog(
-                  title: const Text(AppStrings.cancelConfirmation),
-                  content: const Text(AppStrings.cancelPrompt),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(dCtx, false), child: const Text(AppStrings.no)),
-                    TextButton(onPressed: () => Navigator.pop(dCtx, true), child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.alertRed))),
-                  ],
-                ),
-              ) ?? false;
+              final shouldCancel =
+                  await showDialog<bool>(
+                    context: context,
+                    builder: (dCtx) => AlertDialog(
+                      title: const Text(AppStrings.cancelConfirmation),
+                      content: const Text(AppStrings.cancelPrompt),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dCtx, false),
+                          child: const Text(AppStrings.no),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(dCtx, true),
+                          child: const Text(
+                            AppStrings.yes,
+                            style: TextStyle(color: AppColors.alertRed),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ) ??
+                  false;
 
               if (!shouldCancel) return;
 
@@ -332,11 +367,14 @@ class OrderBottomActions extends ConsumerWidget {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (_) => const Center(child: CircularProgressIndicator()),
+                builder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
               );
 
               try {
-                await ref.read(orderActionControllerProvider).cancelOrder(order.id);
+                await ref
+                    .read(orderActionControllerProvider)
+                    .cancelOrder(order.id);
 
                 if (context.mounted) {
                   Navigator.pop(context); // close loading
@@ -345,7 +383,10 @@ class OrderBottomActions extends ConsumerWidget {
                     context: context,
                     barrierDismissible: false,
                     builder: (successCtx) => AlertDialog(
-                      title: const Text(AppStrings.success, style: TextStyle(color: AppColors.primaryDark)),
+                      title: const Text(
+                        AppStrings.success,
+                        style: TextStyle(color: AppColors.primaryDark),
+                      ),
                       content: const Text(AppStrings.cancelSuccessMsg),
                       actions: [
                         TextButton(
@@ -368,11 +409,16 @@ class OrderBottomActions extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   Navigator.pop(context); // close loading
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
+                  );
                 }
               }
             },
-            child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.alertRed)),
+            child: const Text(
+              AppStrings.yes,
+              style: TextStyle(color: AppColors.alertRed),
+            ),
           ),
         ],
       ),

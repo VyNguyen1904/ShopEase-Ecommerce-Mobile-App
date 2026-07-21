@@ -7,6 +7,6 @@ class AppAssets {
   static const String logo = '$imagePath/logo.png';
   static const String defaultAvatar = '$imagePath/default_avatar.png';
   static const String defaultProduct = '$imagePath/default_product.png';
-  
+
   // Icons có thể thêm ở đây
 }

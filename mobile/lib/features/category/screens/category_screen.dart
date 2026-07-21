@@ -62,7 +62,11 @@ class CategoryScreen extends ConsumerWidget {
                         if (cat.imageUrl != null)
                           Image.network(cat.imageUrl!, width: 24, height: 24)
                         else
-                          const Icon(Icons.category, color: AppColors.primary, size: 24),
+                          const Icon(
+                            Icons.category,
+                            color: AppColors.primary,
+                            size: 24,
+                          ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
@@ -86,7 +90,8 @@ class CategoryScreen extends ConsumerWidget {
               },
             ),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
+            error: (err, stack) =>
+                Center(child: Text('${AppStrings.errorPrefix}$err')),
           ),
     );
   }

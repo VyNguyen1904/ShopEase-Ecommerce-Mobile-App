@@ -11,16 +11,20 @@ final notificationServiceProvider = Provider((ref) {
   return ApiNotificationService(dio: authService.dio);
 });
 
-final unreadNotificationCountProvider = Provider.autoDispose<AsyncValue<int>>((ref) {
+final unreadNotificationCountProvider = Provider.autoDispose<AsyncValue<int>>((
+  ref,
+) {
   final listAsync = ref.watch(notificationListProvider);
   return listAsync.whenData((list) => list.where((n) => !n.isRead).length);
 });
 
-class NotificationListNotifier extends StateNotifier<AsyncValue<List<NotificationModel>>> {
+class NotificationListNotifier
+    extends StateNotifier<AsyncValue<List<NotificationModel>>> {
   final ApiNotificationService _service;
   final Ref _ref;
 
-  NotificationListNotifier(this._service, this._ref) : super(const AsyncValue.loading()) {
+  NotificationListNotifier(this._service, this._ref)
+    : super(const AsyncValue.loading()) {
     fetchNotifications();
     _connectWebSocket();
     _service.initializePushNotifications();
@@ -38,18 +42,19 @@ class NotificationListNotifier extends StateNotifier<AsyncValue<List<Notificatio
   void _connectWebSocket() {
     _service.connectWebSocket((newNotification) {
       addLocalNotification(newNotification);
-      
+
       // Invalidate providers to achieve real-time updates across the app
       // Invalidate orders immediately
       _ref.invalidate(sellerOrdersProvider);
       _ref.invalidate(userOrdersProvider);
-      
+
       // Invalidate all orderDetailProvider instances when order status changes
       // This covers the case where a buyer has an order detail screen open
-      if (newNotification.type.contains('ORDER') || newNotification.type.contains('STATUS')) {
+      if (newNotification.type.contains('ORDER') ||
+          newNotification.type.contains('STATUS')) {
         _ref.invalidate(orderDetailProvider);
       }
-      
+
       // Delay product invalidation slightly to allow Kafka events to process the stock update
       Future.delayed(const Duration(seconds: 2), () {
         _ref.invalidate(productsProvider);
@@ -113,7 +118,11 @@ class NotificationListNotifier extends StateNotifier<AsyncValue<List<Notificatio
   }
 }
 
-final notificationListProvider = StateNotifierProvider<NotificationListNotifier, AsyncValue<List<NotificationModel>>>((ref) {
-  final service = ref.read(notificationServiceProvider);
-  return NotificationListNotifier(service, ref);
-});
+final notificationListProvider =
+    StateNotifierProvider<
+      NotificationListNotifier,
+      AsyncValue<List<NotificationModel>>
+    >((ref) {
+      final service = ref.read(notificationServiceProvider);
+      return NotificationListNotifier(service, ref);
+    });

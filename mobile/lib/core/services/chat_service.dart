@@ -49,7 +49,10 @@ class ApiChatService {
 
   Future<dynamic> sendMessage(String roomId, String text) async {
     try {
-      final response = await _dio.post('$_chatUrl/$roomId/messages', data: text);
+      final response = await _dio.post(
+        '$_chatUrl/$roomId/messages',
+        data: text,
+      );
       return response.data['data'];
     } catch (e) {
       throw Exception('Failed to send message: $e');
@@ -58,7 +61,9 @@ class ApiChatService {
 
   Future<dynamic> getOrCreateRoom(String targetUserId) async {
     try {
-      final response = await _dio.post('$_chatUrl/room?targetUserId=$targetUserId');
+      final response = await _dio.post(
+        '$_chatUrl/room?targetUserId=$targetUserId',
+      );
       return response.data['data'];
     } catch (e) {
       throw Exception('Failed to create room: $e');
@@ -82,11 +87,15 @@ class ApiChatService {
 
   Function(String)? onTypingIndicatorReceived;
 
-  void connectWebSocket(String roomId, Function(dynamic) onMessage, {Function(String)? onTyping}) async {
+  void connectWebSocket(
+    String roomId,
+    Function(dynamic) onMessage, {
+    Function(String)? onTyping,
+  }) async {
     onMessageReceived = onMessage;
     onTypingIndicatorReceived = onTyping;
     final token = await _authService.getAccessToken();
-    
+
     _stompClient = StompClient(
       config: StompConfig(
         url: _wsUrl,
@@ -110,7 +119,8 @@ class ApiChatService {
             );
           }
         },
-        onWebSocketError: (dynamic error) => debugPrint('WebSocket Error: $error'),
+        onWebSocketError: (dynamic error) =>
+            debugPrint('WebSocket Error: $error'),
         stompConnectHeaders: {'Authorization': 'Bearer $token'},
       ),
     );
@@ -118,10 +128,7 @@ class ApiChatService {
   }
 
   void sendTypingEvent(String roomId, String myUserId) {
-    _stompClient?.send(
-      destination: '/app/chat/$roomId/typing',
-      body: myUserId,
-    );
+    _stompClient?.send(destination: '/app/chat/$roomId/typing', body: myUserId);
   }
 
   void disconnectWebSocket() {

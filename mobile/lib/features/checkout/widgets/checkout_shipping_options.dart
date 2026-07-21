@@ -39,18 +39,32 @@ class CheckoutShippingOptions extends StatelessWidget {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             secondary: isFreeShipping
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text('35.000đ', style: TextStyle(fontSize: 12, decoration: TextDecoration.lineThrough, color: AppColors.textGrey)),
-                    SizedBox(width: 4),
-                    Text('0đ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                  ],
-                )
-              : const Text(
-                  '35.000đ',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text(
+                        '35.000đ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          decoration: TextDecoration.lineThrough,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        '0đ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  )
+                : const Text(
+                    '35.000đ',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
           ),
           const Divider(
             height: 1,
@@ -72,18 +86,32 @@ class CheckoutShippingOptions extends StatelessWidget {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             secondary: isFreeShipping
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text('15.000đ', style: TextStyle(fontSize: 12, decoration: TextDecoration.lineThrough, color: AppColors.textGrey)),
-                    SizedBox(width: 4),
-                    Text('0đ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
-                  ],
-                )
-              : const Text(
-                  '15.000đ',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text(
+                        '15.000đ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          decoration: TextDecoration.lineThrough,
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        '0đ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  )
+                : const Text(
+                    '15.000đ',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
           ),
         ],
       ),

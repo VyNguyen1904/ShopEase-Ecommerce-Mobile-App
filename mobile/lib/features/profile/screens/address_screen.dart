@@ -54,7 +54,7 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
         ),
         data: (user) {
           final addresses = user?.addresses ?? [];
-          
+
           return Stack(
             children: [
               if (addresses.isEmpty)
@@ -73,7 +73,8 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
                     bottom: 120,
                   ),
                   itemCount: addresses.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     return _AddressItemCard(
                       address: addresses[index],
@@ -91,7 +92,8 @@ class _AddressScreenState extends ConsumerState<AddressScreen> {
 }
 
 class _AddressItemCard extends ConsumerWidget {
-  final dynamic address; // Should ideally be replaced with your Address model type
+  final dynamic
+  address; // Should ideally be replaced with your Address model type
   final bool isSelecting;
 
   const _AddressItemCard({required this.address, this.isSelecting = false});
@@ -102,139 +104,145 @@ class _AddressItemCard extends ConsumerWidget {
       onTap: isSelecting ? () => context.pop(address) : null,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      address.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        address.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
+                        ),
                       ),
-                    ),
-                    if (address.isDefault) ...[
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryLight,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          AppStrings.defaultBadge,
-                          style: TextStyle(
-                            color: AppColors.primaryDark,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                      if (address.isDefault) ...[
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            AppStrings.defaultBadge,
+                            style: TextStyle(
+                              color: AppColors.primaryDark,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  address.phone,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textGrey,
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  address.address1,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textGrey,
-                  ),
-                ),
-                if (address.address2 != null && address.address2!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   Text(
-                    address.address2!,
+                    address.phone,
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textGrey,
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    address.address1,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textGrey,
+                    ),
+                  ),
+                  if (address.address2 != null &&
+                      address.address2!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      address.address2!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textGrey,
+                      ),
+                    ),
+                  ],
                 ],
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(4),
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    color: AppColors.textDark,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => AddressModal(address: address),
+                    );
+                  },
+                ),
+                IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: const EdgeInsets.all(4),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: AppColors.alertRed,
+                    size: 20,
+                  ),
+                  onPressed: () async {
+                    try {
+                      final authService = ref.read(authServiceProvider);
+                      await authService.deleteAddress(address.id);
+                      ref.invalidate(userProfileProvider);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(AppStrings.deleteAddressSuccess),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${AppStrings.errorPrefix}$e'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
               ],
             ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                constraints: const BoxConstraints(),
-                padding: const EdgeInsets.all(4),
-                icon: const Icon(
-                  Icons.edit_outlined,
-                  color: AppColors.textDark,
-                  size: 20,
-                ),
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => AddressModal(address: address),
-                  );
-                },
-              ),
-              IconButton(
-                constraints: const BoxConstraints(),
-                padding: const EdgeInsets.all(4),
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: AppColors.alertRed,
-                  size: 20,
-                ),
-                onPressed: () async {
-                  try {
-                    final authService = ref.read(authServiceProvider);
-                    await authService.deleteAddress(address.id);
-                    ref.invalidate(userProfileProvider);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text(AppStrings.deleteAddressSuccess)),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -285,10 +293,7 @@ class _AddAddressButton extends StatelessWidget {
                 SizedBox(width: 8),
                 Text(
                   AppStrings.addNewAddress,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

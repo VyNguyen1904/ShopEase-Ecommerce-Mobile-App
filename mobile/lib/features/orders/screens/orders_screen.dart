@@ -163,11 +163,13 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen>
     ref.watch(notificationListProvider);
 
     // Logged in — load orders
-    return ref.watch(userOrdersProvider).when(
-      data: (orders) => _buildOrderTabs(orders),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
-    );
+    return ref
+        .watch(userOrdersProvider)
+        .when(
+          data: (orders) => _buildOrderTabs(orders),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
+        );
   }
 
   Widget _buildOrderTabs(List<OrderResponse> orders) {

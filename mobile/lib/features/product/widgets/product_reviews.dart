@@ -7,10 +7,7 @@ import '../../../core/providers/review_provider.dart';
 class ProductReviews extends ConsumerWidget {
   final String productId;
 
-  const ProductReviews({
-    super.key,
-    required this.productId,
-  });
+  const ProductReviews({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +45,10 @@ class ProductReviews extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
                   AppStrings.noReviewsYet,
-                  style: TextStyle(color: AppColors.textGrey, fontStyle: FontStyle.italic),
+                  style: TextStyle(
+                    color: AppColors.textGrey,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               );
             }
@@ -67,9 +67,13 @@ class ProductReviews extends ConsumerWidget {
                     children: [
                       CircleAvatar(
                         radius: 20,
-                        backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.1,
+                        ),
                         child: Text(
-                          review.buyerId.isNotEmpty ? review.buyerId[0].toUpperCase() : 'U',
+                          review.buyerId.isNotEmpty
+                              ? review.buyerId[0].toUpperCase()
+                              : 'U',
                           style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
@@ -102,7 +106,9 @@ class ProductReviews extends ConsumerWidget {
                         children: List.generate(
                           5,
                           (index) => Icon(
-                            index < review.rating ? Icons.star : Icons.star_border,
+                            index < review.rating
+                                ? Icons.star
+                                : Icons.star_border,
                             color: Colors.amber,
                             size: 14,
                           ),
@@ -141,7 +147,10 @@ class ProductReviews extends ConsumerWidget {
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Text(
               AppStrings.noReviewsYet,
-              style: TextStyle(color: AppColors.textGrey, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                color: AppColors.textGrey,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
         ),

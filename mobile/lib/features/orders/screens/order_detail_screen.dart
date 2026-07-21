@@ -60,9 +60,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: AppColors.textDark, size: 20),
+            icon: const Icon(
+              Icons.refresh,
+              color: AppColors.textDark,
+              size: 20,
+            ),
             tooltip: 'Làm mới',
-            onPressed: () => ref.invalidate(orderDetailProvider(widget.orderId)),
+            onPressed: () =>
+                ref.invalidate(orderDetailProvider(widget.orderId)),
           ),
         ],
       ),
@@ -129,7 +134,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
       ),
-      bottomSheet: orderAsync.hasValue ? OrderBottomActions(order: orderAsync.value!) : null,
+      bottomSheet: orderAsync.hasValue
+          ? OrderBottomActions(order: orderAsync.value!)
+          : null,
     );
   }
 }

@@ -21,7 +21,10 @@ class MapPickerScreen extends StatefulWidget {
 
 class _MapPickerScreenState extends State<MapPickerScreen> {
   late final MapController _mapController;
-  LatLng _currentCenter = const LatLng(10.762622, 106.660172); // Default to HCM City
+  LatLng _currentCenter = const LatLng(
+    10.762622,
+    106.660172,
+  ); // Default to HCM City
   String _currentAddress = AppStrings.loadingLocation;
   dynamic _rawAddress; // Store the raw address data
   bool _isLoadingAddress = false;
@@ -36,7 +39,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     if (widget.initialLocation != null) {
       _currentCenter = widget.initialLocation!;
       _getAddressFromLatLng(_currentCenter);
-    } else if (widget.searchQuery != null && widget.searchQuery!.trim().isNotEmpty) {
+    } else if (widget.searchQuery != null &&
+        widget.searchQuery!.trim().isNotEmpty) {
       _searchController.text = widget.searchQuery!;
       _searchAddress(widget.searchQuery!);
     } else {
@@ -67,7 +71,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         return;
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
       return;
     }
@@ -99,9 +103,12 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       );
       if (response.data != null && response.data['display_name'] != null) {
         String dn = response.data['display_name'];
-        dn = dn.replaceAll('Thành phố Thủ Đức, Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh');
+        dn = dn.replaceAll(
+          'Thành phố Thủ Đức, Thành phố Hồ Chí Minh',
+          'Thành phố Hồ Chí Minh',
+        );
         response.data['display_name'] = dn;
-        
+
         setState(() {
           _currentAddress = dn;
           _rawAddress = response.data;
@@ -149,11 +156,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     final lat = double.parse(result['lat']);
     final lon = double.parse(result['lon']);
     final newLocation = LatLng(lat, lon);
-    
+
     String dn = result['display_name'];
-    dn = dn.replaceAll('Thành phố Thủ Đức, Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh');
+    dn = dn.replaceAll(
+      'Thành phố Thủ Đức, Thành phố Hồ Chí Minh',
+      'Thành phố Hồ Chí Minh',
+    );
     result['display_name'] = dn;
-    
+
     setState(() {
       _searchResults = [];
       _searchController.text = dn;
@@ -161,7 +171,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       _currentAddress = dn;
       _rawAddress = result;
     });
-    
+
     _mapController.move(newLocation, 16.0);
   }
 
@@ -169,7 +179,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.selectLocationTitle, style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: const Text(
+          AppStrings.selectLocationTitle,
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textDark),
@@ -201,15 +218,21 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               ),
             ],
           ),
-          
+
           // Fixed center pin
           const Center(
             child: Padding(
-              padding: EdgeInsets.only(bottom: 40.0), // Offset to put the tip of the pin exactly at center
-              child: Icon(Icons.location_on, color: AppColors.primary, size: 40),
+              padding: EdgeInsets.only(
+                bottom: 40.0,
+              ), // Offset to put the tip of the pin exactly at center
+              child: Icon(
+                Icons.location_on,
+                color: AppColors.primary,
+                size: 40,
+              ),
             ),
           ),
-          
+
           // Search Bar
           MapSearchBar(
             searchController: _searchController,
@@ -234,7 +257,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             },
             onResultSelected: _onSearchResultSelected,
           ),
-          
+
           // My Location Button
           Positioned(
             bottom: 120,
@@ -246,7 +269,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               child: const Icon(Icons.my_location, color: AppColors.primary),
             ),
           ),
-          
+
           // Bottom Info Card
           MapInfoCard(
             isLoadingAddress: _isLoadingAddress,
@@ -260,7 +283,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 'raw': _rawAddress,
               });
             },
-          )
+          ),
         ],
       ),
     );

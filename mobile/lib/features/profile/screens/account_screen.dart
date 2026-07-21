@@ -9,6 +9,8 @@ import '../widgets/account_section_title.dart';
 import '../widgets/account_menu_group.dart';
 import '../widgets/account_menu_item.dart';
 import '../widgets/account_user_info_card.dart';
+import '../widgets/account_unauthenticated_view.dart';
+import '../widgets/account_error_view.dart';
 
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
@@ -16,7 +18,7 @@ class AccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userProfileProvider);
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white bg
       appBar: AppBar(
@@ -41,77 +43,12 @@ class AccountScreen extends ConsumerWidget {
             userProfileAsync.when(
               data: (user) {
                 if (user == null) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.person_outline, size: 48, color: AppColors.textGrey),
-                          const SizedBox(height: 16),
-                          const Text(
-                            AppStrings.notLoggedIn,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () => context.go(AppRoutes.login),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            ),
-                            child: const Text(AppStrings.loginNow),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  return const AccountUnauthenticatedView();
                 }
                 return AccountUserInfoCard(user: user);
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) {
-                final errorStr = err.toString().toLowerCase();
-                if (errorStr.contains('unauthorized') || errorStr.contains('đăng nhập')) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.lock_outline, size: 48, color: AppColors.textGrey),
-                          const SizedBox(height: 16),
-                          const Text(
-                            AppStrings.sessionExpired,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            AppStrings.loginAgainPrompt,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: AppColors.textGrey),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () {
-                              ref.read(authServiceProvider).logout();
-                              context.go(AppRoutes.login);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            ),
-                            child: const Text(AppStrings.loginAgain),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return Center(child: Text('${AppStrings.errorPrefix}$err'));
-              },
+              error: (err, stack) => AccountErrorView(error: err),
             ),
             const SizedBox(height: 32),
 
@@ -169,7 +106,7 @@ class AccountScreen extends ConsumerWidget {
                 ),
                 AccountMenuItem(
                   icon: Icons.favorite_border,
-                  title: 'Danh sách yêu thích',
+                  title: AppStrings.wishlist,
                   onTap: () => context.push(AppRoutes.wishlist),
                 ),
                 AccountMenuItem(
@@ -179,7 +116,7 @@ class AccountScreen extends ConsumerWidget {
                 ),
                 AccountMenuItem(
                   icon: Icons.rate_review_outlined,
-                  title: 'Đánh giá của tôi',
+                  title: AppStrings.myReviews,
                   onTap: () => context.push(AppRoutes.myReviews),
                 ),
               ],
@@ -193,7 +130,7 @@ class AccountScreen extends ConsumerWidget {
               children: [
                 AccountMenuItem(
                   icon: Icons.map_outlined,
-                  title: 'Bản đồ cửa hàng',
+                  title: AppStrings.storeMap,
                   onTap: () => context.push(AppRoutes.storeMap),
                 ),
                 const AccountMenuItem(
@@ -221,5 +158,4 @@ class AccountScreen extends ConsumerWidget {
       ),
     );
   }
-
 }

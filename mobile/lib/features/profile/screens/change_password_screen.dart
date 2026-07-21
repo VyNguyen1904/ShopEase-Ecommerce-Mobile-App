@@ -87,13 +87,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: 'Mật khẩu hiện tại',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureCurrent ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                    icon: Icon(
+                      _obscureCurrent ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscureCurrent = !_obscureCurrent),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'Vui lòng nhập mật khẩu hiện tại';
+                  if (val == null || val.isEmpty) {
+                    return 'Vui lòng nhập mật khẩu hiện tại';
+                  }
                   return null;
                 },
               ),
@@ -105,13 +112,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: 'Mật khẩu mới',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureNew ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                      _obscureNew ? Icons.visibility_off : Icons.visibility,
+                    ),
                     onPressed: () => setState(() => _obscureNew = !_obscureNew),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'Vui lòng nhập mật khẩu mới';
+                  if (val == null || val.isEmpty) {
+                    return 'Vui lòng nhập mật khẩu mới';
+                  }
                   if (val.length < 6) return 'Mật khẩu phải có ít nhất 6 ký tự';
                   return null;
                 },
@@ -124,14 +137,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: 'Xác nhận mật khẩu mới',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    icon: Icon(
+                      _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'Vui lòng xác nhận mật khẩu';
-                  if (val != _newPasswordController.text) return 'Mật khẩu xác nhận không khớp';
+                  if (val == null || val.isEmpty) {
+                    return 'Vui lòng xác nhận mật khẩu';
+                  }
+                  if (val != _newPasswordController.text) {
+                    return 'Mật khẩu xác nhận không khớp';
+                  }
                   return null;
                 },
               ),
@@ -141,17 +163,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: _isLoading
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                     : const Text(
                         'Cập nhật mật khẩu',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
               ),
             ],

@@ -16,7 +16,14 @@ class WishlistScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(AppStrings.wishlist, style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: const Text(
+          AppStrings.wishlist,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -32,7 +39,11 @@ class WishlistScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite_border, size: 64, color: AppColors.textLight),
+                  Icon(
+                    Icons.favorite_border,
+                    size: 64,
+                    color: AppColors.textLight,
+                  ),
                   SizedBox(height: 16),
                   Text(
                     AppStrings.noFavoriteProducts,
@@ -61,10 +72,11 @@ class WishlistScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-        error: (error, stack) => Center(
-          child: Text('${AppStrings.errorPrefix}$error'),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
         ),
+        error: (error, stack) =>
+            Center(child: Text('${AppStrings.errorPrefix}$error')),
       ),
     );
   }

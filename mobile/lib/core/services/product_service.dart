@@ -40,8 +40,10 @@ class ProductService {
       final response = await _dio.get(_categoryUrl, options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
-      
-      final List<dynamic> content = data is Map ? (data['content'] ?? []) : data;
+
+      final List<dynamic> content = data is Map
+          ? (data['content'] ?? [])
+          : data;
       return content.map((json) => CategoryModel.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to get categories: $e');
@@ -64,28 +66,49 @@ class ProductService {
 
   // --- Products ---
 
-  Future<List<Product>> getProducts({int page = 0, int size = 20, String sortBy = 'createdAt', String sortDir = 'desc'}) async {
+  Future<List<Product>> getProducts({
+    int page = 0,
+    int size = 20,
+    String sortBy = 'createdAt',
+    String sortDir = 'desc',
+  }) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.get('$_productUrl?page=$page&size=$size&sortBy=$sortBy&sortDir=$sortDir', options: options);
+      final response = await _dio.get(
+        '$_productUrl?page=$page&size=$size&sortBy=$sortBy&sortDir=$sortDir',
+        options: options,
+      );
       final dynamic data = response.data['data'];
       if (data == null) return [];
-      
-      final List<dynamic> content = data is Map ? (data['content'] ?? []) : data;
+
+      final List<dynamic> content = data is Map
+          ? (data['content'] ?? [])
+          : data;
       return content.map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to get products: $e');
     }
   }
 
-  Future<List<Product>> searchProducts(String query, {int page = 0, int size = 20, String sortBy = 'createdAt', String sortDir = 'desc'}) async {
+  Future<List<Product>> searchProducts(
+    String query, {
+    int page = 0,
+    int size = 20,
+    String sortBy = 'createdAt',
+    String sortDir = 'desc',
+  }) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.get('$_productUrl/search?query=$query&page=$page&size=$size&sortBy=$sortBy&sortDir=$sortDir', options: options);
+      final response = await _dio.get(
+        '$_productUrl/search?query=$query&page=$page&size=$size&sortBy=$sortBy&sortDir=$sortDir',
+        options: options,
+      );
       final dynamic data = response.data['data'];
       if (data == null) return [];
-      
-      final List<dynamic> content = data is Map ? (data['content'] ?? []) : data;
+
+      final List<dynamic> content = data is Map
+          ? (data['content'] ?? [])
+          : data;
       return content.map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to search products: $e');
@@ -95,7 +118,10 @@ class ProductService {
   Future<List<String>> getSuggestions(String query) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.get('$_productUrl/suggestions?query=$query', options: options);
+      final response = await _dio.get(
+        '$_productUrl/suggestions?query=$query',
+        options: options,
+      );
       final dynamic data = response.data['data'];
       if (data == null) return [];
       return (data as List).map((e) => e.toString()).toList();
@@ -151,7 +177,11 @@ class ProductService {
     }
   }
 
-  Future<List<Product>> getProductsBySeller(String sellerId, {int page = 0, int size = 20}) async {
+  Future<List<Product>> getProductsBySeller(
+    String sellerId, {
+    int page = 0,
+    int size = 20,
+  }) async {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.get(
@@ -160,8 +190,10 @@ class ProductService {
       );
       final dynamic data = response.data['data'];
       if (data == null) return [];
-      
-      final List<dynamic> content = data is Map ? (data['content'] ?? []) : data;
+
+      final List<dynamic> content = data is Map
+          ? (data['content'] ?? [])
+          : data;
       return content.map((json) => Product.fromJson(json)).toList();
     } catch (e) {
       throw Exception('Failed to get seller products: $e');

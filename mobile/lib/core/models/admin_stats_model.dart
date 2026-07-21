@@ -14,7 +14,9 @@ class AdminUserStats {
     return AdminUserStats(
       totalUsers: json['totalUsers'] as int? ?? 0,
       activeUsers: json['activeUsers'] as int? ?? 0,
-      userGrowth: growthList.map((item) => MonthlyGrowth.fromJson(item)).toList(),
+      userGrowth: growthList
+          .map((item) => MonthlyGrowth.fromJson(item))
+          .toList(),
     );
   }
 }
@@ -23,10 +25,7 @@ class MonthlyGrowth {
   final String month;
   final int count;
 
-  MonthlyGrowth({
-    required this.month,
-    required this.count,
-  });
+  MonthlyGrowth({required this.month, required this.count});
 
   factory MonthlyGrowth.fromJson(Map<String, dynamic> json) {
     return MonthlyGrowth(
@@ -59,7 +58,9 @@ class AdminOrderStats {
       totalOrders: json['totalOrders'] as int? ?? 0,
       aov: (json['aov'] as num? ?? 0.0).toDouble(),
       dailySales: salesList.map((item) => DailySales.fromJson(item)).toList(),
-      categoryBreakdown: categoryList.map((item) => CategoryBreakdown.fromJson(item)).toList(),
+      categoryBreakdown: categoryList
+          .map((item) => CategoryBreakdown.fromJson(item))
+          .toList(),
     );
   }
 }
@@ -108,8 +109,5 @@ class CombinedAdminStats {
   final AdminUserStats userStats;
   final AdminOrderStats orderStats;
 
-  CombinedAdminStats({
-    required this.userStats,
-    required this.orderStats,
-  });
+  CombinedAdminStats({required this.userStats, required this.orderStats});
 }

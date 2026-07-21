@@ -22,7 +22,8 @@ class ProductVariantSheet extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ProductVariantSheet> createState() => _ProductVariantSheetState();
+  ConsumerState<ProductVariantSheet> createState() =>
+      _ProductVariantSheetState();
 }
 
 class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
@@ -37,7 +38,7 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
       setState(() {
         selectedColor = ref.read(selectedProductColorProvider);
         selectedSize = ref.read(selectedProductSizeProvider);
-        
+
         // Fallback if providers are empty
         if (selectedColor == null && widget.product.colors.isNotEmpty) {
           selectedColor = widget.product.colors.first;
@@ -57,9 +58,9 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
       return;
     }
     if (widget.product.sizes.isNotEmpty && selectedSize == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.selectSizeError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text(AppStrings.selectSizeError)));
       return;
     }
 
@@ -74,25 +75,36 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
         size: selectedSize,
         productName: widget.product.name,
         productImageUrl: widget.product.imageUrl,
-        productVariant: [selectedColor, selectedSize].where((e) => e != null).join(', '),
+        productVariant: [
+          selectedColor,
+          selectedSize,
+        ].where((e) => e != null).join(', '),
       );
-      
+
       Navigator.of(context).pop();
-      context.push(AppRoutes.checkout, extra: {'directItems': [directItem]});
+      context.push(
+        AppRoutes.checkout,
+        extra: {
+          'directItems': [directItem],
+        },
+      );
     } else {
-      ref.read(cartProvider.notifier).addToCart(
-        int.parse(widget.product.id),
-        quantity,
-        color: selectedColor,
-        size: selectedSize,
-      ).then((_) {
-        Navigator.of(context).pop();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(AppStrings.addedToCart)),
-          );
-        }
-      });
+      ref
+          .read(cartProvider.notifier)
+          .addToCart(
+            int.parse(widget.product.id),
+            quantity,
+            color: selectedColor,
+            size: selectedSize,
+          )
+          .then((_) {
+            Navigator.of(context).pop();
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text(AppStrings.addedToCart)),
+              );
+            }
+          });
     }
   }
 
@@ -100,9 +112,9 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.fromLTRB(
-        16, 
-        0, 
-        16, 
+        16,
+        0,
+        16,
         MediaQuery.of(context).padding.bottom + 16,
       ),
       padding: const EdgeInsets.all(16),
@@ -128,7 +140,8 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
               setState(() {
                 selectedColor = selected;
               });
-              ref.read(selectedProductColorProvider.notifier).state = selectedColor;
+              ref.read(selectedProductColorProvider.notifier).state =
+                  selectedColor;
             },
           ),
           VariantSelectionGroup(
@@ -139,7 +152,8 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
               setState(() {
                 selectedSize = selected;
               });
-              ref.read(selectedProductSizeProvider.notifier).state = selectedSize;
+              ref.read(selectedProductSizeProvider.notifier).state =
+                  selectedSize;
             },
           ),
           QuantitySelector(
@@ -163,7 +177,9 @@ class _ProductVariantSheetState extends ConsumerState<ProductVariantSheet> {
                 backgroundColor: widget.isBuyNow ? Colors.red : Colors.orange,
                 foregroundColor: Colors.white,
               ),
-              child: Text(widget.isBuyNow ? AppStrings.buyNow : AppStrings.addToCart),
+              child: Text(
+                widget.isBuyNow ? AppStrings.buyNow : AppStrings.addToCart,
+              ),
             ),
           ),
           const SizedBox(height: 16),

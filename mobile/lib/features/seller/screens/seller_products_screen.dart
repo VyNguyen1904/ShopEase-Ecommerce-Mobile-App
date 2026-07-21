@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/product_provider.dart';
-import '../../../core/models/product.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../widgets/seller_product_card.dart';
@@ -14,7 +13,8 @@ class SellerProductsScreen extends ConsumerStatefulWidget {
   const SellerProductsScreen({super.key});
 
   @override
-  ConsumerState<SellerProductsScreen> createState() => _SellerProductsScreenState();
+  ConsumerState<SellerProductsScreen> createState() =>
+      _SellerProductsScreenState();
 }
 
 class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
@@ -39,13 +39,13 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
   Widget build(BuildContext context) {
     // Ensure WebSocket is active for real-time updates
     ref.watch(notificationListProvider);
-    
+
     final userAsync = ref.watch(userProfileProvider);
-    
+
     int totalCount = 0;
     int inStockCount = 0;
     int outOfStockCount = 0;
-    
+
     final user = userAsync.valueOrNull;
     if (user != null) {
       final productsAsync = ref.watch(sellerProductsProvider(user.id));
@@ -63,7 +63,11 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: const Text(
@@ -151,58 +155,66 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen>
         if (user == null) {
           return const Center(child: Text(AppStrings.pleaseLogin));
         }
-        return ref.watch(sellerProductsProvider(user.id)).when(
-          data: (allProducts) {
-            final products = allProducts.where((p) {
-              if (tabIndex == 1) return p.stockQuantity > 0;
-              if (tabIndex == 2) return p.stockQuantity <= 0;
-              return true;
-            }).toList();
+        return ref
+            .watch(sellerProductsProvider(user.id))
+            .when(
+              data: (allProducts) {
+                final products = allProducts.where((p) {
+                  if (tabIndex == 1) return p.stockQuantity > 0;
+                  if (tabIndex == 2) return p.stockQuantity <= 0;
+                  return true;
+                }).toList();
 
-            if (products.isEmpty) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  ref.invalidate(sellerProductsProvider(user.id));
-                },
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-                    const Center(child: Text(AppStrings.noProductsList)),
-                  ],
-                ),
-              );
-            }
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(sellerProductsProvider(user.id));
-              },
-              child: ListView.separated(
-                padding: const EdgeInsets.all(20),
-                itemCount: products.length,
-                separatorBuilder: (context, index) => Divider(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  height: 32,
-                ),
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return SellerProductCard(
-                    product: product,
-                    onEdit: () {
-                      context.push(AppRoutes.sellerEditProduct, extra: product);
+                if (products.isEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(sellerProductsProvider(user.id));
                     },
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.3,
+                        ),
+                        const Center(child: Text(AppStrings.noProductsList)),
+                      ],
+                    ),
                   );
-                },
-              ),
+                }
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(sellerProductsProvider(user.id));
+                  },
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: products.length,
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                      height: 32,
+                    ),
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return SellerProductCard(
+                        product: product,
+                        onEdit: () {
+                          context.push(
+                            AppRoutes.sellerEditProduct,
+                            extra: product,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) =>
+                  Center(child: Text('${AppStrings.errorPrefix}$err')),
             );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
-        );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
+      error: (err, stack) =>
+          Center(child: Text('${AppStrings.errorPrefix}$err')),
     );
   }
-
 }

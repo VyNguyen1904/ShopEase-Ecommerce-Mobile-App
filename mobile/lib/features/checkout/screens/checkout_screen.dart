@@ -15,7 +15,6 @@ import '../../../core/providers/payment_provider.dart';
 import '../../../core/models/payment_model.dart';
 import '../../../core/models/address_model.dart';
 import '../widgets/checkout_section_title.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/checkout_address_card.dart';
 import '../widgets/checkout_selected_items.dart';
@@ -45,10 +44,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final cartState = ref.watch(cartProvider);
     final userState = ref.watch(userProfileProvider);
 
-    final selectedItems = widget.directItems ?? 
+    final selectedItems =
+        widget.directItems ??
         (cartState.value?.items.where((i) => i.selected).toList() ?? []);
     final subtotal = widget.directItems != null
-        ? selectedItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity))
+        ? selectedItems.fold(
+            0.0,
+            (sum, item) => sum + (item.price * item.quantity),
+          )
         : (cartState.value?.subtotal ?? 0);
 
     final double baseShippingFee = _selectedShipping == 'nhanh' ? 35000 : 15000;
@@ -56,8 +59,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final double discount = _useCoins ? 2000 : 0;
     final double totalAmount = subtotal + shippingFee - discount;
 
-    final defaultAddress = userState.value?.addresses.where((a) => a.isDefault).firstOrNull 
-        ?? userState.value?.addresses.firstOrNull;
+    final defaultAddress =
+        userState.value?.addresses.where((a) => a.isDefault).firstOrNull ??
+        userState.value?.addresses.firstOrNull;
 
     final addressToUse = _selectedAddress ?? defaultAddress;
 
@@ -136,11 +140,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(selectedItems, addressToUse, totalAmount, shippingFee),
+      bottomNavigationBar: _buildBottomBar(
+        selectedItems,
+        addressToUse,
+        totalAmount,
+        shippingFee,
+      ),
     );
   }
 
-  Widget _buildBottomBar(List<CartItem> items, AddressModel? address, double totalAmount, double shippingFee) {
+  Widget _buildBottomBar(
+    List<CartItem> items,
+    AddressModel? address,
+    double totalAmount,
+    double shippingFee,
+  ) {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -155,95 +169,129 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: _isLoading ? null : () async {
-            if (address == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.missingAddressError)));
-              return;
-            }
-            if (items.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.cartEmptyError)));
-              return;
-            }
-
-            setState(() => _isLoading = true);
-            try {
-              final addrParts = address.address2.split(', ');
-              final district = addrParts.length > 1 ? addrParts[0] : (address.address2.isNotEmpty ? address.address2 : 'N/A');
-              final city = addrParts.length > 1 ? addrParts[1] : (address.address2.isNotEmpty ? address.address2 : 'N/A');
-
-              final req = CreateOrderRequest(
-                items: items.map((i) => OrderItemRequest(productId: i.productId, quantity: i.quantity, color: i.color, size: i.size)).toList(),
-                shipRecipient: address.name,
-                shipPhone: address.phone,
-                shipStreet: address.address1,
-                shipDistrict: district,
-                shipCity: city,
-                paymentMethod: _selectedPayment.toUpperCase(),
-                shippingFee: shippingFee,
-                note: '',
-              );
-
-              final orderService = ref.read(orderServiceProvider);
-              final newOrder = await orderService.createOrder(req);
-
-              // Stock is decremented asynchronously via Kafka (ReserveStockCommand).
-              // We delay invalidation by 2s to let the Kafka pipeline finish before
-              // re-fetching, preventing the UI from showing stale/old stock numbers.
-              Future.delayed(const Duration(seconds: 2), () {
-                ref.invalidate(productsProvider);
-                final sellerId = ref.read(userProfileProvider).valueOrNull?.id;
-                for (var item in items) {
-                  ref.invalidate(productDetailProvider(item.productId.toString()));
-                }
-                if (sellerId != null) {
-                  ref.invalidate(sellerProductsProvider(sellerId));
-                } else {
-                  ref.invalidate(sellerProductsProvider);
-                }
-              });
-
-              if (_selectedPayment != 'cod') {
-                final paymentReq = CheckoutPaymentRequest(
-                  orderId: newOrder.id,
-                  amount: totalAmount,
-                  paymentMethod: _selectedPayment.toUpperCase(),
-                );
-                final paymentService = ref.read(paymentServiceProvider);
-                final paymentResp = await paymentService.processCheckout(paymentReq);
-
-                if (mounted) {
-                    context.go('/payment', extra: {
-                      'orderId': newOrder.id,
-                    });
-                    
-                    final cartNotifier = ref.read(cartProvider.notifier);
-                    for (var item in items) {
-                      cartNotifier.removeItem(item.itemId);
-                    }
+          onPressed: _isLoading
+              ? null
+              : () async {
+                  if (address == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(AppStrings.missingAddressError),
+                      ),
+                    );
                     return;
-                }
-              }
+                  }
+                  if (items.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text(AppStrings.cartEmptyError)),
+                    );
+                    return;
+                  }
 
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(AppStrings.orderSuccess)));
-                context.go(AppRoutes.orderDetailPath(newOrder.id));
-              }
+                  setState(() => _isLoading = true);
+                  try {
+                    final addrParts = address.address2.split(', ');
+                    final district = addrParts.length > 1
+                        ? addrParts[0]
+                        : (address.address2.isNotEmpty
+                              ? address.address2
+                              : 'N/A');
+                    final city = addrParts.length > 1
+                        ? addrParts[1]
+                        : (address.address2.isNotEmpty
+                              ? address.address2
+                              : 'N/A');
 
-              // Only clear from cart if we are checking out from cart
-              if (widget.directItems == null) {
-                final cartNotifier = ref.read(cartProvider.notifier);
-                for (var item in items) {
-                  cartNotifier.removeItem(item.itemId);
-                }
-              }
-            } catch (e) {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
-              }
-            } finally {
-              if (mounted) setState(() => _isLoading = false);
-            }
-          },
+                    final req = CreateOrderRequest(
+                      items: items
+                          .map(
+                            (i) => OrderItemRequest(
+                              productId: i.productId,
+                              quantity: i.quantity,
+                              color: i.color,
+                              size: i.size,
+                            ),
+                          )
+                          .toList(),
+                      shipRecipient: address.name,
+                      shipPhone: address.phone,
+                      shipStreet: address.address1,
+                      shipDistrict: district,
+                      shipCity: city,
+                      paymentMethod: _selectedPayment.toUpperCase(),
+                      shippingFee: shippingFee,
+                      note: '',
+                    );
+
+                    final orderService = ref.read(orderServiceProvider);
+                    final newOrder = await orderService.createOrder(req);
+
+                    // Stock is decremented asynchronously via Kafka (ReserveStockCommand).
+                    // We delay invalidation by 2s to let the Kafka pipeline finish before
+                    // re-fetching, preventing the UI from showing stale/old stock numbers.
+                    Future.delayed(const Duration(seconds: 2), () {
+                      ref.invalidate(productsProvider);
+                      final sellerId = ref
+                          .read(userProfileProvider)
+                          .valueOrNull
+                          ?.id;
+                      for (var item in items) {
+                        ref.invalidate(
+                          productDetailProvider(item.productId.toString()),
+                        );
+                      }
+                      if (sellerId != null) {
+                        ref.invalidate(sellerProductsProvider(sellerId));
+                      } else {
+                        ref.invalidate(sellerProductsProvider);
+                      }
+                    });
+
+                    if (_selectedPayment != 'cod') {
+                      final paymentReq = CheckoutPaymentRequest(
+                        orderId: newOrder.id,
+                        amount: totalAmount,
+                        paymentMethod: _selectedPayment.toUpperCase(),
+                      );
+                      final paymentService = ref.read(paymentServiceProvider);
+                      final paymentResp = await paymentService.processCheckout(
+                        paymentReq,
+                      );
+
+                      if (mounted) {
+                        context.go('/payment', extra: {'orderId': newOrder.id});
+
+                        final cartNotifier = ref.read(cartProvider.notifier);
+                        for (var item in items) {
+                          cartNotifier.removeItem(item.itemId);
+                        }
+                        return;
+                      }
+                    }
+
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text(AppStrings.orderSuccess)),
+                      );
+                      context.go(AppRoutes.orderDetailPath(newOrder.id));
+                    }
+
+                    // Only clear from cart if we are checking out from cart
+                    if (widget.directItems == null) {
+                      final cartNotifier = ref.read(cartProvider.notifier);
+                      for (var item in items) {
+                        cartNotifier.removeItem(item.itemId);
+                      }
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
+                      );
+                    }
+                  } finally {
+                    if (mounted) setState(() => _isLoading = false);
+                  }
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.alertRed,
             foregroundColor: Colors.white,
@@ -253,19 +301,29 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ),
             elevation: 0,
           ),
-          child: _isLoading 
-            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.lock_outline, size: 20),
-              SizedBox(width: 8),
-              Text(
-                AppStrings.placeOrder,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          child: _isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.lock_outline, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      AppStrings.placeOrder,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

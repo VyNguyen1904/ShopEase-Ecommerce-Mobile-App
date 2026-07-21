@@ -30,7 +30,10 @@ class HomeHeader extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Tìm kiếm sản phẩm, thương hiệu...',
-                        style: TextStyle(color: AppColors.textLight, fontSize: 14),
+                        style: TextStyle(
+                          color: AppColors.textLight,
+                          fontSize: 14,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

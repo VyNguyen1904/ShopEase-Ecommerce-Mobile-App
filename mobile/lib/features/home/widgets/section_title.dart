@@ -4,7 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 class SectionTitle extends StatelessWidget {
   final String title;
   final VoidCallback? onViewAll;
-  
+
   const SectionTitle({super.key, required this.title, this.onViewAll});
 
   @override
@@ -34,10 +34,7 @@ class SectionTitle extends StatelessWidget {
             ),
             child: const Text(
               'Xem tất cả',
-              style: TextStyle(
-                color: AppColors.textGrey,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppColors.textGrey, fontSize: 12),
             ),
           ),
         ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../models/product.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 class ProductCard extends StatelessWidget {
   final Product product;
   final bool isHorizontal;

@@ -73,7 +73,10 @@ class SellerInputField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(color: AppColors.textGrey, fontSize: 14),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: maxLines > 1 ? 16 : 16),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: maxLines > 1 ? 16 : 16,
+            ),
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(

@@ -16,7 +16,9 @@ final userProfileProvider = FutureProvider<UserResponse?>((ref) async {
   } catch (e) {
     // If 401/Unauthorized, clear tokens silently and return null (show login UI)
     final msg = e.toString().toLowerCase();
-    if (msg.contains('unauthorized') || msg.contains('401') || msg.contains('đăng nhập')) {
+    if (msg.contains('unauthorized') ||
+        msg.contains('401') ||
+        msg.contains('đăng nhập')) {
       await authService.logout();
       return null;
     }

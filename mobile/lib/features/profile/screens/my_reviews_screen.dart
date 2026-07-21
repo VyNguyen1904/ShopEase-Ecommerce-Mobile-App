@@ -40,7 +40,11 @@ class MyReviewsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.rate_review_outlined, size: 64, color: Colors.grey.shade400),
+                  Icon(
+                    Icons.rate_review_outlined,
+                    size: 64,
+                    color: Colors.grey.shade400,
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     AppStrings.noReviewsWritten,
@@ -79,7 +83,8 @@ class MyReviewsScreen extends ConsumerWidget {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.network(
-                            review.productImage ?? 'https://via.placeholder.com/60',
+                            review.productImage ??
+                                'https://via.placeholder.com/60',
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -87,7 +92,11 @@ class MyReviewsScreen extends ConsumerWidget {
                               width: 50,
                               height: 50,
                               color: Colors.grey[200],
-                              child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 20),
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ),
@@ -98,14 +107,22 @@ class MyReviewsScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 review.productName ?? AppStrings.product,
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                DateFormat('dd/MM/yyyy HH:mm').format(review.createdAt),
-                                style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
+                                DateFormat(
+                                  'dd/MM/yyyy HH:mm',
+                                ).format(review.createdAt),
+                                style: const TextStyle(
+                                  color: AppColors.textGrey,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
@@ -120,14 +137,20 @@ class MyReviewsScreen extends ConsumerWidget {
                         _buildStarRating(review.rating),
                         if (review.status != 'ACTIVE')
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
                               AppStrings.pendingApproval,
-                              style: TextStyle(fontSize: 10, color: AppColors.textGrey),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: AppColors.textGrey,
+                              ),
                             ),
                           ),
                       ],
@@ -136,13 +159,20 @@ class MyReviewsScreen extends ConsumerWidget {
                     if (review.title.isNotEmpty) ...[
                       Text(
                         review.title,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 4),
                     ],
                     Text(
                       review.body,
-                      style: const TextStyle(fontSize: 14, color: AppColors.textDark, height: 1.4),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textDark,
+                        height: 1.4,
+                      ),
                     ),
                   ],
                 ),

@@ -6,7 +6,6 @@ import '../../../../core/models/product.dart';
 
 import 'product_variant_sheet.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/services/chat_service.dart';
 import '../../../../core/providers/chat_provider.dart';
 
 class ProductBottomBar extends ConsumerWidget {
@@ -39,29 +38,39 @@ class ProductBottomBar extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: IconButton(
-              icon: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
+              icon: const Icon(
+                Icons.chat_bubble_outline,
+                color: AppColors.primary,
+              ),
               onPressed: () async {
                 if (product.sellerId.isNotEmpty) {
                   try {
                     // Show a simple loading indicator in a dialog
                     showDialog(
-                      context: context, 
+                      context: context,
                       barrierDismissible: false,
-                      builder: (_) => const Center(child: CircularProgressIndicator()),
+                      builder: (_) =>
+                          const Center(child: CircularProgressIndicator()),
                     );
-                    
+
                     final chatService = ref.read(chatServiceProvider);
-                    final room = await chatService.getOrCreateRoom(product.sellerId);
-                    
+                    final room = await chatService.getOrCreateRoom(
+                      product.sellerId,
+                    );
+
                     if (context.mounted) {
                       Navigator.pop(context); // Close loading
-                      context.push('/chats/${room['id']}'); // Navigate directly to the room
+                      context.push(
+                        '/chats/${room['id']}',
+                      ); // Navigate directly to the room
                     }
                   } catch (e) {
                     if (context.mounted) {
                       Navigator.pop(context); // Close loading
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${AppStrings.createChatError}$e')),
+                        SnackBar(
+                          content: Text('${AppStrings.createChatError}$e'),
+                        ),
                       );
                     }
                     debugPrint('Error creating chat: $e');
@@ -85,7 +94,9 @@ class ProductBottomBar extends ConsumerWidget {
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => Padding(
-                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
                       child: ProductVariantSheet(product: product),
                     ),
                   );
@@ -101,10 +112,7 @@ class ProductBottomBar extends ConsumerWidget {
                 icon: const Icon(Icons.shopping_cart_outlined, size: 20),
                 label: const Text(
                   AppStrings.addToCart,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
               ),
             ),
@@ -121,8 +129,13 @@ class ProductBottomBar extends ConsumerWidget {
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => Padding(
-                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: ProductVariantSheet(product: product, isBuyNow: true),
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: ProductVariantSheet(
+                        product: product,
+                        isBuyNow: true,
+                      ),
                     ),
                   );
                 },
@@ -136,10 +149,7 @@ class ProductBottomBar extends ConsumerWidget {
                 ),
                 child: const Text(
                   AppStrings.buyNow,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
               ),
             ),

@@ -33,7 +33,11 @@ class MapSearchBar extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
               boxShadow: const [
-                BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
+                ),
               ],
             ),
             child: TextField(
@@ -59,7 +63,7 @@ class MapSearchBar extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 10)
+                  BoxShadow(color: Colors.black12, blurRadius: 10),
                 ],
               ),
               constraints: const BoxConstraints(maxHeight: 200),
@@ -69,13 +73,21 @@ class MapSearchBar extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final result = searchResults[index];
                   return ListTile(
-                    leading: const Icon(Icons.location_city, color: AppColors.textGrey),
-                    title: Text(result['display_name'], maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
+                    leading: const Icon(
+                      Icons.location_city,
+                      color: AppColors.textGrey,
+                    ),
+                    title: Text(
+                      result['display_name'],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 13),
+                    ),
                     onTap: () => onResultSelected(result),
                   );
                 },
               ),
-            )
+            ),
         ],
       ),
     );

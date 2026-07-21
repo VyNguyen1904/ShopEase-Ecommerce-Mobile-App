@@ -10,7 +10,7 @@ import '../constants/app_strings.dart';
 class AuthService {
   final Dio _dio;
   Future<TokenResponse>? _refreshTokenFuture;
-  
+
   Dio get dio => _dio;
 
   String get _host {
@@ -31,13 +31,14 @@ class AuthService {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final isAuthRoute = options.path.contains('/api/auth/login') || 
-                              options.path.contains('/api/auth/register') ||
-                              options.path.contains('/api/auth/verify-email') ||
-                              options.path.contains('/api/auth/resend-otp') ||
-                              options.path.contains('/api/auth/refresh') ||
-                              options.path.endsWith('/api/auth/logout');
-          
+          final isAuthRoute =
+              options.path.contains('/api/auth/login') ||
+              options.path.contains('/api/auth/register') ||
+              options.path.contains('/api/auth/verify-email') ||
+              options.path.contains('/api/auth/resend-otp') ||
+              options.path.contains('/api/auth/refresh') ||
+              options.path.endsWith('/api/auth/logout');
+
           if (!isAuthRoute) {
             final token = await getAccessToken();
             if (token == null) {
@@ -56,7 +57,8 @@ class AuthService {
         onError: (DioException e, handler) async {
           final path = e.requestOptions.path;
           // Auth endpoints must NEVER trigger a refresh attempt
-          final isAuthEndpoint = path.contains('/api/auth/login') ||
+          final isAuthEndpoint =
+              path.contains('/api/auth/login') ||
               path.contains('/api/auth/register') ||
               path.contains('/api/auth/refresh') ||
               path.contains('/api/auth/verify-email') ||
@@ -68,12 +70,13 @@ class AuthService {
               _refreshTokenFuture ??= refreshToken().whenComplete(() {
                 _refreshTokenFuture = null;
               });
-              
+
               final tokenResponse = await _refreshTokenFuture!;
-              
+
               // Update the original request with the new token
-              e.requestOptions.headers['Authorization'] = 'Bearer ${tokenResponse.accessToken}';
-              
+              e.requestOptions.headers['Authorization'] =
+                  'Bearer ${tokenResponse.accessToken}';
+
               // Create a new Dio instance to retry the request without triggering interceptor loops
               final retryDio = Dio();
               final retryResponse = await retryDio.fetch(e.requestOptions);
@@ -81,11 +84,13 @@ class AuthService {
             } catch (refreshError) {
               await _clearTokens();
               // Force redirect to login by throwing a specific error
-              return handler.next(DioException(
-                requestOptions: e.requestOptions,
-                error: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.',
-                type: DioExceptionType.unknown,
-              ));
+              return handler.next(
+                DioException(
+                  requestOptions: e.requestOptions,
+                  error: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.',
+                  type: DioExceptionType.unknown,
+                ),
+              );
             }
           }
           if (e.response?.statusCode == 401 && !isAuthEndpoint) {
@@ -101,7 +106,8 @@ class AuthService {
     if (e.error == 'Vui lòng đăng nhập lại') return e.error.toString();
 
     // Fast-path: sai mật khẩu khi đăng nhập
-    if (e.response?.statusCode == 401 && e.requestOptions.path.contains('/login')) {
+    if (e.response?.statusCode == 401 &&
+        e.requestOptions.path.contains('/login')) {
       return AppStrings.errBadCredentials;
     }
 
@@ -119,38 +125,45 @@ class AuthService {
         'internal server error': AppStrings.errInternalServer,
       };
 
-      final match = errorMappings.entries.where((entry) => lowerMsg.contains(entry.key)).firstOrNull;
+      final match = errorMappings.entries
+          .where((entry) => lowerMsg.contains(entry.key))
+          .firstOrNull;
       return match?.value ?? message;
     }
 
     final data = e.response?.data;
     final serverMessage = switch (data) {
       Map() when data['message'] != null => data['message'].toString(),
-      Map() when data['error'] != null   => data['error'].toString(),
-      Map() when data['errors'] is List && (data['errors'] as List).isNotEmpty
-          => (data['errors'] as List).first.toString(),
+      Map() when data['error'] != null => data['error'].toString(),
+      Map()
+          when data['errors'] is List && (data['errors'] as List).isNotEmpty =>
+        (data['errors'] as List).first.toString(),
       _ => null,
     };
 
     return serverMessage != null
         ? translateError(serverMessage)
         : e.response != null
-            ? (e.response!.statusMessage?.isNotEmpty == true
-                ? e.response!.statusMessage!
-                : '${AppStrings.errServerStatus} (${e.response!.statusCode})')
-            : switch (e.type) {
-                DioExceptionType.connectionTimeout ||
-                DioExceptionType.receiveTimeout => AppStrings.errConnectionTimeout,
-                DioExceptionType.connectionError => AppStrings.errConnectionError,
-                _ => e.message?.isNotEmpty == true
-                    ? '${AppStrings.errOccurred}${e.message}'
-                    : AppStrings.unknownError,
-              };
+        ? (e.response!.statusMessage?.isNotEmpty == true
+              ? e.response!.statusMessage!
+              : '${AppStrings.errServerStatus} (${e.response!.statusCode})')
+        : switch (e.type) {
+            DioExceptionType.connectionTimeout ||
+            DioExceptionType.receiveTimeout => AppStrings.errConnectionTimeout,
+            DioExceptionType.connectionError => AppStrings.errConnectionError,
+            _ =>
+              e.message?.isNotEmpty == true
+                  ? '${AppStrings.errOccurred}${e.message}'
+                  : AppStrings.unknownError,
+          };
   }
 
   Future<TokenResponse> login(String email, String password) async {
     try {
-      final response = await _dio.post('$_authUrl/login', data: {'email': email, 'password': password});
+      final response = await _dio.post(
+        '$_authUrl/login',
+        data: {'email': email, 'password': password},
+      );
       final tokenResponse = TokenResponse.fromJson(response.data['data']);
       await _saveTokens(tokenResponse);
       return tokenResponse;
@@ -163,7 +176,12 @@ class AuthService {
     try {
       await _dio.post(
         '$_authUrl/register',
-        data: {'email': email, 'password': password, 'fullName': fullName, 'role': 'BUYER'},
+        data: {
+          'email': email,
+          'password': password,
+          'fullName': fullName,
+          'role': 'BUYER',
+        },
       );
     } on DioException catch (e) {
       throw Exception(_handleDioError(e));
@@ -186,10 +204,7 @@ class AuthService {
 
   Future<void> resendOtp(String email) async {
     try {
-      await _dio.post(
-        '$_authUrl/resend-otp',
-        data: {'email': email},
-      );
+      await _dio.post('$_authUrl/resend-otp', data: {'email': email});
     } on DioException catch (e) {
       throw Exception(_handleDioError(e));
     }
@@ -222,7 +237,11 @@ class AuthService {
     }
   }
 
-  Future<UserResponse> updateProfile(String fullName, String? phone, String? avatarUrl) async {
+  Future<UserResponse> updateProfile(
+    String fullName,
+    String? phone,
+    String? avatarUrl,
+  ) async {
     try {
       final data = {
         'fullName': fullName,
@@ -237,16 +256,15 @@ class AuthService {
     }
   }
 
-
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     try {
       final token = await getAccessToken();
       await _dio.post(
         '$_authUrl/change-password',
-        data: {
-          'currentPassword': currentPassword,
-          'newPassword': newPassword,
-        },
+        data: {'currentPassword': currentPassword, 'newPassword': newPassword},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } on DioException catch (e) {
@@ -278,7 +296,9 @@ class AuthService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to update address');
+      throw Exception(
+        e.response?.data['message'] ?? 'Failed to update address',
+      );
     } catch (e) {
       throw Exception('Unexpected error: $e');
     }
@@ -292,7 +312,9 @@ class AuthService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to delete address');
+      throw Exception(
+        e.response?.data['message'] ?? 'Failed to delete address',
+      );
     }
   }
 
@@ -302,7 +324,10 @@ class AuthService {
       final refreshToken = prefs.getString('refresh_token');
 
       if (refreshToken != null) {
-        await _dio.post('$_authUrl/logout', data: {'refreshToken': refreshToken});
+        await _dio.post(
+          '$_authUrl/logout',
+          data: {'refreshToken': refreshToken},
+        );
       }
     } catch (e) {
       // Ignore errors during logout
@@ -372,9 +397,27 @@ class AuthService {
       if (token == null) return null;
       final parts = token.split('.');
       if (parts.length != 3) return null;
-      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
       final Map<String, dynamic> data = jsonDecode(payload);
       return data['userId']?.toString() ?? data['sub']?.toString();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<String?> getUserRole() async {
+    try {
+      final token = await getAccessToken();
+      if (token == null) return null;
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final Map<String, dynamic> data = jsonDecode(payload);
+      return data['role']?.toString();
     } catch (_) {
       return null;
     }

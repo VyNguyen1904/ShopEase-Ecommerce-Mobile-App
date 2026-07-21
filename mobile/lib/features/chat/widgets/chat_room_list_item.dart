@@ -6,11 +6,7 @@ class ChatRoomListItem extends StatelessWidget {
   final ChatRoom room;
   final VoidCallback onTap;
 
-  const ChatRoomListItem({
-    super.key,
-    required this.room,
-    required this.onTap,
-  });
+  const ChatRoomListItem({super.key, required this.room, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +56,9 @@ class ChatRoomListItem extends StatelessWidget {
         style: TextStyle(
           fontSize: 14,
           color: room.unreadCount > 0 ? AppColors.textDark : AppColors.textGrey,
-          fontWeight: room.unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
+          fontWeight: room.unreadCount > 0
+              ? FontWeight.bold
+              : FontWeight.normal,
         ),
       ),
       trailing: Column(
@@ -70,10 +68,7 @@ class ChatRoomListItem extends StatelessWidget {
         children: [
           Text(
             room.time,
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.textLight,
-            ),
+            style: const TextStyle(fontSize: 11, color: AppColors.textLight),
           ),
           const SizedBox(height: 6),
           if (room.unreadCount > 0)

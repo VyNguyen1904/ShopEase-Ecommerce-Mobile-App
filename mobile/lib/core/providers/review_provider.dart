@@ -9,7 +9,10 @@ final reviewServiceProvider = Provider((ref) {
   return ReviewService(dio: authService.dio);
 });
 
-final productReviewsProvider = FutureProvider.family<List<Review>, String>((ref, productId) async {
+final productReviewsProvider = FutureProvider.family<List<Review>, String>((
+  ref,
+  productId,
+) async {
   final reviewService = ref.watch(reviewServiceProvider);
   return reviewService.getProductReviews(productId);
 });

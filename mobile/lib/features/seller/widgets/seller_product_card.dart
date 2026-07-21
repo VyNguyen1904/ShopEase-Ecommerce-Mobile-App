@@ -6,11 +6,7 @@ class SellerProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback? onEdit;
 
-  const SellerProductCard({
-    super.key,
-    required this.product,
-    this.onEdit,
-  });
+  const SellerProductCard({super.key, required this.product, this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +83,7 @@ class SellerProductCard extends StatelessWidget {
         ),
         IconButton(
           onPressed: onEdit ?? () {},
-          icon: const Icon(
-            Icons.edit_outlined,
-            color: AppColors.textGrey,
-          ),
+          icon: const Icon(Icons.edit_outlined, color: AppColors.textGrey),
         ),
       ],
     );

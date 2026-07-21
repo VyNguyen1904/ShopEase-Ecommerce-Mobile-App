@@ -27,27 +27,38 @@ class AddressModel {
       name: json['name'] ?? json['recipientName'] ?? '',
       phone: json['phone'] ?? '',
       address1: json['address1'] ?? json['street'] ?? '',
-      address2: json['address2'] ?? 
-          ((json['district'] != null && json['city'] != null) 
-              ? '${json['district']}, ${json['city']}' 
+      address2:
+          json['address2'] ??
+          ((json['district'] != null && json['city'] != null)
+              ? '${json['district']}, ${json['city']}'
               : (json['city'] ?? json['district'] ?? '')),
       label: json['label'] ?? '',
-      isDefault: json['isDefault'] ?? json['defaultAddress'] ?? json['default'] ?? false,
-      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
-      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+      isDefault:
+          json['isDefault'] ??
+          json['defaultAddress'] ??
+          json['default'] ??
+          false,
+      latitude: json['latitude'] != null
+          ? double.tryParse(json['latitude'].toString())
+          : null,
+      longitude: json['longitude'] != null
+          ? double.tryParse(json['longitude'].toString())
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     String cityStr = address2;
     String districtStr = '';
-    
+
     if (address2.contains(', ')) {
       final parts = address2.split(', ');
       districtStr = parts[0].trim();
-      cityStr = parts.length > 1 ? parts.sublist(1).join(', ').trim() : parts[0].trim();
+      cityStr = parts.length > 1
+          ? parts.sublist(1).join(', ').trim()
+          : parts[0].trim();
     }
-    
+
     // Fallback if backend strictly requires them
     if (districtStr.isEmpty) districtStr = 'N/A';
     if (cityStr.isEmpty) cityStr = 'N/A';

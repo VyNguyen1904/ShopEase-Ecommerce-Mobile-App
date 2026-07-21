@@ -26,11 +26,17 @@ class PriceRangeFilter extends StatelessWidget {
             children: [
               Text(
                 formatCurrency(minPrice),
-                style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
               ),
               Text(
                 formatCurrency(maxPrice),
-                style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
               ),
             ],
           ),

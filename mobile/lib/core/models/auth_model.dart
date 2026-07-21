@@ -8,7 +8,8 @@ class TokenResponse {
 
   factory TokenResponse.fromJson(Map<String, dynamic> json) {
     return TokenResponse(
-      accessToken: json['accessToken'] ?? json['access_token'] ?? json['token'] ?? '',
+      accessToken:
+          json['accessToken'] ?? json['access_token'] ?? json['token'] ?? '',
       refreshToken: json['refreshToken'] ?? json['refresh_token'] ?? '',
     );
   }
@@ -41,7 +42,8 @@ class UserResponse {
       phone: json['phone'],
       avatar: json['avatar'],
       role: json['role'] ?? 'CUSTOMER',
-      addresses: (json['addresses'] as List?)
+      addresses:
+          (json['addresses'] as List?)
               ?.map((e) => AddressModel.fromJson(e))
               .toList() ??
           [],

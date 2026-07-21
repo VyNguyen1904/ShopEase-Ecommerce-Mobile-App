@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/providers/payment_provider.dart';
 import '../../../core/models/order_model.dart';
@@ -12,10 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
 
-  const PaymentScreen({
-    super.key,
-    required this.orderId,
-  });
+  const PaymentScreen({super.key, required this.orderId});
 
   @override
   ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
@@ -62,7 +58,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         // After returning from VNPay, start polling
         _startPolling();
       } else {
-        setState(() => _statusText = 'Không thể mở trang VNPay. Vui lòng thử lại.');
+        setState(
+          () => _statusText = 'Không thể mở trang VNPay. Vui lòng thử lại.',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -110,7 +108,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         _pollTimer?.cancel();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Thanh toán thất bại. Bạn có thể thử lại từ trang đơn hàng.'),
+            content: Text(
+              'Thanh toán thất bại. Bạn có thể thử lại từ trang đơn hàng.',
+            ),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
           ),
@@ -139,7 +139,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1E293B), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF1E293B),
+            size: 20,
+          ),
           onPressed: () => context.go(AppRoutes.orders),
         ),
       ),
@@ -178,7 +182,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
               const SizedBox(height: 32),
               Text(
-                _hasOpenedVNPay ? 'Đang chờ kết quả thanh toán' : 'Đang kết nối VNPay',
+                _hasOpenedVNPay
+                    ? 'Đang chờ kết quả thanh toán'
+                    : 'Đang kết nối VNPay',
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -237,7 +243,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           ),
                           child: const Text(
                             'Kiểm tra kết quả',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ),
@@ -247,7 +256,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                         onPressed: () => context.go(AppRoutes.orders),
                         child: Text(
                           'Quay lại đơn hàng',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],

@@ -5,10 +5,7 @@ import '../../../core/constants/app_strings.dart';
 class SellerProfileHeaderContent extends StatelessWidget {
   final Color headerColor;
 
-  const SellerProfileHeaderContent({
-    super.key,
-    required this.headerColor,
-  });
+  const SellerProfileHeaderContent({super.key, required this.headerColor});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +28,7 @@ class SellerProfileHeaderContent extends StatelessWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.iconTeal,
-                      width: 2,
-                    ),
+                    border: Border.all(color: AppColors.iconTeal, width: 2),
                     image: const DecorationImage(
                       image: NetworkImage(
                         'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80',
@@ -88,11 +82,7 @@ class SellerProfileHeaderContent extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                  size: 18,
-                ),
+                const Icon(Icons.star, color: Colors.amber, size: 18),
                 const SizedBox(width: 6),
                 const Text(
                   '4.9',
@@ -104,23 +94,12 @@ class SellerProfileHeaderContent extends StatelessWidget {
                 ),
                 const Text(
                   ' (2.3k đánh giá)',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.white70),
                 ),
                 const SizedBox(width: 16),
-                Container(
-                  width: 1,
-                  height: 16,
-                  color: Colors.white24,
-                ),
+                Container(width: 1, height: 16, color: Colors.white24),
                 const SizedBox(width: 16),
-                const Icon(
-                  Icons.people_alt,
-                  color: Colors.white70,
-                  size: 18,
-                ),
+                const Icon(Icons.people_alt, color: Colors.white70, size: 18),
                 const SizedBox(width: 6),
                 const Text(
                   '2.3k',
@@ -132,10 +111,7 @@ class SellerProfileHeaderContent extends StatelessWidget {
                 ),
                 const Text(
                   AppStrings.followers,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.white70),
                 ),
               ],
             ),
@@ -155,9 +131,7 @@ class SellerProfileHeaderContent extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
@@ -165,10 +139,7 @@ class SellerProfileHeaderContent extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(
-                      Icons.chat_bubble_outline,
-                      size: 18,
-                    ),
+                    icon: const Icon(Icons.chat_bubble_outline, size: 18),
                     label: const Text(AppStrings.chat),
                     style: OutlinedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -177,9 +148,7 @@ class SellerProfileHeaderContent extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),

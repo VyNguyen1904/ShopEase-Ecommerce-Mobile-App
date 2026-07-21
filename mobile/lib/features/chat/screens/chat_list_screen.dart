@@ -23,7 +23,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   late final AuthService _authService;
 
   List<dynamic> _chatRooms = [];
-  Map<String, String> _userNames = {};
+  final Map<String, String> _userNames = {};
   bool _isLoading = true;
 
   Timer? _pollingTimer;
@@ -53,22 +53,25 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
     try {
       final rooms = await _chatService.getMyChats();
       final Map<String, String> names = {};
-      
+
       for (var room in rooms) {
         final p1 = room['participant1Id'];
         final p2 = room['participant2Id'];
         final otherUserId = (p1 != null && p1 != 'SYSTEM') ? p1 : p2;
-        
+
         if (otherUserId != null && !names.containsKey(otherUserId)) {
           // If we already have the name cached, use it to avoid redundant API calls
           if (_userNames.containsKey(otherUserId.toString())) {
             names[otherUserId.toString()] = _userNames[otherUserId.toString()]!;
           } else {
             try {
-              final user = await _authService.getUserById(otherUserId.toString());
+              final user = await _authService.getUserById(
+                otherUserId.toString(),
+              );
               names[otherUserId.toString()] = user.fullName;
             } catch (_) {
-              names[otherUserId.toString()] = 'User ${otherUserId.toString().substring(0, 5)}';
+              names[otherUserId.toString()] =
+                  'User ${otherUserId.toString().substring(0, 5)}';
             }
           }
         }
@@ -131,52 +134,65 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _chatRooms.isEmpty
-                    ? const Center(
-                        child: Text(
-                          AppStrings.noChatsYet,
-                          style: TextStyle(color: AppColors.textLight),
-                        ),
-                      )
-                    : ListView.separated(
-                        itemCount: _chatRooms.length,
-                        separatorBuilder: (context, index) => const Divider(
-                          height: 1,
-                          indent: 80,
-                          endIndent: 16,
-                          color: AppColors.border,
-                        ),
-                        itemBuilder: (context, index) {
-                          final room = _chatRooms[index];
-                          final p1 = room['participant1Id'];
-                          final p2 = room['participant2Id'];
-                          final otherUserId = (p1 != null && p1 != 'SYSTEM') ? p1.toString() : p2?.toString();
-                          
-                          final roomName = otherUserId != null ? (_userNames[otherUserId] ?? 'User ${otherUserId.substring(0, 5)}') : AppStrings.guest;
-                          final lastMessage = room['lastMessage']?.toString() ?? AppStrings.noMessagesYet;
-                          
-                          String timeDisplay = '';
-                          if (room['lastMessageAt'] != null) {
-                            try {
-                              final time = DateTime.parse(room['lastMessageAt']).toLocal();
-                              final now = DateTime.now();
-                              if (time.year == now.year && time.month == now.month && time.day == now.day) {
-                                timeDisplay = DateFormat('HH:mm').format(time);
-                              } else {
-                                timeDisplay = DateFormat('dd/MM').format(time);
-                              }
-                            } catch (_) {}
-                          }
+                ? const Center(
+                    child: Text(
+                      AppStrings.noChatsYet,
+                      style: TextStyle(color: AppColors.textLight),
+                    ),
+                  )
+                : ListView.separated(
+                    itemCount: _chatRooms.length,
+                    separatorBuilder: (context, index) => const Divider(
+                      height: 1,
+                      indent: 80,
+                      endIndent: 16,
+                      color: AppColors.border,
+                    ),
+                    itemBuilder: (context, index) {
+                      final room = _chatRooms[index];
+                      final p1 = room['participant1Id'];
+                      final p2 = room['participant2Id'];
+                      final otherUserId = (p1 != null && p1 != 'SYSTEM')
+                          ? p1.toString()
+                          : p2?.toString();
 
-                          return ChatListItem(
-                            roomName: roomName,
-                            lastMessage: lastMessage,
-                            timeDisplay: timeDisplay,
-                            onTap: () {
-                              context.push('/chats/${room['id']}').then((_) => _loadChats());
-                            },
-                          );
+                      final roomName = otherUserId != null
+                          ? (_userNames[otherUserId] ??
+                                'User ${otherUserId.substring(0, 5)}')
+                          : AppStrings.guest;
+                      final lastMessage =
+                          room['lastMessage']?.toString() ??
+                          AppStrings.noMessagesYet;
+
+                      String timeDisplay = '';
+                      if (room['lastMessageAt'] != null) {
+                        try {
+                          final time = DateTime.parse(
+                            room['lastMessageAt'],
+                          ).toLocal();
+                          final now = DateTime.now();
+                          if (time.year == now.year &&
+                              time.month == now.month &&
+                              time.day == now.day) {
+                            timeDisplay = DateFormat('HH:mm').format(time);
+                          } else {
+                            timeDisplay = DateFormat('dd/MM').format(time);
+                          }
+                        } catch (_) {}
+                      }
+
+                      return ChatListItem(
+                        roomName: roomName,
+                        lastMessage: lastMessage,
+                        timeDisplay: timeDisplay,
+                        onTap: () {
+                          context
+                              .push('/chats/${room['id']}')
+                              .then((_) => _loadChats());
                         },
-                      ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -204,10 +220,7 @@ class ChatSearchBar extends StatelessWidget {
           Expanded(
             child: Text(
               AppStrings.searchChat,
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: AppColors.textLight, fontSize: 14),
             ),
           ),
         ],
@@ -237,11 +250,7 @@ class ChatListItem extends StatelessWidget {
       leading: const CircleAvatar(
         radius: 24,
         backgroundColor: AppColors.bgLight,
-        child: Icon(
-          Icons.person,
-          color: AppColors.textGrey,
-          size: 28,
-        ),
+        child: Icon(Icons.person, color: AppColors.textGrey, size: 28),
       ),
       title: Text(
         roomName,
@@ -255,10 +264,7 @@ class ChatListItem extends StatelessWidget {
         lastMessage,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 14,
-          color: AppColors.textGrey,
-        ),
+        style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
       ),
       trailing: timeDisplay.isNotEmpty
           ? Text(

@@ -7,7 +7,6 @@ import '../../../core/router/app_routes.dart';
 import '../../../core/providers/selected_product_provider.dart';
 import '../../../core/providers/favorite_provider.dart';
 
-
 import '../widgets/product_options_selector.dart';
 import '../widgets/product_bottom_bar.dart';
 import '../widgets/product_header.dart';
@@ -22,7 +21,8 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
   const ProductDetailScreen({super.key, required this.productId});
 
   @override
-  ConsumerState<ProductDetailScreen> createState() => _ProductDetailScreenState();
+  ConsumerState<ProductDetailScreen> createState() =>
+      _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
@@ -69,18 +69,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ProductHeader(
               isFavorite: ref.watch(favoriteIdsProvider).contains(product.id),
               onFavoriteToggle: () {
-                ref.read(favoriteProductsProvider.notifier).toggleFavorite(product);
+                ref
+                    .read(favoriteProductsProvider.notifier)
+                    .toggleFavorite(product);
               },
             ),
             Expanded(
               child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior: ScrollConfiguration.of(
+                  context,
+                ).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       ProductImage(
                         imageUrl: product.imageUrl,
-                        heroTag: heroTag.isNotEmpty ? heroTag : 'hero_img_${product.id}_v',
+                        heroTag: heroTag.isNotEmpty
+                            ? heroTag
+                            : 'hero_img_${product.id}_v',
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24),

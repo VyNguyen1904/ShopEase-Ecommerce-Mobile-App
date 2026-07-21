@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/router/app_routes.dart';
+import '../../../core/models/admin_stats_model.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 
@@ -39,7 +43,9 @@ class HoverMenuCardState extends State<HoverMenuCard> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _isHovered ? widget.color.withValues(alpha: 0.5) : const Color(0xFFE2E8F0),
+              color: _isHovered
+                  ? widget.color.withValues(alpha: 0.5)
+                  : const Color(0xFFE2E8F0),
               width: _isHovered ? 2 : 1,
             ),
             boxShadow: [
@@ -148,7 +154,10 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFF8FAFC),
                   border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
@@ -161,17 +170,27 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
                       children: const [
                         Text(
                           AppStrings.systemSettingsTitle,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Manage global environment parameters',
-                          style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textGrey,
+                          ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: AppColors.textGrey),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: AppColors.textGrey,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -184,63 +203,121 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
                     SwitchListTile(
                       value: _maintenanceMode,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Maintenance Mode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Render storefront offline for deployment activities', style: TextStyle(fontSize: 12)),
-                      onChanged: (val) => setState(() => _maintenanceMode = val),
+                      title: const Text(
+                        'Maintenance Mode',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Render storefront offline for deployment activities',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (val) =>
+                          setState(() => _maintenanceMode = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _allowRegister,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Allow Registrations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Allow new customer/seller registrations on auth endpoints', style: TextStyle(fontSize: 12)),
+                      title: const Text(
+                        'Allow Registrations',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Allow new customer/seller registrations on auth endpoints',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onChanged: (val) => setState(() => _allowRegister = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _sandboxPayments,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Sandbox Payments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Route transaction requests through simulated test gateways', style: TextStyle(fontSize: 12)),
-                      onChanged: (val) => setState(() => _sandboxPayments = val),
+                      title: const Text(
+                        'Sandbox Payments',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Route transaction requests through simulated test gateways',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (val) =>
+                          setState(() => _sandboxPayments = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _kafkaLogging,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Kafka Trace Debug', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Enable trace logging for publish/subscribe microservice pipelines', style: TextStyle(fontSize: 12)),
+                      title: const Text(
+                        'Kafka Trace Debug',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Enable trace logging for publish/subscribe microservice pipelines',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onChanged: (val) => setState(() => _kafkaLogging = val),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 color: const Color(0xFFF8FAFC),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel', style: TextStyle(color: AppColors.textGrey, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text(AppStrings.saveConfigSuccess), backgroundColor: Colors.green),
+                          const SnackBar(
+                            content: Text(AppStrings.saveConfigSuccess),
+                            backgroundColor: Colors.green,
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
                       ),
-                      child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Save Changes',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -297,7 +374,10 @@ class SystemLogsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFF1E293B),
                   border: Border(bottom: BorderSide(color: Color(0xFF334155))),
@@ -310,17 +390,28 @@ class SystemLogsDialog extends StatelessWidget {
                       children: [
                         Text(
                           AppStrings.gatewayLogs,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Realtime microservice routing trace logs',
-                          style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF94A3B8),
+                          ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Color(0xFF94A3B8),
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -367,7 +458,10 @@ class SystemLogsDialog extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 color: const Color(0xFF1E293B),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -378,10 +472,18 @@ class SystemLogsDialog extends StatelessWidget {
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF1E293B),
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
                       ),
-                      child: const Text('Close Terminal', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Close Terminal',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -446,7 +548,9 @@ class LineChartPainter extends CustomPainter {
 
     final width = size.width;
     final height = size.height;
-    final stepX = dataPoints.length > 1 ? width / (dataPoints.length - 1) : width;
+    final stepX = dataPoints.length > 1
+        ? width / (dataPoints.length - 1)
+        : width;
 
     final linePaint = Paint()
       ..color = lineColor
@@ -516,4 +620,802 @@ class LineChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class AdminDashboardHeader extends StatelessWidget {
+  const AdminDashboardHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+          child: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: const DecorationImage(
+                image: NetworkImage(
+                  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+                ),
+                fit: BoxFit.cover,
+              ),
+              border: Border.all(color: AppColors.border, width: 1.5),
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    AppStrings.welcomeAdmin,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Image.network(
+                    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.webp',
+                    width: 20,
+                    height: 20,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Text('👋'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              const Text(
+                AppStrings.adminGreeting,
+                style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+              ),
+            ],
+          ),
+        ),
+
+        // Return to Storefront button in Header
+        TextButton.icon(
+          onPressed: () => context.go('/home'),
+          icon: const Icon(
+            Icons.storefront_rounded,
+            size: 18,
+            color: AppColors.primary,
+          ),
+          label: const Text(
+            AppStrings.storefront,
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+          style: TextButton.styleFrom(
+            backgroundColor: AppColors.primary.withValues(alpha: 0.08),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          ),
+        ),
+        const SizedBox(width: 12),
+
+        // Bell Icon
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const Icon(
+                Icons.notifications_none,
+                color: AppColors.textDark,
+                size: 22,
+              ),
+              Positioned(
+                right: 12,
+                top: 12,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.alertRed,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AdminOverviewGrid extends StatelessWidget {
+  final CombinedAdminStats stats;
+  const AdminOverviewGrid({super.key, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final _stats = stats;
+    final oStats = _stats!.orderStats;
+    final uStats = _stats!.userStats;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 750;
+        return GridView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: isWide ? 4 : 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            mainAxisExtent: 88,
+          ),
+          children: [
+            AdminOverviewCard(
+              icon: Icons.attach_money,
+              iconColor: AppColors.primary,
+              iconBg: const Color(0xFFEAF5F6),
+              title: AppStrings.revenue,
+              value: '\$${oStats.totalRevenue.toStringAsFixed(2)}',
+              percentage: 'Live',
+              isIncrease: true,
+            ),
+            AdminOverviewCard(
+              icon: Icons.shopping_bag_outlined,
+              iconColor: Colors.teal,
+              iconBg: const Color(0xFFE6FFFA),
+              title: AppStrings.orders,
+              value: oStats.totalOrders.toString(),
+              percentage: 'Live',
+              isIncrease: true,
+            ),
+            AdminOverviewCard(
+              icon: Icons.people_outline_rounded,
+              iconColor: Colors.indigo,
+              iconBg: const Color(0xFFEBF4FF),
+              title: AppStrings.members,
+              value: uStats.totalUsers.toString(),
+              percentage: '${uStats.activeUsers}${AppStrings.activeStatus}',
+              isIncrease: true,
+            ),
+            AdminOverviewCard(
+              icon: Icons.analytics_rounded,
+              iconColor: Colors.orange,
+              iconBg: const Color(0xFFFFF3CD),
+              title: AppStrings.aov,
+              value: '\$${oStats.aov.toStringAsFixed(2)}',
+              percentage: 'Live',
+              isIncrease: true,
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class AdminChartsGrid extends StatelessWidget {
+  final CombinedAdminStats stats;
+  const AdminChartsGrid({super.key, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final _stats = stats;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 850;
+        return isWide
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 3, child: AdminBarChartCard(stats: _stats)),
+                  const SizedBox(width: 24),
+                  Expanded(flex: 2, child: AdminDonutChartCard(stats: _stats)),
+                ],
+              )
+            : Column(
+                children: [
+                  AdminBarChartCard(stats: _stats),
+                  const SizedBox(height: 24),
+                  AdminDonutChartCard(stats: _stats),
+                ],
+              );
+      },
+    );
+  }
+}
+
+class AdminBarChartCard extends StatelessWidget {
+  final CombinedAdminStats stats;
+  const AdminBarChartCard({super.key, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final _stats = stats;
+    final sales = _stats!.orderStats.dailySales;
+
+    // Dynamically calculate maximum height bounds for rendering
+    double maxRev = sales
+        .map((s) => s.revenue)
+        .fold(1.0, (m, v) => v > m ? v : m);
+    double maxOrd = sales
+        .map((s) => s.ordersCount.toDouble())
+        .fold(1.0, (m, v) => v > m ? v : m);
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                AppStrings.salesAndOrders,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  children: const [
+                    Text(
+                      AppStrings.last7Days,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 14,
+                      color: AppColors.textGrey,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              AdminLegendDot(
+                color: AppColors.primary,
+                label: AppStrings.revenue,
+              ),
+              const SizedBox(width: 16),
+              AdminLegendDot(
+                color: const Color(0xFFCBECE8),
+                label: AppStrings.orders,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 180,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: sales.map((s) {
+                // Scale value height between 10 and 140
+                double revH = maxRev > 0 ? (s.revenue / maxRev) * 120 + 10 : 10;
+                double ordH = maxOrd > 0
+                    ? (s.ordersCount / maxOrd) * 120 + 10
+                    : 10;
+                return AdminDoubleBar(
+                  date: s.date,
+                  revenueHeight: revH,
+                  orderHeight: ordH,
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminDonutChartCard extends StatelessWidget {
+  final CombinedAdminStats stats;
+  const AdminDonutChartCard({super.key, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final _stats = stats;
+    final categories = _stats!.orderStats.categoryBreakdown;
+    final List<double> values = categories.map((c) => c.percentage).toList();
+    final List<Color> colors = [
+      const Color(0xFF3B82F6), // Blue
+      const Color(0xFFEC4899), // Pink
+      const Color(0xFF10B981), // Green
+      const Color(0xFFF59E0B), // Amber
+    ];
+
+    int totalSales = categories
+        .map((c) => c.salesCount)
+        .fold(0, (sum, count) => sum + count);
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            AppStrings.popularCategories,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: SizedBox(
+              width: 120,
+              height: 120,
+              child: Stack(
+                children: [
+                  CustomPaint(
+                    size: const Size(120, 120),
+                    painter: DonutChartPainter(values, colors),
+                  ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          totalSales.toString(),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        const Text(
+                          'Items',
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          for (int i = 0; i < categories.length; i++) ...[
+            if (i > 0) const SizedBox(height: 6),
+            AdminCategoryLegend(
+              name: categories[i].name,
+              percentage: '${categories[i].percentage.toStringAsFixed(0)}%',
+              color: colors[i % colors.length],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class AdminCategoryLegend extends StatelessWidget {
+  final String name;
+  final String percentage;
+  final Color color;
+  const AdminCategoryLegend({
+    super.key,
+    required this.name,
+    required this.percentage,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textGrey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        Text(
+          percentage,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AdminUserGrowthCard extends StatelessWidget {
+  final CombinedAdminStats stats;
+  const AdminUserGrowthCard({super.key, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final _stats = stats;
+    final growth = _stats!.userStats.userGrowth;
+    final List<double> dataPoints = growth
+        .map((g) => g.count.toDouble())
+        .toList();
+    final List<String> labels = growth.map((g) => g.month).toList();
+
+    // Map point values proportionally to canvas height
+    double maxVal = dataPoints.fold(1.0, (m, v) => v > m ? v : m);
+    final scaledPoints = dataPoints
+        .map((v) => maxVal > 0 ? (v / maxVal) : 0.0)
+        .toList();
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            AppStrings.memberGrowth,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Monthly growth analytics of active client base',
+            style: TextStyle(fontSize: 11.5, color: AppColors.textGrey),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 160,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: LineChartPainter(
+                scaledPoints,
+                const Color(0xFF3B82F6),
+                const Color(0xFF3B82F6).withValues(alpha: 0.06),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: labels.map((label) {
+              return Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textGrey,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminQuickActionsGrid extends StatelessWidget {
+  final VoidCallback onSettings;
+  final VoidCallback onLogs;
+  const AdminQuickActionsGrid({
+    super.key,
+    required this.onSettings,
+    required this.onLogs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 750;
+        return GridView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: isWide ? 4 : 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            mainAxisExtent: 88,
+          ),
+          children: [
+            HoverMenuCard(
+              icon: Icons.people_alt_rounded,
+              color: Colors.indigo,
+              title: AppStrings.manageUsers,
+              subtitle: 'Manage accounts',
+              onTap: () => context.push(AppRoutes.adminUsers),
+            ),
+            HoverMenuCard(
+              icon: Icons.settings_suggest_rounded,
+              color: Colors.orange,
+              title: AppStrings.systemConfig,
+              subtitle: 'Environment settings',
+              onTap: () => onSettings(),
+            ),
+            HoverMenuCard(
+              icon: Icons.terminal_rounded,
+              color: Colors.purple,
+              title: AppStrings.systemLogs,
+              subtitle: 'Gateway trace logs',
+              onTap: () => onLogs(),
+            ),
+            HoverMenuCard(
+              icon: Icons.storefront_rounded,
+              color: AppColors.primary,
+              title: AppStrings.returnToHome,
+              subtitle: 'Exit admin panel',
+              onTap: () => context.go('/home'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class AdminOverviewCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String title;
+  final String value;
+  final String percentage;
+  final bool isIncrease;
+  const AdminOverviewCard({
+    super.key,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.title,
+    required this.value,
+    required this.percentage,
+    required this.isIncrease,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        percentage,
+                        style: TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.bold,
+                          color: isIncrease
+                              ? AppColors.iconGreen
+                              : AppColors.alertRed,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminLegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+  const AdminLegendDot({super.key, required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textGrey,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AdminDoubleBar extends StatelessWidget {
+  final String date;
+  final double revenueHeight;
+  final double orderHeight;
+  const AdminDoubleBar({
+    super.key,
+    required this.date,
+    required this.revenueHeight,
+    required this.orderHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              width: 10,
+              height: revenueHeight,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Container(
+              width: 10,
+              height: orderHeight,
+              decoration: const BoxDecoration(
+                color: Color(0xFFCBECE8),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          date,
+          style: const TextStyle(
+            fontSize: 9,
+            color: AppColors.textGrey,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
 }

@@ -17,31 +17,33 @@ class HomeCategories extends ConsumerWidget {
           onViewAll: () => context.go(AppRoutes.category),
         ),
         const SizedBox(height: 12),
-        ref.watch(categoriesProvider).when(
-          data: (categories) {
-            if (categories.isEmpty) return const SizedBox();
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: categories.map((cat) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: GestureDetector(
-                      onTap: () => context.go(AppRoutes.category),
-                      child: _buildCategoryPill(
-                        cat.name, 
-                        isActive: cat.id == categories.first.id,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, st) => const SizedBox(),
-        ),
+        ref
+            .watch(categoriesProvider)
+            .when(
+              data: (categories) {
+                if (categories.isEmpty) return const SizedBox();
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: categories.map((cat) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: GestureDetector(
+                          onTap: () => context.go(AppRoutes.category),
+                          child: _buildCategoryPill(
+                            cat.name,
+                            isActive: cat.id == categories.first.id,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, st) => const SizedBox(),
+            ),
       ],
     );
   }

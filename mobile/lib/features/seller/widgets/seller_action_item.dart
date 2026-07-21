@@ -34,11 +34,7 @@ class SellerActionItem extends StatelessWidget {
                 ),
               ],
             ),
-            child: Icon(
-              icon,
-              color: AppColors.accent,
-              size: 28,
-            ),
+            child: Icon(icon, color: AppColors.accent, size: 28),
           ),
           const SizedBox(height: 8),
           Text(

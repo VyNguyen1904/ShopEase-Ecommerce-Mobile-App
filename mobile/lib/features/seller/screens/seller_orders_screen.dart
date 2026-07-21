@@ -89,8 +89,11 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: const Text(
@@ -138,22 +141,24 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
           ),
         ),
       ),
-      body: ref.watch(sellerOrdersProvider).when(
-        data: (orders) {
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _buildOrderList(orders, AppStrings.all),
-              _buildOrderList(orders, AppStrings.newStatus),
-              _buildOrderList(orders, AppStrings.processingStatus),
-              _buildOrderList(orders, AppStrings.delivered),
-              _buildOrderList(orders, AppStrings.cancelled),
-            ],
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
-      ),
+      body: ref
+          .watch(sellerOrdersProvider)
+          .when(
+            data: (orders) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildOrderList(orders, AppStrings.all),
+                  _buildOrderList(orders, AppStrings.newStatus),
+                  _buildOrderList(orders, AppStrings.processingStatus),
+                  _buildOrderList(orders, AppStrings.delivered),
+                  _buildOrderList(orders, AppStrings.cancelled),
+                ],
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('${AppStrings.errorPrefix}$e')),
+          ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -183,16 +188,25 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
   }
 
   Widget _buildOrderList(List<OrderResponse> orders, String tabStatus) {
-    final filteredOrders = tabStatus == AppStrings.all 
-      ? orders 
-      : orders.where((o) {
-          final st = _mapStatus(o.status);
-          if (tabStatus == AppStrings.processingStatus && (st == AppStrings.processingStatus || st == AppStrings.shipping)) return true;
-          return st == tabStatus;
-        }).toList();
+    final filteredOrders = tabStatus == AppStrings.all
+        ? orders
+        : orders.where((o) {
+            final st = _mapStatus(o.status);
+            if (tabStatus == AppStrings.processingStatus &&
+                (st == AppStrings.processingStatus ||
+                    st == AppStrings.shipping)) {
+              return true;
+            }
+            return st == tabStatus;
+          }).toList();
 
     if (filteredOrders.isEmpty) {
-      return const Center(child: Text(AppStrings.noOrdersList, style: TextStyle(color: AppColors.textGrey)));
+      return const Center(
+        child: Text(
+          AppStrings.noOrdersList,
+          style: TextStyle(color: AppColors.textGrey),
+        ),
+      );
     }
 
     return ListView.builder(
@@ -225,8 +239,13 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
               radius: 24,
               backgroundColor: AppColors.bgLight,
               child: Text(
-                order.shipRecipient.isNotEmpty ? order.shipRecipient[0].toUpperCase() : 'U',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+                order.shipRecipient.isNotEmpty
+                    ? order.shipRecipient[0].toUpperCase()
+                    : 'U',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -274,7 +293,10 @@ class _SellerOrdersScreenState extends ConsumerState<SellerOrdersScreen>
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusBgColor(_mapStatus(order.status)),
                     borderRadius: BorderRadius.circular(6),

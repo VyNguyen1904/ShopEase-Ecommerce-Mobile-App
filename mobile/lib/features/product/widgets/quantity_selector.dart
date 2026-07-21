@@ -24,7 +24,10 @@ class QuantitySelector extends StatelessWidget {
               icon: const Icon(Icons.remove_circle_outline),
               onPressed: onDecrease,
             ),
-            Text('$quantity', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              '$quantity',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             IconButton(
               icon: const Icon(Icons.add_circle_outline),
               onPressed: onIncrease,

@@ -18,9 +18,9 @@ class CheckoutOrderSummary extends StatelessWidget {
 
   String _formatPrice(double price) {
     return price.toInt().toString().replaceAllMapped(
-          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]}.',
-        );
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
   }
 
   @override
@@ -29,7 +29,12 @@ class CheckoutOrderSummary extends StatelessWidget {
       children: [
         _buildSummaryRow(AppStrings.subtotal, '${_formatPrice(subtotal)}đ'),
         const SizedBox(height: 8),
-        _buildSummaryRow(AppStrings.shippingFee, shippingFee == 0 ? AppStrings.freeShipping : '${_formatPrice(shippingFee)}đ'),
+        _buildSummaryRow(
+          AppStrings.shippingFee,
+          shippingFee == 0
+              ? AppStrings.freeShipping
+              : '${_formatPrice(shippingFee)}đ',
+        ),
         const SizedBox(height: 8),
         _buildSummaryRow(AppStrings.discount, '-${_formatPrice(discount)}đ'),
         const SizedBox(height: 12),
@@ -38,11 +43,19 @@ class CheckoutOrderSummary extends StatelessWidget {
           children: [
             const Text(
               AppStrings.totalAmount,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+              ),
             ),
             Text(
               '${_formatPrice(totalAmount)}đ',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.alertRed),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.alertRed,
+              ),
             ),
           ],
         ),
@@ -54,8 +67,18 @@ class CheckoutOrderSummary extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: AppColors.textGrey)),
-        Text(value, style: const TextStyle(fontSize: 14, color: AppColors.textDark, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: AppColors.textGrey),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textDark,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
