@@ -18,7 +18,9 @@ class AddToCartButton extends StatelessWidget {
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
           builder: (context) => Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: ProductVariantSheet(product: product),
           ),
         );
@@ -29,11 +31,7 @@ class AddToCartButton extends StatelessWidget {
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 18,
-        ),
+        child: const Icon(Icons.add, color: Colors.white, size: 18),
       ),
     );
   }

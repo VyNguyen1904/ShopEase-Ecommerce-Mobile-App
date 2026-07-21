@@ -9,10 +9,11 @@ final cartServiceProvider = Provider((ref) {
   return CartService(dio: authService.dio);
 });
 
-final cartProvider =
-    NotifierProvider<CartNotifier, AsyncValue<CartResponse>>(() {
-      return CartNotifier();
-    });
+final cartProvider = NotifierProvider<CartNotifier, AsyncValue<CartResponse>>(
+  () {
+    return CartNotifier();
+  },
+);
 
 class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
   late CartService _cartService;
@@ -23,13 +24,15 @@ class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
     _cartService = ref.watch(cartServiceProvider);
     final userAsync = ref.watch(userProfileProvider);
     _userId = userAsync.value?.id ?? 'guest';
-    
+
     if (_userId != 'guest') {
       // Fetch in background, return loading initially
       Future.microtask(() => fetchCart());
       return const AsyncValue.loading();
     } else {
-      return AsyncValue.data(CartResponse(userId: 'guest', items: [], subtotal: 0, totalItems: 0));
+      return AsyncValue.data(
+        CartResponse(userId: 'guest', items: [], subtotal: 0, totalItems: 0),
+      );
     }
   }
 
@@ -45,18 +48,20 @@ class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
         final currentItems = state.value!.items;
         for (var item in cart.items) {
           try {
-            final existing = currentItems.firstWhere((e) => e.itemId == item.itemId);
+            final existing = currentItems.firstWhere(
+              (e) => e.itemId == item.itemId,
+            );
             item.selected = existing.selected;
           } catch (_) {
             // New item, keeps default selected = true
           }
         }
-        
+
         // Recalculate subtotal based on preserved selections
         final newSubtotal = cart.items
             .where((item) => item.selected)
             .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-            
+
         final updatedCart = CartResponse(
           userId: cart.userId,
           items: cart.items,
@@ -106,7 +111,14 @@ class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
     try {
       final item = state.value?.items.firstWhere((e) => e.itemId == itemId);
       if (item != null) {
-        await _cartService.updateQuantity(_userId, itemId, item.productId, quantity, item.color, item.size);
+        await _cartService.updateQuantity(
+          _userId,
+          itemId,
+          item.productId,
+          quantity,
+          item.color,
+          item.size,
+        );
       }
       // Refresh to ensure server sync without showing loading spinner
       fetchCart(silently: true);
@@ -115,9 +127,20 @@ class CartNotifier extends Notifier<AsyncValue<CartResponse>> {
     }
   }
 
-  Future<void> addToCart(int productId, int quantity, {String? color, String? size}) async {
+  Future<void> addToCart(
+    int productId,
+    int quantity, {
+    String? color,
+    String? size,
+  }) async {
     try {
-      await _cartService.addItem(_userId, productId, quantity, color: color, size: size);
+      await _cartService.addItem(
+        _userId,
+        productId,
+        quantity,
+        color: color,
+        size: size,
+      );
       fetchCart(silently: true);
     } catch (e) {
       fetchCart(silently: true);

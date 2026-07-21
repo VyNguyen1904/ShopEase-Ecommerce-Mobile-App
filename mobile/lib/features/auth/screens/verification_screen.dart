@@ -27,7 +27,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     final otp = _otpController.text.trim();
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.errorInvalidOtp), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text(AppStrings.errorInvalidOtp),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -40,7 +43,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -54,13 +60,19 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       await _authService.resendOtp(widget.email);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(AppStrings.otpSentSuccess), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text(AppStrings.otpSentSuccess),
+            backgroundColor: Colors.green,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -98,7 +110,11 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.arrow_back, color: AppColors.primary, size: 24),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -123,7 +139,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                     const TextSpan(text: AppStrings.verifySubtitle),
                     TextSpan(
                       text: widget.email,
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
                     ),
                     const WidgetSpan(child: SizedBox(width: 8)),
                     WidgetSpan(
@@ -149,11 +168,18 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                 keyboardType: TextInputType.number,
                 maxLength: 6,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  letterSpacing: 8,
+                  fontWeight: FontWeight.bold,
+                ),
                 decoration: InputDecoration(
                   counterText: '',
                   hintText: '000000',
-                  hintStyle: const TextStyle(color: AppColors.textLight, letterSpacing: 8),
+                  hintStyle: const TextStyle(
+                    color: AppColors.textLight,
+                    letterSpacing: 8,
+                  ),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -166,7 +192,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -179,7 +208,11 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
               const SizedBox(height: 24),
               Center(
                 child: _isResending
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : GestureDetector(
                         onTap: _handleResend,
                         child: const Text(

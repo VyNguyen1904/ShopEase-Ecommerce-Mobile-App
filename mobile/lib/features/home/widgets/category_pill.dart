@@ -4,11 +4,7 @@ class CategoryPill extends StatelessWidget {
   final String label;
   final bool isActive;
 
-  const CategoryPill({
-    super.key,
-    required this.label,
-    this.isActive = false,
-  });
+  const CategoryPill({super.key, required this.label, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {

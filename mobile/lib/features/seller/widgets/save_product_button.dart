@@ -20,7 +20,14 @@ class SaveProductButton extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: isLoading ? null : onPressed,
           icon: isLoading
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
               : const Icon(Icons.save_outlined, color: Colors.white),
           label: Text(
             isLoading ? AppStrings.saving : AppStrings.saveProduct,

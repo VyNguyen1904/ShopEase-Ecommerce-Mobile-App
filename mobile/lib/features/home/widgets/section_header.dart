@@ -36,10 +36,7 @@ class SectionHeader extends StatelessWidget {
             ),
             child: const Text(
               AppStrings.viewAll,
-              style: TextStyle(
-                color: AppColors.textGrey,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppColors.textGrey, fontSize: 12),
             ),
           ),
         ],

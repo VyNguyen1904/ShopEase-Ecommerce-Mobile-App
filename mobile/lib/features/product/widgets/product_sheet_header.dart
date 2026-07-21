@@ -34,14 +34,21 @@ class ProductSheetHeader extends StatelessWidget {
             children: [
               Text(
                 name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Text(
                 '₫${price.toStringAsFixed(0)}',
-                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ],
           ),

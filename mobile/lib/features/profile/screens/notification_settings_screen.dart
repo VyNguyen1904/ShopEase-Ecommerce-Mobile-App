@@ -6,10 +6,12 @@ class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   bool _orderUpdates = true;
   bool _promotions = true;
   bool _chatMessages = true;
@@ -38,28 +40,32 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         children: [
           _buildSwitchTile(
             title: 'Cập nhật đơn hàng',
-            subtitle: 'Thông báo về trạng thái giao hàng, đơn hàng thành công hoặc bị hủy.',
+            subtitle:
+                'Thông báo về trạng thái giao hàng, đơn hàng thành công hoặc bị hủy.',
             value: _orderUpdates,
             onChanged: (val) => setState(() => _orderUpdates = val),
           ),
           const SizedBox(height: 16),
           _buildSwitchTile(
             title: 'Khuyến mãi & Ưu đãi',
-            subtitle: 'Nhận thông tin về các chương trình giảm giá, voucher mới nhất.',
+            subtitle:
+                'Nhận thông tin về các chương trình giảm giá, voucher mới nhất.',
             value: _promotions,
             onChanged: (val) => setState(() => _promotions = val),
           ),
           const SizedBox(height: 16),
           _buildSwitchTile(
             title: 'Tin nhắn Chat',
-            subtitle: 'Thông báo khi có tin nhắn mới từ cửa hàng hoặc khách hàng.',
+            subtitle:
+                'Thông báo khi có tin nhắn mới từ cửa hàng hoặc khách hàng.',
             value: _chatMessages,
             onChanged: (val) => setState(() => _chatMessages = val),
           ),
           const SizedBox(height: 16),
           _buildSwitchTile(
             title: 'Cảnh báo hệ thống',
-            subtitle: 'Thông báo về bảo mật tài khoản và các thay đổi hệ thống quan trọng.',
+            subtitle:
+                'Thông báo về bảo mật tài khoản và các thay đổi hệ thống quan trọng.',
             value: _systemAlerts,
             onChanged: (val) => setState(() => _systemAlerts = val),
           ),
@@ -100,11 +106,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
             subtitle,
-            style: const TextStyle(fontSize: 13, color: AppColors.textGrey, height: 1.4),
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textGrey,
+              height: 1.4,
+            ),
           ),
         ),
         value: value,
-        activeColor: AppColors.primary,
+        activeThumbColor: AppColors.primary,
         onChanged: onChanged,
       ),
     );

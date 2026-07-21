@@ -75,11 +75,7 @@ class SellerStatCard extends StatelessWidget {
                   color: iconBgColor,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 20,
-                ),
+                child: Icon(icon, color: iconColor, size: 20),
               ),
             ],
           ),

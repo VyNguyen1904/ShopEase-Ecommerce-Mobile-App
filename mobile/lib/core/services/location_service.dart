@@ -23,10 +23,10 @@ class LocationService {
         return null;
       }
     }
-    
+
     if (permission == LocationPermission.deniedForever) {
       return null;
-    } 
+    }
 
     return await Geolocator.getCurrentPosition();
   }

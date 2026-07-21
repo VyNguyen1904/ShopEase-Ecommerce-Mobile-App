@@ -47,7 +47,7 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
     final currentSortBy = ref.watch(sortByProvider);
     final currentSortDir = ref.watch(sortDirProvider);
     final currentKey = '${currentSortBy}_$currentSortDir';
-    
+
     final currentCategory = ref.watch(selectedCategorySearchProvider);
 
     return Drawer(
@@ -60,7 +60,11 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  const Icon(Icons.filter_list, color: AppColors.primary, size: 24),
+                  const Icon(
+                    Icons.filter_list,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
@@ -86,42 +90,84 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
-                  _buildSectionHeader(Icons.swap_vert, AppStrings.sortByOptions),
-                  _sortOption(AppStrings.defaultVariant, 'none_desc', currentKey),
+                  _buildSectionHeader(
+                    Icons.swap_vert,
+                    AppStrings.sortByOptions,
+                  ),
+                  _sortOption(
+                    AppStrings.defaultVariant,
+                    'none_desc',
+                    currentKey,
+                  ),
                   _sortOption(AppStrings.nameAsc, 'name_asc', currentKey),
                   _sortOption(AppStrings.nameDesc, 'name_desc', currentKey),
                   _sortOption(AppStrings.priceAsc, 'price_asc', currentKey),
                   _sortOption(AppStrings.priceDesc, 'price_desc', currentKey),
-                  _sortOption(AppStrings.highestRating, 'rating_desc', currentKey),
-                  _sortOption(AppStrings.bestSelling, 'salesCount_desc', currentKey),
-                  
+                  _sortOption(
+                    AppStrings.highestRating,
+                    'rating_desc',
+                    currentKey,
+                  ),
+                  _sortOption(
+                    AppStrings.bestSelling,
+                    'salesCount_desc',
+                    currentKey,
+                  ),
+
                   const Divider(height: 32),
 
                   _buildSectionHeader(Icons.grid_view, AppStrings.navCategory),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Consumer(
                       builder: (context, innerRef, _) {
-                        final categoriesAsync = innerRef.watch(categoriesProvider);
+                        final categoriesAsync = innerRef.watch(
+                          categoriesProvider,
+                        );
                         return categoriesAsync.when(
                           data: (categories) {
                             return Wrap(
                               spacing: 8,
                               runSpacing: 8,
                               children: [
-                                _categoryChip(AppStrings.all, currentCategory == null, () {
-                                  ref.read(selectedCategorySearchProvider.notifier).state = null;
-                                }),
+                                _categoryChip(
+                                  AppStrings.all,
+                                  currentCategory == null,
+                                  () {
+                                    ref
+                                            .read(
+                                              selectedCategorySearchProvider
+                                                  .notifier,
+                                            )
+                                            .state =
+                                        null;
+                                  },
+                                ),
                                 ...categories.map((cat) {
-                                  return _categoryChip(cat.name, currentCategory == cat.name, () {
-                                    ref.read(selectedCategorySearchProvider.notifier).state = cat.name;
-                                  });
+                                  return _categoryChip(
+                                    cat.name,
+                                    currentCategory == cat.name,
+                                    () {
+                                      ref
+                                              .read(
+                                                selectedCategorySearchProvider
+                                                    .notifier,
+                                              )
+                                              .state =
+                                          cat.name;
+                                    },
+                                  );
                                 }),
                               ],
                             );
                           },
-                          loading: () => const Center(child: CircularProgressIndicator()),
-                          error: (_, _) => const Text(AppStrings.errorLoadCategory),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (_, _) =>
+                              const Text(AppStrings.errorLoadCategory),
                         );
                       },
                     ),
@@ -129,7 +175,10 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
 
                   const Divider(height: 32),
 
-                  _buildSectionHeader(Icons.local_offer_outlined, AppStrings.priceRange),
+                  _buildSectionHeader(
+                    Icons.local_offer_outlined,
+                    AppStrings.priceRange,
+                  ),
                   PriceRangeFilter(
                     minPrice: _tempMinPrice,
                     maxPrice: _tempMaxPrice,
@@ -178,7 +227,10 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                       onPressed: () {
                         ref.read(sortByProvider.notifier).state = 'none';
                         ref.read(sortDirProvider.notifier).state = 'desc';
-                        ref.read(selectedCategorySearchProvider.notifier).state = null;
+                        ref
+                                .read(selectedCategorySearchProvider.notifier)
+                                .state =
+                            null;
                         ref.read(minPriceProvider.notifier).state = null;
                         ref.read(maxPriceProvider.notifier).state = null;
                         ref.read(minRatingProvider.notifier).state = null;
@@ -191,9 +243,17 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         side: const BorderSide(color: AppColors.border),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text(AppStrings.resetFilter, style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w600)),
+                      child: const Text(
+                        AppStrings.resetFilter,
+                        style: TextStyle(
+                          color: AppColors.textDark,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -201,19 +261,27 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
                     child: ElevatedButton(
                       onPressed: () {
                         // Apply sliders state to providers
-                        ref.read(minPriceProvider.notifier).state = _tempMinPrice > 0 ? _tempMinPrice : null;
-                        ref.read(maxPriceProvider.notifier).state = _tempMaxPrice < 10000000 ? _tempMaxPrice : null;
-                        ref.read(minRatingProvider.notifier).state = _tempMinRating > 0 ? _tempMinRating : null;
+                        ref.read(minPriceProvider.notifier).state =
+                            _tempMinPrice > 0 ? _tempMinPrice : null;
+                        ref.read(maxPriceProvider.notifier).state =
+                            _tempMaxPrice < 10000000 ? _tempMaxPrice : null;
+                        ref.read(minRatingProvider.notifier).state =
+                            _tempMinRating > 0 ? _tempMinRating : null;
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         elevation: 0,
                       ),
-                      child: const Text(AppStrings.apply, style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        AppStrings.apply,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
@@ -291,7 +359,9 @@ class _SearchFilterDrawerState extends ConsumerState<SearchFilterDrawer> {
         color: isSelected ? AppColors.primary : AppColors.textDark,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
       ),
-      backgroundColor: isSelected ? AppColors.primary.withValues(alpha: 0.1) : AppColors.bgLight,
+      backgroundColor: isSelected
+          ? AppColors.primary.withValues(alpha: 0.1)
+          : AppColors.bgLight,
       side: BorderSide(
         color: isSelected ? AppColors.primary : Colors.transparent,
       ),

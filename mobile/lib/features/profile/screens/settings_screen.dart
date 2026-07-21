@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../widgets/settings_section_header.dart';
+import '../widgets/settings_item_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -31,22 +33,22 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader(AppStrings.general),
-            _buildSettingsTile(
+            const SettingsSectionHeader(title: AppStrings.general),
+            SettingsItemTile(
               icon: Icons.language,
               title: AppStrings.language,
               trailingText: AppStrings.vietnamese,
               onTap: () {},
             ),
             _buildDivider(),
-            _buildSettingsTile(
+            SettingsItemTile(
               icon: Icons.monetization_on_outlined,
               title: AppStrings.currency,
               trailingText: AppStrings.vnd,
               onTap: () {},
             ),
             _buildDivider(),
-            _buildSettingsTile(
+            SettingsItemTile(
               icon: Icons.palette_outlined,
               title: AppStrings.theme,
               trailingText: AppStrings.lightTheme,
@@ -54,26 +56,26 @@ class SettingsScreen extends StatelessWidget {
               showChevronDown: true,
             ),
             const SizedBox(height: 16),
-            _buildSectionHeader(AppStrings.supportSection),
-            _buildSettingsTile(
+            const SettingsSectionHeader(title: AppStrings.supportSection),
+            SettingsItemTile(
               icon: Icons.help_outline,
               title: AppStrings.helpCenter,
               onTap: () {},
             ),
             _buildDivider(),
-            _buildSettingsTile(
+            SettingsItemTile(
               icon: Icons.description_outlined,
               title: AppStrings.termsAndConditions,
               onTap: () {},
             ),
             _buildDivider(),
-            _buildSettingsTile(
+            SettingsItemTile(
               icon: Icons.security_outlined,
               title: AppStrings.privacyPolicy,
               onTap: () {},
             ),
             _buildDivider(),
-            _buildSettingsTile(
+            SettingsItemTile(
               icon: Icons.info_outline,
               title: AppStrings.aboutApp,
               trailingText: AppStrings.version,
@@ -81,80 +83,6 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textGrey,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsTile({
-    required IconData icon,
-    required String title,
-    String? trailingText,
-    required VoidCallback onTap,
-    bool showChevronDown = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF1FAF9),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: AppColors.primary, size: 20),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ),
-              if (trailingText != null) ...[
-                Text(
-                  trailingText,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textGrey,
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
-              Icon(
-                showChevronDown
-                    ? Icons.keyboard_arrow_down
-                    : Icons.chevron_right,
-                color: AppColors.textLight,
-                size: 20,
-              ),
-            ],
-          ),
         ),
       ),
     );

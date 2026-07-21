@@ -39,7 +39,9 @@ class HoverMenuCardState extends State<HoverMenuCard> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _isHovered ? widget.color.withValues(alpha: 0.5) : const Color(0xFFE2E8F0),
+              color: _isHovered
+                  ? widget.color.withValues(alpha: 0.5)
+                  : const Color(0xFFE2E8F0),
               width: _isHovered ? 2 : 1,
             ),
             boxShadow: [
@@ -148,7 +150,10 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFF8FAFC),
                   border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
@@ -161,17 +166,27 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
                       children: const [
                         Text(
                           AppStrings.systemSettingsTitle,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Manage global environment parameters',
-                          style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textGrey,
+                          ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: AppColors.textGrey),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: AppColors.textGrey,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -184,63 +199,121 @@ class SystemSettingsDialogState extends State<SystemSettingsDialog> {
                     SwitchListTile(
                       value: _maintenanceMode,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Maintenance Mode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Render storefront offline for deployment activities', style: TextStyle(fontSize: 12)),
-                      onChanged: (val) => setState(() => _maintenanceMode = val),
+                      title: const Text(
+                        'Maintenance Mode',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Render storefront offline for deployment activities',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (val) =>
+                          setState(() => _maintenanceMode = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _allowRegister,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Allow Registrations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Allow new customer/seller registrations on auth endpoints', style: TextStyle(fontSize: 12)),
+                      title: const Text(
+                        'Allow Registrations',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Allow new customer/seller registrations on auth endpoints',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onChanged: (val) => setState(() => _allowRegister = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _sandboxPayments,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Sandbox Payments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Route transaction requests through simulated test gateways', style: TextStyle(fontSize: 12)),
-                      onChanged: (val) => setState(() => _sandboxPayments = val),
+                      title: const Text(
+                        'Sandbox Payments',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Route transaction requests through simulated test gateways',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (val) =>
+                          setState(() => _sandboxPayments = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _kafkaLogging,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Kafka Trace Debug', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Enable trace logging for publish/subscribe microservice pipelines', style: TextStyle(fontSize: 12)),
+                      title: const Text(
+                        'Kafka Trace Debug',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Enable trace logging for publish/subscribe microservice pipelines',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onChanged: (val) => setState(() => _kafkaLogging = val),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 color: const Color(0xFFF8FAFC),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel', style: TextStyle(color: AppColors.textGrey, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text(AppStrings.saveConfigSuccess), backgroundColor: Colors.green),
+                          const SnackBar(
+                            content: Text(AppStrings.saveConfigSuccess),
+                            backgroundColor: Colors.green,
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
                       ),
-                      child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Save Changes',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -297,7 +370,10 @@ class SystemLogsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFF1E293B),
                   border: Border(bottom: BorderSide(color: Color(0xFF334155))),
@@ -310,17 +386,28 @@ class SystemLogsDialog extends StatelessWidget {
                       children: [
                         Text(
                           AppStrings.gatewayLogs,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Realtime microservice routing trace logs',
-                          style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF94A3B8),
+                          ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Color(0xFF94A3B8),
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -367,7 +454,10 @@ class SystemLogsDialog extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 color: const Color(0xFF1E293B),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -378,10 +468,18 @@ class SystemLogsDialog extends StatelessWidget {
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF1E293B),
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
                       ),
-                      child: const Text('Close Terminal', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Close Terminal',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -446,7 +544,9 @@ class LineChartPainter extends CustomPainter {
 
     final width = size.width;
     final height = size.height;
-    final stepX = dataPoints.length > 1 ? width / (dataPoints.length - 1) : width;
+    final stepX = dataPoints.length > 1
+        ? width / (dataPoints.length - 1)
+        : width;
 
     final linePaint = Paint()
       ..color = lineColor

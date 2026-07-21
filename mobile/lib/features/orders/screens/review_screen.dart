@@ -46,7 +46,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   Future<void> _submitReviews() async {
     setState(() => _isSubmitting = true);
     final reviewService = ref.read(reviewServiceProvider);
-    
+
     try {
       for (var item in widget.order.items) {
         final title = _titleControllers[item.productId]?.text.trim() ?? '';
@@ -80,9 +80,9 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
       }
     } finally {
       if (mounted) {
@@ -159,7 +159,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                                 width: 60,
                                 height: 60,
                                 color: Colors.grey[200],
-                                child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
                           ),
@@ -170,7 +173,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                               children: [
                                 Text(
                                   item.productName,
-                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -178,8 +184,12 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4),
                                     child: Text(
-                                      '${item.color ?? ''} ${item.size != null ? '- ${item.size}' : ''}'.trim(),
-                                      style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
+                                      '${item.color ?? ''} ${item.size != null ? '- ${item.size}' : ''}'
+                                          .trim(),
+                                      style: const TextStyle(
+                                        color: AppColors.textGrey,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                               ],
@@ -202,9 +212,14 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           hintText: 'Tiêu đề (ví dụ: Sản phẩm rất tốt)',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.border),
+                            borderSide: const BorderSide(
+                              color: AppColors.border,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -212,12 +227,18 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                         controller: _bodyControllers[item.productId],
                         maxLines: 3,
                         decoration: InputDecoration(
-                          hintText: 'Chia sẻ thêm cảm nhận của bạn về sản phẩm này nhé...',
+                          hintText:
+                              'Chia sẻ thêm cảm nhận của bạn về sản phẩm này nhé...',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.border),
+                            borderSide: const BorderSide(
+                              color: AppColors.border,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],

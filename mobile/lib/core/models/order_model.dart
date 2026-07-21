@@ -5,15 +5,10 @@ enum OrderStatus {
   SHIPPED,
   DELIVERED,
   CANCELLED,
-  FAILED
+  FAILED,
 }
 
-enum PaymentStatus {
-  PENDING,
-  PAID,
-  FAILED,
-  REFUNDED
-}
+enum PaymentStatus { PENDING, PAID, FAILED, REFUNDED }
 
 class OrderItemRequest {
   final int productId;
@@ -21,7 +16,12 @@ class OrderItemRequest {
   final String? color;
   final String? size;
 
-  OrderItemRequest({required this.productId, required this.quantity, this.color, this.size});
+  OrderItemRequest({
+    required this.productId,
+    required this.quantity,
+    this.color,
+    this.size,
+  });
 
   Map<String, dynamic> toJson() => {
     'productId': productId,
@@ -156,7 +156,8 @@ class OrderResponse {
         (e) => e.name == json['paymentStatus'],
         orElse: () => PaymentStatus.PENDING,
       ),
-      items: (json['items'] as List?)
+      items:
+          (json['items'] as List?)
               ?.map((e) => OrderItemResponse.fromJson(e))
               .toList() ??
           [],

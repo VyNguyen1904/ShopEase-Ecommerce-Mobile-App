@@ -39,11 +39,8 @@ class ProductImage extends StatelessWidget {
             placeholder: (context, url) => const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             ),
-            errorWidget: (context, url, error) => const Icon(
-              Icons.image,
-              size: 100,
-              color: AppColors.textLight,
-            ),
+            errorWidget: (context, url, error) =>
+                const Icon(Icons.image, size: 100, color: AppColors.textLight),
           ),
         ),
       ),

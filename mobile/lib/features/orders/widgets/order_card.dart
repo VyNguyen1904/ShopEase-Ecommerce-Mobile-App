@@ -63,10 +63,10 @@ class OrderCard extends ConsumerWidget {
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Divider(height: 1, color: AppColors.border),
             ),
-            ...order.items.map((item) => OrderItemRow(
-                  item: item,
-                  formatCurrency: _formatCurrency,
-                )),
+            ...order.items.map(
+              (item) =>
+                  OrderItemRow(item: item, formatCurrency: _formatCurrency),
+            ),
             const Padding(
               padding: EdgeInsets.only(top: 4, bottom: 12),
               child: Divider(height: 1, color: AppColors.border),
@@ -160,18 +160,21 @@ class OrderCardActions extends ConsumerWidget {
         alignment: WrapAlignment.end,
         children: [
           // Show pay button for PENDING/FAILED VNPay orders
-          if ((order.status == OrderStatus.PENDING || order.status == OrderStatus.FAILED)
-              && order.paymentMethod.toUpperCase() == 'VNPAY')
+          if ((order.status == OrderStatus.PENDING ||
+                  order.status == OrderStatus.FAILED) &&
+              order.paymentMethod.toUpperCase() == 'VNPAY')
             _buildPayVNPayButton(context),
           // Show cancel for pending (waiting confirmation or waiting payment)
           if (statusStr == AppStrings.pending || statusStr == 'Chờ thanh toán')
             _buildCancelButton(context, ref),
-          if (statusStr == AppStrings.delivered || statusStr == AppStrings.completedStatus) ...[
+          if (statusStr == AppStrings.delivered ||
+              statusStr == AppStrings.completedStatus) ...[
             _buildReturnRefundButton(context),
             _buildReviewButton(context),
           ],
           // Hide Theo dõi for failed or waiting-payment VNPay orders
-          if (order.status != OrderStatus.FAILED && statusStr != 'Chờ thanh toán')
+          if (order.status != OrderStatus.FAILED &&
+              statusStr != 'Chờ thanh toán')
             _buildPrimaryButton(context, ref),
         ],
       ),
@@ -180,7 +183,8 @@ class OrderCardActions extends ConsumerWidget {
 
   Widget _buildPayVNPayButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.push(AppRoutes.payment, extra: {'orderId': order.id}),
+      onPressed: () =>
+          context.push(AppRoutes.payment, extra: {'orderId': order.id}),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[800],
         foregroundColor: Colors.white,
@@ -205,7 +209,10 @@ class OrderCardActions extends ConsumerWidget {
       ),
       child: const Text(
         AppStrings.cancelAction,
-        style: TextStyle(color: AppColors.alertRed, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: AppColors.alertRed,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -222,7 +229,10 @@ class OrderCardActions extends ConsumerWidget {
       ),
       child: const Text(
         AppStrings.reviewAction,
-        style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: AppColors.primaryDark,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -237,7 +247,10 @@ class OrderCardActions extends ConsumerWidget {
       ),
       child: const Text(
         AppStrings.returnRefundAction,
-        style: TextStyle(color: AppColors.textGrey, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: AppColors.textGrey,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -246,12 +259,18 @@ class OrderCardActions extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text(AppStrings.returnRefundAction, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          AppStrings.returnRefundAction,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: const Text(AppStrings.returnRefundPrompt),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(AppStrings.no, style: TextStyle(color: AppColors.textGrey)),
+            child: const Text(
+              AppStrings.no,
+              style: TextStyle(color: AppColors.textGrey),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -260,7 +279,10 @@ class OrderCardActions extends ConsumerWidget {
                 const SnackBar(content: Text(AppStrings.returnRefundSuccess)),
               );
             },
-            child: const Text(AppStrings.yes, style: TextStyle(color: AppColors.primaryDark)),
+            child: const Text(
+              AppStrings.yes,
+              style: TextStyle(color: AppColors.primaryDark),
+            ),
           ),
         ],
       ),
@@ -268,20 +290,26 @@ class OrderCardActions extends ConsumerWidget {
   }
 
   Widget _buildPrimaryButton(BuildContext context, WidgetRef ref) {
-    final isDeliveredOrCompleted = statusStr == AppStrings.delivered || statusStr == AppStrings.completedStatus;
+    final isDeliveredOrCompleted =
+        statusStr == AppStrings.delivered ||
+        statusStr == AppStrings.completedStatus;
     return ElevatedButton(
       onPressed: () => isDeliveredOrCompleted
           ? _handleReorder(context, ref)
           : _handleTrack(context),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isDeliveredOrCompleted ? AppColors.textDark : AppColors.primary,
+        backgroundColor: isDeliveredOrCompleted
+            ? AppColors.textDark
+            : AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       ),
       child: Text(
-        isDeliveredOrCompleted ? AppStrings.reorderAction : AppStrings.trackAction,
+        isDeliveredOrCompleted
+            ? AppStrings.reorderAction
+            : AppStrings.trackAction,
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
     );
@@ -347,7 +375,9 @@ class OrderCardActions extends ConsumerWidget {
     );
     try {
       for (final item in order.items) {
-        await ref.read(cartProvider.notifier).addToCart(
+        await ref
+            .read(cartProvider.notifier)
+            .addToCart(
               item.productId,
               item.quantity,
               color: item.color,
@@ -361,9 +391,9 @@ class OrderCardActions extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
       }
     }
   }

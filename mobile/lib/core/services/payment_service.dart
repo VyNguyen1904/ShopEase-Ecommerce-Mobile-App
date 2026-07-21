@@ -38,13 +38,13 @@ class PaymentService {
       final options = await _getAuthOptions();
       // Add idempotency key to prevent duplicate payments
       options.headers?['Idempotency-Key'] = const Uuid().v4();
-      
+
       final response = await _dio.post(
         '$_baseUrl/checkout',
         options: options,
         data: request.toJson(),
       );
-      
+
       return CheckoutPaymentResponse.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to process checkout payment: $e');
@@ -63,8 +63,6 @@ class PaymentService {
       throw Exception('Failed to get payment status: $e');
     }
   }
-
-
 
   Future<String> createVNPayUrl(String orderId, int amount) async {
     try {

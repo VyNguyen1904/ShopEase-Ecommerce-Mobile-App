@@ -10,9 +10,10 @@ final paymentServiceProvider = Provider((ref) {
 });
 
 final paymentStatusProvider =
-    FutureProvider.family<CheckoutPaymentResponse, String>((ref, orderId) async {
+    FutureProvider.family<CheckoutPaymentResponse, String>((
+      ref,
+      orderId,
+    ) async {
       final service = ref.watch(paymentServiceProvider);
       return service.getPaymentStatus(orderId);
     });
-
-

@@ -31,8 +31,9 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     final searchQuery = _searchController.text;
-    final searchAsyncValue =
-        ref.watch(filteredSearchProductsProvider(searchQuery));
+    final searchAsyncValue = ref.watch(
+      filteredSearchProductsProvider(searchQuery),
+    );
     final selectedCategory = ref.watch(selectedCategorySearchProvider);
     final sortBy = ref.watch(sortByProvider);
     final filterCount = ref.watch(activeFilterCountProvider);
@@ -169,7 +170,9 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                       child: RichText(
                         text: TextSpan(
                           style: const TextStyle(
-                              fontSize: 15, color: AppColors.textGrey),
+                            fontSize: 15,
+                            color: AppColors.textGrey,
+                          ),
                           children: [
                             TextSpan(
                               text: '${products.length}',
@@ -188,7 +191,9 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                         onTap: _clearAllFilters,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.alertRed.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
@@ -196,8 +201,11 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.clear_all,
-                                  size: 14, color: AppColors.alertRed),
+                              const Icon(
+                                Icons.clear_all,
+                                size: 14,
+                                color: AppColors.alertRed,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 AppStrings.clearFilter,
@@ -228,8 +236,11 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.search_off,
-                              size: 64, color: AppColors.textLight),
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: AppColors.textLight,
+                          ),
                           const SizedBox(height: 16),
                           const Text(
                             AppStrings.noProductsFound,
@@ -264,15 +275,13 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                               product;
                           ref.read(selectedHeroTagProvider.notifier).state =
                               heroTag;
-                          context.push(
-                              AppRoutes.productDetailPath(product.id));
+                          context.push(AppRoutes.productDetailPath(product.id));
                         },
                       );
                     },
                   );
                 },
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) =>
                     Center(child: Text('${AppStrings.errorPrefix}$err')),
               ),
@@ -343,8 +352,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
             if (badgeCount > 0 && isActive) ...[
               const SizedBox(width: 6),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(10),

@@ -95,7 +95,9 @@ class NotificationTile extends StatelessWidget {
                               item.title,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: item.isRead ? FontWeight.w600 : FontWeight.bold,
+                                fontWeight: item.isRead
+                                    ? FontWeight.w600
+                                    : FontWeight.bold,
                                 color: AppColors.textDark,
                               ),
                             ),
@@ -114,7 +116,9 @@ class NotificationTile extends StatelessWidget {
                         item.message,
                         style: TextStyle(
                           fontSize: 13,
-                          color: item.isRead ? AppColors.textGrey : AppColors.textDark,
+                          color: item.isRead
+                              ? AppColors.textGrey
+                              : AppColors.textDark,
                           height: 1.3,
                         ),
                       ),
@@ -126,7 +130,11 @@ class NotificationTile extends StatelessWidget {
                   height: 48,
                   alignment: Alignment.center,
                   child: item.isRead
-                      ? const Icon(Icons.chevron_right, color: AppColors.textLight, size: 18)
+                      ? const Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textLight,
+                          size: 18,
+                        )
                       : Container(
                           width: 8,
                           height: 8,

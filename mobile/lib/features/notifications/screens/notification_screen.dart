@@ -89,7 +89,11 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.done_all, color: AppColors.textDark, size: 24),
+            icon: const Icon(
+              Icons.done_all,
+              color: AppColors.textDark,
+              size: 24,
+            ),
             onPressed: () {
               ref.read(notificationListProvider.notifier).markAllAsRead();
             },
@@ -126,7 +130,9 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: isSelected ? AppColors.primary : Colors.transparent,
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : Colors.transparent,
                               width: 2.5,
                             ),
                           ),
@@ -135,8 +141,12 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                           tab,
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: isSelected ? AppColors.primary : AppColors.textGrey,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textGrey,
                           ),
                         ),
                       ),
@@ -161,18 +171,26 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.notifications_none, size: 64, color: AppColors.textLight),
+                        Icon(
+                          Icons.notifications_none,
+                          size: 64,
+                          color: AppColors.textLight,
+                        ),
                         SizedBox(height: 12),
                         Text(
                           AppStrings.noNotifications,
-                          style: TextStyle(color: AppColors.textGrey, fontSize: 16),
+                          style: TextStyle(
+                            color: AppColors.textGrey,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
                   );
                 }
 
-                final Map<String, List<NotificationModel>> groupedNotifications = {};
+                final Map<String, List<NotificationModel>>
+                groupedNotifications = {};
                 for (var n in filteredNotifications) {
                   final group = _getGroup(n.createdAt);
                   if (!groupedNotifications.containsKey(group)) {
@@ -181,12 +199,17 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                   groupedNotifications[group]!.add(n);
                 }
 
-                final sortedGroups = [AppStrings.today, AppStrings.yesterday, AppStrings.earlier]
-                    .where((g) => groupedNotifications.containsKey(g))
-                    .toList();
+                final sortedGroups = [
+                  AppStrings.today,
+                  AppStrings.yesterday,
+                  AppStrings.earlier,
+                ].where((g) => groupedNotifications.containsKey(g)).toList();
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   itemCount: sortedGroups.length,
                   itemBuilder: (context, groupIndex) {
                     final groupName = sortedGroups[groupIndex];
@@ -196,7 +219,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4.0),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12.0,
+                            horizontal: 4.0,
+                          ),
                           child: Text(
                             groupName,
                             style: const TextStyle(
@@ -206,30 +232,34 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                             ),
                           ),
                         ),
-                        ...items.map((item) => NotificationTile(
-                              item: item,
-                              formattedTime: _formatTime(item.createdAt),
-                              onTap: () {
-                                if (!item.isRead) {
-                                  ref.read(notificationListProvider.notifier).markAsRead(item.id);
-                                }
-                                if (item.type == 'MESSAGE') {
-                                  context.push(AppRoutes.chats);
-                                }
-                              },
-                            )),
+                        ...items.map(
+                          (item) => NotificationTile(
+                            item: item,
+                            formattedTime: _formatTime(item.createdAt),
+                            onTap: () {
+                              if (!item.isRead) {
+                                ref
+                                    .read(notificationListProvider.notifier)
+                                    .markAsRead(item.id);
+                              }
+                              if (item.type == 'MESSAGE') {
+                                context.push(AppRoutes.chats);
+                              }
+                            },
+                          ),
+                        ),
                       ],
                     );
                   },
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
+              error: (err, stack) =>
+                  Center(child: Text('${AppStrings.errorPrefix}$err')),
             ),
           ),
         ],
       ),
     );
   }
-
 }

@@ -40,7 +40,10 @@ class _SortFilterSheetState extends State<SortFilterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Sắp xếp theo', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const Text(
+            'Sắp xếp theo',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           const SizedBox(height: 16),
           _buildRadio('createdAt', 'desc', 'Mới nhất'),
           _buildRadio('price', 'asc', 'Giá thấp đến cao'),

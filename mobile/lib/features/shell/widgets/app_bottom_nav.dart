@@ -21,7 +21,7 @@ class AppBottomNav extends ConsumerWidget {
       data: (cart) => cart.items.fold(0, (sum, item) => sum + item.quantity),
       orElse: () => 0,
     );
-    
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),

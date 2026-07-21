@@ -26,23 +26,48 @@ class MapInfoCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
-            BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -5))
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -5),
+            ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(AppStrings.selectedLocation, style: TextStyle(color: AppColors.textGrey, fontSize: 12)),
+            const Text(
+              AppStrings.selectedLocation,
+              style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.location_on, color: AppColors.primary, size: 24),
+                const Icon(
+                  Icons.location_on,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: isLoadingAddress 
-                    ? const Text(AppStrings.loading, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
-                    : Text(currentAddress, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  child: isLoadingAddress
+                      ? const Text(
+                          AppStrings.loading,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : Text(
+                          currentAddress,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                 ),
               ],
             ),
@@ -53,12 +78,21 @@ class MapInfoCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 onPressed: onConfirm,
-                child: const Text(AppStrings.confirmLocation, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  AppStrings.confirmLocation,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),

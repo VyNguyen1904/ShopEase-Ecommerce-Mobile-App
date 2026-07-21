@@ -27,7 +27,7 @@ class HomeProductCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final heroTag = 'hero_${heroPrefix}_${product.id}';
-    
+
     return GestureDetector(
       onTap: () {
         ref.read(selectedProductProvider.notifier).state = product;
@@ -54,12 +54,12 @@ class HomeProductCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HomeProductImageSection(
-                product: product, 
-                heroTag: heroTag, 
+                product: product,
+                heroTag: heroTag,
                 showDiscount: showDiscount,
               ),
               HomeProductDetailsSection(
-                product: product, 
+                product: product,
                 showDiscount: showDiscount,
               ),
             ],
@@ -105,7 +105,9 @@ class HomeProductImageSection extends ConsumerWidget {
             right: 8,
             child: GestureDetector(
               onTap: () {
-                ref.read(favoriteProductsProvider.notifier).toggleFavorite(product);
+                ref
+                    .read(favoriteProductsProvider.notifier)
+                    .toggleFavorite(product);
               },
               child: CircleAvatar(
                 backgroundColor: Colors.white,
@@ -129,10 +131,7 @@ class HomeProductImageSection extends ConsumerWidget {
               top: 8,
               left: 8,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.accent,
                   borderRadius: BorderRadius.circular(6),
@@ -164,20 +163,25 @@ class HomeProductDetailsSection extends ConsumerWidget {
   });
 
   String _formatCurrency(double amount) {
-    return amount.toInt().toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
+    return amount.toInt().toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reviewsAsync = ref.watch(productReviewsProvider(product.id));
-    
+
     double displayRating = product.rating;
     int displayReviewCount = product.reviewsCount;
-    
+
     reviewsAsync.whenData((reviews) {
       if (reviews.isNotEmpty) {
         displayReviewCount = reviews.length;
-        displayRating = reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+        displayRating =
+            reviews.map((r) => r.rating).reduce((a, b) => a + b) /
+            reviews.length;
       }
     });
 
@@ -192,10 +196,7 @@ class HomeProductDetailsSection extends ConsumerWidget {
             children: [
               Text(
                 product.category,
-                style: const TextStyle(
-                  color: AppColors.textGrey,
-                  fontSize: 11,
-                ),
+                style: const TextStyle(color: AppColors.textGrey, fontSize: 11),
               ),
               const SizedBox(height: 4),
               Text(
@@ -244,10 +245,7 @@ class HomeProductDetailsSection extends ConsumerWidget {
                 product.description,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textGrey,
-                ),
+                style: const TextStyle(fontSize: 11, color: AppColors.textGrey),
               ),
             ],
           ),
@@ -294,7 +292,9 @@ class HomeProductDetailsSection extends ConsumerWidget {
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => Padding(
-                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
                       child: ProductVariantSheet(product: product),
                     ),
                   );
@@ -305,11 +305,7 @@ class HomeProductDetailsSection extends ConsumerWidget {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+                  child: const Icon(Icons.add, color: Colors.white, size: 18),
                 ),
               ),
             ],

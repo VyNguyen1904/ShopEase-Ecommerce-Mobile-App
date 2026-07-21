@@ -1,7 +1,7 @@
 class AppStrings {
   // App
   static const String appName = "ShopEase";
-  
+
   // Common Buttons
   static const String cancel = "Hủy";
   static const String confirm = "Xác nhận";
@@ -22,7 +22,8 @@ class AppStrings {
   // Dev Panel
   static const String devPanelTooltip = "Duyệt nhanh màn hình";
   static const String devPanelTitle = "Bảng điều khiển kiểm thử giao diện";
-  static const String devPanelSubtitle = "Chọn nhanh một màn hình từ thiết kế PNG để đối chiếu:";
+  static const String devPanelSubtitle =
+      "Chọn nhanh một màn hình từ thiết kế PNG để đối chiếu:";
 
   // Onboarding
   static const String splashSlogan = "Mua sắm thông minh,\ncuộc sống dễ dàng";
@@ -32,32 +33,35 @@ class AppStrings {
   static const String loginTitle = "Đăng nhập";
   static const String loginSubtitle = "Chào mừng bạn trở lại với ShopEase";
   static const String registerTitle = "Tạo tài khoản";
-  static const String registerSubtitle = "Tham gia và bắt đầu mua sắm thông minh";
-  
+  static const String registerSubtitle =
+      "Tham gia và bắt đầu mua sắm thông minh";
+
   static const String email = "Email";
   static const String password = "Mật khẩu";
   static const String confirmPassword = "Xác nhận mật khẩu";
   static const String fullName = "Họ và tên";
   static const String forgotPassword = "Quên mật khẩu?";
-  
+
   static const String noAccount = "Chưa có tài khoản? ";
   static const String registerNow = "Đăng ký ngay";
   static const String hasAccount = "Đã có tài khoản? ";
-  
+
   static const String agreeTermsPrefix = "Tôi đồng ý với ";
   static const String termsOfUse = "Điều khoản sử dụng";
   static const String and = " và ";
   static const String privacyPolicy = "Chính sách bảo mật";
-  
+
   static const String errorEmptyField = "Vui lòng nhập ";
   static const String errorInvalidEmail = "Email không hợp lệ";
   static const String errorShortPassword = "Mật khẩu phải có ít nhất 6 ký tự";
   static const String errorPasswordMismatch = "Mật khẩu không khớp";
-  static const String errorAgreeTerms = "Vui lòng đồng ý với điều khoản sử dụng";
-  
+  static const String errorAgreeTerms =
+      "Vui lòng đồng ý với điều khoản sử dụng";
+
   // Verification
   static const String verifyTitle = "Xác thực Email";
-  static const String verifySubtitle = "Vui lòng nhập mã gồm 6 chữ số đã được gửi đến email:\n";
+  static const String verifySubtitle =
+      "Vui lòng nhập mã gồm 6 chữ số đã được gửi đến email:\n";
   static const String errorInvalidOtp = "Vui lòng nhập đủ 6 số OTP";
   static const String otpSentSuccess = "Mã OTP mới đã được gửi!";
   static const String resendOtp = "Gửi lại mã OTP";
@@ -73,11 +77,13 @@ class AppStrings {
 
   static const String promo1Title = "SIGNATURE COLLECTION";
   static const String promo1Subtitle = "Heavyweight\nT-Shirt";
-  static const String promo1Desc = "Chất liệu 100% Organic Cotton\n250gsm siêu dày dặn, form dáng\nboxy thời thượng mang lại sự\ntự tin tuyệt đối.";
+  static const String promo1Desc =
+      "Chất liệu 100% Organic Cotton\n250gsm siêu dày dặn, form dáng\nboxy thời thượng mang lại sự\ntự tin tuyệt đối.";
 
   static const String promo2Title = "NEW ARRIVAL";
   static const String promo2Subtitle = "Premium\nWool Overcoat";
-  static const String promo2Desc = "Tôn vinh vẻ đẹp tối giản với\nchiếc áo măng tô được cắt may\ntỉ mỉ từ len lông cừu thượng\nhạng.";
+  static const String promo2Desc =
+      "Tôn vinh vẻ đẹp tối giản với\nchiếc áo măng tô được cắt may\ntỉ mỉ từ len lông cừu thượng\nhạng.";
 
   // Search
   static const String searchProduct = "Tìm kiếm sản phẩm...";
@@ -131,7 +137,7 @@ class AppStrings {
   static const String buyToGetPoints = "Mua để nhận điểm";
   static const String freeShipping = "Miễn phí giao hàng";
   static const String proceedToCheckout = "Tiến hành thanh toán";
-  
+
   static const String shippingAddress = "Địa chỉ nhận hàng";
   static const String selectedItems = "Sản phẩm đã chọn";
   static const String shippingUnit = "Đơn vị vận chuyển";
@@ -165,7 +171,8 @@ class AppStrings {
   static const String notLoggedIn = "Bạn chưa đăng nhập";
   static const String loginNow = "Đăng nhập ngay";
   static const String sessionExpired = "Phiên đăng nhập đã hết hạn";
-  static const String loginAgainPrompt = "Vui lòng đăng nhập lại để xem thông tin tài khoản.";
+  static const String loginAgainPrompt =
+      "Vui lòng đăng nhập lại để xem thông tin tài khoản.";
   static const String loginAgain = "Đăng nhập lại";
   static const String accountSection = "Tài khoản";
   static const String personalInfo = "Thông tin cá nhân";
@@ -190,6 +197,7 @@ class AppStrings {
   static const String theme = "Giao diện";
   static const String lightTheme = "Sáng";
   static const String myOrders = "Đơn hàng của tôi";
+  static const String storeMap = "Bản đồ cửa hàng";
   static const String supportSection = "Hỗ trợ";
   static const String helpCenter = "Trung tâm trợ giúp";
   static const String logout = "Đăng xuất";
@@ -232,7 +240,8 @@ class AppStrings {
   static const String delivered = "Đã giao";
   static const String cancelled = "Đã huỷ";
   static const String receiveSuccess = "Đã nhận hàng thành công!";
-  static const String thankYouShopping = "Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.";
+  static const String thankYouShopping =
+      "Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.";
   static const String orderCode = "Mã đơn hàng";
   static const String orderedAt = "Đặt ngày:";
   static const String orderPlaced = "Đặt hàng";
@@ -243,7 +252,8 @@ class AppStrings {
   static const String paymentMethodPrefix = "Phương thức: ";
   static const String totalPayment = "Tổng thanh toán";
   static const String cancelConfirmation = "Xác nhận huỷ";
-  static const String cancelPrompt = "Bạn có chắc chắn muốn huỷ đơn hàng này không?";
+  static const String cancelPrompt =
+      "Bạn có chắc chắn muốn huỷ đơn hàng này không?";
   static const String no = "Không";
   static const String success = "Thành công";
   static const String cancelSuccessMsg = "Đơn hàng đã được huỷ thành công.";
@@ -260,11 +270,15 @@ class AppStrings {
   static const String noOrdersFound = "Chưa có đơn hàng nào";
   static const String cancelOrderSuccess = "Đã huỷ đơn hàng thành công";
   static const String returnRefundAction = "Đổi trả/Hoàn tiền";
-  static const String returnRefundPrompt = "Bạn muốn yêu cầu đổi trả/hoàn tiền cho đơn hàng này?";
-  static const String returnRefundSuccess = "Yêu cầu của bạn đã được gửi. CSKH sẽ liên hệ trong 24h.";
+  static const String returnRefundPrompt =
+      "Bạn muốn yêu cầu đổi trả/hoàn tiền cho đơn hàng này?";
+  static const String returnRefundSuccess =
+      "Yêu cầu của bạn đã được gửi. CSKH sẽ liên hệ trong 24h.";
   static const String confirmReceivedTitle = "Xác nhận đã nhận hàng";
-  static const String confirmReceivedPrompt = "Bạn xác nhận đã nhận được hàng và hàng hóa trong tình trạng tốt?";
-  static const String thanksForShopping = "Cảm ơn bạn đã mua sắm! Bạn có thể đánh giá sản phẩm ngay bây giờ.";
+  static const String confirmReceivedPrompt =
+      "Bạn xác nhận đã nhận được hàng và hàng hóa trong tình trạng tốt?";
+  static const String thanksForShopping =
+      "Cảm ơn bạn đã mua sắm! Bạn có thể đánh giá sản phẩm ngay bây giờ.";
 
   static const String pleaseSelectProvince = "Vui lòng chọn Tỉnh/Thành";
   static const String pleaseSelectWard = "Vui lòng chọn Phường/Xã";
@@ -290,7 +304,7 @@ class AppStrings {
   static const String reports = "Báo cáo";
   static const String recentOrders = "Đơn hàng gần đây";
   static const String loadOrderError = "Lỗi tải đơn hàng: ";
-  
+
   // Seller Orders & Products
   static const String newStatus = "Mới";
   static const String processingStatus = "Đang xử lý";
@@ -387,8 +401,10 @@ class AppStrings {
   static const String createNewUser = "Tạo người dùng mới";
   static const String editUser = "Chỉnh sửa người dùng";
   static const String confirmDeleteTitle = "Xác nhận xóa";
-  static const String deleteUserConfirmMsgPrefix = "Bạn có chắc chắn muốn xóa người dùng \"";
-  static const String deleteUserConfirmMsgSuffix = "\"? Hành động này không thể hoàn tác.";
+  static const String deleteUserConfirmMsgPrefix =
+      "Bạn có chắc chắn muốn xóa người dùng \"";
+  static const String deleteUserConfirmMsgSuffix =
+      "\"? Hành động này không thể hoàn tác.";
 
   // Notifications & Chat
   static const String notifications = "Thông báo";
@@ -409,7 +425,7 @@ class AppStrings {
   static const String guest = "Khách";
   static const String noMessagesYet = "Chưa có tin nhắn nào";
   static const String loadChatsFailed = "Không thể tải danh sách chat: ";
-  
+
   static const String general = "Chung";
   static const String currency = "Đơn vị tiền tệ";
   static const String vnd = "VND (đ)";
@@ -423,11 +439,14 @@ class AppStrings {
   static const String errorLoadCategory = "Lỗi tải danh mục";
   static const String saveConfigSuccess = "Cấu hình đã được lưu thành công!";
   static const String paymentSuccess = "Thanh toán thành công!";
-  static const String paymentFailedPrefix = "Thanh toán chưa hoàn tất. Trạng thái: ";
-  static const String paymentSimulatedSuccess = "Mô phỏng thanh toán thành công!";
+  static const String paymentFailedPrefix =
+      "Thanh toán chưa hoàn tất. Trạng thái: ";
+  static const String paymentSimulatedSuccess =
+      "Mô phỏng thanh toán thành công!";
   static const String paymentScreenTitle = "Thanh toán đơn hàng";
   static const String scanQrToPay = "Quét mã QR để thanh toán";
-  static const String scanQrInstruction = "Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã.";
+  static const String scanQrInstruction =
+      "Sử dụng ứng dụng ngân hàng hoặc ví điện tử để quét mã.";
   static const String invalidQrPrefix = "Mã QR không hợp lệ:\n";
   static const String iHavePaid = "Tôi đã thanh toán";
   static const String simulatePayment = "Giả lập thanh toán (Dev)";
@@ -445,20 +464,28 @@ class AppStrings {
 
   // API Errors
   static const String errBadCredentials = "Sai email hoặc mật khẩu.";
-  static const String errUserNotFound = "Không tìm thấy tài khoản với email này.";
-  static const String errEmailTaken = "Email này đã được sử dụng. Vui lòng chọn email khác.";
-  static const String errUnauthorized = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
-  static const String errForbidden = "Bạn không có quyền thực hiện thao tác này.";
+  static const String errUserNotFound =
+      "Không tìm thấy tài khoản với email này.";
+  static const String errEmailTaken =
+      "Email này đã được sử dụng. Vui lòng chọn email khác.";
+  static const String errUnauthorized =
+      "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+  static const String errForbidden =
+      "Bạn không có quyền thực hiện thao tác này.";
   static const String errInternalServer = "Lỗi máy chủ. Vui lòng thử lại sau.";
-  static const String errConnectionTimeout = "Hết thời gian kết nối. Vui lòng kiểm tra mạng.";
-  static const String errConnectionError = "Không thể kết nối đến máy chủ. Vui lòng thử lại.";
+  static const String errConnectionTimeout =
+      "Hết thời gian kết nối. Vui lòng kiểm tra mạng.";
+  static const String errConnectionError =
+      "Không thể kết nối đến máy chủ. Vui lòng thử lại.";
   static const String errServerStatus = "Lỗi máy chủ";
   static const String errOccurred = "Đã có lỗi xảy ra: ";
-  static const String promotionFeatureDev = "Tính năng Khuyến mãi đang phát triển";
+  static const String promotionFeatureDev =
+      "Tính năng Khuyến mãi đang phát triển";
   static const String reportFeatureDev = "Tính năng Báo cáo đang phát triển";
   static const String productImageUrl = "URL Ảnh sản phẩm";
   static const String productImageHint = "Nhập đường dẫn ảnh (http://...)";
-  static const String fillRequiredFields = "Vui lòng điền đầy đủ thông tin bắt buộc.";
+  static const String fillRequiredFields =
+      "Vui lòng điền đầy đủ thông tin bắt buộc.";
   static const String addProductSuccess = "Thêm sản phẩm thành công!";
   static const String loadCategoryError = "Lỗi tải danh mục: ";
   static const String sizesLabel = "Kích cỡ (Sizes)";

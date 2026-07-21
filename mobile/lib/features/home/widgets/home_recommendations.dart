@@ -16,21 +16,24 @@ class HomeRecommendations extends ConsumerWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 310,
-          child: ref.watch(recommendationsProvider).when(
-            data: (products) => ListView.builder(
-              padding: const EdgeInsets.only(left: 20),
-              scrollDirection: Axis.horizontal,
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                return HomeProductCard(
-                  product: products[index],
-                  heroPrefix: 'rec',
-                );
-              },
-            ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Center(child: Text('${AppStrings.errorPrefix}$err')),
-          ),
+          child: ref
+              .watch(recommendationsProvider)
+              .when(
+                data: (products) => ListView.builder(
+                  padding: const EdgeInsets.only(left: 20),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    return HomeProductCard(
+                      product: products[index],
+                      heroPrefix: 'rec',
+                    );
+                  },
+                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) =>
+                    Center(child: Text('${AppStrings.errorPrefix}$err')),
+              ),
         ),
       ],
     );

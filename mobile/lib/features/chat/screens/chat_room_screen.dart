@@ -16,7 +16,8 @@ import '../widgets/chat_input_bar.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   final String roomId;
-  final ChatRoom? initialRoom; // Optional: can be passed to avoid refetching basic info
+  final ChatRoom?
+  initialRoom; // Optional: can be passed to avoid refetching basic info
 
   const ChatRoomScreen({super.key, required this.roomId, this.initialRoom});
 
@@ -27,7 +28,7 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
-  
+
   ChatRoom? _room;
   bool _isLoading = true;
   String? _myUserId;
@@ -64,24 +65,36 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   Future<void> _loadRoomData() async {
     try {
       if (_room == null) setState(() => _isLoading = true);
-      
+
       final profile = await _authService.getProfile();
       _myUserId = profile.id;
       final rawRooms = await _apiChatService.getMyChats();
-      final roomData = rawRooms.firstWhere((r) => r['id'] == widget.roomId, orElse: () => null);
-      
+      final roomData = rawRooms.firstWhere(
+        (r) => r['id'] == widget.roomId,
+        orElse: () => null,
+      );
+
       if (roomData == null) throw Exception('Room not found');
 
-      final targetId = roomData['participant1Id'] == _myUserId ? roomData['participant2Id'] : roomData['participant1Id'];
-      final targetUser = targetId == 'SYSTEM' ? null : await _authService.getUserById(targetId);
-      
+      final targetId = roomData['participant1Id'] == _myUserId
+          ? roomData['participant2Id']
+          : roomData['participant1Id'];
+      final targetUser = targetId == 'SYSTEM'
+          ? null
+          : await _authService.getUserById(targetId);
+
       final rawMsgs = await _apiChatService.getMessages(widget.roomId);
       List<ChatMessage> msgs = rawMsgs.map<ChatMessage>((m) {
         final isMe = m['senderId'] == _myUserId;
         return ChatMessage(
           id: m['id'],
-          senderName: isMe ? AppStrings.you : (targetUser?.fullName ?? AppStrings.system),
-          senderImageUrl: isMe ? '' : (targetUser?.avatar ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'),
+          senderName: isMe
+              ? AppStrings.you
+              : (targetUser?.fullName ?? AppStrings.system),
+          senderImageUrl: isMe
+              ? ''
+              : (targetUser?.avatar ??
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'),
           messageText: m['messageText'],
           time: _formatTime(m['sentAt']),
           isMe: isMe,
@@ -93,7 +106,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           _room = ChatRoom(
             id: roomData['id'],
             name: targetUser?.fullName ?? AppStrings.system,
-            imageUrl: targetUser?.avatar ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+            imageUrl:
+                targetUser?.avatar ??
+                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
             lastMessage: roomData['lastMessage'] ?? '',
             time: _formatTime(roomData['lastMessageAt']),
             unreadCount: 0,
@@ -102,14 +117,14 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           );
           _isLoading = false;
         });
-        
+
         // Connect WebSocket
         _apiChatService.connectWebSocket(
-          widget.roomId, 
+          widget.roomId,
           _onMessageReceived,
           onTyping: _onTypingReceived,
         );
-        
+
         Future.delayed(const Duration(milliseconds: 100), () {
           if (_chatScrollController.hasClients) {
             _chatScrollController.animateTo(
@@ -135,7 +150,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     try {
       final Map<String, dynamic> msgMap = jsonDecode(messageBody);
       if (msgMap['senderId'] == _myUserId) return;
-      
+
       final incomingMessage = ChatMessage(
         id: msgMap['id'] ?? DateTime.now().toString(),
         senderName: _room!.name,
@@ -155,7 +170,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           time: AppStrings.justNow,
           unreadCount: _room!.unreadCount + 1,
           isActive: _room!.isActive,
-          messages: List<ChatMessage>.from(_room!.messages)..add(incomingMessage),
+          messages: List<ChatMessage>.from(_room!.messages)
+            ..add(incomingMessage),
         );
       });
 
@@ -175,7 +191,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   void _onTypingReceived(String senderId) {
     if (!mounted || senderId == _myUserId) return;
-    
+
     setState(() {
       _isTyping = true;
       _lastTypingTime = DateTime.now();
@@ -196,9 +212,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   void _onInputChanged(String text) {
     if (_room == null || _myUserId == null) return;
-    
+
     final now = DateTime.now();
-    if (_lastSentTypingTime == null || now.difference(_lastSentTypingTime!).inSeconds >= 2) {
+    if (_lastSentTypingTime == null ||
+        now.difference(_lastSentTypingTime!).inSeconds >= 2) {
       _apiChatService.sendTypingEvent(_room!.id, _myUserId!);
       _lastSentTypingTime = now;
     }
@@ -207,12 +224,12 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   void _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty || _room == null) return;
-    
+
     _messageController.clear();
-    
+
     try {
       final sentMsg = await _apiChatService.sendMessage(_room!.id, text);
-      
+
       final newMessage = ChatMessage(
         id: sentMsg['id'],
         senderName: AppStrings.you,
@@ -295,7 +312,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.bgLight,
                     borderRadius: BorderRadius.circular(20),

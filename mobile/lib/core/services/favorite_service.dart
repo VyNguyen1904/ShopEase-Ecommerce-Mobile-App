@@ -36,8 +36,10 @@ class FavoriteService {
       final response = await _dio.get(_baseUrl, options: options);
       final dynamic data = response.data['data'];
       if (data == null) return [];
-      
-      final List<dynamic> content = data is Map ? (data['content'] ?? []) : data;
+
+      final List<dynamic> content = data is Map
+          ? (data['content'] ?? [])
+          : data;
       return content.map((json) {
         // Backend could return product directly or { "product": { ... } }
         if (json.containsKey('product')) {

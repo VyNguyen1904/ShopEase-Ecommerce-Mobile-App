@@ -9,25 +9,25 @@ class AiService {
     required List<String> colors,
   }) async {
     const apiKey = String.fromEnvironment('GEMINI_API_KEY');
-    
+
     if (apiKey.isEmpty) {
-      throw Exception('Vui lòng cung cấp GEMINI_API_KEY bằng cách thêm --dart-define=GEMINI_API_KEY=your_api_key khi chạy ứng dụng (ví dụ: flutter run --dart-define=GEMINI_API_KEY=AIzaSy...)');
+      throw Exception(
+        'Vui lòng cung cấp GEMINI_API_KEY bằng cách thêm --dart-define=GEMINI_API_KEY=your_api_key khi chạy ứng dụng (ví dụ: flutter run --dart-define=GEMINI_API_KEY=AIzaSy...)',
+      );
     }
 
     if (name.isEmpty) {
       throw Exception('Vui lòng nhập tên sản phẩm trước khi tạo mô tả!');
     }
 
-    final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
-      apiKey: apiKey,
-    );
+    final model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
 
     final priceStr = price > 0 ? 'Giá: $price' : 'Chưa định giá';
     final sizesStr = sizes.isNotEmpty ? sizes.join(', ') : 'Không có';
     final colorsStr = colors.isNotEmpty ? colors.join(', ') : 'Không có';
 
-    final prompt = '''
+    final prompt =
+        '''
 Bạn là một chuyên gia viết lời quảng cáo sản phẩm (copywriter) chuyên nghiệp cho một trang thương mại điện tử. 
 Hãy viết một đoạn mô tả sản phẩm thật hấp dẫn, chuyên nghiệp và có lời kêu gọi mua hàng (call-to-action).
 Dưới đây là thông tin sản phẩm:
@@ -53,4 +53,3 @@ Yêu cầu:
     }
   }
 }
-

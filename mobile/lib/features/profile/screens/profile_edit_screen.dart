@@ -25,7 +25,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     _nameController = TextEditingController();
     _phoneController = TextEditingController();
     _avatarController = TextEditingController();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userState = ref.read(userProfileProvider);
       userState.whenData((user) {
@@ -46,18 +46,22 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
     try {
       final authService = ref.read(authServiceProvider);
       await authService.updateProfile(
         _nameController.text.trim(),
-        _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        _avatarController.text.trim().isEmpty ? null : _avatarController.text.trim(),
+        _phoneController.text.trim().isEmpty
+            ? null
+            : _phoneController.text.trim(),
+        _avatarController.text.trim().isEmpty
+            ? null
+            : _avatarController.text.trim(),
       );
-      
+
       ref.invalidate(userProfileProvider);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text(AppStrings.updateProfileSuccess)),
@@ -66,9 +70,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -83,12 +87,20 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textDark, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textDark,
+            size: 20,
+          ),
           onPressed: () => context.pop(),
         ),
         title: const Text(
           AppStrings.personalInfo,
-          style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: false,
       ),
@@ -107,7 +119,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       backgroundColor: AppColors.border,
                       backgroundImage: _avatarController.text.isNotEmpty
                           ? NetworkImage(_avatarController.text)
-                          : const NetworkImage('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80'),
+                          : const NetworkImage(
+                              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
+                            ),
                     ),
                     Positioned(
                       bottom: 0,
@@ -118,7 +132,11 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                           color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ],
@@ -129,7 +147,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                 label: AppStrings.fullNameLabel,
                 controller: _nameController,
                 hintText: AppStrings.fullNameHint,
-                validator: (value) => value == null || value.trim().isEmpty ? AppStrings.fullNameRequired : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? AppStrings.fullNameRequired
+                    : null,
               ),
               const SizedBox(height: 24),
               _buildTextField(
@@ -153,11 +173,27 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text(AppStrings.saveChanges, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          AppStrings.saveChanges,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],
@@ -178,7 +214,13 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textDark,
+          ),
+        ),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
@@ -186,7 +228,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
           decoration: InputDecoration(
             hintText: hintText,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
           validator: validator,
           onChanged: onChanged,
@@ -195,4 +240,3 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
     );
   }
 }
-

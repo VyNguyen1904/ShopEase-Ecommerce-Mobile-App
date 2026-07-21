@@ -18,12 +18,14 @@ void main() async {
   if (!kIsWeb) {
     try {
       await Firebase.initializeApp();
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
     } catch (e) {
       debugPrint('Firebase init error: $e');
     }
   }
-  
+
   runApp(
     // ProviderScope is the root widget required by flutter_riverpod.
     // It makes all providers accessible throughout the widget tree.

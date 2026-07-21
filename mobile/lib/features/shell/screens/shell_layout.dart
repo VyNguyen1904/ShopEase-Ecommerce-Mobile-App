@@ -180,66 +180,60 @@ class ShellLayout extends StatelessWidget {
                           () => context.push(AppRoutes.chats),
                         ),
                       ]),
-                      _buildPanelSection(
-                        '4. Quản trị(Admin)',
-                        [
-                          _buildPanelItem(
-                            ctx,
-                            'Admin Dashboard (Admin/1.png)',
-                            () => context.push(AppRoutes.adminDashboard),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Admin User Management (Admin/3.png)',
-                            () => context.push(AppRoutes.adminUsers),
-                          ),
-                        ],
-                      ),
-                      _buildPanelSection(
-                        '5. Người bán (Seller)',
-                        [
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Order Detail (Seller/1.png)',
-                            () => context.push(AppRoutes.sellerOrderDetail),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Notifications (Seller/2.png)',
-                            () => context.push(AppRoutes.sellerNotifications),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Shop Profile (Seller/3.png)',
-                            () => context.push(AppRoutes.sellerShopProfile),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Dashboard (Seller/Dashboard.png)',
-                            () => context.push(AppRoutes.sellerDashboard),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Products',
-                            () => context.push(AppRoutes.sellerProducts),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Add Product',
-                            () => context.push(AppRoutes.sellerAddProduct),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Orders',
-                            () => context.push(AppRoutes.sellerOrders),
-                          ),
-                          _buildPanelItem(
-                            ctx,
-                            'Seller Chat',
-                            () => context.push(AppRoutes.chats),
-                          ),
-                        ],
-                      ),
+                      _buildPanelSection('4. Quản trị(Admin)', [
+                        _buildPanelItem(
+                          ctx,
+                          'Admin Dashboard (Admin/1.png)',
+                          () => context.push(AppRoutes.adminDashboard),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Admin User Management (Admin/3.png)',
+                          () => context.push(AppRoutes.adminUsers),
+                        ),
+                      ]),
+                      _buildPanelSection('5. Người bán (Seller)', [
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Order Detail (Seller/1.png)',
+                          () => context.push(AppRoutes.sellerOrderDetail),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Notifications (Seller/2.png)',
+                          () => context.push(AppRoutes.sellerNotifications),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Shop Profile (Seller/3.png)',
+                          () => context.push(AppRoutes.sellerShopProfile),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Dashboard (Seller/Dashboard.png)',
+                          () => context.push(AppRoutes.sellerDashboard),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Products',
+                          () => context.push(AppRoutes.sellerProducts),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Add Product',
+                          () => context.push(AppRoutes.sellerAddProduct),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Orders',
+                          () => context.push(AppRoutes.sellerOrders),
+                        ),
+                        _buildPanelItem(
+                          ctx,
+                          'Seller Chat',
+                          () => context.push(AppRoutes.chats),
+                        ),
+                      ]),
                     ],
                   ),
                 ),

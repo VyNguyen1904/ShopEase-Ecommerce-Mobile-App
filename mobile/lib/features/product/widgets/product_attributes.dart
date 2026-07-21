@@ -26,19 +26,30 @@ class ProductAttributes extends StatelessWidget {
           _buildDetailRow(AppStrings.materialLabel, product.material!),
         if (product.fit != null && product.fit!.isNotEmpty)
           _buildDetailRow(AppStrings.fitLabel, product.fit!),
-        if (product.careInstructions != null && product.careInstructions!.isNotEmpty)
+        if (product.careInstructions != null &&
+            product.careInstructions!.isNotEmpty)
           _buildDetailRow(AppStrings.careLabel, product.careInstructions!),
         if (product.features.isNotEmpty)
-          ...product.features.map((f) => Padding(
-                padding: const EdgeInsets.only(bottom: 6.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('• ', style: TextStyle(color: AppColors.textGrey)),
-                    Expanded(child: Text(f, style: const TextStyle(color: AppColors.textDark, fontSize: 14))),
-                  ],
-                ),
-              )),
+          ...product.features.map(
+            (f) => Padding(
+              padding: const EdgeInsets.only(bottom: 6.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('• ', style: TextStyle(color: AppColors.textGrey)),
+                  Expanded(
+                    child: Text(
+                      f,
+                      style: const TextStyle(
+                        color: AppColors.textDark,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

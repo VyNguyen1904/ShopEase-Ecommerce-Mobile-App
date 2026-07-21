@@ -10,34 +10,43 @@ final orderServiceProvider = Provider((ref) {
   return OrderService(dio: authService.dio);
 });
 
-final userOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref) async {
+final userOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((
+  ref,
+) async {
   final timer = Timer(const Duration(seconds: 5), () => ref.invalidateSelf());
   ref.onDispose(() => timer.cancel());
-  
+
   final service = ref.watch(orderServiceProvider);
   return await service.getOrderHistory();
 });
 
-final sellerOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((ref) async {
+final sellerOrdersProvider = FutureProvider.autoDispose<List<OrderResponse>>((
+  ref,
+) async {
   final timer = Timer(const Duration(seconds: 5), () => ref.invalidateSelf());
   ref.onDispose(() => timer.cancel());
-  
+
   final service = ref.watch(orderServiceProvider);
   return await service.getSellerOrders();
 });
 
-final orderDetailProvider = FutureProvider.family.autoDispose<OrderResponse, String>((ref, id) async {
-  final service = ref.watch(orderServiceProvider);
-  final order = await service.getOrderDetail(id);
-  
-  // Tối ưu: Chỉ poll nếu đơn hàng chưa hoàn thành hoặc chưa bị huỷ
-  if (order.status != OrderStatus.DELIVERED && order.status != OrderStatus.CANCELLED) {
-    final timer = Timer(const Duration(seconds: 5), () => ref.invalidateSelf());
-    ref.onDispose(() => timer.cancel());
-  }
-  
-  return order;
-});
+final orderDetailProvider = FutureProvider.family
+    .autoDispose<OrderResponse, String>((ref, id) async {
+      final service = ref.watch(orderServiceProvider);
+      final order = await service.getOrderDetail(id);
+
+      // Tối ưu: Chỉ poll nếu đơn hàng chưa hoàn thành hoặc chưa bị huỷ
+      if (order.status != OrderStatus.DELIVERED &&
+          order.status != OrderStatus.CANCELLED) {
+        final timer = Timer(
+          const Duration(seconds: 5),
+          () => ref.invalidateSelf(),
+        );
+        ref.onDispose(() => timer.cancel());
+      }
+
+      return order;
+    });
 
 class OrderActionController {
   final Ref ref;
@@ -58,4 +67,6 @@ class OrderActionController {
   }
 }
 
-final orderActionControllerProvider = Provider((ref) => OrderActionController(ref));
+final orderActionControllerProvider = Provider(
+  (ref) => OrderActionController(ref),
+);

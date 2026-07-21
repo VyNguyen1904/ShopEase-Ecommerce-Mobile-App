@@ -61,12 +61,12 @@ class SellerDropdownField extends StatelessWidget {
                 hintText,
                 style: const TextStyle(color: AppColors.textGrey, fontSize: 14),
               ),
-              icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textDark),
+              icon: const Icon(
+                Icons.keyboard_arrow_down,
+                color: AppColors.textDark,
+              ),
               items: items.map((String val) {
-                return DropdownMenuItem<String>(
-                  value: val,
-                  child: Text(val),
-                );
+                return DropdownMenuItem<String>(value: val, child: Text(val));
               }).toList(),
               onChanged: onChanged,
             ),

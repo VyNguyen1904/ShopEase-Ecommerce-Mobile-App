@@ -10,10 +10,7 @@ import '../../../core/router/app_routes.dart';
 class ProductInfo extends ConsumerWidget {
   final Product product;
 
-  const ProductInfo({
-    super.key,
-    required this.product,
-  });
+  const ProductInfo({super.key, required this.product});
 
   String _formatCurrency(double amount) {
     String value = amount.round().toString();
@@ -24,15 +21,17 @@ class ProductInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reviewsAsync = ref.watch(productReviewsProvider(product.id));
-    
+
     // Calculate actual rating and review count from fetched reviews
     double displayRating = product.rating;
     int displayReviewCount = product.reviewsCount;
-    
+
     reviewsAsync.whenData((reviews) {
       if (reviews.isNotEmpty) {
         displayReviewCount = reviews.length;
-        displayRating = reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+        displayRating =
+            reviews.map((r) => r.rating).reduce((a, b) => a + b) /
+            reviews.length;
       }
     });
 
@@ -59,7 +58,9 @@ class ProductInfo extends ConsumerWidget {
               children: List.generate(
                 5,
                 (index) => Icon(
-                  index < displayRating.floor() ? Icons.star : Icons.star_border,
+                  index < displayRating.floor()
+                      ? Icons.star
+                      : Icons.star_border,
                   color: Colors.amber,
                   size: 18,
                 ),
@@ -88,7 +89,8 @@ class ProductInfo extends ConsumerWidget {
                 color: AppColors.accent,
               ),
             ),
-            if (product.originalPrice != null && product.discountPercentage > 0) ...[
+            if (product.originalPrice != null &&
+                product.discountPercentage > 0) ...[
               const SizedBox(width: 12),
               Text(
                 '${_formatCurrency(product.originalPrice!)}${AppStrings.currencySymbol}',
@@ -140,9 +142,9 @@ class ProductInfo extends ConsumerWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue.withOpacity(0.2)),
+            color: Colors.blue.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
@@ -163,10 +165,7 @@ class ProductInfo extends ConsumerWidget {
                     SizedBox(height: 2),
                     Text(
                       'Bấm để xem bản đồ và chỉ đường',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.textGrey),
                     ),
                   ],
                 ),
@@ -179,12 +178,18 @@ class ProductInfo extends ConsumerWidget {
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Bản đồ', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  'Bản đồ',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),

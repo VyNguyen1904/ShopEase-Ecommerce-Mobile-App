@@ -27,10 +27,7 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
   }
 
   Future<void> _fetchData() async {
-    await Future.wait([
-      _fetchUserLocation(),
-      _fetchStoreLocation(),
-    ]);
+    await Future.wait([_fetchUserLocation(), _fetchStoreLocation()]);
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -57,15 +54,19 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
   Future<void> _fetchUserLocation() async {
     final locationService = ref.read(locationServiceProvider);
     Position? position = await locationService.getCurrentLocation();
-    
+
     if (mounted) {
       if (position != null) {
         _userLocation = LatLng(position.latitude, position.longitude);
       }
-      
+
       if (position == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể lấy được vị trí hiện tại. Vui lòng cấp quyền vị trí.')),
+          const SnackBar(
+            content: Text(
+              'Không thể lấy được vị trí hiện tại. Vui lòng cấp quyền vị trí.',
+            ),
+          ),
         );
       }
     }
@@ -74,20 +75,20 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
   Future<void> _openGoogleMaps() async {
     final double destLat = _storeLocation.latitude;
     final double destLng = _storeLocation.longitude;
-    
-    final String googleMapsUrl = _userLocation != null 
+
+    final String googleMapsUrl = _userLocation != null
         ? 'https://www.google.com/maps/dir/?api=1&origin=${_userLocation!.latitude},${_userLocation!.longitude}&destination=$destLat,$destLng'
         : 'https://www.google.com/maps/dir/?api=1&destination=$destLat,$destLng';
 
     final Uri url = Uri.parse(googleMapsUrl);
-    
+
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể mở bản đồ.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Không thể mở bản đồ.')));
       }
     }
   }
@@ -95,9 +96,7 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Bản đồ $_storeName'),
-      ),
+      appBar: AppBar(title: Text('Bản đồ $_storeName')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Stack(
@@ -109,7 +108,8 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.shopease.app',
                     ),
                     MarkerLayer(
@@ -151,4 +151,3 @@ class _StoreMapScreenState extends ConsumerState<StoreMapScreen> {
     );
   }
 }
-

@@ -9,28 +9,32 @@ class ProductOptionsSelector extends ConsumerStatefulWidget {
   final List<String> colors;
 
   const ProductOptionsSelector({
-    super.key, 
+    super.key,
     required this.sizes,
     required this.colors,
   });
 
   @override
-  ConsumerState<ProductOptionsSelector> createState() => _ProductOptionsSelectorState();
+  ConsumerState<ProductOptionsSelector> createState() =>
+      _ProductOptionsSelectorState();
 }
 
-class _ProductOptionsSelectorState extends ConsumerState<ProductOptionsSelector> {
+class _ProductOptionsSelectorState
+    extends ConsumerState<ProductOptionsSelector> {
   final int _selectedColorIndex = 1;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.colors.isNotEmpty) {
-        ref.read(selectedProductColorProvider.notifier).state = widget.colors.first;
+        ref.read(selectedProductColorProvider.notifier).state =
+            widget.colors.first;
       } else {
         ref.read(selectedProductColorProvider.notifier).state = null;
       }
       if (widget.sizes.isNotEmpty) {
-        ref.read(selectedProductSizeProvider.notifier).state = widget.sizes.first;
+        ref.read(selectedProductSizeProvider.notifier).state =
+            widget.sizes.first;
       } else {
         ref.read(selectedProductSizeProvider.notifier).state = null;
       }
@@ -66,13 +70,17 @@ class _ProductOptionsSelectorState extends ConsumerState<ProductOptionsSelector>
                 final isSelected = selectedColor == color;
                 return GestureDetector(
                   onTap: () {
-                    ref.read(selectedProductColorProvider.notifier).state = color;
+                    ref.read(selectedProductColorProvider.notifier).state =
+                        color;
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
                     margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.accent : Colors.white,
                       borderRadius: BorderRadius.circular(24),
@@ -105,66 +113,68 @@ class _ProductOptionsSelectorState extends ConsumerState<ProductOptionsSelector>
           const SizedBox(height: 24),
         ],
         if (widget.sizes.isNotEmpty) ...[
-        const Text(
-          AppStrings.size,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+          const Text(
+            AppStrings.size,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: widget.sizes.map((size) {
-              final isSelected = selectedSize == size;
-              return GestureDetector(
-                onTap: () {
-                  ref.read(selectedProductSizeProvider.notifier).state = size;
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  margin: const EdgeInsets.only(right: 12),
-                  padding: EdgeInsets.symmetric(horizontal: size.length > 3 ? 16.0 : 0.0),
-                  constraints: BoxConstraints(
-                    minWidth: isSelected ? 48 : 42,
-                    minHeight: isSelected ? 48 : 42,
-                  ),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.accent : Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected ? AppColors.accent : AppColors.border,
-                      width: 1,
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: widget.sizes.map((size) {
+                final isSelected = selectedSize == size;
+                return GestureDetector(
+                  onTap: () {
+                    ref.read(selectedProductSizeProvider.notifier).state = size;
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: size.length > 3 ? 16.0 : 0.0,
                     ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: AppColors.accent.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    size,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : AppColors.textDark,
+                    constraints: BoxConstraints(
+                      minWidth: isSelected ? 48 : 42,
+                      minHeight: isSelected ? 48 : 42,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.accent : Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: isSelected ? AppColors.accent : AppColors.border,
+                        width: 1,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: AppColors.accent.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Text(
+                      size,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: isSelected ? Colors.white : AppColors.textDark,
+                      ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
-        ),
-        const SizedBox(height: 32),
-        ]
+          const SizedBox(height: 32),
+        ],
       ],
     );
   }

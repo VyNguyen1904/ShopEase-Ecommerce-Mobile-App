@@ -5,9 +5,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/address_model.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:flutter_map/flutter_map.dart';
-import '../screens/map_picker_screen.dart';
 import 'address_map_preview.dart';
 
 class AddressModal extends ConsumerStatefulWidget {
@@ -24,7 +21,7 @@ class _AddressModalState extends ConsumerState<AddressModal> {
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _streetController;
-  
+
   bool _isDefault = false;
   bool _isLoading = false;
   double? _latitude;
@@ -78,7 +75,9 @@ class _AddressModalState extends ConsumerState<AddressModal> {
 
   Future<void> _fetchWardsByProvince(int provinceCode) async {
     try {
-      final response = await Dio().get('https://provinces.open-api.vn/api/p/$provinceCode?depth=3');
+      final response = await Dio().get(
+        'https://provinces.open-api.vn/api/p/$provinceCode?depth=3',
+      );
       if (mounted) {
         List<dynamic> allWards = [];
         for (var d in response.data['districts']) {
@@ -125,8 +124,10 @@ class _AddressModalState extends ConsumerState<AddressModal> {
       id: widget.address?.id,
       name: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
-      address1: '${_streetController.text.trim()}${_selectedWard != null ? ', ${_selectedWard['name']}' : ''}',
-      address2: '${_selectedWard != null ? _selectedWard['district_name'] : ''}, ${_selectedProvince?['name'] ?? ''}',
+      address1:
+          '${_streetController.text.trim()}${_selectedWard != null ? ', ${_selectedWard['name']}' : ''}',
+      address2:
+          '${_selectedWard != null ? _selectedWard['district_name'] : ''}, ${_selectedProvince?['name'] ?? ''}',
       isDefault: _isDefault,
       latitude: _latitude,
       longitude: _longitude,
@@ -144,9 +145,11 @@ class _AddressModalState extends ConsumerState<AddressModal> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.address == null
-                ? AppStrings.addAddressSuccess
-                : AppStrings.updateAddressSuccess),
+            content: Text(
+              widget.address == null
+                  ? AppStrings.addAddressSuccess
+                  : AppStrings.updateAddressSuccess,
+            ),
           ),
         );
       }
@@ -154,9 +157,9 @@ class _AddressModalState extends ConsumerState<AddressModal> {
       ref.invalidate(userProfileProvider);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -189,7 +192,9 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEditing ? AppStrings.editAddress : AppStrings.addNewAddress,
+                    isEditing
+                        ? AppStrings.editAddress
+                        : AppStrings.addNewAddress,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -207,7 +212,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 controller: _nameController,
                 label: AppStrings.receiverName,
                 hint: AppStrings.fullNameHint,
-                validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
+                validator: (v) =>
+                    v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -215,7 +221,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 label: AppStrings.phoneLabel,
                 hint: AppStrings.phoneHint,
                 keyboardType: TextInputType.phone,
-                validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
+                validator: (v) =>
+                    v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
               _buildDropdown(
@@ -233,7 +240,8 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     _fetchWardsByProvince(val['code']);
                   }
                 },
-                validator: (v) => v == null ? AppStrings.pleaseSelectProvince : null,
+                validator: (v) =>
+                    v == null ? AppStrings.pleaseSelectProvince : null,
               ),
               const SizedBox(height: 16),
               _buildDropdown(
@@ -246,14 +254,16 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     _selectedWard = val;
                   });
                 },
-                validator: (v) => v == null ? AppStrings.pleaseSelectWard : null,
+                validator: (v) =>
+                    v == null ? AppStrings.pleaseSelectWard : null,
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _streetController,
                 label: AppStrings.streetAddress,
                 hint: AppStrings.streetAddressHint,
-                validator: (v) => v!.isEmpty ? AppStrings.notEmptyRequired : null,
+                validator: (v) =>
+                    v!.isEmpty ? AppStrings.notEmptyRequired : null,
               ),
               const SizedBox(height: 16),
               // Embedded Map Thumbnail
@@ -265,29 +275,40 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                 streetAddress: _streetController.text,
                 provinces: _provinces,
                 wards: _wards,
-                onLocationUpdated: (lat, lng, matchedProvince, matchedWard, updatedWards, street) {
-                  setState(() {
-                    _latitude = lat;
-                    _longitude = lng;
-                    _streetController.text = street;
-                    
-                    if (matchedProvince != null && _selectedProvince != matchedProvince) {
-                      _selectedProvince = matchedProvince;
-                      _selectedWard = null;
-                      _wards = [];
-                      _fetchWardsByProvince(matchedProvince['code']);
-                    } else {
-                      _selectedWard = matchedWard;
-                      _wards = updatedWards;
-                    }
-                  });
-                },
+                onLocationUpdated:
+                    (
+                      lat,
+                      lng,
+                      matchedProvince,
+                      matchedWard,
+                      updatedWards,
+                      street,
+                    ) {
+                      setState(() {
+                        _latitude = lat;
+                        _longitude = lng;
+                        _streetController.text = street;
+
+                        if (matchedProvince != null &&
+                            _selectedProvince != matchedProvince) {
+                          _selectedProvince = matchedProvince;
+                          _selectedWard = null;
+                          _wards = [];
+                          _fetchWardsByProvince(matchedProvince['code']);
+                        } else {
+                          _selectedWard = matchedWard;
+                          _wards = updatedWards;
+                        }
+                      });
+                    },
               ),
               const SizedBox(height: 16),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text(AppStrings.setAsDefault,
-                    style: TextStyle(fontSize: 14, color: AppColors.textDark)),
+                title: const Text(
+                  AppStrings.setAsDefault,
+                  style: TextStyle(fontSize: 14, color: AppColors.textDark),
+                ),
                 activeThumbColor: AppColors.primary,
                 value: _isDefault,
                 onChanged: (val) => setState(() => _isDefault = val),
@@ -301,21 +322,25 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: _isLoading
                       ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2),
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Text(
                           isEditing ? AppStrings.saveChanges : AppStrings.done,
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ),
@@ -336,11 +361,14 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textGrey)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textGrey,
+          ),
+        ),
         const SizedBox(height: 4),
         TextFormField(
           controller: controller,
@@ -349,8 +377,10 @@ class _AddressModalState extends ConsumerState<AddressModal> {
             hintText: hint,
             isDense: true,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
           ),
           validator: validator,
         ),
@@ -375,22 +405,37 @@ class _AddressModalState extends ConsumerState<AddressModal> {
             }).toList();
 
             return Dialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Container(
-                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.7,
+                ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 12),
                     TextField(
                       autofocus: true,
                       decoration: InputDecoration(
                         hintText: AppStrings.searchHint,
                         prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
                       ),
                       onChanged: (val) {
                         setDialogState(() {
@@ -407,7 +452,9 @@ class _AddressModalState extends ConsumerState<AddressModal> {
                               itemBuilder: (context, index) {
                                 final item = filteredItems[index];
                                 return ListTile(
-                                  title: Text(item['displayName'] ?? item['name']),
+                                  title: Text(
+                                    item['displayName'] ?? item['name'],
+                                  ),
                                   onTap: () {
                                     onSelected(item);
                                     Navigator.pop(context);
@@ -437,20 +484,28 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textGrey)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textGrey,
+          ),
+        ),
         const SizedBox(height: 4),
         TextFormField(
           readOnly: true,
-          controller: TextEditingController(text: value != null ? (value['displayName'] ?? value['name']) : ''),
+          controller: TextEditingController(
+            text: value != null ? (value['displayName'] ?? value['name']) : '',
+          ),
           decoration: InputDecoration(
             hintText: hint,
             isDense: true,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
             suffixIcon: const Icon(Icons.arrow_drop_down),
           ),
           onTap: () {
@@ -467,4 +522,3 @@ class _AddressModalState extends ConsumerState<AddressModal> {
     );
   }
 }
-

@@ -49,7 +49,12 @@ class AdminUserService {
     }
   }
 
-  Future<UserModel> createUser(String username, String email, String password, String role) async {
+  Future<UserModel> createUser(
+    String username,
+    String email,
+    String password,
+    String role,
+  ) async {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.post(
@@ -101,17 +106,18 @@ class AdminUserService {
     }
   }
 
-  Future<UserModel> updateUser(String id, String username, String email, String role) async {
+  Future<UserModel> updateUser(
+    String id,
+    String username,
+    String email,
+    String role,
+  ) async {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.put(
         '$_baseUrl/$id',
         options: options,
-        data: {
-          'username': username,
-          'email': email,
-          'role': role,
-        },
+        data: {'username': username, 'email': email, 'role': role},
       );
 
       final data = response.data['data'];
@@ -124,10 +130,7 @@ class AdminUserService {
   Future<void> deleteUser(String id) async {
     try {
       final options = await _getAuthOptions();
-      await _dio.delete(
-        '$_baseUrl/$id',
-        options: options,
-      );
+      await _dio.delete('$_baseUrl/$id', options: options);
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Failed to delete user');
     }
@@ -143,7 +146,9 @@ class AdminUserService {
       final data = response.data['data'];
       return AdminUserStats.fromJson(data);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to load user stats');
+      throw Exception(
+        e.response?.data['message'] ?? 'Failed to load user stats',
+      );
     }
   }
 
@@ -157,16 +162,15 @@ class AdminUserService {
       final data = response.data['data'];
       return AdminOrderStats.fromJson(data);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Failed to load order stats');
+      throw Exception(
+        e.response?.data['message'] ?? 'Failed to load order stats',
+      );
     }
   }
 
   Future<CombinedAdminStats> getCombinedStats() async {
     try {
-      final results = await Future.wait([
-        getUserStats(),
-        getOrderStats(),
-      ]);
+      final results = await Future.wait([getUserStats(), getOrderStats()]);
       return CombinedAdminStats(
         userStats: results[0] as AdminUserStats,
         orderStats: results[1] as AdminOrderStats,

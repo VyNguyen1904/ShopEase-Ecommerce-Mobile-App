@@ -9,9 +9,12 @@ final favoriteServiceProvider = Provider((ref) {
   return FavoriteService(dio: authService.dio);
 });
 
-final favoriteProductsProvider = StateNotifierProvider<FavoriteProductsNotifier, AsyncValue<List<Product>>>((ref) {
-  return FavoriteProductsNotifier(ref.watch(favoriteServiceProvider));
-});
+final favoriteProductsProvider =
+    StateNotifierProvider<FavoriteProductsNotifier, AsyncValue<List<Product>>>((
+      ref,
+    ) {
+      return FavoriteProductsNotifier(ref.watch(favoriteServiceProvider));
+    });
 
 // A provider that just exposes a Set of product IDs for quick lookup (O(1)) in UI
 final favoriteIdsProvider = Provider<Set<String>>((ref) {
@@ -22,7 +25,8 @@ final favoriteIdsProvider = Provider<Set<String>>((ref) {
   );
 });
 
-class FavoriteProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
+class FavoriteProductsNotifier
+    extends StateNotifier<AsyncValue<List<Product>>> {
   final FavoriteService _service;
 
   FavoriteProductsNotifier(this._service) : super(const AsyncValue.loading()) {
@@ -49,7 +53,9 @@ class FavoriteProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> 
     try {
       if (isFavorite) {
         // Optimistic update
-        state = AsyncValue.data(products.where((p) => p.id != product.id).toList());
+        state = AsyncValue.data(
+          products.where((p) => p.id != product.id).toList(),
+        );
         await _service.removeFavorite(product.id);
       } else {
         // Optimistic update

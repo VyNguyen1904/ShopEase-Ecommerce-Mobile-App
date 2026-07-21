@@ -79,7 +79,7 @@ class ApiNotificationService {
           debugPrint('FCM Token: $token');
           await _dio.post('$_apiUrl/token', data: {'token': token});
         }
-        
+
         // Listen to token refresh
         messaging.onTokenRefresh.listen((newToken) {
           _dio.post('$_apiUrl/token', data: {'token': newToken});
@@ -87,10 +87,12 @@ class ApiNotificationService {
 
         // Handle foreground messages
         FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-          debugPrint('Received foreground message: ${message.notification?.title}');
+          debugPrint(
+            'Received foreground message: ${message.notification?.title}',
+          );
           if (message.notification != null) {
-            // Since we already have a WebSocket for in-app notifications, we don't necessarily 
-            // need to do anything here unless we want to show a local snackbar. The WebSocket 
+            // Since we already have a WebSocket for in-app notifications, we don't necessarily
+            // need to do anything here unless we want to show a local snackbar. The WebSocket
             // will automatically update the UI.
           }
         });

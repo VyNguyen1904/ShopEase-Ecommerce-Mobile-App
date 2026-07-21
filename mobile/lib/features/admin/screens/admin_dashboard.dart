@@ -83,7 +83,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 140),
                     child: Center(
-                      child: CircularProgressIndicator(color: AppColors.primary),
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
                     ),
                   )
                 else if (_error != null)
@@ -93,11 +95,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline_rounded, size: 48, color: AppColors.alertRed),
+                          const Icon(
+                            Icons.error_outline_rounded,
+                            size: 48,
+                            color: AppColors.alertRed,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             '${AppStrings.loadDataErrorPrefix}$_error',
-                            style: const TextStyle(fontSize: 14, color: AppColors.textGrey, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textGrey,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 16),
@@ -108,8 +118,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
                             ),
                           ),
                         ],
@@ -150,7 +165,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   const SizedBox(height: 16),
                   _buildQuickActionsGrid(context),
                   const SizedBox(height: 40),
-                ]
+                ],
               ],
             ),
           ),
@@ -213,19 +228,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
               const SizedBox(height: 2),
               const Text(
                 AppStrings.adminGreeting,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textGrey,
-                ),
+                style: TextStyle(fontSize: 12, color: AppColors.textGrey),
               ),
             ],
           ),
         ),
-        
+
         // Return to Storefront button in Header
         TextButton.icon(
           onPressed: () => context.go('/home'),
-          icon: const Icon(Icons.storefront_rounded, size: 18, color: AppColors.primary),
+          icon: const Icon(
+            Icons.storefront_rounded,
+            size: 18,
+            color: AppColors.primary,
+          ),
           label: const Text(
             AppStrings.storefront,
             style: TextStyle(
@@ -236,7 +252,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           style: TextButton.styleFrom(
             backgroundColor: AppColors.primary.withValues(alpha: 0.08),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
         ),
@@ -363,10 +381,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildBarChartCard() {
     final sales = _stats!.orderStats.dailySales;
-    
+
     // Dynamically calculate maximum height bounds for rendering
-    double maxRev = sales.map((s) => s.revenue).fold(1.0, (m, v) => v > m ? v : m);
-    double maxOrd = sales.map((s) => s.ordersCount.toDouble()).fold(1.0, (m, v) => v > m ? v : m);
+    double maxRev = sales
+        .map((s) => s.revenue)
+        .fold(1.0, (m, v) => v > m ? v : m);
+    double maxOrd = sales
+        .map((s) => s.ordersCount.toDouble())
+        .fold(1.0, (m, v) => v > m ? v : m);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -375,7 +397,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.01), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -386,10 +412,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: [
               const Text(
                 AppStrings.salesAndOrders,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(8),
@@ -397,9 +430,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
                 child: Row(
                   children: const [
-                    Text(AppStrings.last7Days, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                    Text(
+                      AppStrings.last7Days,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDark,
+                      ),
+                    ),
                     SizedBox(width: 4),
-                    Icon(Icons.keyboard_arrow_down, size: 14, color: AppColors.textGrey),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 14,
+                      color: AppColors.textGrey,
+                    ),
                   ],
                 ),
               ),
@@ -422,8 +466,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
               children: sales.map((s) {
                 // Scale value height between 10 and 140
                 double revH = maxRev > 0 ? (s.revenue / maxRev) * 120 + 10 : 10;
-                double ordH = maxOrd > 0 ? (s.ordersCount / maxOrd) * 120 + 10 : 10;
-                return _buildDoubleBar(s.date, revenueHeight: revH, orderHeight: ordH);
+                double ordH = maxOrd > 0
+                    ? (s.ordersCount / maxOrd) * 120 + 10
+                    : 10;
+                return _buildDoubleBar(
+                  s.date,
+                  revenueHeight: revH,
+                  orderHeight: ordH,
+                );
               }).toList(),
             ),
           ),
@@ -442,7 +492,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
       const Color(0xFFF59E0B), // Amber
     ];
 
-    int totalSales = categories.map((c) => c.salesCount).fold(0, (sum, count) => sum + count);
+    int totalSales = categories
+        .map((c) => c.salesCount)
+        .fold(0, (sum, count) => sum + count);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -451,7 +503,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.01), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -459,7 +515,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           const Text(
             AppStrings.popularCategories,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
           ),
           const SizedBox(height: 20),
           Center(
@@ -476,8 +536,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(totalSales.toString(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark)),
-                        const Text('Items', style: TextStyle(fontSize: 9, color: AppColors.textGrey)),
+                        Text(
+                          totalSales.toString(),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        const Text(
+                          'Items',
+                          style: TextStyle(
+                            fontSize: 9,
+                            color: AppColors.textGrey,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -493,7 +566,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               '${categories[i].percentage.toStringAsFixed(0)}%',
               colors[i % colors.length],
             ),
-          ]
+          ],
         ],
       ),
     );
@@ -505,24 +578,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
       children: [
         Row(
           children: [
-            Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
             const SizedBox(width: 8),
-            Text(name, style: const TextStyle(fontSize: 12, color: AppColors.textGrey, fontWeight: FontWeight.w500)),
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textGrey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
-        Text(percentage, style: const TextStyle(fontSize: 12, color: AppColors.textDark, fontWeight: FontWeight.bold)),
+        Text(
+          percentage,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildUserGrowthCard() {
     final growth = _stats!.userStats.userGrowth;
-    final List<double> dataPoints = growth.map((g) => g.count.toDouble()).toList();
+    final List<double> dataPoints = growth
+        .map((g) => g.count.toDouble())
+        .toList();
     final List<String> labels = growth.map((g) => g.month).toList();
 
     // Map point values proportionally to canvas height
     double maxVal = dataPoints.fold(1.0, (m, v) => v > m ? v : m);
-    final scaledPoints = dataPoints.map((v) => maxVal > 0 ? (v / maxVal) : 0.0).toList();
+    final scaledPoints = dataPoints
+        .map((v) => maxVal > 0 ? (v / maxVal) : 0.0)
+        .toList();
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -531,7 +626,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.01), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -539,7 +638,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           const Text(
             AppStrings.memberGrowth,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textDark,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -564,7 +667,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
             children: labels.map((label) {
               return Text(
                 label,
-                style: const TextStyle(fontSize: 10, color: AppColors.textGrey, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.textGrey,
+                  fontWeight: FontWeight.bold,
+                ),
               );
             }).toList(),
           ),
@@ -705,7 +812,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         style: TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.bold,
-                          color: isIncrease ? AppColors.iconGreen : AppColors.alertRed,
+                          color: isIncrease
+                              ? AppColors.iconGreen
+                              : AppColors.alertRed,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -822,7 +931,9 @@ class _HoverMenuCardState extends State<_HoverMenuCard> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _isHovered ? widget.color.withValues(alpha: 0.5) : const Color(0xFFE2E8F0),
+              color: _isHovered
+                  ? widget.color.withValues(alpha: 0.5)
+                  : const Color(0xFFE2E8F0),
               width: _isHovered ? 2 : 1,
             ),
             boxShadow: [
@@ -931,7 +1042,10 @@ class _SystemSettingsDialogState extends State<_SystemSettingsDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFF8FAFC),
                   border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
@@ -944,17 +1058,27 @@ class _SystemSettingsDialogState extends State<_SystemSettingsDialog> {
                       children: const [
                         Text(
                           AppStrings.systemSettingsTitle,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Manage global environment parameters',
-                          style: TextStyle(fontSize: 12, color: AppColors.textGrey),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textGrey,
+                          ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: AppColors.textGrey),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: AppColors.textGrey,
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -967,63 +1091,121 @@ class _SystemSettingsDialogState extends State<_SystemSettingsDialog> {
                     SwitchListTile(
                       value: _maintenanceMode,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Maintenance Mode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Render storefront offline for deployment activities', style: TextStyle(fontSize: 12)),
-                      onChanged: (val) => setState(() => _maintenanceMode = val),
+                      title: const Text(
+                        'Maintenance Mode',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Render storefront offline for deployment activities',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (val) =>
+                          setState(() => _maintenanceMode = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _allowRegister,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Allow Registrations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Allow new customer/seller registrations on auth endpoints', style: TextStyle(fontSize: 12)),
+                      title: const Text(
+                        'Allow Registrations',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Allow new customer/seller registrations on auth endpoints',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onChanged: (val) => setState(() => _allowRegister = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _sandboxPayments,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Sandbox Payments', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Route transaction requests through simulated test gateways', style: TextStyle(fontSize: 12)),
-                      onChanged: (val) => setState(() => _sandboxPayments = val),
+                      title: const Text(
+                        'Sandbox Payments',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Route transaction requests through simulated test gateways',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      onChanged: (val) =>
+                          setState(() => _sandboxPayments = val),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
                       value: _kafkaLogging,
                       activeThumbColor: AppColors.primary,
-                      title: const Text('Kafka Trace Debug', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                      subtitle: const Text('Enable trace logging for publish/subscribe microservice pipelines', style: TextStyle(fontSize: 12)),
+                      title: const Text(
+                        'Kafka Trace Debug',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Enable trace logging for publish/subscribe microservice pipelines',
+                        style: TextStyle(fontSize: 12),
+                      ),
                       onChanged: (val) => setState(() => _kafkaLogging = val),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 color: const Color(0xFFF8FAFC),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel', style: TextStyle(color: AppColors.textGrey, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: AppColors.textGrey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text(AppStrings.saveConfigSuccess), backgroundColor: Colors.green),
+                          const SnackBar(
+                            content: Text(AppStrings.saveConfigSuccess),
+                            backgroundColor: Colors.green,
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
                       ),
-                      child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Save Changes',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -1080,7 +1262,10 @@ class _SystemLogsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 decoration: const BoxDecoration(
                   color: Color(0xFF1E293B),
                   border: Border(bottom: BorderSide(color: Color(0xFF334155))),
@@ -1093,17 +1278,28 @@ class _SystemLogsDialog extends StatelessWidget {
                       children: const [
                         Text(
                           AppStrings.gatewayLogs,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
                         ),
                         SizedBox(height: 4),
                         Text(
                           'Realtime microservice routing trace logs',
-                          style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF94A3B8),
+                          ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 20, color: Color(0xFF94A3B8)),
+                      icon: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Color(0xFF94A3B8),
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -1150,7 +1346,10 @@ class _SystemLogsDialog extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 color: const Color(0xFF1E293B),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -1161,10 +1360,18 @@ class _SystemLogsDialog extends StatelessWidget {
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF1E293B),
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
                       ),
-                      child: const Text('Close Terminal', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Close Terminal',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -1229,7 +1436,9 @@ class _LineChartPainter extends CustomPainter {
 
     final width = size.width;
     final height = size.height;
-    final stepX = dataPoints.length > 1 ? width / (dataPoints.length - 1) : width;
+    final stepX = dataPoints.length > 1
+        ? width / (dataPoints.length - 1)
+        : width;
 
     final linePaint = Paint()
       ..color = lineColor

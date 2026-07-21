@@ -31,8 +31,8 @@ import '../../features/profile/screens/profile_edit_screen.dart';
 import '../../features/profile/screens/my_reviews_screen.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
 import '../../features/admin/screens/admin_users.dart';
-import '../../features/admin/screens/seller_order_detail.dart';
-import '../../features/admin/screens/seller_notifications.dart';
+import '../../features/seller/screens/seller_order_detail.dart';
+import '../../features/seller/screens/seller_notifications.dart';
 import '../../features/seller/screens/seller_shop_profile.dart';
 import '../../features/seller/screens/seller_dashboard_screen.dart';
 import '../../features/seller/screens/seller_products_screen.dart';
@@ -42,6 +42,7 @@ import '../../features/seller/screens/seller_orders_screen.dart';
 import '../../features/seller/screens/seller_shell_layout.dart';
 import '../../features/cart/screens/payment_screen.dart';
 import '../../features/store/screens/store_map_screen.dart';
+
 Map<String, dynamic> _decodeJwt(String token) {
   try {
     final parts = token.split('.');
@@ -65,9 +66,10 @@ final appRouter = GoRouter(
     final location = state.matchedLocation;
     final isAdminPath = location.startsWith('/admin');
     final isSellerPath = location.startsWith('/seller');
-    
+
     // Paths that require a logged in user (any role)
-    final isProtectedPath = location == AppRoutes.checkout ||
+    final isProtectedPath =
+        location == AppRoutes.checkout ||
         location == AppRoutes.orders ||
         location == AppRoutes.review ||
         location.startsWith('/order-detail') ||
@@ -104,7 +106,10 @@ final appRouter = GoRouter(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Phiên đăng nhập đã hết hạn hoặc trang không tồn tại.', style: TextStyle(fontSize: 16)),
+          const Text(
+            'Phiên đăng nhập đã hết hạn hoặc trang không tồn tại.',
+            style: TextStyle(fontSize: 16),
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.go(AppRoutes.login),
@@ -116,10 +121,7 @@ final appRouter = GoRouter(
   ),
   routes: [
     // ── Deep Link Handlers ──────────────────────────────────────────────────
-    GoRoute(
-      path: '/',
-      redirect: (context, state) => AppRoutes.home,
-    ),
+    GoRoute(path: '/', redirect: (context, state) => AppRoutes.home),
     GoRoute(
       path: '/payment-return/:id',
       redirect: (context, state) {
@@ -260,7 +262,9 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.address,
       builder: (context, state) {
-        final isSelecting = state.extra is Map ? (state.extra as Map)['isSelecting'] == true : false;
+        final isSelecting = state.extra is Map
+            ? (state.extra as Map)['isSelecting'] == true
+            : false;
         return AddressScreen(isSelecting: isSelecting);
       },
     ),
@@ -399,5 +403,3 @@ final appRouter = GoRouter(
     ),
   ],
 );
-
-

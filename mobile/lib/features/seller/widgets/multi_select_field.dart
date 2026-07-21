@@ -65,7 +65,9 @@ class MultiSelectField extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
                 side: BorderSide(
-                  color: isSelected ? AppColors.primary : Colors.grey.withValues(alpha: 0.3),
+                  color: isSelected
+                      ? AppColors.primary
+                      : Colors.grey.withValues(alpha: 0.3),
                 ),
               ),
             );

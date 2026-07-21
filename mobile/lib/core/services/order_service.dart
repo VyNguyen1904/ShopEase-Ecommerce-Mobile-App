@@ -53,12 +53,15 @@ class OrderService {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.get(_orderUrl, options: options);
-      dynamic data = response.data['data'] ?? response.data['content'] ?? response.data;
+      dynamic data =
+          response.data['data'] ?? response.data['content'] ?? response.data;
       if (data is Map) {
         data = data['content'] ?? data['data'] ?? [];
       }
       if (data == null) return [];
-      return (data as List).map((json) => OrderResponse.fromJson(json)).toList();
+      return (data as List)
+          .map((json) => OrderResponse.fromJson(json))
+          .toList();
     } catch (e) {
       throw Exception('Failed to get order history: $e');
     }
@@ -68,12 +71,15 @@ class OrderService {
     try {
       final options = await _getAuthOptions();
       final response = await _dio.get('$_orderUrl/seller', options: options);
-      dynamic data = response.data['data'] ?? response.data['content'] ?? response.data;
+      dynamic data =
+          response.data['data'] ?? response.data['content'] ?? response.data;
       if (data is Map) {
         data = data['content'] ?? data['data'] ?? [];
       }
       if (data == null) return [];
-      return (data as List).map((json) => OrderResponse.fromJson(json)).toList();
+      return (data as List)
+          .map((json) => OrderResponse.fromJson(json))
+          .toList();
     } catch (e) {
       throw Exception('Failed to get seller orders: $e');
     }
@@ -92,7 +98,10 @@ class OrderService {
   Future<OrderResponse> cancelOrder(String id) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.post('$_orderUrl/$id/cancel', options: options);
+      final response = await _dio.post(
+        '$_orderUrl/$id/cancel',
+        options: options,
+      );
       return OrderResponse.fromJson(response.data['data']);
     } catch (e) {
       throw Exception('Failed to cancel order: $e');
@@ -116,7 +125,10 @@ class OrderService {
   Future<OrderResponse> markAsDelivered(String id) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.post('$_orderUrl/$id/deliver', options: options);
+      final response = await _dio.post(
+        '$_orderUrl/$id/deliver',
+        options: options,
+      );
       return OrderResponse.fromJson(response.data['data']);
     } catch (e) {
       throw Exception('Failed to mark order as delivered: $e');
@@ -126,7 +138,10 @@ class OrderService {
   Future<OrderResponse> confirmOrder(String id) async {
     try {
       final options = await _getAuthOptions();
-      final response = await _dio.post('$_orderUrl/$id/confirm', options: options);
+      final response = await _dio.post(
+        '$_orderUrl/$id/confirm',
+        options: options,
+      );
       return OrderResponse.fromJson(response.data['data']);
     } catch (e) {
       throw Exception('Failed to confirm order: $e');

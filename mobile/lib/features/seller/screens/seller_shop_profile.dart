@@ -108,7 +108,9 @@ class _SellerShopProfileState extends State<SellerShopProfile>
                 onPressed: () => context.pop(),
               ),
               flexibleSpace: FlexibleSpaceBar(
-                background: SellerProfileHeaderContent(headerColor: headerColor),
+                background: SellerProfileHeaderContent(
+                  headerColor: headerColor,
+                ),
               ),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(48),

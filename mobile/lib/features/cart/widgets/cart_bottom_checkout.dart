@@ -22,9 +22,7 @@ class CartBottomCheckout extends StatelessWidget {
             offset: const Offset(0, -4),
           ),
         ],
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         child: Column(
@@ -32,10 +30,7 @@ class CartBottomCheckout extends StatelessWidget {
           children: [
             // Coupon Code
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: AppColors.bgLight,
                 borderRadius: BorderRadius.circular(12),
@@ -77,11 +72,7 @@ class CartBottomCheckout extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 4),
-                        Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 14,
-                        ),
+                        Icon(Icons.close, color: Colors.white, size: 14),
                       ],
                     ),
                   ),
@@ -109,10 +100,7 @@ class CartBottomCheckout extends StatelessWidget {
                     SizedBox(height: 4),
                     Text(
                       AppStrings.buyToGetPoints,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.textGrey),
                     ),
                   ],
                 ),
@@ -130,10 +118,7 @@ class CartBottomCheckout extends StatelessWidget {
                     const SizedBox(height: 4),
                     const Text(
                       AppStrings.freeShipping,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textGrey,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.textGrey),
                     ),
                   ],
                 ),
@@ -146,11 +131,15 @@ class CartBottomCheckout extends StatelessWidget {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: subtotal > 0 ? () => context.push(AppRoutes.checkout) : null,
+                onPressed: subtotal > 0
+                    ? () => context.push(AppRoutes.checkout)
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.textDark,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: AppColors.textLight.withValues(alpha: 0.5),
+                  disabledBackgroundColor: AppColors.textLight.withValues(
+                    alpha: 0.5,
+                  ),
                   disabledForegroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -159,10 +148,7 @@ class CartBottomCheckout extends StatelessWidget {
                 ),
                 child: const Text(
                   AppStrings.proceedToCheckout,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),

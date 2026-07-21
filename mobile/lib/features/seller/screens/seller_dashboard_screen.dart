@@ -9,8 +9,9 @@ import '../../../core/constants/app_strings.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/app_routes.dart';
 import '../widgets/seller_stat_card.dart';
-import '../widgets/seller_action_item.dart';
 import '../widgets/seller_order_item.dart';
+import '../widgets/seller_dashboard_header.dart';
+import '../widgets/seller_dashboard_menu.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
   const SellerDashboardScreen({super.key});
@@ -25,11 +26,11 @@ class SellerDashboardScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(ref),
+              const SellerDashboardHeader(),
               const SizedBox(height: 24),
               _buildStatsCards(ref),
               const SizedBox(height: 32),
-              _buildQuickActions(context),
+              const SellerDashboardMenu(),
               const SizedBox(height: 32),
               _buildRecentOrders(context, ref),
             ],
@@ -39,47 +40,12 @@ class SellerDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(WidgetRef ref) {
-    final userAsync = ref.watch(userProfileProvider);
-    final userName = userAsync.maybeWhen(
-      data: (user) => user?.fullName.split(' ').last ?? 'Seller',
-      orElse: () => 'Seller',
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Text(
-              '${AppStrings.helloPrefix}$userName',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          AppStrings.shopOverviewDesc,
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textGrey,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildStatsCards(WidgetRef ref) {
     final ordersAsync = ref.watch(sellerOrdersProvider);
-    
+
     int totalOrders = 0;
     double totalRevenue = 0;
-    
+
     ordersAsync.whenData((orders) {
       totalOrders = orders.length;
       for (var order in orders) {
@@ -122,64 +88,6 @@ class SellerDashboardScreen extends ConsumerWidget {
     );
   }
 
-
-  Widget _buildQuickActions(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          AppStrings.quickActions,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SellerActionItem(
-              icon: Icons.inventory_2_outlined,
-              label: AppStrings.addProduct,
-              onTap: () {
-                // Navigate to add product screen
-                context.push(AppRoutes.sellerAddProduct);
-              },
-            ),
-            SellerActionItem(
-              icon: Icons.receipt_long_outlined,
-              label: AppStrings.orders,
-              onTap: () {
-                // Navigate to seller orders
-                context.push(AppRoutes.sellerOrders);
-              },
-            ),
-            SellerActionItem(
-              icon: Icons.campaign_outlined,
-              label: AppStrings.promotions,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text(AppStrings.promotionFeatureDev)),
-                );
-              },
-            ),
-            SellerActionItem(
-              icon: Icons.pie_chart_outline,
-              label: AppStrings.reports,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text(AppStrings.reportFeatureDev)),
-                );
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-
   Widget _buildRecentOrders(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(sellerOrdersProvider);
     final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
@@ -202,17 +110,10 @@ class SellerDashboardScreen extends ConsumerWidget {
               children: [
                 const Text(
                   AppStrings.viewAll,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textGrey,
-                  ),
+                  style: TextStyle(fontSize: 13, color: AppColors.textGrey),
                 ),
                 const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 14,
-                  color: AppColors.textGrey,
-                ),
+                Icon(Icons.arrow_forward, size: 14, color: AppColors.textGrey),
               ],
             ),
           ],
@@ -238,11 +139,14 @@ class SellerDashboardScreen extends ConsumerWidget {
                   final order = recentOrders[index];
                   return SellerOrderItem(
                     id: '#${order.id.split('-').last.toUpperCase()}',
-                    date: DateFormat('dd/MM/yyyy • HH:mm').format(order.createdAt),
+                    date: DateFormat(
+                      'dd/MM/yyyy • HH:mm',
+                    ).format(order.createdAt),
                     price: formatCurrency.format(order.totalAmount),
                     status: _mapStatus(order.status),
                     statusColor: _getStatusColor(order.status),
-                    avatarUrl: 'https://ui-avatars.com/api/?name=User+${index + 1}&background=random',
+                    avatarUrl:
+                        'https://ui-avatars.com/api/?name=User+${index + 1}&background=random',
                     showDivider: index < recentOrders.length - 1,
                     onTap: () {
                       context.push(AppRoutes.sellerOrderDetailPath(order.id));
@@ -264,7 +168,6 @@ class SellerDashboardScreen extends ConsumerWidget {
       ],
     );
   }
-
 
   String _mapStatus(OrderStatus status) {
     switch (status) {
@@ -303,5 +206,4 @@ class SellerDashboardScreen extends ConsumerWidget {
         return Colors.red[700]!;
     }
   }
-
 }

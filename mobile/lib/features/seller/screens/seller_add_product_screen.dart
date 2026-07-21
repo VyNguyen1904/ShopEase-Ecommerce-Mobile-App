@@ -18,10 +18,12 @@ class SellerAddProductScreen extends ConsumerStatefulWidget {
   const SellerAddProductScreen({super.key});
 
   @override
-  ConsumerState<SellerAddProductScreen> createState() => _SellerAddProductScreenState();
+  ConsumerState<SellerAddProductScreen> createState() =>
+      _SellerAddProductScreenState();
 }
 
-class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen> {
+class _SellerAddProductScreenState
+    extends ConsumerState<SellerAddProductScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _originalPriceController = TextEditingController();
@@ -35,8 +37,18 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
   final AiService _aiService = AiService();
 
   final List<String> _availableSizes = ['S', 'M', 'L', 'XL', 'XXL', 'Freesize'];
-  final List<String> _availableColors = ['Đen', 'Trắng', 'Đỏ', 'Xanh dương', 'Xanh lá', 'Vàng', 'Hồng', 'Xám', 'Nâu'];
-  
+  final List<String> _availableColors = [
+    'Đen',
+    'Trắng',
+    'Đỏ',
+    'Xanh dương',
+    'Xanh lá',
+    'Vàng',
+    'Hồng',
+    'Xám',
+    'Nâu',
+  ];
+
   final List<String> _selectedSizes = [];
   final List<String> _selectedColors = [];
 
@@ -62,11 +74,12 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
     }
 
     setState(() => _isGeneratingAi = true);
-    
+
     try {
       final priceStr = _priceController.text.trim();
-      final price = double.tryParse(priceStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
-      
+      final price =
+          double.tryParse(priceStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
+
       final description = await _aiService.generateProductDescription(
         name: name,
         category: _selectedCategory ?? '',
@@ -74,7 +87,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
         sizes: _selectedSizes,
         colors: _selectedColors,
       );
-      
+
       if (mounted) {
         _descController.text = description;
       }
@@ -107,18 +120,26 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
       return;
     }
 
-    if (name.isEmpty || priceStr.isEmpty || stockStr.isEmpty || _selectedCategory == null || desc.isEmpty || weightStr.isEmpty) {
+    if (name.isEmpty ||
+        priceStr.isEmpty ||
+        stockStr.isEmpty ||
+        _selectedCategory == null ||
+        desc.isEmpty ||
+        weightStr.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text(AppStrings.fillRequiredFields)),
       );
       return;
     }
 
-    final price = double.tryParse(priceStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
-    final originalPrice = origPriceStr.isNotEmpty ? double.tryParse(origPriceStr.replaceAll(RegExp(r'[^0-9]'), '')) : null;
+    final price =
+        double.tryParse(priceStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
+    final originalPrice = origPriceStr.isNotEmpty
+        ? double.tryParse(origPriceStr.replaceAll(RegExp(r'[^0-9]'), ''))
+        : null;
     final stock = int.tryParse(stockStr) ?? 0;
     final weightKg = double.tryParse(weightStr.replaceAll(',', '.')) ?? 0.0;
-    
+
     // Find category ID
     final selectedCatModel = categories.firstWhere(
       (c) => c.name == _selectedCategory,
@@ -147,7 +168,7 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
 
       final service = ref.read(productServiceProvider);
       await service.createProduct(newProduct);
-      
+
       ref.invalidate(sellerProductsProvider);
       ref.invalidate(productsProvider);
 
@@ -159,9 +180,9 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.errorPrefix}$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${AppStrings.errorPrefix}$e')));
       }
     } finally {
       if (mounted) {
@@ -261,7 +282,10 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
                 },
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Text('${AppStrings.loadCategoryError}$err', style: const TextStyle(color: Colors.red)),
+              error: (err, _) => Text(
+                '${AppStrings.loadCategoryError}$err',
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -282,7 +306,9 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
                     icon: Icons.scale_outlined,
                     label: 'Khối lượng (Kg)',
                     hintText: 'Ví dụ: 0.5',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                   ),
                 ),
               ],
@@ -334,13 +360,23 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
                     )
                   : TextButton.icon(
                       onPressed: _generateAiDescription,
-                      icon: const Icon(Icons.auto_awesome, color: Colors.purple, size: 20),
+                      icon: const Icon(
+                        Icons.auto_awesome,
+                        color: Colors.purple,
+                        size: 20,
+                      ),
                       label: const Text(
                         'AI',
-                        style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.purple,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         backgroundColor: Colors.purple.withValues(alpha: 0.1),
@@ -362,5 +398,4 @@ class _SellerAddProductScreenState extends ConsumerState<SellerAddProductScreen>
       ),
     );
   }
-
 }
